@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "title": "Ruang Vektor",
+  "subtitle": "Matematika Tingkat Lanjut — Kelas 11",
+  "relevansi": {
+    "title": "Kenapa Vektor Penting?",
+    "lead": "Vektor bukan sekadar tanda panah di buku. Ia fondasi banyak teknologi yang kamu pakai hari ini.",
+    "items": [
+      {
+        "icon": "cpu",
+        "name": "Komputasi & Digital",
+        "text": "Representasi data pada Kecerdasan Artifisial (AI) dan enkripsi informasi kriptografi."
+      },
+      {
+        "icon": "compass",
+        "name": "Astronomi & Navigasi",
+        "text": "Perhitungan lintasan satelit, jarak terpendek penerbangan (GPS), dan navigasi arah angin."
+      },
+      {
+        "icon": "zap",
+        "name": "Fisika",
+        "text": "Representasi gaya, medan elektromagnetik, dan gaya Lorentz."
+      }
+    ]
+  },
+  "prasyarat": {
+    "title": "Pra-Materi (Prasyarat Wajib)",
+    "lead": "Sebelum masuk Bab 1, pastikan empat hal ini sudah kamu kuasai. Kalau ada yang goyah, ia akan terasa persis di tengah soal.",
+    "items": [
+      {
+        "name": "Teorema Pythagoras Lanjut",
+        "text": "Menyederhanakan bentuk akar ($\\sqrt{20} = 2\\sqrt{5}$) dan menghitung diagonal ruang 3D $\\sqrt{p^2 + l^2 + t^2}$."
+      },
+      {
+        "name": "Aljabar Kuadratik",
+        "text": "Menyusun persamaan dari bentuk akar dengan mengkuadratkan kedua ruas, lalu memfaktorkan persamaan kuadratnya."
+      },
+      {
+        "name": "Sifat Bangun Datar",
+        "text": "Jajar genjang: sisi berhadapan **sejajar dan sama panjang**. Trapesium sama kaki: kaki miringnya **sama panjang**."
+      },
+      {
+        "name": "Perbandingan Senilai",
+        "text": "Logika rasio dasar — proporsionalitas antara jarak dan waktu pada gerak berkecepatan tetap."
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "id": "01_konsep_dasar",
+      "number": 1,
+      "title": "Konsep Dasar Vektor",
+      "tagline": "Kenali arah dan besar sebelum menghitung apa pun.",
+      "accent": "primary",
+      "src": "data/chapters/01_konsep_dasar.json",
+      "subtopicOrder": [
+        "pengertian_notasi",
+        "notasi_penyajian",
+        "vektor_posisi",
+        "komponen_r2_r3",
+        "panjang_vektor",
+        "vektor_satuan"
+      ]
+    },
+    {
+      "id": "02_operasi_bangun_datar",
+      "number": 2,
+      "title": "Operasi & Bangun Datar",
+      "tagline": "Menjumlah, mengurang, dan membaca bentuk dari vektornya.",
+      "accent": "success",
+      "src": "data/chapters/02_operasi_bangun_datar.json",
+      "subtopicOrder": [
+        "penjumlahan_segitiga",
+        "penjumlahan_jajargenjang",
+        "operasi_komponen",
+        "perkalian_skalar",
+        "kombinasi_operasi",
+        "kesamaan_vektor",
+        "titik_segaris",
+        "pembagian_ruas_garis"
+      ]
+    },
+    {
+      "id": "03_perkalian_proyeksi",
+      "number": 3,
+      "title": "Perkalian & Proyeksi",
+      "tagline": "Dua vektor dikalikan, hasilnya justru sebuah bilangan.",
+      "accent": "amber",
+      "src": "data/chapters/03_perkalian_proyeksi.json",
+      "subtopicOrder": [
+        "dot_product",
+        "sifat_perkalian",
+        "sudut_antar_vektor",
+        "vektor_tegak_lurus",
+        "proyeksi_skalar",
+        "proyeksi_vektor"
+      ]
+    },
+    {
+      "id": "04_pemodelan_tka",
+      "number": 4,
+      "title": "Pemodelan TKA & Geometri Ruang",
+      "tagline": "Empat taktik yang membedakan siswa yang hafal dari siswa yang bisa.",
+      "accent": "coral",
+      "src": "data/chapters/04_pemodelan_tka.json",
+      "subtopicOrder": [
+        "parameter_modulus",
+        "bangun_segiempat",
+        "kinematika_lintasan",
+        "diagonal_balok",
+        "sniper_komponen"
+      ]
+    }
+  ]
+}

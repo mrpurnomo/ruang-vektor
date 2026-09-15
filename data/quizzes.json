@@ -1,0 +1,615 @@
+{
+  "schemaVersion": 1,
+  "modes": [
+    {
+      "id": "latihan_bab",
+      "label": "Latihan per Bab",
+      "description": "Soal terfokus dari satu bab untuk drilling. Umpan balik tertunda — periksa sendiri sebelum mengumpulkan."
+    },
+    {
+      "id": "simulasi_tka",
+      "label": "Latihan Soal TKA",
+      "description": "Sepuluh soal bergaya ujian sesungguhnya. Bebas berpindah nomor, tidak ada pembahasan sebelum dikumpulkan."
+    }
+  ],
+
+  "banks": {
+    "01_konsep_dasar": [
+      {
+        "id": "u1_01",
+        "input_type": "single_choice",
+        "subtopic": "vektor_posisi",
+        "prompt": "Diketahui titik $P(-2,\\, 5)$ dan $Q(4,\\, -1)$.",
+        "after": "**Tentukan vektor $\\vec{PQ}$.**",
+        "options": [
+          { "tex": "(2,\\, 4)" },
+          { "tex": "(6,\\, -6)" },
+          { "tex": "(-6,\\, 6)" },
+          { "tex": "(-8,\\, 4)" },
+          { "tex": "(6,\\, 6)" }
+        ],
+        "answerIndex": 1,
+        "explanation": "$\\vec{PQ} = Q - P = (4-(-2),\\; -1-5) = (6,\\, -6)$. Perhatikan komponen $x$: mengurangi bilangan negatif berarti menambah.",
+        "toastWrong": "Belum tepat — ingat rumus **ujung dikurangi pangkal**. Kalau jawabanmu $(-6,6)$, kamu menghitung $\\vec{QP}$. Kalau jawabanmu $(2,4)$, kamu menjumlahkan kedua titiknya."
+      },
+      {
+        "id": "u1_02",
+        "input_type": "mathpad",
+        "subtopic": "panjang_vektor",
+        "prompt": "Diketahui vektor $\\vec{a} = (-8,\\, 6)$.",
+        "after": "**Tentukan panjang vektor $\\vec{a}$.**",
+        "answer": 10,
+        "tolerance": 1e-6,
+        "explanation": "$|\\vec{a}| = \\sqrt{(-8)^2 + 6^2} = \\sqrt{64 + 36} = \\sqrt{100} = 10$. Tanda negatif hilang karena dikuadratkan.",
+        "toastWrong": "Belum tepat — kuadratkan dulu setiap komponennya. $(-8)^2 = 64$, bukan $-64$: tanda minus ikut terkuadratkan sehingga hilang. Panjang tidak pernah bernilai negatif."
+      },
+      {
+        "id": "u1_03",
+        "input_type": "single_choice",
+        "subtopic": "notasi_penyajian",
+        "prompt": "Diketahui vektor dalam bentuk basis vektor satuan.",
+        "tex": "\\vec{v} = -4\\hat{i} + 3\\hat{k}",
+        "after": "**Bentuk vektor kolom dari $\\vec{v}$ adalah ....**",
+        "options": [
+          { "tex": "\\begin{pmatrix} -4 \\\\ 3 \\end{pmatrix}" },
+          { "tex": "\\begin{pmatrix} -4 \\\\ 0 \\\\ 3 \\end{pmatrix}" },
+          { "tex": "\\begin{pmatrix} -4 \\\\ 1 \\\\ 3 \\end{pmatrix}" },
+          { "tex": "\\begin{pmatrix} -4 \\\\ 3 \\\\ 0 \\end{pmatrix}" },
+          { "tex": "\\begin{pmatrix} 0 \\\\ -4 \\\\ 3 \\end{pmatrix}" }
+        ],
+        "answerIndex": 1,
+        "explanation": "Huruf basis $\\hat{j}$ tidak muncul, artinya komponen $y$ bernilai $0$ — bukan dihilangkan dari daftar. Maka $\\vec{v} = (-4,\\, 0,\\, 3)$. **Opsi B**.",
+        "toastWrong": "Belum tepat — huruf basis yang **tidak muncul** berarti komponennya $0$, dan komponen itu tetap harus ditulis pada posisinya. Menggeser angka $3$ naik ke posisi $y$ mengubah arah vektornya sama sekali."
+      },
+      {
+        "id": "u1_04",
+        "input_type": "single_choice",
+        "subtopic": "vektor_satuan",
+        "prompt": "Diketahui vektor $\\vec{b} = (-6,\\, 8)$.",
+        "after": "**Vektor satuan dari $\\vec{b}$ adalah ....**",
+        "options": [
+          { "tex": "\\left(-\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)" },
+          { "tex": "\\left(-\\tfrac{6}{5},\\, \\tfrac{8}{5}\\right)" },
+          { "tex": "\\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)" },
+          { "tex": "\\left(-\\tfrac{1}{6},\\, \\tfrac{1}{8}\\right)" },
+          { "tex": "\\left(-\\tfrac{3}{4},\\, 1\\right)" }
+        ],
+        "answerIndex": 0,
+        "explanation": "$|\\vec{b}| = \\sqrt{36+64} = 10$, sehingga $\\hat{e} = \\left(\\tfrac{-6}{10},\\, \\tfrac{8}{10}\\right) = \\left(-\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$. Periksa: $\\tfrac{9}{25}+\\tfrac{16}{25} = 1$ ✓.",
+        "toastWrong": "Belum tepat — pembaginya adalah **panjang** vektor, yaitu $10$, bukan salah satu komponennya. Dan jangan membuang tanda negatifnya: vektor satuan harus **searah** dengan vektor asalnya, sehingga arah kirinya tetap terjaga."
+      },
+      {
+        "id": "u1_05",
+        "input_type": "matrix_input",
+        "subtopic": "vektor_posisi",
+        "prompt": "Diketahui titik $A(4,\\, -1,\\, 2)$ dan $B(1,\\, 3,\\, -2)$ di ruang.",
+        "after": "**Tentukan $\\vec{AB}$ dalam bentuk vektor kolom.**",
+        "rows": 3,
+        "cols": 1,
+        "answer": [[-3], [4], [-4]],
+        "explanation": "$\\vec{AB} = B - A = (1-4,\\; 3-(-1),\\; -2-2) = (-3,\\, 4,\\, -4)$.",
+        "toastWrong": "Belum tepat — periksa baris keduanya. $3 - (-1) = 3 + 1 = 4$: dua tanda minus yang bertemu menjadi tambah. Dan pastikan urutannya **ujung dikurangi pangkal**, bukan sebaliknya."
+      },
+      {
+        "id": "u1_06",
+        "input_type": "multi_select",
+        "subtopic": "panjang_vektor",
+        "prompt": "Perhatikan pernyataan-pernyataan tentang panjang vektor berikut.",
+        "after": "**Pilih semua pernyataan yang benar.**",
+        "options": [
+          { "label": "$|\\vec{v}| = |-\\vec{v}|$ untuk setiap vektor $\\vec{v}$." },
+          { "label": "Vektor $(0,\\,0)$ memiliki vektor satuan, yaitu $(0,\\,0)$." },
+          { "label": "$|(3,\\,-4)| = 5$." },
+          { "label": "$\\sqrt{50}$ dapat disederhanakan menjadi $5\\sqrt{2}$." },
+          { "label": "Jika $|\\vec{u}|^2 = 25$ dan $|\\vec{v}|^2 = 36$, maka $|\\vec{u}| > |\\vec{v}|$." }
+        ],
+        "answerIndices": [0, 2, 3],
+        "perOptionFeedback": [
+          "**Benar** — setiap komponen dikuadratkan, sehingga tanda tidak berpengaruh pada panjang.",
+          "Salah — vektor nol **tidak punya** vektor satuan. Lagi pula $|(0,0)| = 0$, sedangkan vektor satuan harus berpanjang $1$.",
+          "**Benar** — $\\sqrt{9+16} = \\sqrt{25} = 5$.",
+          "**Benar** — $\\sqrt{50} = \\sqrt{25 \\cdot 2} = 5\\sqrt{2}$.",
+          "Salah — justru sebaliknya. Karena $25 < 36$, maka $|\\vec{u}| < |\\vec{v}|$."
+        ],
+        "explanation": "Dua pernyataan yang keliru menyentuh dua kasus khusus yang paling sering menjebak: vektor nol yang tidak punya arah, dan perbandingan kuadrat panjang yang urutannya terbalik.",
+        "toastWrong": "Ada pilihan yang belum tepat — periksa pernyataan terakhir. Kuadrat panjang adalah fungsi **naik**, jadi urutannya tidak pernah terbalik: yang kuadratnya lebih besar, vektornya lebih panjang."
+      }
+    ],
+
+    "02_operasi_bangun_datar": [
+      {
+        "id": "u2_01",
+        "input_type": "single_choice",
+        "subtopic": "penjumlahan_segitiga",
+        "prompt": "Perhatikan penjumlahan vektor berikut.",
+        "tex": "\\vec{AB} + \\vec{BC} + \\vec{CA}",
+        "after": "**Hasil penjumlahan tersebut adalah ....**",
+        "options": [
+          { "tex": "\\vec{AC}" },
+          { "tex": "\\vec{CA}" },
+          { "tex": "\\vec{0}" },
+          { "tex": "2\\vec{AB}" },
+          { "tex": "\\vec{AA} + \\vec{BB}" }
+        ],
+        "answerIndex": 2,
+        "explanation": "Rantainya berangkat dari $A$ dan berakhir kembali di $A$: $\\vec{AB}+\\vec{BC}+\\vec{CA} = \\vec{AA} = \\vec{0}$. Berkeliling kembali ke titik semula menghasilkan perpindahan nol. **Opsi C**.",
+        "toastWrong": "Belum tepat — tuliskan hurufnya berderet: $A\\,B + B\\,C + C\\,A$. Huruf di tengah saling menghapus, dan yang tersisa adalah perjalanan dari $A$ ke $A$. Ke mana kamu berpindah kalau titik akhirmu sama dengan titik awalmu?"
+      },
+      {
+        "id": "u2_02",
+        "input_type": "matrix_input",
+        "subtopic": "kombinasi_operasi",
+        "prompt": "Diketahui $\\vec{a} = (7,\\, -3)$ dan $\\vec{b} = (-2,\\, 5)$.",
+        "after": "**Tentukan $3\\vec{a} - 2\\vec{b}$ dalam bentuk vektor kolom.**",
+        "rows": 2,
+        "cols": 1,
+        "answer": [[25], [-19]],
+        "explanation": "$3\\vec{a} = (21,\\, -9)$ dan $2\\vec{b} = (-4,\\, 10)$, sehingga $3\\vec{a} - 2\\vec{b} = (21-(-4),\\; -9-10) = (25,\\, -19)$.",
+        "toastWrong": "Belum tepat — periksa baris pertamanya. Karena $2\\vec{b}$ berkomponen $x$ bernilai $-4$, mengurangkannya berarti **menambah**: $21 - (-4) = 25$. Kalau hasilmu $17$, kamu mengurangkan tanpa membawa tanda negatifnya."
+      },
+      {
+        "id": "u2_03",
+        "input_type": "mathpad",
+        "subtopic": "kesamaan_vektor",
+        "prompt": "Diketahui kesamaan vektor berikut.",
+        "tex": "\\begin{pmatrix} 4x \\\\ y-2 \\end{pmatrix} = \\begin{pmatrix} 20 \\\\ 3 \\end{pmatrix}",
+        "after": "**Tentukan nilai $x + y$.**",
+        "answer": 10,
+        "tolerance": 1e-6,
+        "explanation": "Baris pertama: $4x = 20 \\Rightarrow x = 5$. Baris kedua: $y - 2 = 3 \\Rightarrow y = 5$. Maka $x + y = 10$.",
+        "toastWrong": "Belum tepat — kerjakan **kedua** barisnya, lalu jumlahkan hasilnya. Kalau jawabanmu $23$, kamu menjumlahkan ruas kanannya ($20+3$) tanpa menyelesaikan persamaan tiap barisnya lebih dulu."
+      },
+      {
+        "id": "u2_04",
+        "input_type": "single_choice",
+        "subtopic": "pembagian_ruas_garis",
+        "prompt": "Diketahui titik $A(1,\\, -2)$ dan $B(5,\\, 6)$. Titik $P$ membagi ruas garis $AB$ dengan perbandingan $AP : PB = 3 : 1$.",
+        "after": "**Tentukan koordinat titik $P$.**",
+        "options": [
+          { "tex": "P(2,\\, 0)" },
+          { "tex": "P(3,\\, 2)" },
+          { "tex": "P(4,\\, 4)" },
+          { "tex": "P(4{,}5,\\, 5)" },
+          { "tex": "P(6,\\, 8)" }
+        ],
+        "answerIndex": 2,
+        "explanation": "$\\vec{p} = \\dfrac{3\\vec{b} + 1\\vec{a}}{3+1} = \\dfrac{3(5,6) + (1,-2)}{4} = \\dfrac{(16,\\, 16)}{4} = (4,\\, 4)$. **Opsi C**.",
+        "toastWrong": "Belum tepat — penempatan $m$ dan $n$ **bersilang**, jadi angka $3$ berpasangan dengan $\\vec{b}$. Uji cepat: karena $AP$ tiga kali lebih panjang daripada $PB$, titik $P$ harus jauh lebih **dekat ke $B$**. Pilihan $(2,0)$ justru dekat ke $A$."
+      },
+      {
+        "id": "u2_05",
+        "input_type": "single_choice",
+        "subtopic": "perkalian_skalar",
+        "prompt": "Diketahui sebuah vektor $\\vec{v}$ dengan $|\\vec{v}| = \\sqrt{13}$.",
+        "after": "**Tentukan panjang vektor $-2\\vec{v}$.**",
+        "options": [
+          { "tex": "-2\\sqrt{13}" },
+          { "tex": "\\sqrt{13}" },
+          { "tex": "2\\sqrt{13}" },
+          { "tex": "4\\sqrt{13}" },
+          { "tex": "\\sqrt{26}" }
+        ],
+        "answerIndex": 2,
+        "explanation": "$|-2\\vec{v}| = |-2| \\cdot |\\vec{v}| = 2\\sqrt{13}$. Tanda negatif membalik arah, tetapi panjang tidak pernah negatif. **Opsi C**.",
+        "toastWrong": "Belum tepat — gunakan $|k\\vec{v}| = |k| \\cdot |\\vec{v}|$, dengan tanda mutlak pada $k$. Kalau jawabanmu $\\sqrt{26}$, kamu mengalikan $2$ ke dalam akar; padahal $2\\sqrt{13} = \\sqrt{52}$, bukan $\\sqrt{26}$."
+      },
+      {
+        "id": "u2_06",
+        "input_type": "multi_select",
+        "subtopic": "titik_segaris",
+        "prompt": "Perhatikan pernyataan tentang vektor sejajar dan titik segaris berikut.",
+        "after": "**Pilih semua pernyataan yang benar.**",
+        "options": [
+          { "label": "Jika $\\vec{AB} = 3\\,\\vec{BC}$, maka titik $A$, $B$, dan $C$ segaris." },
+          { "label": "Dua vektor sejajar selalu terletak pada satu garis yang sama." },
+          { "label": "Vektor $(2,\\,-6)$ dan $(-1,\\,3)$ saling sejajar." },
+          { "label": "Pada jajar genjang $ABCD$ berlaku $\\vec{AB} = \\vec{DC}$." },
+          { "label": "Untuk membuktikan tiga titik segaris, cukup memeriksa satu komponen saja." }
+        ],
+        "answerIndices": [0, 2, 3],
+        "perOptionFeedback": [
+          "**Benar** — keduanya sejajar **dan** berbagi titik $B$, sehingga pasti satu garis.",
+          "Salah — tanpa titik bersama, dua vektor sejajar hanya membentuk dua garis sejajar yang berbeda.",
+          "**Benar** — $(2,-6) = -2(-1,3)$, jadi keduanya kelipatan satu sama lain.",
+          "**Benar** — sisi berhadapan jajar genjang sejajar dan sama panjang, dengan arah penulisan yang searah.",
+          "Salah — nilai $k$ dari satu komponen **wajib** diuji pada komponen lainnya. Banyak pasangan cocok di satu komponen dan meleset di komponen berikutnya."
+        ],
+        "explanation": "Dua pernyataan yang keliru menyentuh syarat yang sama dari dua sisi: sejajar saja tidak cukup untuk segaris (butuh titik bersama), dan satu komponen saja tidak cukup untuk membuktikannya (butuh $k$ yang konsisten).",
+        "toastWrong": "Ada pilihan yang belum tepat — periksa pernyataan terakhir. Kalau satu komponen sudah cukup, apa gunanya langkah \"uji ulang pada komponen lainnya\" yang selalu diajarkan?"
+      }
+    ],
+
+    "03_perkalian_proyeksi": [
+      {
+        "id": "u3_01",
+        "input_type": "mathpad",
+        "subtopic": "dot_product",
+        "prompt": "Diketahui $\\vec{a} = (5,\\, -2,\\, 1)$ dan $\\vec{b} = (3,\\, 4,\\, -2)$.",
+        "after": "**Tentukan nilai $\\vec{a} \\cdot \\vec{b}$.**",
+        "answer": 5,
+        "tolerance": 1e-6,
+        "explanation": "$\\vec{a}\\cdot\\vec{b} = 5(3) + (-2)(4) + 1(-2) = 15 - 8 - 2 = 5$.",
+        "toastWrong": "Belum tepat — dua dari tiga sukunya bertanda **negatif**, dan keduanya mengurangi. Kerjakan satu pasangan pada satu waktu, lalu jumlahkan dengan membawa tandanya masing-masing."
+      },
+      {
+        "id": "u3_02",
+        "input_type": "single_choice",
+        "subtopic": "sudut_antar_vektor",
+        "prompt": "Diketahui $\\vec{u} = (2,\\, 2)$ dan $\\vec{v} = (0,\\, 3)$.",
+        "after": "**Tentukan besar sudut antara $\\vec{u}$ dan $\\vec{v}$.**",
+        "options": [
+          { "tex": "0^\\circ" },
+          { "tex": "30^\\circ" },
+          { "tex": "45^\\circ" },
+          { "tex": "60^\\circ" },
+          { "tex": "90^\\circ" }
+        ],
+        "answerIndex": 2,
+        "explanation": "$\\vec{u}\\cdot\\vec{v} = 0 + 6 = 6$; $|\\vec{u}| = \\sqrt{8} = 2\\sqrt{2}$ dan $|\\vec{v}| = 3$, sehingga penyebutnya $6\\sqrt{2}$. Maka $\\cos\\theta = \\dfrac{6}{6\\sqrt{2}} = \\dfrac{1}{\\sqrt{2}} = \\dfrac{1}{2}\\sqrt{2}$, dan $\\theta = 45^\\circ$. **Opsi C**.",
+        "toastWrong": "Belum tepat — sederhanakan $|\\vec{u}| = \\sqrt{8}$ menjadi $2\\sqrt{2}$ lebih dulu supaya pembagiannya rapi. Setelah membagi kamu memperoleh $\\tfrac{1}{\\sqrt{2}}$; rasionalkan menjadi $\\tfrac{1}{2}\\sqrt{2}$ sebelum mencocokkannya dengan sudut istimewa."
+      },
+      {
+        "id": "u3_03",
+        "input_type": "mathpad",
+        "subtopic": "vektor_tegak_lurus",
+        "prompt": "Diketahui $\\vec{a} = (2,\\, 3,\\, m)$ dan $\\vec{b} = (1,\\, -2,\\, 2)$ saling tegak lurus.",
+        "after": "**Tentukan nilai $m$.**",
+        "answer": 2,
+        "tolerance": 1e-6,
+        "explanation": "Syarat tegak lurus: $2(1) + 3(-2) + m(2) = 0$, yaitu $2 - 6 + 2m = 0$, sehingga $2m = 4$ dan $m = 2$.",
+        "toastWrong": "Belum tepat — jumlahkan dulu kedua suku konstantanya: $2 + (-6) = -4$. Persamaannya menjadi $-4 + 2m = 0$. Jangan lupa membagi dengan koefisien $2$ pada langkah terakhir."
+      },
+      {
+        "id": "u3_04",
+        "input_type": "single_choice",
+        "subtopic": "proyeksi_skalar",
+        "prompt": "Diketahui $\\vec{a} = (2,\\, 3,\\, 6)$ dan $\\vec{b} = (1,\\, 2,\\, 2)$.",
+        "after": "**Tentukan proyeksi skalar ortogonal $\\vec{a}$ pada $\\vec{b}$.**",
+        "options": [
+          { "tex": "\\tfrac{20}{9}" },
+          { "tex": "\\tfrac{20}{7}" },
+          { "tex": "\\tfrac{20}{3}" },
+          { "tex": "20" },
+          { "tex": "\\tfrac{3}{20}" }
+        ],
+        "answerIndex": 2,
+        "explanation": "$\\vec{a}\\cdot\\vec{b} = 2 + 6 + 12 = 20$; $|\\vec{b}| = \\sqrt{1+4+4} = 3$. Maka proyeksi skalarnya $\\dfrac{20}{3}$. **Opsi C**.",
+        "toastWrong": "Belum tepat — kalau jawabanmu $\\tfrac{20}{9}$, kamu memakai $|\\vec{b}|^2$ di penyebut. Untuk proyeksi **skalar**, penyebutnya $|\\vec{b}|$ berpangkat satu; pangkat dua baru dipakai pada **vektor** proyeksi."
+      },
+      {
+        "id": "u3_05",
+        "input_type": "matrix_input",
+        "subtopic": "proyeksi_vektor",
+        "prompt": "Diketahui $\\vec{a} = (6,\\, 2)$ dan $\\vec{b} = (1,\\, 1)$.",
+        "after": "**Tentukan vektor proyeksi ortogonal $\\vec{a}$ pada $\\vec{b}$ dalam bentuk vektor kolom.**",
+        "rows": 2,
+        "cols": 1,
+        "answer": [[4], [4]],
+        "explanation": "$\\vec{a}\\cdot\\vec{b} = 6 + 2 = 8$ dan $|\\vec{b}|^2 = 1+1 = 2$, sehingga $\\vec{c} = \\dfrac{8}{2}(1,1) = 4(1,1) = (4,\\, 4)$.",
+        "toastWrong": "Belum tepat — kalau hasilmu $(4,0)$ atau memuat dua komponen berbeda, periksa lagi: vektor proyeksi **selalu sejajar** dengan alasnya, dan $\\vec{b} = (1,1)$ punya kedua komponen sama. Kalau hasilmu berupa angka $4$ saja, kamu berhenti sebelum mengalikannya kembali dengan $\\vec{b}$."
+      },
+      {
+        "id": "u3_06",
+        "input_type": "multi_select",
+        "subtopic": "sifat_perkalian",
+        "prompt": "Perhatikan pernyataan tentang perkalian titik dan proyeksi berikut.",
+        "after": "**Pilih semua pernyataan yang benar.**",
+        "options": [
+          { "label": "Hasil $\\vec{a} \\cdot \\vec{b}$ selalu berupa bilangan real." },
+          { "label": "Proyeksi $\\vec{a}$ pada $\\vec{b}$ sama dengan proyeksi $\\vec{b}$ pada $\\vec{a}$." },
+          { "label": "Jika $\\vec{a} \\cdot \\vec{b} < 0$, maka sudut antara keduanya tumpul." },
+          { "label": "$\\vec{a} \\cdot (\\vec{b}+\\vec{c}) = \\vec{a}\\cdot\\vec{b} + \\vec{a}\\cdot\\vec{c}$." },
+          { "label": "Vektor proyeksi $\\vec{a}$ pada $\\vec{b}$ selalu sejajar dengan $\\vec{b}$." }
+        ],
+        "answerIndices": [0, 2, 3, 4],
+        "perOptionFeedback": [
+          "**Benar** — penjumlahan hasil kali bilangan selalu menghasilkan bilangan.",
+          "Salah — pembilangnya memang sama, tetapi penyebutnya berbeda. Proyeksi **tidak** komutatif.",
+          "**Benar** — kedua panjangnya positif, jadi tanda negatif hanya bisa datang dari $\\cos\\theta$.",
+          "**Benar** — sifat distributif diwarisi utuh dari perkalian bilangan.",
+          "**Benar** — rumusnya berakhir dengan perkalian terhadap $\\vec{b}$, sehingga arahnya mengikuti $\\vec{b}$."
+        ],
+        "explanation": "Satu-satunya pernyataan yang keliru adalah tentang komutativitas proyeksi. Perkalian titik memang komutatif, tetapi proyeksi bukan — karena penyebutnya bergantung pada siapa yang menjadi alas.",
+        "toastWrong": "Ada pilihan yang belum tepat — periksa pernyataan tentang proyeksi. Tuliskan kedua rumusnya berdampingan, lalu bandingkan **penyebutnya**. Apakah keduanya sama?"
+      }
+    ],
+
+    "04_pemodelan_tka": [
+      {
+        "id": "u4_01",
+        "input_type": "single_choice",
+        "subtopic": "parameter_modulus",
+        "prompt": "Diketahui vektor $\\vec{v} = (3m,\\, 4m)$ dengan $|\\vec{v}| = 20$.",
+        "after": "**Nilai $m$ yang memenuhi adalah ....**",
+        "options": [
+          { "tex": "2 \\ \\text{atau} \\ -2" },
+          { "tex": "4 \\ \\text{atau} \\ -4" },
+          { "tex": "5 \\ \\text{atau} \\ -5" },
+          { "tex": "4 \\ \\text{saja}" },
+          { "tex": "20 \\ \\text{saja}" }
+        ],
+        "answerIndex": 1,
+        "explanation": "$\\sqrt{9m^2 + 16m^2} = 20 \\Rightarrow \\sqrt{25m^2} = 20 \\Rightarrow 5|m| = 20 \\Rightarrow m = \\pm 4$. **Opsi B**.",
+        "toastWrong": "Belum tepat — $(3m)^2 = 9m^2$ dan $(4m)^2 = 16m^2$; koefisiennya ikut terkuadratkan. Setelah dijumlahkan menjadi $25m^2$, akarnya adalah $5|m|$ — dan tanda mutlak itulah yang melahirkan **dua** jawaban."
+      },
+      {
+        "id": "u4_02",
+        "input_type": "mathpad",
+        "subtopic": "diagonal_balok",
+        "prompt": "Diketahui balok $ABCD.EFGH$ dengan panjang $8$ cm, lebar $6$ cm, dan tinggi $24$ cm.",
+        "after": "**Tentukan panjang diagonal ruang $\\vec{AG}$ dalam cm.**",
+        "answer": 26,
+        "tolerance": 1e-6,
+        "explanation": "$|\\vec{AG}| = \\sqrt{8^2 + 6^2 + 24^2} = \\sqrt{64 + 36 + 576} = \\sqrt{676} = 26$ cm.",
+        "toastWrong": "Belum tepat — diagonal **ruang** menjumlahkan ketiga ukuran, jadi ada tiga suku di dalam akar. Kalau hasilmu $10$, kamu hanya memakai panjang dan lebar — itu diagonal **bidang** alas."
+      },
+      {
+        "id": "u4_03",
+        "input_type": "single_choice",
+        "subtopic": "bangun_segiempat",
+        "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\vec{AB} = (4,\\, 1)$ dan $\\vec{BC} = (2,\\, 5)$.",
+        "after": "**Tentukan diagonal $\\vec{AC}$.**",
+        "options": [
+          { "tex": "(2,\\, -4)" },
+          { "tex": "(-2,\\, 4)" },
+          { "tex": "(6,\\, 6)" },
+          { "tex": "(8,\\, 5)" },
+          { "tex": "(6,\\, 4)" }
+        ],
+        "answerIndex": 2,
+        "explanation": "$\\vec{AC} = \\vec{AB} + \\vec{BC} = (4+2,\\; 1+5) = (6,\\, 6)$. **Opsi C**.",
+        "toastWrong": "Belum tepat — $\\vec{AB}$ dan $\\vec{BC}$ sudah sambung-menyambung (huruf $B$ bertemu $B$), jadi cukup dijumlahkan langsung. Kalau jawabanmu $(2,-4)$, kamu mengurangkan — itu diagonal yang satu lagi, bukan $\\vec{AC}$."
+      },
+      {
+        "id": "u4_04",
+        "input_type": "mathpad",
+        "subtopic": "kinematika_lintasan",
+        "prompt": "Sebuah kendaraan melaju dengan kecepatan konstan pada lintasan lurus sepanjang $45$ km, ditempuh dalam $60$ menit. Titik $P$ dan $Q$ terletak pada lintasan itu, dan jarak $PQ$ ditempuh dalam $12$ menit.",
+        "after": "**Tentukan jarak $PQ$ dalam km.**",
+        "answer": 9,
+        "tolerance": 1e-6,
+        "explanation": "Jarak berbanding lurus dengan waktu: $PQ = \\dfrac{12}{60} \\times 45 = \\dfrac{1}{5} \\times 45 = 9$ km.",
+        "toastWrong": "Belum tepat — susun proporsinya: waktu **bagian** dibagi waktu **total**, lalu dikalikan jarak total. Sederhanakan $\\tfrac{12}{60}$ menjadi $\\tfrac{1}{5}$ lebih dulu supaya perkaliannya ringan."
+      },
+      {
+        "id": "u4_05",
+        "input_type": "mathpad",
+        "subtopic": "sniper_komponen",
+        "prompt": "Diketahui $\\vec{u} = (3,\\, k,\\, -2)$ dan $\\vec{v} = (1,\\, 2,\\, 4)$ dengan $\\vec{u} \\cdot \\vec{v} = -1$.",
+        "after": "**Tentukan nilai $k$.**",
+        "answer": 2,
+        "tolerance": 1e-6,
+        "explanation": "Suku konstantanya $3(1) + (-2)(4) = 3 - 8 = -5$; suku parameternya $2k$. Maka $-5 + 2k = -1$, sehingga $2k = 4$ dan $k = 2$.",
+        "toastWrong": "Belum tepat — kumpulkan dulu kedua suku konstantanya menjadi satu angka, yaitu $-5$. Lalu pindahkan ke ruas kanan: $2k = -1 - (-5) = 4$. Perhatikan bahwa mengurangi bilangan negatif berarti menambah."
+      },
+      {
+        "id": "u4_06",
+        "input_type": "multi_select",
+        "subtopic": "sniper_komponen",
+        "prompt": "Perhatikan empat bentuk soal berikut, masing-masing memuat satu parameter.",
+        "after": "**Pilih semua bentuk soal yang dapat dikerjakan dengan teknik sniper komponen.**",
+        "options": [
+          { "label": "$\\vec{u} \\cdot \\vec{v} = 12$, dengan satu komponen $\\vec{u}$ memuat $k$." },
+          { "label": "$|\\vec{v}| = 10$, dengan satu komponen $\\vec{v}$ memuat $m$." },
+          { "label": "$\\vec{a} \\perp \\vec{b}$, dengan satu komponen $\\vec{b}$ memuat $k$." },
+          { "label": "Proyeksi skalar $\\vec{a}$ pada $\\vec{b}$ bernilai $4$, dengan satu komponen $\\vec{a}$ memuat $k$." },
+          { "label": "$|\\vec{u}|^2 + |\\vec{v}|^2 = 50$, dengan satu komponen $\\vec{u}$ memuat $p$." }
+        ],
+        "answerIndices": [0, 2, 3],
+        "perOptionFeedback": [
+          "**Bisa** — perkalian titik bersifat linear terhadap parameternya.",
+          "Tidak bisa — di dalam modulus setiap komponen **dikuadratkan**, sehingga parameternya berpangkat dua. Pakai Taktik TKA 1.",
+          "**Bisa** — syarat ortogonal hanyalah perkalian titik yang disamakan dengan nol.",
+          "**Bisa** — parameternya hanya muncul di pembilang, yang berupa perkalian titik. Penyebutnya konstanta.",
+          "Tidak bisa — kuadrat panjang membuat parameternya berpangkat dua, sama seperti kasus modulus."
+        ],
+        "explanation": "Teknik sniper hanya bekerja pada operasi yang **linear** terhadap parameternya. Setiap operasi yang mengkuadratkan komponen — modulus dan kuadrat panjang — mengeluarkan parameternya dari jangkauan taktik ini.",
+        "toastWrong": "Ada pilihan yang belum tepat — tanyakan pada tiap bentuk: setelah dijabarkan, apakah parameternya masih berpangkat **satu**? Operasi yang mengkuadratkan komponen selalu menjawab tidak."
+      }
+    ],
+
+    "tka_2026": [
+      {
+        "id": "tka26_01",
+        "input_type": "single_choice",
+        "subtopic": "parameter_modulus",
+        "source": "Latihan TKA · No. 1",
+        "prompt": "Diketahui vektor berikut.",
+        "tex": "\\vec{v} = \\begin{pmatrix} 2m \\\\ m \\\\ 2m \\end{pmatrix}",
+        "after": "**Jika $|\\vec{v}| = 12$, maka nilai $m$ yang memenuhi adalah ....**",
+        "options": [
+          { "tex": "-4 \\ \\text{atau} \\ 4" },
+          { "tex": "-3 \\ \\text{atau} \\ 3" },
+          { "tex": "4 \\ \\text{saja}" },
+          { "tex": "-2 \\ \\text{atau} \\ 2" },
+          { "tex": "-6 \\ \\text{atau} \\ 6" }
+        ],
+        "answerIndex": 0,
+        "explanation": "$4m^2 + m^2 + 4m^2 = 144 \\Rightarrow 9m^2 = 144 \\Rightarrow m^2 = 16 \\Rightarrow m = \\pm 4$. **Opsi A**.",
+        "toastWrong": "Belum tepat — kuadratkan kedua ruas lebih dulu, dan ingat bahwa $(2m)^2 = 4m^2$. Setelah dijumlahkan menjadi $9m^2 = 144$, jangan berhenti pada satu akar: bentuk kuadrat memberi **dua** nilai."
+      },
+      {
+        "id": "tka26_02",
+        "input_type": "multi_select",
+        "subtopic": "kinematika_lintasan",
+        "source": "Latihan TKA · No. 2",
+        "prompt": "Sebuah kereta melaju dengan kecepatan konstan pada lintasan lurus dari stasiun $A(1,\\, 2,\\, 2)$ hingga stasiun $E(7,\\, 5,\\, 8)$, koordinat dalam km. Waktu tempuh antar stasiun tercatat pada tabel berikut.",
+        "table": {
+          "headers": ["Ruas", "Waktu tempuh (menit)"],
+          "rows": [["$A \\to B$", 4], ["$B \\to C$", 2], ["$C \\to D$", 3], ["$D \\to E$", 1]]
+        },
+        "after": "**Pilih semua pasangan stasiun yang jaraknya kurang dari $2{,}5$ km.**",
+        "options": [
+          { "label": "$AB$" },
+          { "label": "$BC$" },
+          { "label": "$CD$" },
+          { "label": "$DE$" },
+          { "label": "$CE$" }
+        ],
+        "answerIndices": [1, 3],
+        "perOptionFeedback": [
+          "Tidak memenuhi — $\\tfrac{4}{10} \\times 9 = 3{,}6$ km.",
+          "**Memenuhi** — $\\tfrac{2}{10} \\times 9 = 1{,}8$ km.",
+          "Tidak memenuhi — $\\tfrac{3}{10} \\times 9 = 2{,}7$ km, hanya sedikit di atas ambang.",
+          "**Memenuhi** — $\\tfrac{1}{10} \\times 9 = 0{,}9$ km, yang terpendek.",
+          "Tidak memenuhi — $CE$ gabungan $CD + DE$, sehingga waktunya $3+1 = 4$ menit dan jaraknya $3{,}6$ km."
+        ],
+        "explanation": "$\\vec{AE} = (6,\\,3,\\,6)$, sehingga $|\\vec{AE}| = \\sqrt{36+9+36} = \\sqrt{81} = 9$ km dengan waktu total $10$ menit. Ambang waktunya: $t < \\tfrac{2{,}5 \\times 10}{9} \\approx 2{,}78$ menit. Hanya $BC$ ($2$ menit) dan $DE$ ($1$ menit) yang lolos.",
+        "toastWrong": "Ada pilihan yang belum tepat — periksa $CD$ dan $CE$. Ruas $CD$ berada tepat di dekat ambang, dan $CE$ **bukan** ruas di tabel melainkan gabungan dua ruas yang waktunya harus dijumlahkan dulu."
+      },
+      {
+        "id": "tka26_03",
+        "input_type": "single_choice",
+        "subtopic": "bangun_segiempat",
+        "source": "Latihan TKA · No. 3",
+        "prompt": "Diketahui jajar genjang $ABCD$ dengan $A(1,\\, 2)$, $B(6,\\, 3)$, dan $D(3,\\, 7)$.",
+        "after": "**Tentukan koordinat titik $C$.**",
+        "options": [
+          { "tex": "C(4,\\, 8)" },
+          { "tex": "C(8,\\, 8)" },
+          { "tex": "C(10,\\, 12)" },
+          { "tex": "C(2,\\, 6)" },
+          { "tex": "C(9,\\, 10)" }
+        ],
+        "answerIndex": 1,
+        "explanation": "Pada jajar genjang $ABCD$, $\\vec{BC} = \\vec{AD} = D - A = (2,\\, 5)$. Maka $C = B + \\vec{BC} = (6+2,\\; 3+5) = (8,\\, 8)$. **Opsi B**.",
+        "toastWrong": "Belum tepat — terjemahkan dulu sifat jajar genjangnya menjadi persamaan vektor: sisi berhadapan sejajar dan sama panjang, sehingga $\\vec{BC} = \\vec{AD}$. Hitung $\\vec{AD}$ dengan ujung dikurangi pangkal, baru tambahkan ke titik $B$."
+      },
+      {
+        "id": "tka26_04",
+        "input_type": "mathpad",
+        "subtopic": "sudut_antar_vektor",
+        "source": "Latihan TKA · No. 4",
+        "prompt": "Diketahui $\\vec{u} = (1,\\, -1,\\, 0)$ dan $\\vec{v} = (1,\\, 0,\\, -1)$.",
+        "after": "**Tentukan besar sudut antara $\\vec{u}$ dan $\\vec{v}$ dalam satuan derajat.**",
+        "answer": 60,
+        "tolerance": 1e-6,
+        "explanation": "$\\vec{u}\\cdot\\vec{v} = 1 + 0 + 0 = 1$; $|\\vec{u}| = |\\vec{v}| = \\sqrt{2}$, sehingga penyebutnya $2$. Maka $\\cos\\theta = \\tfrac{1}{2}$ dan $\\theta = 60^\\circ$.",
+        "toastWrong": "Belum tepat — kerjakan tiga tahapnya terpisah. Perhatikan bahwa suku kedua dan ketiga pada hasil kali titik bernilai nol, sehingga pembilangnya hanya $1$. Dan $\\sqrt{2} \\times \\sqrt{2} = 2$, bukan $2\\sqrt{2}$."
+      },
+      {
+        "id": "tka26_05",
+        "input_type": "single_choice",
+        "subtopic": "proyeksi_vektor",
+        "source": "Latihan TKA · No. 5",
+        "prompt": "Diketahui $\\vec{a} = (4,\\, -2,\\, 4)$ dan $\\vec{b} = (1,\\, 2,\\, 2)$.",
+        "after": "**Tentukan vektor proyeksi ortogonal $\\vec{a}$ pada $\\vec{b}$.**",
+        "options": [
+          { "tex": "\\tfrac{8}{3}(1,\\, 2,\\, 2)" },
+          { "tex": "\\tfrac{8}{9}(1,\\, 2,\\, 2)" },
+          { "tex": "\\tfrac{8}{9}(4,\\, -2,\\, 4)" },
+          { "tex": "\\tfrac{9}{8}(1,\\, 2,\\, 2)" },
+          { "tex": "8(1,\\, 2,\\, 2)" }
+        ],
+        "answerIndex": 1,
+        "explanation": "$\\vec{a}\\cdot\\vec{b} = 4 - 4 + 8 = 8$ dan $|\\vec{b}|^2 = 1+4+4 = 9$, sehingga vektor proyeksinya $\\tfrac{8}{9}(1,2,2)$. **Opsi B**.",
+        "toastWrong": "Belum tepat — periksa dua hal. Pertama, penyebutnya $|\\vec{b}|^2 = 9$, bukan $|\\vec{b}| = 3$. Kedua, yang dikalikan kembali adalah $\\vec{b}$ sebagai alas, bukan $\\vec{a}$ — bayangan selalu jatuh di garis arah alasnya."
+      },
+      {
+        "id": "tka26_06",
+        "input_type": "matrix_input",
+        "subtopic": "diagonal_balok",
+        "source": "Latihan TKA · No. 6",
+        "prompt": "Diketahui balok $ABCD.EFGH$ dengan $A$ berimpit titik asal, $\\vec{AB} = (10,\\,0,\\,0)$, $\\vec{AD} = (0,\\,10,\\,0)$, dan $\\vec{AE} = (0,\\,0,\\,5)$.",
+        "after": "**Tentukan $\\vec{EC}$ dalam bentuk vektor kolom.**",
+        "rows": 3,
+        "cols": 1,
+        "answer": [[10], [10], [-5]],
+        "explanation": "$E = (0,0,5)$ dan $C = A + \\vec{AB} + \\vec{AD} = (10,10,0)$, sehingga $\\vec{EC} = C - E = (10,\\, 10,\\, -5)$. Komponen $z$ bertanda negatif karena perjalanan dari $E$ ke $C$ bergerak **turun**.",
+        "toastWrong": "Belum tepat — periksa baris ketiganya. Titik $E$ berada di atas dan titik $C$ di bidang alas, jadi perjalanannya **turun** dan komponen $z$-nya harus bertanda negatif. Salah tanda di sini tidak mengubah panjang diagonalnya, tetapi mengubah vektornya."
+      },
+      {
+        "id": "tka26_07",
+        "input_type": "mathpad",
+        "subtopic": "vektor_tegak_lurus",
+        "source": "Latihan TKA · No. 7",
+        "prompt": "Diketahui $\\vec{a} = (k,\\, 3,\\, -1)$ dan $\\vec{b} = (2,\\, 1,\\, 5)$ saling tegak lurus.",
+        "after": "**Tentukan nilai $k$.**",
+        "answer": 1,
+        "tolerance": 1e-6,
+        "explanation": "$\\vec{a}\\cdot\\vec{b} = 2k + 3 - 5 = 0$, sehingga $2k = 2$ dan $k = 1$.",
+        "toastWrong": "Belum tepat — kumpulkan suku konstantanya lebih dulu: $3(1) + (-1)(5) = 3 - 5 = -2$. Persamaannya menjadi $2k - 2 = 0$. Jangan lupa membagi dengan koefisien $2$ pada langkah terakhir."
+      },
+      {
+        "id": "tka26_08",
+        "input_type": "single_choice",
+        "subtopic": "titik_segaris",
+        "source": "Latihan TKA · No. 8",
+        "prompt": "Diketahui titik $A(2,\\, -1,\\, 3)$, $B(4,\\, 1,\\, 5)$, dan $C(8,\\, 5,\\, p)$ terletak pada satu garis lurus.",
+        "after": "**Tentukan nilai $p$.**",
+        "options": [
+          { "tex": "6" },
+          { "tex": "7" },
+          { "tex": "8" },
+          { "tex": "9" },
+          { "tex": "11" }
+        ],
+        "answerIndex": 3,
+        "explanation": "$\\vec{AB} = (2,\\,2,\\,2)$ dan $\\vec{AC} = (6,\\,6,\\,p-3)$. Agar segaris, $\\vec{AC} = k\\,\\vec{AB}$; dari komponen $x$ diperoleh $k = 3$. Maka $p - 3 = 3(2) = 6$, sehingga $p = 9$. **Opsi D**.",
+        "toastWrong": "Belum tepat — cari $k$ dari komponen yang **kedua angkanya sudah diketahui** ($x$ atau $y$), baru pakai $k$ itu di komponen $z$. Dan ingat komponen $z$ dari $\\vec{AC}$ adalah $p - 3$, bukan $p$ — pangkalnya harus ikut dikurangkan."
+      },
+      {
+        "id": "tka26_09",
+        "input_type": "single_choice",
+        "subtopic": "dot_product",
+        "source": "Latihan TKA · No. 9",
+        "prompt": "Diketahui $|\\vec{a}| = 3$, $|\\vec{b}| = 4$, dan sudut antara $\\vec{a}$ dan $\\vec{b}$ adalah $60^\\circ$.",
+        "after": "**Tentukan nilai $\\vec{a} \\cdot \\vec{b}$.**",
+        "options": [
+          { "tex": "2\\sqrt{3}" },
+          { "tex": "6" },
+          { "tex": "6\\sqrt{3}" },
+          { "tex": "10" },
+          { "tex": "12" }
+        ],
+        "answerIndex": 1,
+        "explanation": "Pakai rumus geometri: $\\vec{a}\\cdot\\vec{b} = |\\vec{a}||\\vec{b}|\\cos\\theta = 3 \\times 4 \\times \\cos 60^\\circ = 12 \\times \\tfrac{1}{2} = 6$. **Opsi B**.",
+        "toastWrong": "Belum tepat — komponennya tidak diberikan, jadi rumus aljabar tidak bisa dipakai. Gunakan rumus **geometri**. Dan periksa nilai kosinusnya: $\\cos 60^\\circ = \\tfrac{1}{2}$, bukan $\\tfrac{1}{2}\\sqrt{3}$ (itu $\\cos 30^\\circ$). Kalau jawabanmu $12$, kamu lupa mengalikan dengan kosinusnya."
+      },
+      {
+        "id": "tka26_10",
+        "input_type": "multi_select",
+        "subtopic": "sifat_perkalian",
+        "source": "Latihan TKA · No. 10",
+        "prompt": "Perhatikan pernyataan-pernyataan berikut.",
+        "after": "**Pilih semua pernyataan yang benar.**",
+        "options": [
+          { "label": "Jika $\\vec{u} \\cdot \\vec{v} = 0$, maka $\\vec{u}$ dan $\\vec{v}$ pasti saling tegak lurus." },
+          { "label": "$\\vec{a} \\cdot \\vec{a} = |\\vec{a}|^2$ berlaku untuk setiap vektor $\\vec{a}$." },
+          { "label": "Proyeksi skalar ortogonal dapat bernilai negatif." },
+          { "label": "Vektor proyeksi ortogonal selalu sejajar dengan vektor alasnya." },
+          { "label": "Jika $|\\vec{u}| = |\\vec{v}|$, maka $\\vec{u} = \\vec{v}$." }
+        ],
+        "answerIndices": [1, 2, 3],
+        "perOptionFeedback": [
+          "Salah — kalau salah satunya **vektor nol**, hasil kali titiknya tetap nol padahal tidak ada sudut yang dapat diukur. Syarat ortogonal mensyaratkan kedua vektor **tak-nol**.",
+          "**Benar** — berlaku bahkan untuk vektor nol, karena keduanya bernilai $0$.",
+          "**Benar** — bernilai negatif ketika sudutnya tumpul, artinya bayangan jatuh berlawanan arah dengan alasnya.",
+          "**Benar** — rumusnya berakhir dengan perkalian terhadap vektor alas, sehingga arahnya mengikuti alas.",
+          "Salah — panjang yang sama sama sekali tidak menjamin arah yang sama. Contoh: $(3,0)$ dan $(0,3)$."
+        ],
+        "explanation": "Kedua pernyataan yang keliru menyentuh kasus batas yang sama seringnya diuji: vektor nol pada syarat ortogonal, dan anggapan bahwa panjang menentukan vektor secara tunggal.",
+        "toastWrong": "Ada pilihan yang belum tepat — periksa pernyataan pertama dan terakhir. Keduanya terdengar benar, tetapi masing-masing punya satu **contoh penyangkal** yang mudah ditemukan. Coba cari vektor yang menggugurkannya."
+      }
+    ]
+  },
+
+  "tkaSimulation": {
+    "title": "Latihan Soal TKA",
+    "bankId": "tka_2026",
+    "questionCount": 10,
+    "questionOrder": [
+      "tka26_01",
+      "tka26_02",
+      "tka26_03",
+      "tka26_04",
+      "tka26_05",
+      "tka26_06",
+      "tka26_07",
+      "tka26_08",
+      "tka26_09",
+      "tka26_10"
+    ],
+    "note": "Urutan TETAP, dipilih tangan sebagai penutup bergaya HOTS: dibuka dengan parameter tersembunyi, ditutup dengan multi-kondisi kasus batas."
+  }
+}

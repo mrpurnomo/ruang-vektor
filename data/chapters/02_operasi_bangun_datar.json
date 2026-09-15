@@ -1,0 +1,822 @@
+{
+  "id": "02_operasi_bangun_datar",
+  "title": "Operasi & Bangun Datar",
+  "subtopics": [
+    {
+      "id": "penjumlahan_segitiga",
+      "title": "Aturan Segitiga & Poligon",
+
+      "materi": [
+        { "t": "p",
+          "x": "Kamu berjalan $3$ km ke timur, lalu $4$ km ke utara. Berapa jaraknya dari titik awal? Kalau jawabanmu $7$ km, kamu baru saja menjumlahkan dua vektor seolah-olah keduanya skalar. Jawabannya **$5$ km** — dan seluruh bab ini lahir dari selisih $2$ km itu." },
+
+        { "t": "def", "title": "Aturan Segitiga",
+          "x": "Untuk menjumlahkan $\\vec{a} + \\vec{b}$: **pindahkan pangkal $\\vec{b}$ ke ujung $\\vec{a}$**, lalu tarik vektor baru dari pangkal $\\vec{a}$ ke ujung $\\vec{b}$. Bentuk yang terjadi adalah segitiga — dari situlah namanya." },
+
+        { "t": "steps", "title": "Tiga Langkah",
+          "items": [
+            "Gambar $\\vec{a}$ apa adanya.",
+            "Geser $\\vec{b}$ sehingga **pangkalnya menempel di ujung $\\vec{a}$**. Vektor boleh digeser asalkan panjang dan arahnya tidak berubah.",
+            "Tarik resultan dari **pangkal $\\vec{a}$** menuju **ujung $\\vec{b}$**."
+          ] },
+
+        { "t": "p",
+          "x": "Aturan yang sama berlaku berapa pun banyaknya vektor. Sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ke titik paling akhir. Inilah **aturan poligon**." },
+
+        { "t": "tex", "x": "\\vec{AB} + \\vec{BC} + \\vec{CD} = \\vec{AD}" },
+
+        { "t": "tip", "title": "Huruf yang Bertemu Saling Menghapus",
+          "x": "Perhatikan pola hurufnya: $A\\underline{B} + \\underline{B}C = AC$. Huruf yang bertemu di tengah lenyap. Kalau kamu mengenali pola ini di soal, kamu bisa menjawab **tanpa menghitung satu komponen pun**." },
+
+        { "t": "warn", "title": "Kasus Istimewa",
+          "x": "$\\vec{AB} + \\vec{BA} = \\vec{AA} = \\vec{0}$. Berangkat lalu kembali ke titik semula — perpindahan totalnya nol, berapa pun jauhnya kamu sempat pergi." }
+      ],
+
+      "simulation": {
+        "engine": "triangle_rule",
+        "title": "Simulasi: Sambung Ujung ke Pangkal",
+        "brief": "Dua panah tergambar terpisah. Pindahkan pangkal yang kedua ke ujung yang pertama dengan ketukan, baru resultannya boleh digambar — dan kamu yang menentukan pangkal serta ujungnya.",
+        "config": {
+          "cases": [
+            { "a": [3, 0], "b": [0, 4], "label": ["a", "b"] },
+            { "a": [2, 3], "b": [3, -1], "label": ["u", "v"] },
+            { "a": [-4, 1], "b": [4, -1], "label": ["p", "q"], "isZeroResult": true }
+          ],
+          "xRange": [-7, 7],
+          "yRange": [-5, 5]
+        },
+        "toasts": {
+          "belumDigeser": "Resultan belum bisa ditarik — pangkal $\\vec{{{kedua}}}$ masih berada di tempat asalnya. Aturan segitiga menuntut ujung yang satu bertemu pangkal yang lain lebih dulu.",
+          "geserKeUjungSalah": "Belum tepat — yang harus ditempelkan adalah **pangkal** $\\vec{{{kedua}}}$ ke **ujung** $\\vec{{{pertama}}}$, bukan sebaliknya. Kalau terbalik, yang terbentuk adalah $\\vec{{{kedua}}} + \\vec{{{pertama}}}$ — kebetulan hasilnya sama, tetapi gambarnya bukan yang diminta.",
+          "resultanSalahPangkal": "Belum tepat — resultan selalu ditarik dari **pangkal yang paling awal** menuju **ujung yang paling akhir**. Titik yang kamu pilih adalah titik sambungan di tengah, bukan ujung rantainya.",
+          "vektorBergeserBentuk": "Menggeser vektor boleh, tetapi **panjang dan arahnya tidak boleh berubah**. Yang kamu pindahkan sekarang bukan lagi vektor yang sama.",
+          "hasilNol": "Benar — kedua vektor ini saling meniadakan. Ujungnya kembali tepat ke titik pangkal, sehingga resultannya vektor nol.",
+          "success": "Tepat! Resultan ditarik dari pangkal pertama ke ujung terakhir — itulah aturan segitiga."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_01_1",
+          "input_type": "single_choice",
+          "subtopic": "penjumlahan_segitiga",
+          "prompt": "Perhatikan penjumlahan vektor berikut.",
+          "tex": "\\vec{AB} + \\vec{BC}",
+          "after": "**Hasil penjumlahan tersebut adalah ....**",
+          "options": [
+            { "tex": "\\vec{AC}" },
+            { "tex": "\\vec{CA}" },
+            { "tex": "\\vec{AB}" },
+            { "tex": "\\vec{BC}" },
+            { "tex": "\\vec{0}" }
+          ],
+          "answerIndex": 0,
+          "explanation": "Ujung vektor pertama ($B$) bertemu pangkal vektor kedua ($B$), sehingga huruf $B$ saling menghapus. Yang tersisa adalah perjalanan dari $A$ ke $C$, yaitu $\\vec{AC}$. **Opsi A**.",
+          "toastWrong": "Belum tepat — tuliskan hurufnya berderet: $A\\,B + B\\,C$. Huruf yang bertemu di tengah lenyap, dan yang tersisa adalah huruf paling **kiri** lalu huruf paling **kanan**. Kalau urutanmu terbalik, yang kamu dapat adalah vektor yang arahnya berlawanan."
+        },
+        {
+          "id": "b2_01_2",
+          "input_type": "single_choice",
+          "subtopic": "penjumlahan_segitiga",
+          "prompt": "Sebuah drone terbang dari $P$ ke $Q$, lalu ke $R$, lalu ke $S$.",
+          "tex": "\\vec{PQ} + \\vec{QR} + \\vec{RS}",
+          "after": "**Vektor perpindahan total drone tersebut adalah ....**",
+          "options": [
+            { "tex": "\\vec{PR}" },
+            { "tex": "\\vec{QS}" },
+            { "tex": "\\vec{PS}" },
+            { "tex": "\\vec{SP}" },
+            { "tex": "\\vec{PQ} + \\vec{RS}" }
+          ],
+          "answerIndex": 2,
+          "explanation": "Aturan poligon: sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ($P$) ke titik paling akhir ($S$). Huruf $Q$ dan $R$ saling menghapus. **Opsi C**.",
+          "toastWrong": "Belum tepat — perpindahan **total** hanya peduli pada titik berangkat dan titik tiba. Semua titik persinggahan di tengah saling menghapus, berapa pun banyaknya."
+        },
+        {
+          "id": "b2_01_3",
+          "input_type": "mathpad",
+          "subtopic": "penjumlahan_segitiga",
+          "prompt": "Diketahui panjang $\\vec{AB} = 12$ satuan.",
+          "after": "**Tentukan panjang vektor $\\vec{AB} + \\vec{BA}$.**",
+          "answer": 0,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{AB} + \\vec{BA} = \\vec{AA} = \\vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.",
+          "toastWrong": "Belum tepat — jangan buru-buru memakai angka $12$. Gambarkan dulu: kamu berjalan dari $A$ ke $B$, lalu kembali dari $B$ ke $A$. Di mana posisimu sekarang, dan berapa **perpindahan**-mu dari titik awal?"
+        }
+      ]
+    },
+
+    {
+      "id": "penjumlahan_jajargenjang",
+      "title": "Aturan Jajar Genjang",
+
+      "materi": [
+        { "t": "p",
+          "x": "Aturan segitiga menuntut kamu **memindahkan** salah satu vektor. Aturan jajar genjang tidak — ia bekerja saat kedua vektor sudah berpangkal di titik yang sama, misalnya dua gaya yang bekerja pada satu benda." },
+
+        { "t": "def", "title": "Aturan Jajar Genjang",
+          "x": "Tempelkan **pangkal kedua vektor pada satu titik**, lengkapi bangunnya menjadi jajar genjang, lalu tarik **diagonal**-nya dari titik pangkal bersama. Diagonal itulah resultannya." },
+
+        { "t": "typegroup", "n": "1", "title": "Memilih Aturan yang Tepat",
+          "lead": "Keduanya memberi hasil yang **sama persis**. Yang berbeda hanya cara menggambarnya.",
+          "items": [
+            { "name": "Sudah sambung-menyambung", "tex": "\\vec{AB},\\ \\vec{BC}", "text": "Pakai **aturan segitiga / poligon** — tidak perlu memindahkan apa pun." },
+            { "name": "Berpangkal sama", "tex": "\\vec{F_1},\\ \\vec{F_2}", "text": "Pakai **aturan jajar genjang** — misalnya dua gaya pada satu benda." },
+            { "name": "Lebih dari dua vektor", "tex": "\\vec{a} + \\vec{b} + \\vec{c}", "text": "Pakai **aturan poligon**. Jajar genjang hanya melayani dua vektor." }
+          ],
+          "note": "Kalau hasilmu berbeda antara kedua cara, ada langkah menggambar yang keliru — bukan aturannya yang berbeda." },
+
+        { "t": "warn", "title": "Diagonal yang Satu Lagi",
+          "x": "Jajar genjang punya **dua** diagonal. Diagonal dari titik pangkal bersama adalah $\\vec{a} + \\vec{b}$. Diagonal yang lain — yang menghubungkan kedua ujung — adalah **selisihnya**: $\\vec{a} - \\vec{b}$ atau $\\vec{b} - \\vec{a}$, tergantung arah menariknya." },
+
+        { "t": "tip", "title": "Ingat Gambar Ini",
+          "x": "Satu jajar genjang memuat **jumlah dan selisih sekaligus**. Soal bangun datar di TKA hampir selalu berpijak pada gambar ini — mengenalinya menghemat separuh waktu pengerjaan." }
+      ],
+
+      "simulation": {
+        "engine": "parallelogram_rule",
+        "title": "Simulasi: Dua Diagonal, Dua Makna",
+        "brief": "Bangun jajar genjangnya sendiri, lalu tentukan diagonal mana yang mewakili jumlah dan mana yang mewakili selisih. Aplikasi tidak menandai keduanya lebih dulu.",
+        "config": {
+          "cases": [
+            { "a": [5, 1], "b": [2, 4], "ask": "sum" },
+            { "a": [5, 1], "b": [2, 4], "ask": "diff" },
+            { "a": [-3, 2], "b": [4, 3], "ask": "sum" }
+          ],
+          "xRange": [-7, 7],
+          "yRange": [-5, 5]
+        },
+        "toasts": {
+          "pangkalTidakBerimpit": "Aturan jajar genjang menuntut **kedua pangkal berada di satu titik**. Salah satu vektormu masih berpangkal di tempat lain — itu aturan segitiga, bukan jajar genjang.",
+          "bangunBelumTertutup": "Jajar genjangnya belum lengkap. Sisi yang berhadapan harus **sejajar dan sama panjang** — tarik dulu kedua sisi penutupnya.",
+          "diagonalSalah": "Belum tepat — diagonal yang kamu pilih menghubungkan kedua **ujung** vektor, dan itu mewakili **selisih**. Yang mewakili **jumlah** adalah diagonal yang berangkat dari titik pangkal bersama.",
+          "arahSelisihTerbalik": "Hampir — diagonalmu sudah benar, tetapi arahnya terbalik. Menarik dari ujung $\\vec{{{dari}}}$ ke ujung $\\vec{{{ke}}}$ menghasilkan $\\vec{{{ke}}} - \\vec{{{dari}}}$, bukan sebaliknya.",
+          "success": "Tepat! Satu jajar genjang memuat jumlah **dan** selisih sekaligus — tinggal memilih diagonal yang mana."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_02_1",
+          "input_type": "single_choice",
+          "subtopic": "penjumlahan_jajargenjang",
+          "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\vec{AB} = \\vec{a}$ dan $\\vec{AD} = \\vec{b}$.",
+          "after": "**Nyatakan diagonal $\\vec{AC}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
+          "options": [
+            { "tex": "\\vec{a} - \\vec{b}" },
+            { "tex": "\\vec{a} + \\vec{b}" },
+            { "tex": "\\vec{b} - \\vec{a}" },
+            { "tex": "2\\vec{a}" },
+            { "tex": "\\tfrac{1}{2}(\\vec{a} + \\vec{b})" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$\\vec{AC} = \\vec{AB} + \\vec{BC}$. Pada jajar genjang, $\\vec{BC} = \\vec{AD} = \\vec{b}$ karena sisi berhadapan sejajar dan sama panjang. Maka $\\vec{AC} = \\vec{a} + \\vec{b}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — $\\vec{AC}$ berangkat dari titik pangkal bersama $A$, jadi ia diagonal **jumlah**. Diagonal selisih adalah yang menghubungkan kedua ujung, yaitu $\\vec{DB}$ atau $\\vec{BD}$."
+        },
+        {
+          "id": "b2_02_2",
+          "input_type": "single_choice",
+          "subtopic": "penjumlahan_jajargenjang",
+          "prompt": "Masih pada jajar genjang $ABCD$ dengan $\\vec{AB} = \\vec{a}$ dan $\\vec{AD} = \\vec{b}$.",
+          "after": "**Nyatakan diagonal $\\vec{DB}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
+          "options": [
+            { "tex": "\\vec{a} + \\vec{b}" },
+            { "tex": "\\vec{a} - \\vec{b}" },
+            { "tex": "\\vec{b} - \\vec{a}" },
+            { "tex": "-\\vec{a} - \\vec{b}" },
+            { "tex": "\\vec{0}" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$\\vec{DB} = \\vec{DA} + \\vec{AB} = -\\vec{b} + \\vec{a} = \\vec{a} - \\vec{b}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — perhatikan arah penulisannya. $\\vec{DB}$ berangkat dari $D$ **menuju** $B$, jadi yang berdiri di depan tanda kurang adalah vektor menuju $B$. Kalau jawabanmu $\\vec{b} - \\vec{a}$, yang kamu hitung adalah $\\vec{BD}$."
+        },
+        {
+          "id": "b2_02_3",
+          "input_type": "multi_select",
+          "subtopic": "penjumlahan_jajargenjang",
+          "prompt": "Perhatikan pernyataan tentang aturan segitiga dan aturan jajar genjang berikut.",
+          "after": "**Pilih semua pernyataan yang benar.**",
+          "options": [
+            { "label": "Keduanya selalu memberi resultan yang sama untuk dua vektor yang sama." },
+            { "label": "Aturan jajar genjang dapat langsung dipakai untuk menjumlahkan tiga vektor sekaligus." },
+            { "label": "Pada aturan jajar genjang, kedua vektor harus berpangkal di satu titik." },
+            { "label": "Diagonal jajar genjang yang menghubungkan kedua ujung vektor mewakili selisihnya." },
+            { "label": "Pada aturan segitiga, salah satu vektor boleh digeser asalkan panjang dan arahnya tetap." }
+          ],
+          "answerIndices": [0, 2, 3, 4],
+          "perOptionFeedback": [
+            "**Benar** — yang berbeda hanya cara menggambarnya, bukan hasilnya.",
+            "Salah — jajar genjang hanya melayani **dua** vektor. Untuk tiga atau lebih, pakai aturan poligon.",
+            "**Benar** — inilah syarat yang membedakannya dari aturan segitiga.",
+            "**Benar** — diagonal dari pangkal bersama mewakili jumlah, diagonal antar-ujung mewakili selisih.",
+            "**Benar** — vektor tidak terikat pada satu posisi, hanya pada panjang dan arahnya."
+          ],
+          "explanation": "Satu-satunya pernyataan yang keliru adalah tentang tiga vektor: bangun jajar genjang hanya punya dua sisi berpangkal, sehingga hanya dapat menjumlahkan dua vektor pada satu waktu.",
+          "toastWrong": "Ada pilihan yang belum tepat — periksa kembali pernyataan tentang **tiga vektor**. Berapa sisi berpangkal yang dimiliki sebuah jajar genjang?"
+        }
+      ]
+    },
+
+    {
+      "id": "operasi_komponen",
+      "title": "Jumlah & Selisih Komponen",
+
+      "materi": [
+        { "t": "p",
+          "x": "Menggambar itu bagus untuk **memahami**. Tapi saat mengerjakan soal, kamu menghitung lewat komponen — dan caranya jauh lebih cepat." },
+
+        { "t": "def", "title": "Operasi Komponen Seletak",
+          "x": "Jumlahkan (atau kurangkan) **komponen yang seletak**. Komponen $x$ hanya boleh bertemu komponen $x$, komponen $y$ hanya dengan $y$, komponen $z$ hanya dengan $z$." },
+
+        { "t": "tex",
+          "x": "\\vec{a} \\pm \\vec{b} = \\begin{pmatrix} a_1 \\\\ a_2 \\end{pmatrix} \\pm \\begin{pmatrix} b_1 \\\\ b_2 \\end{pmatrix} = \\begin{pmatrix} a_1 \\pm b_1 \\\\ a_2 \\pm b_2 \\end{pmatrix}" },
+
+        { "t": "warn", "title": "Syarat yang Sering Dilupakan",
+          "x": "Kedua vektor harus punya **dimensi yang sama**. Vektor di bidang ($2$ komponen) tidak bisa dijumlahkan dengan vektor di ruang ($3$ komponen) — tidak ada pasangan untuk komponen $z$-nya, dan operasinya **tidak terdefinisi**, bukan sekadar sulit." },
+
+        { "t": "p",
+          "x": "Apa arti $\\vec{a} - \\vec{b}$ pada gambar? Tulis ulang sebagai $\\vec{a} + (-\\vec{b})$: **balik arah $\\vec{b}$ lebih dulu**, baru jumlahkan dengan aturan segitiga." },
+
+        { "t": "tip", "title": "Cara Baca yang Lebih Berguna",
+          "x": "Kalau $\\vec{a} = \\vec{OA}$ dan $\\vec{b} = \\vec{OB}$ adalah vektor posisi, maka $\\vec{a} - \\vec{b} = \\vec{OA} - \\vec{OB} = \\vec{BA}$ — yaitu vektor **dari ujung $\\vec{b}$ menuju ujung $\\vec{a}$**. Inilah rumus $\\vec{AB} = B - A$ dari Bab 1, dilihat dari sudut pandang lain." }
+      ],
+
+      "simulation": {
+        "engine": "component_add",
+        "title": "Simulasi: Pasangkan yang Seletak",
+        "brief": "Ketuk satu komponen di vektor pertama, lalu pasangannya di vektor kedua. Komponen yang tidak seletak tetap boleh diketuk — supaya kamu tahu kenapa ia ditolak.",
+        "config": {
+          "cases": [
+            { "a": [3, -2], "b": [1, 5], "op": "add" },
+            { "a": [3, -2], "b": [1, 5], "op": "sub" },
+            { "a": [3, -2, 5], "b": [-1, 4, 2], "op": "add" },
+            { "a": [2, 7], "b": [1, 0, 3], "op": "add", "invalid": true }
+          ]
+        },
+        "toasts": {
+          "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Operasi vektor hanya memasangkan komponen yang **seletak**.",
+          "pilihSumberDulu": "Ketuk dulu satu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
+          "dimensiBeda": "Operasi ini **tidak terdefinisi**. $\\vec{a}$ punya {{dimA}} komponen sedangkan $\\vec{b}$ punya {{dimB}} — komponen $z$ pada $\\vec{b}$ tidak punya pasangan. Penjumlahan vektor mensyaratkan dimensi yang sama persis.",
+          "tandaKurangTerlewat": "Belum tepat — operasinya **pengurangan**, jadi tanda komponen $\\vec{b}$ harus dibalik lebih dulu. Perhatikan: $-2 - 5$ bernilai $-7$, bukan $3$.",
+          "hasilSalah": "Belum tepat — kerjakan satu pasangan saja dulu, dan bawa tandanya apa adanya. Bilangan negatif dikurangi bilangan positif menjadi **lebih** negatif.",
+          "success": "Tepat! Komponen seletak bertemu komponen seletak — itu satu-satunya aturan di sini."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_03_1",
+          "input_type": "matrix_input",
+          "subtopic": "operasi_komponen",
+          "prompt": "Diketahui $\\vec{a} = (3,\\, -2,\\, 5)$ dan $\\vec{b} = (-1,\\, 4,\\, 2)$.",
+          "after": "**Tentukan $\\vec{a} + \\vec{b}$ dalam bentuk vektor kolom.**",
+          "rows": 3,
+          "cols": 1,
+          "answer": [[2], [2], [7]],
+          "explanation": "$\\vec{a} + \\vec{b} = \\begin{pmatrix} 3+(-1) \\\\ -2+4 \\\\ 5+2 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 2 \\\\ 7 \\end{pmatrix}$.",
+          "toastWrong": "Belum tepat — periksa dua baris pertama, di situlah tandanya bekerja. $3 + (-1) = 2$ (bukan $4$), dan $-2 + 4 = 2$ (bukan $-6$). Bawa tanda negatifnya masuk ke penjumlahan."
+        },
+        {
+          "id": "b2_03_2",
+          "input_type": "mathpad",
+          "subtopic": "operasi_komponen",
+          "prompt": "Diketahui $\\vec{a} = (3,\\, -2)$ dan $\\vec{b} = (1,\\, 5)$.",
+          "after": "**Tentukan komponen $y$ dari $\\vec{a} - \\vec{b}$.**",
+          "answer": -7,
+          "tolerance": 1e-6,
+          "explanation": "Komponen $y$ dari $\\vec{a} - \\vec{b}$ adalah $-2 - 5 = -7$.",
+          "toastWrong": "Belum tepat — jangan tertukar urutannya. Yang diminta $\\vec{a} - \\vec{b}$, jadi komponen $\\vec{a}$ berdiri di depan: $-2 - 5$. Bilangan negatif dikurangi bilangan positif menjadi **lebih** negatif, bukan positif."
+        },
+        {
+          "id": "b2_03_3",
+          "input_type": "single_choice",
+          "subtopic": "operasi_komponen",
+          "prompt": "Diketahui $\\vec{p} = (2,\\, 7)$ dan $\\vec{q} = (1,\\, 0,\\, 3)$.",
+          "after": "**Manakah pernyataan yang paling tepat mengenai $\\vec{p} + \\vec{q}$?**",
+          "options": [
+            { "label": "Hasilnya $(3,\\, 7,\\, 3)$, dengan komponen $z$ diambil dari $\\vec{q}$." },
+            { "label": "Hasilnya $(3,\\, 7)$, karena komponen $z$ diabaikan saja." },
+            { "label": "Operasi tidak terdefinisi karena dimensi keduanya berbeda." },
+            { "label": "Hasilnya $(2,\\, 7,\\, 0) + (1,\\, 0,\\, 3) = (3,\\, 7,\\, 3)$, dan itu selalu boleh dilakukan." },
+            { "label": "Operasi dapat dilakukan setelah $\\vec{q}$ dijadikan vektor satuan." }
+          ],
+          "answerIndex": 2,
+          "explanation": "Penjumlahan vektor mensyaratkan **dimensi yang sama persis**. Vektor $\\vec{p}$ hidup di bidang, $\\vec{q}$ hidup di ruang; komponen $z$ pada $\\vec{q}$ tidak punya pasangan. Menambahkan sendiri komponen $z=0$ pada $\\vec{p}$ berarti **mengganti soal**, bukan menyelesaikannya. **Opsi C**.",
+          "toastWrong": "Belum tepat — memang secara teknis kita bisa menuliskan $\\vec{p} = (2,7,0)$, tetapi soal tidak menyatakan $\\vec{p}$ berada di ruang. Menambahkan komponen sendiri berarti mengubah data soal. Yang benar: operasinya **tidak terdefinisi**."
+        }
+      ]
+    },
+
+    {
+      "id": "perkalian_skalar",
+      "title": "Perkalian Skalar dengan Vektor",
+
+      "materi": [
+        { "t": "def", "title": "Perkalian Skalar",
+          "x": "Jika skalar $k$ dikalikan dengan vektor $\\vec{v}$, maka **setiap** komponennya dikalikan $k$. Vektor diregangkan atau diperpendek, tetapi garis arahnya tidak pernah membelok." },
+
+        { "t": "tex",
+          "x": "k \\cdot \\vec{v} = k\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} kx \\\\ ky \\end{pmatrix}" },
+
+        { "t": "typegroup", "n": "2", "title": "Apa yang Terjadi pada Gambarnya",
+          "lead": "Dua kalimat merangkum seluruh tabelnya: **besar $|k|$** menentukan seberapa diregangkan, **tanda $k$** menentukan searah atau berlawanan.",
+          "items": [
+            { "name": "$k > 1$", "tex": "3\\vec{v}", "text": "Diperbesar, arah **sama**." },
+            { "name": "$0 < k < 1$", "tex": "\\tfrac{1}{2}\\vec{v}", "text": "Diperkecil, arah **sama**." },
+            { "name": "$k = 0$", "tex": "0 \\cdot \\vec{v} = \\vec{0}", "text": "Menjadi vektor nol — tidak punya arah sama sekali." },
+            { "name": "$k < 0$", "tex": "-2\\vec{v}", "text": "Panjang dikali $|k|$, arah **berlawanan**." }
+          ],
+          "note": "Perkalian skalar tidak pernah memutar vektor ke arah miring yang baru; ia hanya bergerak maju-mundur pada garis yang sama." },
+
+        { "t": "tex", "x": "|k\\vec{v}| = |k| \\cdot |\\vec{v}|" },
+
+        { "t": "warn", "title": "Perhatikan Tanda Mutlak pada $k$",
+          "x": "Panjang tidak pernah negatif. Mengalikan dengan $-3$ membuat vektornya **tiga kali lebih panjang**, bukan \"negatif tiga kali lebih panjang\". Yang negatif adalah arahnya, bukan panjangnya." },
+
+        { "t": "tip", "title": "Jalan Pintas yang Sah",
+          "x": "Kalau kamu sudah tahu $|\\vec{v}| = \\sqrt{13}$, maka $|5\\vec{v}| = 5\\sqrt{13}$ — langsung, tanpa mengalikan komponen dan mengakarkan ulang. Di soal TKA, jalan pintas ini menghemat waktu yang nyata." }
+      ],
+
+      "simulation": {
+        "engine": "scalar_sweep",
+        "title": "Simulasi: Sapu Skalar ke Tiap Komponen",
+        "brief": "Chip skalar dibawa ke komponen satu per satu — bukan sekali sapu ke seluruh vektor. Perhatikan panahnya berubah setelah komponen terakhir selesai.",
+        "config": {
+          "cases": [
+            { "v": [2, -4], "k": -3 },
+            { "v": [6, 2], "k": 0.5 },
+            { "v": [1, -3, 2], "k": 4 },
+            { "v": [5, 7], "k": 0, "isZeroResult": true }
+          ],
+          "xRange": [-8, 8],
+          "yRange": [-6, 6]
+        },
+        "toasts": {
+          "komponenTerlewat": "Masih ada komponen yang belum disentuh skalar. Perkalian skalar menyentuh **semua** komponen tanpa kecuali — melewati satu saja mengubah arah vektornya, bukan memperpanjangnya.",
+          "tandaHilang": "Belum tepat — skalarnya bernilai {{k}}, dan tandanya ikut masuk ke hasil kali. $({{k}}) \\times ({{komponen}})$ bertanda **{{tandaHasil}}**.",
+          "panjangSalah": "Belum tepat — ingat $|k\\vec{v}| = |k| \\cdot |\\vec{v}|$. Perhatikan tanda mutlak pada $k$: panjang tidak pernah bernilai negatif, sehingga skalar $-3$ tetap **memperpanjang** tiga kali.",
+          "arahSalah": "Belum tepat — skalar bertanda negatif membalik **arah**, bukan hanya menggeser posisinya. Panah hasilnya harus menunjuk ke sisi berlawanan dari panah asal.",
+          "hasilNol": "Benar — dikalikan nol, semua komponennya menjadi nol. Hasilnya vektor nol, yang tidak punya arah sama sekali.",
+          "success": "Tepat! Besar $|k|$ meregangkan, tanda $k$ menentukan searah atau berlawanan."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_04_1",
+          "input_type": "single_choice",
+          "subtopic": "perkalian_skalar",
+          "prompt": "Diketahui $\\vec{v} = (2,\\, -4)$.",
+          "after": "**Tentukan $-3\\vec{v}$.**",
+          "options": [
+            { "tex": "(-6,\\, -12)" },
+            { "tex": "(-6,\\, 12)" },
+            { "tex": "(6,\\, 12)" },
+            { "tex": "(-6,\\, -4)" },
+            { "tex": "(6,\\, -12)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$-3\\vec{v} = (-3 \\times 2,\\; -3 \\times -4) = (-6,\\, 12)$. Komponen kedua berubah menjadi positif karena negatif dikali negatif menghasilkan positif. **Opsi B**.",
+          "toastWrong": "Belum tepat — periksa komponen keduanya. $-3 \\times (-4)$ bernilai $+12$, bukan $-12$: dua tanda negatif yang bertemu menghasilkan positif. Dan kalau jawabanmu $(-6,-4)$, kamu lupa mengalikan komponen kedua."
+        },
+        {
+          "id": "b2_04_2",
+          "input_type": "mathpad",
+          "subtopic": "perkalian_skalar",
+          "prompt": "Diketahui sebuah vektor $\\vec{w}$ dengan panjang $|\\vec{w}| = 7$ satuan.",
+          "after": "**Tentukan panjang vektor $-3\\vec{w}$.**",
+          "answer": 21,
+          "tolerance": 1e-6,
+          "explanation": "$|-3\\vec{w}| = |-3| \\cdot |\\vec{w}| = 3 \\times 7 = 21$. Tanda negatif membalik arah, tetapi **tidak** membuat panjangnya negatif.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $-21$, ingat bahwa panjang adalah jarak dan **tidak pernah negatif**. Rumusnya memakai tanda mutlak: $|k\\vec{v}| = |k| \\cdot |\\vec{v}|$, sehingga $|-3| = 3$."
+        },
+        {
+          "id": "b2_04_3",
+          "input_type": "single_choice",
+          "subtopic": "perkalian_skalar",
+          "prompt": "Sebuah vektor $\\vec{u}$ dikalikan dengan skalar $k = -\\tfrac{1}{2}$.",
+          "after": "**Manakah yang paling tepat menggambarkan hasilnya?**",
+          "options": [
+            { "label": "Panjangnya menjadi setengahnya, arahnya tetap." },
+            { "label": "Panjangnya menjadi dua kali lipat, arahnya berlawanan." },
+            { "label": "Panjangnya menjadi setengahnya, arahnya berlawanan." },
+            { "label": "Panjangnya menjadi negatif setengah, arahnya tetap." },
+            { "label": "Panjangnya tetap, hanya arahnya yang berlawanan." }
+          ],
+          "answerIndex": 2,
+          "explanation": "Besar $|k| = \\tfrac{1}{2}$ menentukan panjangnya menjadi setengah; tanda negatif pada $k$ menentukan arahnya berlawanan. **Opsi C**.",
+          "toastWrong": "Belum tepat — pisahkan dua hal yang dibawa skalar. **Besarnya** ($\\tfrac{1}{2}$) mengurus panjang; **tandanya** ($-$) mengurus arah. Jawablah keduanya, jangan hanya salah satu."
+        }
+      ]
+    },
+
+    {
+      "id": "kombinasi_operasi",
+      "title": "Kombinasi Operasi",
+
+      "materi": [
+        { "t": "p",
+          "x": "Soal jarang meminta $\\vec{u} + \\vec{v}$ saja. Yang lebih sering muncul bentuknya seperti $2\\vec{u} - 3\\vec{v}$ — dua operasi dalam satu baris." },
+
+        { "t": "def", "title": "Urutan Pengerjaan",
+          "x": "Persis seperti aljabar biasa: **perkalian skalar dulu, penjumlahan atau pengurangan kemudian.** Tidak ada aturan khusus yang perlu dihafal di sini." },
+
+        { "t": "steps", "title": "Tiga Langkah untuk $2\\vec{u} - 3\\vec{v}$",
+          "items": [
+            "Kalikan $\\vec{u}$ dengan $2$ — hasilnya vektor baru.",
+            "Kalikan $\\vec{v}$ dengan $3$ — hasilnya vektor baru.",
+            "Kurangkan hasil langkah kedua dari hasil langkah pertama, **komponen demi komponen**."
+          ] },
+
+        { "t": "tex",
+          "x": "\\vec{u} = (4, -1),\\ \\vec{v} = (2, 3) \\;\\Rightarrow\\; 2\\vec{u} - 3\\vec{v} = (8, -2) - (6, 9) = (2, -11)" },
+
+        { "t": "warn", "title": "Kesalahan Paling Sering",
+          "x": "Mengalikan skalar **hanya ke komponen pertama**. Untuk $\\vec{u} = (4,-1)$, hasil $2\\vec{u}$ adalah $(8,-2)$ — **bukan** $(8,-1)$. Skalar menyentuh semua komponen tanpa kecuali." },
+
+        { "t": "warn", "title": "Kesalahan Kedua",
+          "x": "Tanda pada langkah pengurangan. $-2 - 9$ bernilai $-11$, **bukan** $7$ dan **bukan** $-7$. Kerjakan pelan-pelan di bagian ini; ia menyumbang lebih banyak jawaban salah daripada bagian mana pun di bab ini." }
+      ],
+
+      "simulation": {
+        "engine": "combo_vector_op",
+        "title": "Simulasi: Dua Tahap, Satu per Satu",
+        "brief": "Tahap perkalian skalar harus selesai tuntas untuk kedua vektor sebelum tahap pengurangan bahkan muncul di layar. Tidak ada jalan pintas.",
+        "config": {
+          "cases": [
+            { "u": [4, -1], "v": [2, 3], "ku": 2, "kv": -3 },
+            { "u": [1, 5], "v": [-4, 2], "ku": 3, "kv": 2 },
+            { "u": [2, 0, -1], "v": [1, 3, 4], "ku": -2, "kv": 1 }
+          ]
+        },
+        "toasts": {
+          "tahapBelumSelesai": "Tahap perkalian skalar belum tuntas — masih ada komponen yang belum dikalikan. Tahap pengurangan baru terbuka setelah kedua vektor selesai diregangkan.",
+          "skalarHanyaSatuKomponen": "Belum tepat — skalar menyentuh **semua** komponen. $2\\vec{u}$ dengan $\\vec{u} = ({{ux}}, {{uy}})$ adalah $({{hx}}, {{hy}})$, bukan $({{hx}}, {{uy}})$.",
+          "urutanTerbalik": "Belum tepat — kerjakan perkalian skalar **lebih dulu**, baru pengurangan. Mengurangkan sebelum mengalikan mengubah soalnya menjadi $2(\\vec{u} - \\vec{v})$, yang nilainya berbeda.",
+          "tandaKurangSalah": "Periksa tandanya sekali lagi: ${{a}} - {{b}} = {{hasil}}$. Bilangan negatif dikurangi bilangan positif menjadi lebih negatif — bukan berbalik menjadi positif.",
+          "success": "Tepat! Perkalian dulu, pengurangan kemudian — dan setiap komponen dikerjakan sendiri-sendiri."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_05_1",
+          "input_type": "matrix_input",
+          "subtopic": "kombinasi_operasi",
+          "prompt": "Diketahui $\\vec{u} = (4,\\, -1)$ dan $\\vec{v} = (2,\\, 3)$.",
+          "after": "**Tentukan $2\\vec{u} - 3\\vec{v}$ dalam bentuk vektor kolom.**",
+          "rows": 2,
+          "cols": 1,
+          "answer": [[2], [-11]],
+          "explanation": "$2\\vec{u} = (8,\\, -2)$ dan $3\\vec{v} = (6,\\, 9)$, sehingga $2\\vec{u} - 3\\vec{v} = (8-6,\\; -2-9) = (2,\\, -11)$.",
+          "toastWrong": "Belum tepat — periksa baris keduanya. $-2 - 9 = -11$; kalau hasilmu $7$ atau $-7$, kemungkinan kamu mengurangkan $9-2$ atau lupa membawa tanda negatif dari $2\\vec{u}$."
+        },
+        {
+          "id": "b2_05_2",
+          "input_type": "mathpad",
+          "subtopic": "kombinasi_operasi",
+          "prompt": "Diketahui $\\vec{a} = (1,\\, 5)$ dan $\\vec{b} = (-4,\\, 2)$.",
+          "after": "**Tentukan komponen $x$ dari $3\\vec{a} + 2\\vec{b}$.**",
+          "answer": -5,
+          "tolerance": 1e-6,
+          "explanation": "Komponen $x$: $3(1) + 2(-4) = 3 + (-8) = -5$.",
+          "toastWrong": "Belum tepat — kerjakan kedua perkalian lebih dulu, baru dijumlahkan: $3 \\times 1 = 3$ dan $2 \\times (-4) = -8$. Jangan lupa membawa tanda negatif dari komponen $\\vec{b}$ ke dalam penjumlahan."
+        },
+        {
+          "id": "b2_05_3",
+          "input_type": "single_choice",
+          "subtopic": "kombinasi_operasi",
+          "prompt": "Seorang siswa mengerjakan $2\\vec{u} - 3\\vec{v}$ dengan $\\vec{u} = (4,\\, -1)$ dan $\\vec{v} = (2,\\, 3)$, lalu menuliskan hasilnya $(2,\\, -1)$.",
+          "after": "**Di manakah letak kesalahannya?**",
+          "options": [
+            { "label": "Ia mengurangkan $\\vec{u}$ dan $\\vec{v}$ sebelum mengalikan skalarnya." },
+            { "label": "Ia hanya mengalikan skalar ke komponen $x$, sehingga komponen $y$ tidak ikut diregangkan." },
+            { "label": "Ia menukar posisi $\\vec{u}$ dan $\\vec{v}$ pada pengurangan." },
+            { "label": "Ia menjumlahkan padahal seharusnya mengurangkan." },
+            { "label": "Tidak ada kesalahan; hasilnya memang $(2,\\, -1)$." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Komponen $x$-nya benar ($8-6=2$), tetapi komponen $y$-nya tertinggal di $-1$ — nilai asli $\\vec{u}$ sebelum dikali $2$, dan $\\vec{v}$ tidak ikut dikurangkan. Ini gejala khas skalar yang hanya disapukan ke komponen pertama. **Opsi B**.",
+          "toastWrong": "Belum tepat — bandingkan hasilnya komponen demi komponen dengan jawaban yang benar $(2, -11)$. Komponen $x$-nya **sudah benar**, jadi kesalahannya pasti hanya menimpa komponen $y$. Apa yang membuat satu komponen benar dan komponen lain tertinggal?"
+        }
+      ]
+    },
+
+    {
+      "id": "kesamaan_vektor",
+      "title": "Kesamaan Dua Vektor",
+
+      "materi": [
+        { "t": "def", "title": "Kesamaan Dua Vektor",
+          "x": "Dua vektor dikatakan **sama** ($\\vec{a} = \\vec{b}$) **jika dan hanya jika** semua komponen seletaknya bernilai sama persis. Perhatikan kata **semua** — satu komponen cocok saja tidak cukup." },
+
+        { "t": "tex",
+          "x": "\\begin{pmatrix} a_1 \\\\ a_2 \\end{pmatrix} = \\begin{pmatrix} b_1 \\\\ b_2 \\end{pmatrix} \\iff a_1 = b_1 \\ \\textbf{dan}\\ a_2 = b_2" },
+
+        { "t": "p",
+          "x": "Inilah kegunaan sebenarnya dari kesamaan vektor di soal: **satu persamaan vektor pecah menjadi beberapa persamaan biasa** — sebanyak komponennya." },
+
+        { "t": "steps", "title": "Contoh Pemecahan",
+          "items": [
+            "Diketahui $\\begin{pmatrix} 2x \\\\ y+1 \\end{pmatrix} = \\begin{pmatrix} 6 \\\\ 5 \\end{pmatrix}$.",
+            "Dari baris pertama: $2x = 6 \\Rightarrow x = 3$.",
+            "Dari baris kedua: $y + 1 = 5 \\Rightarrow y = 4$.",
+            "Satu persamaan vektor tadi ternyata menyimpan **dua** persamaan sekaligus."
+          ] },
+
+        { "t": "warn", "title": "Sama vs Sejajar — Jangan Tertukar",
+          "x": "Vektor **sama** menuntut panjang dan arah yang sama persis ($\\vec{a} = \\vec{b}$). Vektor **sejajar** hanya menuntut arah yang sama **atau berlawanan**, dengan panjang bebas ($\\vec{a} = k\\vec{b}$ untuk suatu $k \\ne 0$). Vektor yang sama pasti sejajar; vektor yang sejajar belum tentu sama." },
+
+        { "t": "tip", "title": "Teknik yang Dipakai Ulang di Bab 4",
+          "x": "Memecah satu persamaan vektor menjadi beberapa persamaan aljabar adalah **teknik inti** seluruh soal pemodelan TKA. Kuasai di sini, dan Bab 4 akan terasa seperti pengulangan." }
+      ],
+
+      "simulation": {
+        "engine": "equality_link",
+        "title": "Simulasi: Satu Persamaan, Banyak Persamaan",
+        "brief": "Ketuk komponen di ruas kiri, lalu pasangan seletaknya di ruas kanan. Keduanya terbang menyatu menjadi satu persamaan aljabar — yang nilainya kamu selesaikan sendiri.",
+        "config": {
+          "cases": [
+            { "left": ["2x", "y+1"], "right": [6, 5], "solve": { "x": 3, "y": 4 } },
+            { "left": ["a-2", "3b"], "right": [7, -12], "solve": { "a": 9, "b": -4 } },
+            { "left": ["p", "q", "2r"], "right": [-1, 4, 10], "solve": { "p": -1, "q": 4, "r": 5 } }
+          ]
+        },
+        "toasts": {
+          "tidakSeletak": "Belum tepat — kamu memilih komponen ke-{{kiri}} di ruas kiri, jadi pasangannya harus komponen ke-{{kiri}} juga di ruas kanan. Kesamaan vektor hanya memasangkan komponen yang **seletak**.",
+          "belumSemua": "Masih ada baris yang belum dipasangkan. Kesamaan vektor menuntut **semua** komponen cocok — satu baris yang belum diperiksa bisa menggugurkan seluruh kesimpulan.",
+          "nilaiSalah": "Belum tepat — selesaikan persamaan barisnya seperti persamaan linear biasa. Dari ${{persamaan}}$, pindahkan konstantanya ke ruas kanan lebih dulu.",
+          "salahTafsirSejajar": "Hati-hati — yang diminta adalah dua vektor yang **sama**, bukan sekadar sejajar. Sama menuntut panjang dan arah identik; sejajar hanya menuntut arahnya segaris.",
+          "success": "Tepat! Satu persamaan vektor memang menyimpan sebanyak komponennya persamaan biasa."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_06_1",
+          "input_type": "mathpad",
+          "subtopic": "kesamaan_vektor",
+          "prompt": "Diketahui kesamaan vektor berikut.",
+          "tex": "\\begin{pmatrix} 2x \\\\ y+1 \\end{pmatrix} = \\begin{pmatrix} 6 \\\\ 5 \\end{pmatrix}",
+          "after": "**Tentukan nilai $x$.**",
+          "answer": 3,
+          "tolerance": 1e-6,
+          "explanation": "Dari baris pertama, $2x = 6$, sehingga $x = 3$. Baris kedua tidak memuat $x$ sama sekali, jadi ia tidak perlu dilibatkan.",
+          "toastWrong": "Belum tepat — cari **baris yang memuat $x$**, dan kerjakan baris itu saja. Baris pertama berbunyi $2x = 6$; bagi kedua ruas dengan $2$. Kalau jawabanmu $6$, kamu lupa membagi."
+        },
+        {
+          "id": "b2_06_2",
+          "input_type": "single_choice",
+          "subtopic": "kesamaan_vektor",
+          "prompt": "Diketahui kesamaan vektor berikut.",
+          "tex": "\\begin{pmatrix} x+y \\\\ x-y \\end{pmatrix} = \\begin{pmatrix} 8 \\\\ 2 \\end{pmatrix}",
+          "after": "**Tentukan nilai $xy$.**",
+          "options": [
+            { "tex": "6" },
+            { "tex": "10" },
+            { "tex": "12" },
+            { "tex": "15" },
+            { "tex": "24" }
+          ],
+          "answerIndex": 3,
+          "explanation": "Kesamaan vektor memberi dua persamaan: $x+y=8$ dan $x-y=2$. Menjumlahkan keduanya: $2x=10 \\Rightarrow x=5$, lalu $y=3$. Maka $xy = 15$. **Opsi D**.",
+          "toastWrong": "Belum tepat — perhatikan bahwa yang diminta adalah **hasil kali** $xy$, bukan $x+y$ atau $x-y$. Selesaikan dulu sistem persamaannya untuk mendapat $x$ dan $y$ masing-masing, baru kalikan."
+        },
+        {
+          "id": "b2_06_3",
+          "input_type": "multi_select",
+          "subtopic": "kesamaan_vektor",
+          "prompt": "Perhatikan pernyataan tentang vektor sama dan vektor sejajar berikut.",
+          "after": "**Pilih semua pernyataan yang benar.**",
+          "options": [
+            { "label": "Dua vektor yang sama pasti sejajar." },
+            { "label": "Dua vektor yang sejajar pasti sama." },
+            { "label": "$\\vec{a} = (2,\\,4)$ dan $\\vec{b} = (1,\\,2)$ adalah dua vektor yang sejajar." },
+            { "label": "$\\vec{a} = (2,\\,4)$ dan $\\vec{c} = (-2,\\,-4)$ adalah dua vektor yang sejajar." },
+            { "label": "Satu persamaan vektor berdimensi tiga menyimpan tiga persamaan biasa." }
+          ],
+          "answerIndices": [0, 2, 3, 4],
+          "perOptionFeedback": [
+            "**Benar** — arah dan panjangnya identik, jadi syarat sejajar otomatis terpenuhi.",
+            "Salah — sejajar hanya menuntut arah yang segaris, panjangnya boleh berbeda jauh.",
+            "**Benar** — $\\vec{a} = 2\\vec{b}$, jadi keduanya kelipatan satu sama lain.",
+            "**Benar** — $\\vec{c} = -\\vec{a}$; arah berlawanan tetap termasuk sejajar.",
+            "**Benar** — banyaknya persamaan selalu sebanyak komponennya."
+          ],
+          "explanation": "Kuncinya satu arah saja: **sama ⇒ sejajar**, tetapi **sejajar ⇏ sama**. Arah berlawanan pun masih dihitung sejajar, karena keduanya tetap terletak pada satu garis arah.",
+          "toastWrong": "Ada pilihan yang belum tepat — periksa dua pernyataan pertama. Keduanya tampak simetris, padahal implikasinya hanya berlaku **satu arah**."
+        }
+      ]
+    },
+
+    {
+      "id": "titik_segaris",
+      "title": "Titik-Titik Segaris (Kolinier)",
+
+      "materi": [
+        { "t": "def", "title": "Titik Segaris (Kolinier)",
+          "x": "Titik $A$, $B$, dan $C$ dikatakan **segaris** jika terdapat skalar $k$ sehingga $\\vec{AB} = k \\cdot \\vec{BC}$ atau $\\vec{AB} = k \\cdot \\vec{AC}$." },
+
+        { "t": "p",
+          "x": "Kenapa rumus itu masuk akal? Kalau ketiga titik ada di satu garis lurus, maka $\\vec{AB}$ dan $\\vec{BC}$ pasti **sejajar** — keduanya menunjuk sepanjang garis yang sama. Dan dua vektor sejajar selalu bisa ditulis sebagai kelipatan satu sama lain." },
+
+        { "t": "warn", "title": "Sejajar Saja Belum Cukup",
+          "x": "Dua vektor sejajar yang **tidak berbagi titik** hanya membentuk dua garis sejajar, bukan satu garis. Itulah sebabnya rumusnya memakai vektor yang berbagi huruf: $\\vec{AB}$ dan $\\vec{BC}$ sama-sama memuat $B$. Titik bersama itu yang mengunci keduanya ke satu garis." },
+
+        { "t": "steps", "title": "Langkah Pengerjaan",
+          "items": [
+            "Hitung $\\vec{AB} = B - A$.",
+            "Hitung $\\vec{BC} = C - B$.",
+            "Cari $k$ dari komponen pertama.",
+            "**Uji $k$ itu pada komponen-komponen lainnya.** Kalau cocok semua → segaris."
+          ] },
+
+        { "t": "tex",
+          "x": "\\vec{AB} = (2,4),\\ \\vec{BC} = (3,6) \\;\\Rightarrow\\; k = \\tfrac{2}{3} \\ \\text{dan} \\ \\tfrac{2}{3}(6) = 4 \\ \\checkmark" },
+
+        { "t": "tip", "title": "Satu Komponen Cukup untuk Menggugurkan",
+          "x": "Kalau komponen $x$ memberi $k = \\tfrac{2}{3}$ tetapi komponen $y$ memberi $k = 2$, maka **tidak segaris**. Kamu tidak perlu memeriksa sisanya — satu ketidakcocokan sudah menutup perkara." },
+
+        { "t": "p",
+          "x": "🔗 Teknik ini dipakai lagi untuk membaca **bangun datar** dari vektor-vektornya — trapesium, jajar genjang, layang-layang. Itu **Taktik TKA 2**, dibahas tuntas di **Bab 4 · Bedah Bangun Segiempat**." }
+      ],
+
+      "simulation": {
+        "engine": "collinear_check",
+        "title": "Simulasi: Cari $k$, Lalu Uji Ulang",
+        "brief": "Tentukan $k$ dari satu komponen, lalu ujikan pada komponen lainnya. Kasus terakhir sengaja tidak segaris — dan kamu yang harus menemukan komponen mana yang menggugurkannya.",
+        "config": {
+          "cases": [
+            { "A": [1, 2], "B": [3, 6], "C": [6, 12], "collinear": true },
+            { "A": [0, 0], "B": [2, 1], "C": [-4, -2], "collinear": true },
+            { "A": [1, 1], "B": [3, 5], "C": [6, 9], "collinear": false }
+          ],
+          "xRange": [-8, 8],
+          "yRange": [-6, 6]
+        },
+        "toasts": {
+          "belumCariK": "Tentukan dulu nilai $k$ dari salah satu komponen. Tanpa $k$, belum ada yang bisa diujikan.",
+          "kBeda": "Belum tepat — komponen $x$ memberi $k = {{kx}}$, tetapi komponen $y$ memberi $k = {{ky}}$. Nilai $k$ harus **sama untuk semua komponen**; kalau berbeda, ketiga titik itu tidak segaris.",
+          "lupaUji": "Kamu sudah mendapat $k$, tetapi belum mengujinya pada komponen yang lain. Satu komponen yang cocok belum membuktikan apa-apa — dua vektor bisa cocok di satu komponen dan meleset di komponen lain.",
+          "vektorSalahPasang": "Belum tepat — kedua vektor yang dibandingkan harus **berbagi satu titik**. $\\vec{AB}$ dan $\\vec{CD}$ yang tidak punya huruf bersama hanya membuktikan dua garis sejajar, bukan satu garis.",
+          "tidakSegaris": "Benar — ketiga titik ini **tidak** segaris. Perhatikan bahwa cukup satu komponen yang memberi $k$ berbeda untuk menutup perkaranya.",
+          "success": "Tepat! Nilai $k$ yang sama untuk seluruh komponen — ketiga titik itu memang terletak pada satu garis."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_07_1",
+          "input_type": "mathpad",
+          "subtopic": "titik_segaris",
+          "prompt": "Diketahui titik $A(1,\\, 2)$, $B(3,\\, 6)$, dan $C(p,\\, 14)$ terletak pada satu garis lurus.",
+          "after": "**Tentukan nilai $p$.**",
+          "answer": 7,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{AB} = (2,\\, 4)$ dan $\\vec{AC} = (p-1,\\, 12)$. Agar segaris, $\\vec{AC} = k\\,\\vec{AB}$. Dari komponen $y$: $12 = 4k \\Rightarrow k = 3$. Maka dari komponen $x$: $p - 1 = 3(2) = 6$, sehingga $p = 7$.",
+          "toastWrong": "Belum tepat — mulailah dari komponen yang **kedua-duanya sudah diketahui angkanya**, yaitu komponen $y$: $12$ berbanding $4$. Nilai $k$ dari situ baru kamu pakai untuk komponen $x$. Jangan lupa $\\vec{AC}$ berkomponen $x$ sebesar $p-1$, bukan $p$."
+        },
+        {
+          "id": "b2_07_2",
+          "input_type": "single_choice",
+          "subtopic": "titik_segaris",
+          "prompt": "Perhatikan empat pasang titik berikut.",
+          "after": "**Manakah yang ketiga titiknya terletak pada satu garis lurus?**",
+          "options": [
+            { "label": "$A(0,0)$, $B(1,2)$, $C(3,5)$" },
+            { "label": "$A(0,0)$, $B(2,3)$, $C(6,9)$" },
+            { "label": "$A(1,1)$, $B(2,3)$, $C(4,6)$" },
+            { "label": "$A(2,1)$, $B(4,3)$, $C(7,5)$" },
+            { "label": "$A(1,0)$, $B(3,2)$, $C(6,4)$" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Pada opsi B: $\\vec{AB} = (2,3)$ dan $\\vec{AC} = (6,9)$. Dari komponen $x$: $k = 3$; diuji pada komponen $y$: $3 \\times 3 = 9$ ✓. Nilai $k$ sama untuk keduanya, jadi segaris. **Opsi B**.",
+          "toastWrong": "Belum tepat — untuk setiap pilihan, hitung $\\vec{AB}$ dan $\\vec{AC}$, lalu periksa apakah ada **satu** nilai $k$ yang berlaku untuk **kedua** komponennya. Banyak pilihan yang cocok di komponen $x$ tetapi meleset di komponen $y$ — itulah pengecohnya."
+        },
+        {
+          "id": "b2_07_3",
+          "input_type": "single_choice",
+          "subtopic": "titik_segaris",
+          "prompt": "Diketahui $\\vec{AB} = (2,\\, 4)$ dan $\\vec{CD} = (1,\\, 2)$, dengan $A$, $B$, $C$, $D$ empat titik yang berbeda dan tidak ada huruf yang berulang.",
+          "after": "**Manakah kesimpulan yang paling tepat?**",
+          "options": [
+            { "label": "Keempat titik pasti terletak pada satu garis lurus." },
+            { "label": "Ruas garis $AB$ dan $CD$ sejajar, tetapi belum tentu segaris." },
+            { "label": "Ruas garis $AB$ dan $CD$ pasti berpotongan." },
+            { "label": "Ruas garis $AB$ dan $CD$ pasti tegak lurus." },
+            { "label": "Tidak dapat disimpulkan apa pun dari data tersebut." }
+          ],
+          "answerIndex": 1,
+          "explanation": "$\\vec{AB} = 2\\,\\vec{CD}$, sehingga keduanya **sejajar**. Tetapi karena kedua vektor tidak berbagi satu titik pun, keduanya bisa saja terletak pada dua garis sejajar yang berbeda. Sejajar tidak otomatis segaris. **Opsi B**.",
+          "toastWrong": "Belum tepat — memang benar keduanya kelipatan satu sama lain, jadi sejajar. Tetapi periksa lagi: apakah kedua vektor itu punya **titik bersama**? Tanpa titik bersama, dua garis sejajar tetap dua garis yang berbeda."
+        }
+      ]
+    },
+
+    {
+      "id": "pembagian_ruas_garis",
+      "title": "Pembagian Ruas Garis",
+
+      "materi": [
+        { "t": "def", "title": "Pembagian Ruas Garis",
+          "x": "Jika titik $P$ membagi ruas garis $AB$ dengan perbandingan $AP : PB = m : n$, maka vektor posisi titik $P$ adalah $\\vec{p} = \\dfrac{m\\,\\vec{b} + n\\,\\vec{a}}{m + n}$." },
+
+        { "t": "tex",
+          "x": "\\vec{p} = \\frac{m\\,\\vec{b} + n\\,\\vec{a}}{m + n}" },
+
+        { "t": "warn", "title": "Penempatan $m$ dan $n$ Bersilang",
+          "x": "Ini bagian yang paling sering salah. Perbandingannya $AP : PB = m : n$, tetapi di rumusnya $m$ (bagian yang **dekat $A$**) justru berpasangan dengan $\\vec{b}$, dan $n$ (bagian yang **dekat $B$**) berpasangan dengan $\\vec{a}$. **Silang, bukan lurus.**" },
+
+        { "t": "tip", "title": "Cara Mengingatnya",
+          "x": "Kalau $m$ besar, artinya $P$ jauh dari $A$ dan **dekat ke $B$** — jadi masuk akal kalau $\\vec{b}$ yang mendapat bobot besar. Rumusnya sebenarnya sedang menghitung rata-rata berbobot, dan bobot terbesar diberikan kepada titik yang paling dekat." },
+
+        { "t": "steps", "title": "Uji Cepat yang Selalu Berhasil",
+          "items": [
+            "Ragu apakah $m$ dan $n$ sudah di tempat yang benar? Masukkan kasus ekstrem.",
+            "Ambil $n = 0$ — artinya $P$ berimpit dengan $B$.",
+            "Rumusnya menjadi $\\vec{p} = \\dfrac{m\\vec{b} + 0}{m} = \\vec{b}$ ✓ — tepat seperti yang diharapkan.",
+            "Butuh tiga detik, dan menyelamatkan satu soal penuh."
+          ] },
+
+        { "t": "def", "title": "Kasus Istimewa: Titik Tengah",
+          "x": "Kalau $P$ tepat di tengah, maka $m : n = 1 : 1$ dan rumusnya menyusut menjadi $\\vec{p} = \\dfrac{\\vec{a} + \\vec{b}}{2}$ — rumus titik tengah yang kamu kenal sejak SMP, yang ternyata hanya kasus khusus dari rumus ini." },
+
+        { "t": "p",
+          "x": "Kalau $P$ berada **di luar** ruas $AB$ (pada perpanjangannya), perbandingannya ditulis dengan salah satu suku negatif, misalnya $AP : PB = m : (-n)$. Rumusnya tetap sama; yang berubah hanya tandanya: $\\vec{p} = \\dfrac{m\\vec{b} - n\\vec{a}}{m - n}$." },
+
+        { "t": "p",
+          "x": "🔗 Konsep perbandingan vektor ini menjadi kunci soal **lintasan kendaraan berkecepatan tetap** — itu **Taktik TKA 3**, dibahas tuntas di **Bab 4 · Kinematika & Proporsionalitas**." }
+      ],
+
+      "simulation": {
+        "engine": "section_point",
+        "title": "Simulasi: Geser Titik Pembagi",
+        "brief": "Perbandingannya diberikan; posisi titik $P$ kamu tentukan sendiri lewat perhitungan. Aplikasi baru menandai titiknya setelah kedua komponen kamu isi.",
+        "config": {
+          "cases": [
+            { "A": [2, 1], "B": [8, 7], "m": 2, "n": 1 },
+            { "A": [-4, 3], "B": [6, -1], "m": 1, "n": 1, "isMidpoint": true },
+            { "A": [0, 0], "B": [9, 6], "m": 2, "n": -1, "isOuter": true }
+          ],
+          "xRange": [-8, 10],
+          "yRange": [-5, 8]
+        },
+        "toasts": {
+          "mnTertukar": "Belum tepat — penempatan $m$ dan $n$ **bersilang**. Karena $AP : PB = {{m}} : {{n}}$, maka $\\vec{b}$ berpasangan dengan ${{m}}$ dan $\\vec{a}$ berpasangan dengan ${{n}}$, bukan sebaliknya.",
+          "penyebutSalah": "Belum tepat — penyebutnya adalah **jumlah** kedua bagian perbandingan, yaitu ${{m}} + {{n}} = {{jumlah}}$. Ia mewakili seluruh panjang ruas garisnya.",
+          "ujiEkstremGagal": "Coba uji rumusmu dengan kasus ekstrem: kalau $n = 0$, titik $P$ seharusnya berimpit dengan $B$. Apakah rumus yang kamu susun memberikan $\\vec{b}$?",
+          "titikDiLuarRuas": "Titik yang kamu tentukan jatuh **di luar** ruas $AB$, padahal perbandingan ${{m}} : {{n}}$ keduanya positif — itu berarti $P$ harus berada **di antara** $A$ dan $B$.",
+          "success": "Tepat! Bobot terbesar memang jatuh ke titik yang paling dekat dengan $P$."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b2_08_1",
+          "input_type": "single_choice",
+          "subtopic": "pembagian_ruas_garis",
+          "prompt": "Diketahui titik $A(2,\\, 1)$ dan $B(8,\\, 7)$. Titik $P$ membagi ruas garis $AB$ dengan perbandingan $AP : PB = 2 : 1$.",
+          "after": "**Tentukan koordinat titik $P$.**",
+          "options": [
+            { "tex": "P(4,\\, 3)" },
+            { "tex": "P(5,\\, 4)" },
+            { "tex": "P(6,\\, 5)" },
+            { "tex": "P(7,\\, 6)" },
+            { "tex": "P(10,\\, 9)" }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{p} = \\dfrac{2\\vec{b} + 1\\vec{a}}{2+1} = \\dfrac{2(8,7) + (2,1)}{3} = \\dfrac{(18,\\, 15)}{3} = (6,\\, 5)$. **Opsi C**.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $(4,3)$, kemungkinan kamu memasangkan $m$ dengan $\\vec{a}$ dan $n$ dengan $\\vec{b}$. Ingat, penempatannya **bersilang**. Uji cepat: karena $AP$ lebih panjang daripada $PB$, titik $P$ harus lebih **dekat ke $B$** — dan $(4,3)$ justru lebih dekat ke $A$."
+        },
+        {
+          "id": "b2_08_2",
+          "input_type": "mathpad",
+          "subtopic": "pembagian_ruas_garis",
+          "prompt": "Diketahui titik $A(-3,\\, 4)$ dan $B(7,\\, -2)$. Titik $M$ adalah titik tengah ruas garis $AB$.",
+          "after": "**Tentukan absis (komponen $x$) titik $M$.**",
+          "answer": 2,
+          "tolerance": 1e-6,
+          "explanation": "Titik tengah berarti $m : n = 1 : 1$, sehingga $\\vec{m} = \\dfrac{\\vec{a}+\\vec{b}}{2}$. Absisnya: $\\dfrac{-3 + 7}{2} = \\dfrac{4}{2} = 2$.",
+          "toastWrong": "Belum tepat — untuk titik tengah, jumlahkan kedua absisnya lalu bagi dua. Perhatikan tandanya: $-3 + 7 = 4$, bukan $10$. Kalau kamu mengurangkan, yang kamu hitung adalah panjang mendatar ruasnya, bukan letak titik tengahnya."
+        },
+        {
+          "id": "b2_08_3",
+          "input_type": "single_choice",
+          "subtopic": "pembagian_ruas_garis",
+          "prompt": "Seorang siswa menuliskan rumus pembagian ruas garis untuk $AP : PB = m : n$ sebagai $\\vec{p} = \\dfrac{m\\vec{a} + n\\vec{b}}{m+n}$.",
+          "after": "**Bagaimana cara tercepat membuktikan bahwa rumus tersebut keliru?**",
+          "options": [
+            { "label": "Menggambar ruas garisnya terlebih dahulu di bidang koordinat." },
+            { "label": "Memasukkan $n = 0$: rumus itu memberi $\\vec{p} = \\vec{a}$, padahal $P$ seharusnya berimpit dengan $B$." },
+            { "label": "Memeriksa apakah penyebutnya bernilai positif." },
+            { "label": "Menghitung panjang $\\vec{AB}$ lebih dahulu." },
+            { "label": "Rumus tersebut sebenarnya tidak keliru." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Uji kasus ekstrem adalah cara tercepat. Dengan $n = 0$, perbandingan $AP:PB = m:0$ berarti $PB = 0$, sehingga $P$ berimpit dengan $B$ dan hasilnya harus $\\vec{b}$. Rumus siswa itu justru memberi $\\vec{a}$ — terbalik. **Opsi B**.",
+          "toastWrong": "Belum tepat — kamu tidak perlu menggambar atau menghitung panjang apa pun. Masukkan saja satu **kasus ekstrem** yang jawabannya sudah kamu ketahui tanpa berpikir, lalu lihat apakah rumusnya memberikan jawaban itu."
+        }
+      ]
+    }
+  ]
+}

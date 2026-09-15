@@ -1,0 +1,669 @@
+{
+  "id": "03_perkalian_proyeksi",
+  "title": "Perkalian & Proyeksi",
+  "subtopics": [
+    {
+      "id": "dot_product",
+      "title": "Perkalian Titik (Dot Product)",
+
+      "materi": [
+        { "t": "p",
+          "x": "Dua vektor bisa dijumlahkan, hasilnya vektor. Dikurangkan, hasilnya vektor. Dikali skalar, masih vektor. Sekarang: dua vektor dikalikan **satu sama lain** — hasilnya **sebuah bilangan biasa**. Bukan vektor." },
+
+        { "t": "def", "title": "Definisi Aljabar",
+          "x": "Jika $\\vec{a} = (a_1, a_2, a_3)$ dan $\\vec{b} = (b_1, b_2, b_3)$, maka $\\vec{a} \\cdot \\vec{b} = a_1b_1 + a_2b_2 + a_3b_3$. Aturannya satu kalimat: **kalikan komponen yang seletak, lalu jumlahkan semuanya.**" },
+
+        { "t": "steps", "title": "Contoh dengan $\\vec{a} = (3,-1,2)$ dan $\\vec{b} = (1,4,0)$",
+          "items": [
+            "Pasangan pertama: $3 \\times 1 = 3$.",
+            "Pasangan kedua: $(-1) \\times 4 = -4$.",
+            "Pasangan ketiga: $2 \\times 0 = 0$.",
+            "Jumlahkan seluruhnya: $3 + (-4) + 0 = -1$."
+          ] },
+
+        { "t": "warn", "title": "Suku Nol Tetap Ikut Dijumlahkan",
+          "x": "Suku bernilai nol memang tidak mengubah hasilnya — tetapi melewatkannya berarti kamu **tidak memeriksa komponen ketiga sama sekali**. Di soal berikutnya komponen itu mungkin bukan nol, dan kebiasaan melompat akan terbawa." },
+
+        { "t": "def", "title": "Definisi Geometri",
+          "x": "Ada rumus kedua yang menyatakan hal yang sama, tetapi lewat sudut, dengan $\\theta$ adalah sudut antara kedua vektor **ketika keduanya berpangkal di satu titik**." },
+
+        { "t": "tex", "x": "\\vec{a} \\cdot \\vec{b} = |\\vec{a}|\\,|\\vec{b}|\\cos\\theta" },
+
+        { "t": "typegroup", "n": "1", "title": "Kapan Memakai Rumus yang Mana",
+          "lead": "Dua rumus untuk satu operasi, karena masing-masing menjawab arah pertanyaan yang berbeda.",
+          "items": [
+            { "name": "Diketahui komponennya", "tex": "a_1b_1 + a_2b_2 + a_3b_3", "text": "Pakai rumus **aljabar** — langsung hitung." },
+            { "name": "Diketahui panjang & sudut", "tex": "|\\vec{a}||\\vec{b}|\\cos\\theta", "text": "Pakai rumus **geometri**." },
+            { "name": "Diketahui komponen, dicari sudut", "tex": "a_1b_1 + \\ldots = |\\vec{a}||\\vec{b}|\\cos\\theta", "text": "Pakai **keduanya**, lalu disamakan. Inilah mesin seluruh sisa bab ini." }
+          ],
+          "note": "Baris ketiga itu yang paling sering muncul di TKA." },
+
+        { "t": "tip", "title": "Kenapa Namanya Perkalian Skalar",
+          "x": "Karena **hasilnya** skalar, bukan karena yang dikalikan skalar. Jangan tertukar dengan perkalian skalar-dengan-vektor di Bab 2, yang hasilnya justru vektor." }
+      ],
+
+      "simulation": {
+        "engine": "dot_builder",
+        "title": "Simulasi: Pasangkan, Kalikan, Jumlahkan",
+        "brief": "Kerjakan pasangan demi pasangan. Tombol hitung baru muncul setelah seluruh pasangan lengkap — sebelum itu memang tidak ada, tidak ada jalan pintas.",
+        "config": {
+          "cases": [
+            { "u": [3, -1, 2], "v": [1, 4, 0], "name": ["a", "b"] },
+            { "u": [2, 5], "v": [4, -1], "name": ["u", "v"] },
+            { "u": [1, 1, 0], "v": [0, 1, 1], "name": ["p", "q"] }
+          ]
+        },
+        "toasts": {
+          "pilihSumberDulu": "Ketuk dulu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
+          "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Perkalian titik hanya memasangkan komponen yang **seletak**.",
+          "sukuNolDilewati": "Suku yang bernilai nol tetap harus dikerjakan. Ia tidak mengubah hasilnya, tetapi melewatinya berarti komponen ketiga tidak pernah kamu periksa.",
+          "lupaTandaNegatif": "Belum tepat — hasil kali $({{a}}) \\times ({{b}})$ bertanda **negatif**. Bawa tandanya masuk ke penjumlahan; suku negatif **mengurangi**, bukan menambah.",
+          "hasilSalah": "Belum tepat — jumlahkan **seluruh** hasil kalinya, termasuk suku yang bernilai nol dan suku yang bertanda negatif.",
+          "menjumlahBukanMengali": "Belum tepat — komponen seletak dikalikan lebih dulu, baru hasil-hasil kalinya yang dijumlahkan. Bukan komponennya yang langsung dijumlahkan.",
+          "success": "Tepat! $\\vec{a} \\cdot \\vec{b} = 3(1) + (-1)(4) + 2(0) = -1$ — sebuah bilangan, bukan vektor."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_01_1",
+          "input_type": "mathpad",
+          "subtopic": "dot_product",
+          "prompt": "Diketahui $\\vec{u} = (3,\\, -1,\\, 2)$ dan $\\vec{v} = (1,\\, 4,\\, 0)$.",
+          "after": "**Tentukan nilai $\\vec{u} \\cdot \\vec{v}$.**",
+          "answer": -1,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{u}\\cdot\\vec{v} = 3(1) + (-1)(4) + 2(0) = 3 - 4 + 0 = -1$.",
+          "toastWrong": "Belum tepat — jangan lupa suku ketiganya. $2 \\times 0 = 0$ tetap ikut dijumlahkan, dan suku keduanya bertanda **negatif** sehingga ia mengurangi, bukan menambah."
+        },
+        {
+          "id": "b3_01_2",
+          "input_type": "single_choice",
+          "subtopic": "dot_product",
+          "prompt": "Diketahui $\\vec{a} = (2,\\, 5)$ dan $\\vec{b} = (4,\\, -1)$.",
+          "after": "**Tentukan nilai $\\vec{a} \\cdot \\vec{b}$.**",
+          "options": [
+            { "tex": "-13" },
+            { "tex": "-3" },
+            { "tex": "3" },
+            { "tex": "8" },
+            { "tex": "13" }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 2(4) + 5(-1) = 8 - 5 = 3$. **Opsi C**.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $13$, kamu menjumlahkan $8 + 5$ tanpa membawa tanda negatif dari komponen $\\vec{b}$. Kalau jawabanmu $8$, kamu berhenti setelah pasangan pertama."
+        },
+        {
+          "id": "b3_01_3",
+          "input_type": "single_choice",
+          "subtopic": "dot_product",
+          "prompt": "Dua vektor di ruang, $\\vec{p}$ dan $\\vec{q}$, dikalikan dengan perkalian titik.",
+          "after": "**Hasil dari $\\vec{p} \\cdot \\vec{q}$ berupa ....**",
+          "options": [
+            { "label": "sebuah vektor di R³" },
+            { "label": "sebuah bilangan real" },
+            { "label": "sebuah vektor satuan" },
+            { "label": "sebuah vektor di R², karena satu dimensi hilang" },
+            { "label": "sebuah vektor yang tegak lurus terhadap keduanya" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Perkalian titik menjumlahkan hasil kali komponen seletak — dan penjumlahan bilangan selalu menghasilkan bilangan. Itulah sebabnya operasi ini disebut *perkalian skalar dua vektor*. **Opsi B**.",
+          "toastWrong": "Belum tepat — telusuri kembali langkah hitungannya. Kamu mengalikan angka dengan angka, lalu menjumlahkan semua hasilnya. Objek seperti apa yang keluar dari penjumlahan bilangan?"
+        }
+      ]
+    },
+
+    {
+      "id": "sifat_perkalian",
+      "title": "Sifat & Tanda Hasil",
+
+      "materi": [
+        { "t": "def", "title": "Sifat-Sifat Perkalian Titik",
+          "x": "Perkalian titik mewarisi sebagian sifat perkalian bilangan biasa — tetapi tidak semuanya, dan yang tidak diwarisi justru yang paling sering menjebak." },
+
+        { "t": "list", "title": "Yang Berlaku",
+          "items": [
+            "**Komutatif:** $\\vec{a} \\cdot \\vec{b} = \\vec{b} \\cdot \\vec{a}$. Urutan tidak berpengaruh.",
+            "**Distributif:** $\\vec{a} \\cdot (\\vec{b} + \\vec{c}) = \\vec{a}\\cdot\\vec{b} + \\vec{a}\\cdot\\vec{c}$.",
+            "**Terhadap skalar:** $(k\\vec{a}) \\cdot \\vec{b} = k(\\vec{a} \\cdot \\vec{b})$.",
+            "**Terhadap dirinya sendiri:** $\\vec{a} \\cdot \\vec{a} = |\\vec{a}|^2$."
+          ] },
+
+        { "t": "tip", "title": "Sifat Terakhir Itu Sangat Berguna",
+          "x": "$\\vec{a}\\cdot\\vec{a} = |\\vec{a}|^2$ jarang disadari, padahal ia menghubungkan dua bab sekaligus. Kalau kamu butuh $|\\vec{a}|^2$ tetapi hanya punya bentuk perkalian titik, keduanya adalah benda yang sama. Ia juga menjelaskan kenapa $\\vec{a}\\cdot\\vec{a}$ tidak pernah negatif." },
+
+        { "t": "warn", "title": "Yang TIDAK Berlaku",
+          "x": "Bentuk $(\\vec{a}\\cdot\\vec{b})\\cdot\\vec{c}$ **tidak terdefinisi** — $\\vec{a}\\cdot\\vec{b}$ menghasilkan **bilangan**, dan bilangan tidak bisa di-*dot*-kan dengan vektor. Dan dari $\\vec{a}\\cdot\\vec{b} = \\vec{a}\\cdot\\vec{c}$ kamu **tidak boleh** menyimpulkan $\\vec{b} = \\vec{c}$: banyak vektor berbeda memberi hasil kali titik yang sama." },
+
+        { "t": "typegroup", "n": "2", "title": "Tanda Hasil Menentukan Jenis Sudut",
+          "lead": "Karena $|\\vec{a}|$ dan $|\\vec{b}|$ selalu positif, tanda $\\vec{a}\\cdot\\vec{b}$ ditentukan **sepenuhnya** oleh tanda $\\cos\\theta$.",
+          "items": [
+            { "name": "Positif", "tex": "\\vec{a} \\cdot \\vec{b} > 0", "text": "Sudutnya **lancip** ($0^\\circ \\le \\theta < 90^\\circ$)." },
+            { "name": "Nol", "tex": "\\vec{a} \\cdot \\vec{b} = 0", "text": "Sudutnya **siku-siku** ($\\theta = 90^\\circ$)." },
+            { "name": "Negatif", "tex": "\\vec{a} \\cdot \\vec{b} < 0", "text": "Sudutnya **tumpul** ($90^\\circ < \\theta \\le 180^\\circ$)." }
+          ],
+          "note": "Tidak perlu menghitung sudutnya untuk tahu jenisnya." },
+
+        { "t": "tip", "title": "Berhenti Saat Pertanyaannya Sudah Terjawab",
+          "x": "Kalau soal hanya bertanya \"lancip atau tumpul?\", berhenti setelah mendapat **tanda** hasilnya. Menghitung $\\theta$ penuh adalah pekerjaan yang tidak diminta — dan di ruang ujian, waktu adalah nilai." }
+      ],
+
+      "simulation": {
+        "engine": "product_property_cards",
+        "title": "Simulasi: Sifat yang Berlaku dan yang Tidak",
+        "brief": "Beberapa kartu pernyataan. Putuskan mana yang berlaku, lalu buktikan keputusanmu dengan menghitung contoh penyangkalnya sendiri.",
+        "config": {
+          "cards": [
+            { "claim": "komutatif", "valid": true, "check": { "a": [2, 3], "b": [4, -1] } },
+            { "claim": "distributif", "valid": true, "check": { "a": [1, 2], "b": [3, 0], "c": [-1, 4] } },
+            { "claim": "asosiatif_titik", "valid": false },
+            { "claim": "kuadrat_norma", "valid": true, "check": { "a": [3, 4] } },
+            { "claim": "pencoretan", "valid": false, "counter": { "a": [1, 0], "b": [2, 5], "c": [2, -7] } }
+          ]
+        },
+        "toasts": {
+          "belumDibuktikan": "Kamu sudah memutuskan, tetapi belum membuktikannya. Hitung kedua ruas pernyataan itu dengan angka yang tersedia — keputusan tanpa bukti hanyalah tebakan yang beruntung.",
+          "asosiatifSalah": "Bentuk $(\\vec{a}\\cdot\\vec{b})\\cdot\\vec{c}$ bukan sekadar bernilai lain — ia **tidak terdefinisi**. Hasil $\\vec{a}\\cdot\\vec{b}$ adalah bilangan, dan bilangan tidak punya komponen untuk dipasangkan dengan $\\vec{c}$.",
+          "pencoretanSalah": "Belum tepat — perkalian titik **tidak bisa dicoret** seperti perkalian bilangan. Perhatikan contoh penyangkalnya: $\\vec{b}$ dan $\\vec{c}$ jelas berbeda, tetapi keduanya memberi hasil kali titik yang sama dengan $\\vec{a}$.",
+          "keduaRuasBeda": "Hitunganmu memberi ${{kiri}}$ di ruas kiri dan ${{kanan}}$ di ruas kanan. Kalau sifatnya memang berlaku, keduanya harus sama — periksa lagi aritmetikanya sebelum menyimpulkan.",
+          "success": "Tepat! Perkalian titik mewarisi sebagian sifat perkalian biasa — dan yang tidak diwarisi justru yang paling sering menjebak."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_02_1",
+          "input_type": "multi_select",
+          "subtopic": "sifat_perkalian",
+          "prompt": "Perhatikan pernyataan tentang perkalian titik berikut.",
+          "after": "**Pilih semua pernyataan yang benar.**",
+          "options": [
+            { "label": "$\\vec{a} \\cdot \\vec{b} = \\vec{b} \\cdot \\vec{a}$ selalu berlaku." },
+            { "label": "$\\vec{a} \\cdot (\\vec{b} + \\vec{c}) = \\vec{a}\\cdot\\vec{b} + \\vec{a}\\cdot\\vec{c}$ selalu berlaku." },
+            { "label": "$(\\vec{a} \\cdot \\vec{b}) \\cdot \\vec{c}$ adalah operasi yang terdefinisi." },
+            { "label": "$\\vec{a} \\cdot \\vec{a} = |\\vec{a}|^2$ selalu berlaku." },
+            { "label": "Dari $\\vec{a}\\cdot\\vec{b} = \\vec{a}\\cdot\\vec{c}$ dapat disimpulkan $\\vec{b} = \\vec{c}$." }
+          ],
+          "answerIndices": [0, 1, 3],
+          "perOptionFeedback": [
+            "**Benar** — komponen seletak dikalikan, dan perkalian bilangan bersifat komutatif.",
+            "**Benar** — sifat distributif diwarisi utuh dari perkalian bilangan.",
+            "Salah — $\\vec{a}\\cdot\\vec{b}$ menghasilkan **bilangan**, dan bilangan tidak bisa di-*dot*-kan dengan vektor.",
+            "**Benar** — $\\vec{a}\\cdot\\vec{a} = a_1^2 + a_2^2 + a_3^2$, yang persis definisi $|\\vec{a}|^2$.",
+            "Salah — ambil $\\vec{a}=(1,0)$, $\\vec{b}=(2,5)$, $\\vec{c}=(2,-7)$. Keduanya memberi hasil $2$, padahal $\\vec{b} \\ne \\vec{c}$."
+          ],
+          "explanation": "Perkalian titik mewarisi sifat komutatif dan distributif, tetapi **tidak** mewarisi asosiatif (karena tipe hasilnya berubah) maupun sifat pencoretan.",
+          "toastWrong": "Ada pilihan yang belum tepat — periksa dua pernyataan terakhir dengan bertanya: **objek apa** yang dihasilkan $\\vec{a}\\cdot\\vec{b}$? Begitu kamu menjawab itu, kedua pernyataan tersebut langsung terlihat keliru."
+        },
+        {
+          "id": "b3_02_2",
+          "input_type": "single_choice",
+          "subtopic": "sifat_perkalian",
+          "prompt": "Diketahui $\\vec{u} = (3,\\, 1)$ dan $\\vec{v} = (-2,\\, 4)$.",
+          "after": "**Tanpa menghitung besar sudutnya, tentukan jenis sudut antara $\\vec{u}$ dan $\\vec{v}$.**",
+          "options": [
+            { "label": "Lancip, karena $\\vec{u}\\cdot\\vec{v} > 0$." },
+            { "label": "Siku-siku, karena $\\vec{u}\\cdot\\vec{v} = 0$." },
+            { "label": "Tumpul, karena $\\vec{u}\\cdot\\vec{v} < 0$." },
+            { "label": "Lurus, karena kedua vektor berlawanan arah." },
+            { "label": "Tidak dapat ditentukan tanpa menghitung $\\cos\\theta$." }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{u}\\cdot\\vec{v} = 3(-2) + 1(4) = -6 + 4 = -2$. Karena hasilnya **negatif** dan kedua panjangnya pasti positif, maka $\\cos\\theta$ negatif, sehingga sudutnya **tumpul**. **Opsi C**.",
+          "toastWrong": "Belum tepat — hitung dulu hasil kali titiknya, lalu perhatikan **tandanya** saja. Karena $|\\vec{u}|$ dan $|\\vec{v}|$ selalu positif, tanda hasil kali titik sepenuhnya mengikuti tanda $\\cos\\theta$. Kamu tidak perlu menghitung sudutnya."
+        },
+        {
+          "id": "b3_02_3",
+          "input_type": "mathpad",
+          "subtopic": "sifat_perkalian",
+          "prompt": "Diketahui sebuah vektor $\\vec{a}$ dengan panjang $|\\vec{a}| = 5$ satuan.",
+          "after": "**Tentukan nilai $\\vec{a} \\cdot \\vec{a}$.**",
+          "answer": 25,
+          "tolerance": 1e-6,
+          "explanation": "Menurut sifat $\\vec{a}\\cdot\\vec{a} = |\\vec{a}|^2$, maka $\\vec{a}\\cdot\\vec{a} = 5^2 = 25$. Komponen $\\vec{a}$ tidak perlu diketahui sama sekali.",
+          "toastWrong": "Belum tepat — kamu tidak butuh komponennya. Gunakan sifat $\\vec{a}\\cdot\\vec{a} = |\\vec{a}|^2$: kalikan vektor dengan dirinya sendiri, dan sudut antara keduanya $0^\\circ$ sehingga $\\cos 0^\\circ = 1$."
+        }
+      ]
+    },
+
+    {
+      "id": "sudut_antar_vektor",
+      "title": "Sudut Antara Dua Vektor",
+
+      "materi": [
+        { "t": "p",
+          "x": "Kamu punya dua ekspresi untuk benda yang sama. Samakan keduanya, lalu pindahkan panjangnya ke ruas kiri — dan rumus sudut lahir dengan sendirinya." },
+
+        { "t": "def", "title": "Sudut Antara Dua Vektor",
+          "x": "Dari $a_1b_1 + a_2b_2 + a_3b_3 = |\\vec{a}||\\vec{b}|\\cos\\theta$, diperoleh rumus untuk $\\cos\\theta$ yang berlaku di R² maupun R³." },
+
+        { "t": "tex", "x": "\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}|\\,|\\vec{b}|}" },
+
+        { "t": "steps", "title": "Tiga Tahap yang Tidak Boleh Ditumpuk",
+          "items": [
+            "**Pembilangnya.** Hitung $\\vec{a}\\cdot\\vec{b}$. Satu angka, selesai.",
+            "**Penyebutnya.** Hitung $|\\vec{a}|$, lalu $|\\vec{b}|$ — masing-masing dalam bentuk akar eksak. Baru kalikan keduanya.",
+            "**Susun dan tarik sudutnya.** Bagi, sederhanakan, lalu cari $\\theta$ dari nilai $\\cos\\theta$-nya."
+          ] },
+
+        { "t": "tex",
+          "x": "\\vec{u} = (1,1,0),\\ \\vec{v} = (0,1,1) \\;\\Rightarrow\\; \\cos\\theta = \\frac{1}{\\sqrt{2}\\cdot\\sqrt{2}} = \\frac{1}{2} \\;\\Rightarrow\\; \\theta = 60^\\circ" },
+
+        { "t": "list", "title": "Nilai Kosinus Istimewa yang Wajib Dihafal",
+          "items": [
+            "$\\cos 0^\\circ = 1$ · $\\cos 30^\\circ = \\tfrac{1}{2}\\sqrt{3}$ · $\\cos 45^\\circ = \\tfrac{1}{2}\\sqrt{2}$ · $\\cos 60^\\circ = \\tfrac{1}{2}$",
+            "$\\cos 90^\\circ = 0$",
+            "$\\cos 120^\\circ = -\\tfrac{1}{2}$ · $\\cos 135^\\circ = -\\tfrac{1}{2}\\sqrt{2}$ · $\\cos 150^\\circ = -\\tfrac{1}{2}\\sqrt{3}$ · $\\cos 180^\\circ = -1$"
+          ] },
+
+        { "t": "tip", "title": "Alat Pemeriksa Jawaban yang Ampuh",
+          "x": "Soal TKA hampir selalu dirancang supaya hasilnya jatuh ke salah satu nilai istimewa itu. Kalau hitunganmu memberi $\\cos\\theta = 0{,}374$ — angka yang tidak ada di daftar — kemungkinan besar ada langkah aritmetika yang keliru. Periksa ulang sebelum melanjutkan." },
+
+        { "t": "warn", "title": "Dua Hal yang Sering Terlewat",
+          "x": "Pertama, **rasionalkan penyebutnya**: $\\dfrac{7}{\\sqrt{29}\\cdot\\sqrt{5}} = \\dfrac{7}{\\sqrt{145}} = \\dfrac{7\\sqrt{145}}{145}$. Kedua, nilai $\\cos\\theta$ **selalu** berada di antara $-1$ dan $1$ — hasil di luar rentang itu pasti salah hitung, bukan penemuan baru." }
+      ],
+
+      "simulation": {
+        "engine": "angle_solver",
+        "title": "Simulasi: Tiga Tahap, Tiga Isian",
+        "brief": "Busur sudut digambar tanpa angka. Isi pembilangnya dulu, lalu kedua panjangnya, baru sudutnya — nilai dari tahap sebelumnya dipakai kembali di tahap berikutnya.",
+        "config": {
+          "cases": [
+            { "u": [1, 1, 0], "v": [0, 1, 1], "expectDeg": 60 },
+            { "u": [1, 1], "v": [1, 0], "expectDeg": 45 },
+            { "u": [2, 0], "v": [0, -3], "expectDeg": 90 },
+            { "u": [1, 0], "v": [-1, 1], "expectDeg": 135 }
+          ],
+          "xRange": [-5, 5],
+          "yRange": [-4, 4],
+          "arcLabel": null
+        },
+        "toasts": {
+          "tahapBelumSelesai": "Tahap {{tahap}} belum selesai. Nilai dari tahap ini dipakai lagi di tahap berikutnya — mengisinya belakangan berarti menebak.",
+          "panjangSalah": "Belum tepat — $|\\vec{{{nama}}}|$ belum sesuai. Kuadratkan setiap komponennya, jumlahkan, baru akarkan. Tuliskan dalam bentuk akar eksak.",
+          "lupaKalikanPanjang": "Penyebutnya adalah **hasil kali** kedua panjangnya, bukan jumlahnya. $|\\vec{a}| \\times |\\vec{b}|$, bukan $|\\vec{a}| + |\\vec{b}|$.",
+          "cosDiLuarRentang": "Nilai $\\cos\\theta$ yang kamu peroleh adalah ${{nilai}}$ — di luar rentang $[-1, 1]$. Kosinus tidak pernah keluar dari rentang itu, jadi pasti ada langkah aritmetika yang keliru. Periksa kembali penyebutnya.",
+          "belumDirasionalkan": "Nilainya sudah benar, tetapi penyebutnya masih memuat akar. Rasionalkan lebih dulu: kalikan pembilang dan penyebut dengan akar yang sama.",
+          "sudutTidakIstimewa": "Nilai $\\cos\\theta = {{nilai}}$ tidak ada di daftar sudut istimewa. Soal ini dirancang agar hasilnya salah satu dari mereka — periksa ulang pembilang dan penyebutnya.",
+          "success": "Tepat! Dan perhatikan urutannya: hasil kali titik dulu, panjang kemudian, sudut paling akhir."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_03_1",
+          "input_type": "single_choice",
+          "subtopic": "sudut_antar_vektor",
+          "prompt": "Perhatikan dua vektor berikut!",
+          "tex": "\\vec{u} = (1,\\, 1,\\, 0), \\quad \\vec{v} = (0,\\, 1,\\, 1)",
+          "after": "**Tentukan besar sudut antara $\\vec{u}$ dan $\\vec{v}$.**",
+          "options": [
+            { "tex": "30^\\circ" },
+            { "tex": "45^\\circ" },
+            { "tex": "60^\\circ" },
+            { "tex": "90^\\circ" },
+            { "tex": "120^\\circ" }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{u}\\cdot\\vec{v} = 0 + 1 + 0 = 1$; $|\\vec{u}| = |\\vec{v}| = \\sqrt{2}$, sehingga penyebutnya $\\sqrt{2}\\cdot\\sqrt{2} = 2$. Maka $\\cos\\theta = \\tfrac{1}{2}$ dan $\\theta = 60^\\circ$. **Opsi C**.",
+          "toastWrong": "Belum tepat — kerjakan bertahap. Hitung dulu $\\vec{u}\\cdot\\vec{v}$, baru kedua panjangnya, baru dibagi. Ingat bahwa $\\sqrt{2} \\times \\sqrt{2} = 2$, bukan $\\sqrt{4} \\cdot 2$ atau $2\\sqrt{2}$."
+        },
+        {
+          "id": "b3_03_2",
+          "input_type": "single_choice",
+          "subtopic": "sudut_antar_vektor",
+          "prompt": "Diketahui $\\vec{a} = (1,\\, 1)$ dan $\\vec{b} = (1,\\, 0)$.",
+          "after": "**Tentukan besar sudut antara $\\vec{a}$ dan $\\vec{b}$.**",
+          "options": [
+            { "tex": "0^\\circ" },
+            { "tex": "30^\\circ" },
+            { "tex": "45^\\circ" },
+            { "tex": "60^\\circ" },
+            { "tex": "90^\\circ" }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 1$; $|\\vec{a}| = \\sqrt{2}$ dan $|\\vec{b}| = 1$. Maka $\\cos\\theta = \\dfrac{1}{\\sqrt{2}} = \\dfrac{1}{2}\\sqrt{2}$, sehingga $\\theta = 45^\\circ$. **Opsi C**.",
+          "toastWrong": "Belum tepat — setelah membagi kamu memperoleh $\\dfrac{1}{\\sqrt{2}}$. Rasionalkan dulu menjadi $\\dfrac{1}{2}\\sqrt{2}$, baru cocokkan dengan daftar kosinus istimewa. Jangan tertukar dengan $\\tfrac{1}{2}$ yang nilainya $60^\\circ$."
+        },
+        {
+          "id": "b3_03_3",
+          "input_type": "mathpad",
+          "subtopic": "sudut_antar_vektor",
+          "prompt": "Diketahui $\\vec{p} = (2,\\, 0)$ dan $\\vec{q} = (0,\\, -3)$.",
+          "after": "**Tentukan besar sudut antara $\\vec{p}$ dan $\\vec{q}$ dalam satuan derajat.**",
+          "answer": 90,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{p}\\cdot\\vec{q} = 2(0) + 0(-3) = 0$. Karena pembilangnya nol sedangkan kedua vektor tak-nol, maka $\\cos\\theta = 0$ dan $\\theta = 90^\\circ$. Penyebutnya bahkan tidak perlu dihitung.",
+          "toastWrong": "Belum tepat — hitung dulu pembilangnya. Kalau hasil kali titiknya **nol**, seluruh pecahan bernilai nol berapa pun penyebutnya, dan kosinus yang bernilai nol hanya terjadi pada satu sudut."
+        },
+        {
+          "id": "b3_03_4",
+          "input_type": "single_choice",
+          "subtopic": "sudut_antar_vektor",
+          "prompt": "Seorang siswa menghitung sudut antara dua vektor dan memperoleh $\\cos\\theta = 1{,}8$.",
+          "after": "**Kesimpulan yang paling tepat adalah ....**",
+          "options": [
+            { "label": "Sudutnya sangat kecil, mendekati $0^\\circ$." },
+            { "label": "Sudutnya lebih dari $180^\\circ$." },
+            { "label": "Pasti ada kesalahan hitung, karena $\\cos\\theta$ selalu berada di antara $-1$ dan $1$." },
+            { "label": "Kedua vektor tersebut sejajar." },
+            { "label": "Hasil itu sah, tetapi sudutnya harus dinyatakan dalam radian." }
+          ],
+          "answerIndex": 2,
+          "explanation": "Nilai kosinus **selalu** berada di rentang $[-1, 1]$, berapa pun sudutnya. Hasil $1{,}8$ berarti ada langkah aritmetika yang keliru — paling sering pada penyebutnya, misalnya panjang vektor yang dijumlahkan alih-alih dikalikan. **Opsi C**.",
+          "toastWrong": "Belum tepat — sebelum menafsirkan hasil, periksa dulu apakah hasilnya **mungkin**. Berapa nilai terbesar yang bisa dicapai $\\cos\\theta$ untuk sudut apa pun?"
+        }
+      ]
+    },
+
+    {
+      "id": "vektor_tegak_lurus",
+      "title": "Syarat Ortogonal (Tegak Lurus)",
+
+      "materi": [
+        { "t": "def", "title": "Syarat Ortogonal",
+          "x": "Dua vektor **tak-nol** saling tegak lurus (ortogonal) **jika dan hanya jika** hasil kali titiknya bernilai nol." },
+
+        { "t": "tex", "x": "\\vec{a} \\perp \\vec{b} \\iff \\vec{a} \\cdot \\vec{b} = 0" },
+
+        { "t": "p",
+          "x": "Kenapa demikian? Masukkan $\\theta = 90^\\circ$ ke rumus geometri: $\\vec{a}\\cdot\\vec{b} = |\\vec{a}||\\vec{b}|\\cos 90^\\circ = |\\vec{a}||\\vec{b}| \\cdot 0 = 0$. Sebaliknya juga berlaku — jika hasilnya nol sedangkan kedua panjangnya bukan nol, satu-satunya kemungkinan adalah $\\cos\\theta = 0$." },
+
+        { "t": "warn", "title": "Perhatikan Syarat \"Tak-Nol\"",
+          "x": "Vektor nol menghasilkan $\\vec{0}\\cdot\\vec{b} = 0$ untuk **sembarang** $\\vec{b}$. Secara hitungan seolah-olah ia tegak lurus terhadap semua vektor — tetapi secara geometri pertanyaannya **tidak bermakna**: vektor nol tidak punya arah, jadi tidak ada sudut yang bisa diukur. Itulah sebabnya definisinya menyebut \"dua vektor tak-nol\" secara eksplisit." },
+
+        { "t": "steps", "title": "Bentuk Soal yang Paling Sering Muncul",
+          "items": [
+            "Soal jarang bertanya \"apakah tegak lurus?\". Yang lebih sering: **\"tentukan nilai $k$ agar keduanya tegak lurus\"**.",
+            "Susun $\\vec{a}\\cdot\\vec{b}$ dengan $k$ masih berada di dalamnya.",
+            "Samakan seluruh hasilnya dengan **nol**.",
+            "Selesaikan persamaan linearnya seperti biasa."
+          ] },
+
+        { "t": "tex",
+          "x": "\\vec{a} = (2,k,1),\\ \\vec{b} = (3,-1,4) \\;\\Rightarrow\\; 6 - k + 4 = 0 \\;\\Rightarrow\\; k = 10" },
+
+        { "t": "tip", "title": "Kenapa Bentuk Ini Disukai Penyusun Soal",
+          "x": "Karena ia menguji dua hal sekaligus dalam satu soal pendek: apakah kamu tahu syarat ortogonal, **dan** apakah kamu bisa menyusun persamaan linear dari bentuk vektor. Dua materi, satu soal." }
+      ],
+
+      "simulation": {
+        "engine": "perpendicular_check",
+        "title": "Simulasi: Nol yang Menentukan",
+        "brief": "Beberapa pasangan vektor tergambar. Putuskan mana yang tegak lurus — tetapi keputusanmu baru diterima setelah hasil kali titiknya kamu hitung sendiri.",
+        "config": {
+          "cases": [
+            { "a": [3, 4], "b": [-4, 3], "perp": true },
+            { "a": [1, 2], "b": [2, 1], "perp": false },
+            { "a": [2, "k", 1], "b": [3, -1, 4], "solveK": 10 },
+            { "a": [0, 0], "b": [5, 2], "isZero": true }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-5, 5]
+        },
+        "toasts": {
+          "belumDihitung": "Kamu belum menghitung $\\vec{a}\\cdot\\vec{b}$. Tegak lurus atau tidak ditentukan oleh **angkanya**, bukan oleh kemiripan gambarnya — dan gambar yang tampak siku-siku sering kali tidak.",
+          "bukanNol": "Hasil kali titiknya ${{nilai}}$, bukan nol. Kedua vektor ini **tidak** tegak lurus — kalau hasilnya positif sudutnya lancip, kalau negatif sudutnya tumpul.",
+          "kSalah": "Belum tepat — susun dulu $\\vec{a}\\cdot\\vec{b}$ dengan $k$ di dalamnya, lalu samakan dengan nol. Persamaan yang kamu peroleh seharusnya berbentuk linear terhadap $k$, dan hanya punya satu penyelesaian.",
+          "lupaSamakanNol": "Kamu sudah menyusun $\\vec{a}\\cdot\\vec{b}$, tetapi belum menyamakannya dengan **nol**. Syarat tegak lurus bukan sekadar menghitung, melainkan menuntut hasilnya bernilai nol.",
+          "vektorNol": "Hati-hati — memang $\\vec{0}\\cdot\\vec{b} = 0$, tetapi itu **tidak** berarti keduanya tegak lurus. Vektor nol tidak punya arah, sehingga tidak ada sudut yang dapat diukur di antara keduanya.",
+          "success": "Tepat! Nol pada hasil kali titik adalah tanda pengenal sudut siku-siku — asalkan kedua vektornya tak-nol."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_04_1",
+          "input_type": "mathpad",
+          "subtopic": "vektor_tegak_lurus",
+          "prompt": "Diketahui $\\vec{a} = (2,\\, k,\\, 1)$ dan $\\vec{b} = (3,\\, -1,\\, 4)$ saling tegak lurus.",
+          "after": "**Tentukan nilai $k$.**",
+          "answer": 10,
+          "tolerance": 1e-6,
+          "explanation": "Syarat tegak lurus: $\\vec{a}\\cdot\\vec{b} = 0$, yaitu $2(3) + k(-1) + 1(4) = 0$, sehingga $6 - k + 4 = 0$ dan $k = 10$.",
+          "toastWrong": "Belum tepat — periksa tanda suku yang memuat $k$. Karena $k$ dikalikan $-1$, sukunya menjadi $-k$, sehingga persamaannya $10 - k = 0$. Kalau jawabanmu $-10$, kamu memindahkan ruas tanpa mengubah tanda."
+        },
+        {
+          "id": "b3_04_2",
+          "input_type": "single_choice",
+          "subtopic": "vektor_tegak_lurus",
+          "prompt": "Perhatikan lima pasang vektor berikut.",
+          "after": "**Manakah pasangan yang saling tegak lurus?**",
+          "options": [
+            { "tex": "(1,2) \\text{ dan } (2,1)" },
+            { "tex": "(3,4) \\text{ dan } (-4,3)" },
+            { "tex": "(2,3) \\text{ dan } (3,2)" },
+            { "tex": "(1,1) \\text{ dan } (1,1)" },
+            { "tex": "(1,0) \\text{ dan } (1,1)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Pada opsi B: $3(-4) + 4(3) = -12 + 12 = 0$ ✓. Pasangan lainnya memberi hasil $4$, $12$, $2$, dan $1$ — semuanya bukan nol. **Opsi B**.",
+          "toastWrong": "Belum tepat — hitung hasil kali titik untuk **setiap** pilihan, jangan menebak dari kemiripan angkanya. Pengecoh di soal ini sengaja memakai pasangan angka yang tertukar posisinya, padahal tertukar posisi saja tidak membuat dua vektor tegak lurus."
+        },
+        {
+          "id": "b3_04_3",
+          "input_type": "single_choice",
+          "subtopic": "vektor_tegak_lurus",
+          "prompt": "Seorang siswa menyatakan: \"Vektor nol tegak lurus terhadap semua vektor, karena $\\vec{0}\\cdot\\vec{b} = 0$ untuk sembarang $\\vec{b}$.\"",
+          "after": "**Tanggapan yang paling tepat atas pernyataan itu adalah ....**",
+          "options": [
+            { "label": "Benar sepenuhnya, karena syarat ortogonal memang $\\vec{a}\\cdot\\vec{b}=0$." },
+            { "label": "Hitungannya benar, tetapi kesimpulannya tidak bermakna — vektor nol tidak punya arah, sehingga tidak ada sudut yang dapat diukur." },
+            { "label": "Salah, karena $\\vec{0}\\cdot\\vec{b}$ sebenarnya tidak terdefinisi." },
+            { "label": "Salah, karena $\\vec{0}\\cdot\\vec{b}$ bernilai $1$, bukan $0$." },
+            { "label": "Benar, tetapi hanya berlaku di R² dan tidak berlaku di R³." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Perhitungannya memang menghasilkan nol. Yang keliru adalah penafsirannya: konsep \"tegak lurus\" mensyaratkan adanya **sudut**, dan sudut hanya ada bila kedua vektor punya arah. Karena itulah definisi ortogonal selalu menyebut \"dua vektor **tak-nol**\". **Opsi B**.",
+          "toastWrong": "Belum tepat — jangan buru-buru menyalahkan hitungannya, karena $\\vec{0}\\cdot\\vec{b}$ memang bernilai $0$ dan memang terdefinisi. Yang perlu kamu periksa adalah apakah **kesimpulan geometris**-nya masuk akal: bisakah kita mengukur sudut terhadap sesuatu yang tidak menunjuk ke mana pun?"
+        }
+      ]
+    },
+
+    {
+      "id": "proyeksi_skalar",
+      "title": "Proyeksi Skalar Ortogonal",
+
+      "materi": [
+        { "t": "p",
+          "x": "Bayangkan $\\vec{a}$ disorot lampu tegak lurus ke arah garis $\\vec{b}$. Bayangan yang jatuh di garis itu disebut **proyeksi**. Kalau yang ditanyakan hanya **panjang bayangannya** — sebuah angka — itulah proyeksi skalar." },
+
+        { "t": "def", "title": "Proyeksi Skalar Ortogonal",
+          "x": "Proyeksi skalar dari $\\vec{a}$ **pada** $\\vec{b}$ menghasilkan sebuah **nilai skalar**: panjang bayangan $\\vec{a}$ di sepanjang garis arah $\\vec{b}$." },
+
+        { "t": "tex", "x": "|\\vec{c}| = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{b}|}" },
+
+        { "t": "tip", "title": "Cara Mengingat",
+          "x": "Perhatikan penyebutnya: $|\\vec{b}|$, **pangkat satu**. Kalimatnya: *\"dot dibagi panjang alasnya.\"* Dan yang menjadi alas adalah vektor yang **diproyeksikan kepadanya**." },
+
+        { "t": "warn", "title": "Proyeksi TIDAK Komutatif",
+          "x": "Berbeda dengan perkalian titik, urutan pada proyeksi **sangat menentukan**. Proyeksi $\\vec{a}$ pada $\\vec{b}$ tidak sama dengan proyeksi $\\vec{b}$ pada $\\vec{a}$ — pembilangnya memang sama, tetapi penyebutnya berbeda." },
+
+        { "t": "def", "title": "Membaca Soal: Kata \"Pada\"",
+          "x": "Kalimat *\"proyeksi $\\vec{a}$ **pada** $\\vec{b}$\"* berarti $\\vec{b}$ yang menjadi alas, sehingga $|\\vec{b}|$ yang masuk ke penyebut. **Kata \"pada\" selalu menunjuk alasnya.** Ini sumber kekeliruan nomor satu di sub-bab ini." },
+
+        { "t": "warn", "title": "Proyeksi Skalar Boleh Bernilai Negatif",
+          "x": "Karena pembilangnya bisa negatif, hasilnya juga bisa negatif — artinya bayangannya jatuh ke arah **berlawanan** dengan $\\vec{b}$, yang terjadi persis ketika sudutnya tumpul. Kalau soal meminta **panjang** proyeksi, ambil nilai mutlaknya; kalau soal meminta **proyeksi skalar**, biarkan tandanya karena ia membawa informasi arah." }
+      ],
+
+      "simulation": {
+        "engine": "scalar_projection",
+        "title": "Simulasi: Pilih Alasnya Dulu",
+        "brief": "Sebelum menghitung apa pun, kamu harus memutuskan vektor mana yang menjadi alas. Garis tegak lurusnya baru digambar setelah keputusan itu — dan aplikasi tidak menjatuhkannya lebih dulu.",
+        "config": {
+          "cases": [
+            { "a": [4, 3], "b": [2, 0], "onto": "b" },
+            { "a": [1, 2, 2], "b": [2, -1, 2], "onto": "b" },
+            { "a": [4, 3], "b": [2, 0], "onto": "a" },
+            { "a": [-3, 1], "b": [2, 1], "onto": "b", "negative": true }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-5, 5]
+        },
+        "toasts": {
+          "alasBelumDipilih": "Tentukan dulu vektor mana yang menjadi **alas**. Tanpa itu, garis tegak lurusnya tidak tahu harus jatuh ke mana.",
+          "alasTerbalik": "Belum tepat — soal meminta proyeksi $\\vec{{{yang}}}$ **pada** $\\vec{{{alas}}}$. Kata \"pada\" selalu menunjuk alasnya, jadi yang masuk ke penyebut adalah $|\\vec{{{alas}}}|$.",
+          "penyebutKuadrat": "Belum tepat — untuk proyeksi **skalar**, penyebutnya $|\\vec{b}|$ berpangkat **satu**. Pangkat dua dipakai pada vektor proyeksi, bukan di sini.",
+          "tandaDibuang": "Hasil proyeksi skalar boleh bernilai negatif, dan di sini memang negatif. Tandanya membawa informasi: bayangannya jatuh ke arah **berlawanan** dengan alasnya.",
+          "hasilSalah": "Belum tepat — kerjakan bertahap. Hitung $\\vec{a}\\cdot\\vec{b}$ dulu, lalu $|\\vec{b}|$ secara terpisah, baru dibagi.",
+          "success": "Tepat! Dot dibagi panjang alasnya — dan alasnya ditentukan oleh kata \"pada\" di soal."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_05_1",
+          "input_type": "mathpad",
+          "subtopic": "proyeksi_skalar",
+          "prompt": "Diketahui $\\vec{a} = (4,\\, 3)$ dan $\\vec{b} = (2,\\, 0)$.",
+          "after": "**Tentukan proyeksi skalar $\\vec{a}$ pada $\\vec{b}$.**",
+          "answer": 4,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 8 + 0 = 8$ dan $|\\vec{b}| = \\sqrt{4+0} = 2$. Maka proyeksi skalarnya $\\dfrac{8}{2} = 4$. Masuk akal: $\\vec{b}$ terletak di sumbu $x$, jadi bayangan $\\vec{a}$ padanya adalah komponen $x$ dari $\\vec{a}$, yaitu $4$.",
+          "toastWrong": "Belum tepat — periksa penyebutnya. Yang masuk adalah $|\\vec{b}| = 2$, **bukan** $|\\vec{b}|^2 = 4$ (itu rumus vektor proyeksi) dan bukan pula komponen $\\vec{b}$ begitu saja."
+        },
+        {
+          "id": "b3_05_2",
+          "input_type": "single_choice",
+          "subtopic": "proyeksi_skalar",
+          "prompt": "Diketahui $\\vec{a} = (1,\\, 2,\\, 2)$ dan $\\vec{b} = (2,\\, -1,\\, 2)$.",
+          "after": "**Tentukan proyeksi skalar $\\vec{a}$ pada $\\vec{b}$.**",
+          "options": [
+            { "tex": "\\tfrac{4}{9}" },
+            { "tex": "\\tfrac{3}{4}" },
+            { "tex": "\\tfrac{4}{3}" },
+            { "tex": "4" },
+            { "tex": "12" }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 2 - 2 + 4 = 4$; $|\\vec{b}| = \\sqrt{4+1+4} = \\sqrt{9} = 3$. Maka proyeksi skalarnya $\\dfrac{4}{3}$. **Opsi C**.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $\\tfrac{4}{9}$, kamu memakai $|\\vec{b}|^2$ di penyebut, padahal itu rumus **vektor** proyeksi. Untuk proyeksi **skalar**, penyebutnya $|\\vec{b}|$ berpangkat satu, yaitu $3$."
+        },
+        {
+          "id": "b3_05_3",
+          "input_type": "single_choice",
+          "subtopic": "proyeksi_skalar",
+          "prompt": "Soal meminta: \"Tentukan proyeksi skalar ortogonal $\\vec{u}$ pada $\\vec{v}$.\"",
+          "after": "**Vektor manakah yang panjangnya masuk ke penyebut?**",
+          "options": [
+            { "label": "$\\vec{u}$, karena ia yang disebut lebih dahulu." },
+            { "label": "$\\vec{v}$, karena kata \"pada\" menunjuk alas proyeksinya." },
+            { "label": "Keduanya, karena penyebutnya $|\\vec{u}||\\vec{v}|$." },
+            { "label": "Tidak ada; penyebut proyeksi skalar selalu $1$." },
+            { "label": "Bebas, karena proyeksi bersifat komutatif seperti perkalian titik." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Kata **\"pada\"** selalu menunjuk alas proyeksinya. Jadi $\\vec{v}$ menjadi alas, dan $|\\vec{v}|$ masuk ke penyebut. Berbeda dengan perkalian titik, proyeksi **tidak** komutatif. **Opsi B**.",
+          "toastWrong": "Belum tepat — urutan penyebutan di kalimat soal tidak menentukan. Cari kata **\"pada\"**: vektor yang berdiri sesudah kata itu adalah alasnya, dan alas itulah yang panjangnya masuk ke penyebut."
+        }
+      ]
+    },
+
+    {
+      "id": "proyeksi_vektor",
+      "title": "Vektor Proyeksi Ortogonal",
+
+      "materi": [
+        { "t": "p",
+          "x": "Kalau yang diminta bukan panjang bayangannya, melainkan **bayangannya sebagai sebuah vektor**, maka hasilnya adalah vektor baru yang **sejajar dengan alasnya**." },
+
+        { "t": "def", "title": "Vektor Proyeksi Ortogonal",
+          "x": "Vektor proyeksi dari $\\vec{a}$ pada $\\vec{b}$ menghasilkan **vektor baru** yang arahnya sejajar dengan vektor tumpuan $\\vec{b}$." },
+
+        { "t": "tex",
+          "x": "\\vec{c} = \\left( \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{b}|^2} \\right) \\vec{b}" },
+
+        { "t": "warn", "title": "Dua Perbedaan dari Proyeksi Skalar",
+          "x": "**Pertama**, penyebutnya $|\\vec{b}|^2$ — pangkat **dua**, bukan satu. **Kedua**, seluruh pecahan itu **dikalikan kembali dengan $\\vec{b}$**. Melewatkan yang kedua adalah kesalahan paling sering di sub-bab ini: hasilnya menjadi angka, padahal yang diminta vektor." },
+
+        { "t": "p",
+          "x": "Bagian dalam kurung adalah sebuah **skalar** — ia menentukan seberapa panjang bayangannya. Vektor $\\vec{b}$ di belakangnya menentukan **arahnya**." },
+
+        { "t": "tex",
+          "x": "\\vec{c} = \\underbrace{\\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{b}|}}_{\\text{proyeksi skalar}} \\cdot \\underbrace{\\frac{\\vec{b}}{|\\vec{b}|}}_{\\text{vektor satuan } \\vec{b}}" },
+
+        { "t": "tip", "title": "Kalau Lupa Rumusnya, Susun Ulang dari Kalimat",
+          "x": "Baca bentuk di atas sebagai kalimat: **panjang bayangan × arah alas**. Proyeksi skalar mengurus panjangnya, vektor satuan mengurus arahnya. Menyusunnya kembali dari kalimat ini selalu membawamu ke rumus yang sama." },
+
+        { "t": "tip", "title": "Trik Hemat Waktu",
+          "x": "$|\\vec{b}|^2$ **tidak perlu diakarkan sama sekali**. Untuk $\\vec{b} = (2,-1,2)$, langsung tulis $|\\vec{b}|^2 = 4+1+4 = 9$. Banyak siswa mengakarkan dulu menjadi $3$, lalu mengkuadratkannya kembali menjadi $9$ — dua langkah yang saling membatalkan." },
+
+        { "t": "warn", "title": "Vektor Nol Sebagai Alas",
+          "x": "Memproyeksikan ke $\\vec{0}$ **tidak terdefinisi**. Penyebutnya $|\\vec{0}|^2 = 0$, dan lagi pula vektor nol tidak menentukan arah garis mana pun untuk menampung bayangannya." }
+      ],
+
+      "simulation": {
+        "engine": "vector_projection",
+        "title": "Simulasi: Panjang Bayangan × Arah Alas",
+        "brief": "Dua tahap yang dipisah tegas: hitung skalar pengalinya dulu, baru kalikan kembali dengan vektor alasnya. Panah bayangannya baru digambar setelah kedua tahap selesai.",
+        "config": {
+          "cases": [
+            { "a": [4, 3], "b": [2, 0] },
+            { "a": [1, 2, 2], "b": [2, -1, 2] },
+            { "a": [-3, 1], "b": [2, 1] },
+            { "a": [5, 2], "b": [0, 0], "isZeroBase": true }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-5, 5]
+        },
+        "toasts": {
+          "lupaKalikanVektor": "Belum tepat — hasilmu masih berupa **angka**, padahal yang diminta **vektor**. Kalikan kembali skalar itu dengan $\\vec{b}$; skalarnya mengurus panjang, $\\vec{b}$ mengurus arah.",
+          "penyebutPangkatSatu": "Belum tepat — untuk **vektor** proyeksi, penyebutnya $|\\vec{b}|^2$ berpangkat **dua**. Pangkat satu dipakai pada proyeksi skalar.",
+          "diakarkanDulu": "Tidak perlu diakarkan. $|\\vec{b}|^2$ cukup dihitung sebagai jumlah kuadrat komponennya, yaitu ${{nilai}}$. Mengakarkan lalu mengkuadratkan kembali hanya menambah peluang salah hitung.",
+          "arahTidakSejajar": "Hasilmu tidak sejajar dengan $\\vec{b}$. Vektor proyeksi **selalu** terletak pada garis arah alasnya — periksa apakah kamu sudah mengalikan dengan $\\vec{b}$, bukan dengan $\\vec{a}$.",
+          "alasNol": "Alasnya vektor nol, sehingga $|\\vec{b}|^2 = 0$ dan operasinya **tidak terdefinisi**. Bukan sekadar sulit dihitung — vektor nol tidak menentukan garis arah mana pun untuk menampung bayangannya.",
+          "success": "Tepat! Panjang bayangan dikali arah alas — dan hasilnya memang sejajar dengan alasnya."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b3_06_1",
+          "input_type": "matrix_input",
+          "subtopic": "proyeksi_vektor",
+          "prompt": "Diketahui $\\vec{a} = (4,\\, 3)$ dan $\\vec{b} = (2,\\, 0)$.",
+          "after": "**Tentukan vektor proyeksi $\\vec{a}$ pada $\\vec{b}$ dalam bentuk vektor kolom.**",
+          "rows": 2,
+          "cols": 1,
+          "answer": [[4], [0]],
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 8$ dan $|\\vec{b}|^2 = 4 + 0 = 4$, sehingga $\\vec{c} = \\dfrac{8}{4}(2,0) = 2(2,0) = (4,\\, 0)$. Masuk akal: $\\vec{b}$ terletak di sumbu $x$, jadi bayangannya memang vektor mendatar.",
+          "toastWrong": "Belum tepat — kalau hasilmu $(2,0)$, kamu berhenti pada skalar pengalinya tanpa mengalikannya dengan $\\vec{b}$. Kalau hasilmu memuat komponen $y$ yang bukan nol, periksa lagi: vektor proyeksi **selalu** sejajar dengan alasnya, dan $\\vec{b}$ tidak punya komponen $y$."
+        },
+        {
+          "id": "b3_06_2",
+          "input_type": "single_choice",
+          "subtopic": "proyeksi_vektor",
+          "prompt": "Diketahui $\\vec{a} = (1,\\, 2,\\, 2)$ dan $\\vec{b} = (2,\\, -1,\\, 2)$.",
+          "after": "**Tentukan vektor proyeksi $\\vec{a}$ pada $\\vec{b}$.**",
+          "options": [
+            { "tex": "\\tfrac{4}{3}(2,\\, -1,\\, 2)" },
+            { "tex": "\\tfrac{4}{9}(2,\\, -1,\\, 2)" },
+            { "tex": "\\tfrac{4}{9}(1,\\, 2,\\, 2)" },
+            { "tex": "\\tfrac{9}{4}(2,\\, -1,\\, 2)" },
+            { "tex": "4(2,\\, -1,\\, 2)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$\\vec{a}\\cdot\\vec{b} = 2 - 2 + 4 = 4$ dan $|\\vec{b}|^2 = 4+1+4 = 9$, sehingga $\\vec{c} = \\dfrac{4}{9}(2,-1,2)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — periksa dua hal. Pertama, penyebutnya $|\\vec{b}|^2 = 9$, bukan $|\\vec{b}| = 3$. Kedua, yang dikalikan kembali adalah $\\vec{b}$ sebagai alasnya, bukan $\\vec{a}$ — sebab bayangan selalu jatuh di garis arah alasnya."
+        },
+        {
+          "id": "b3_06_3",
+          "input_type": "single_choice",
+          "subtopic": "proyeksi_vektor",
+          "prompt": "Seorang siswa menghitung vektor proyeksi $\\vec{p}$ pada $\\vec{q}$ dan memperoleh jawaban berupa **sebuah angka**, yaitu $\\tfrac{5}{2}$.",
+          "after": "**Apa yang paling mungkin terlewat dalam pengerjaannya?**",
+          "options": [
+            { "label": "Ia lupa mengakarkan penyebutnya." },
+            { "label": "Ia lupa mengalikan hasilnya kembali dengan vektor alasnya." },
+            { "label": "Ia menukar posisi $\\vec{p}$ dan $\\vec{q}$ pada pembilangnya." },
+            { "label": "Ia lupa mengambil nilai mutlak hasil akhirnya." },
+            { "label": "Tidak ada yang terlewat; vektor proyeksi memang berupa angka." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Bagian $\\dfrac{\\vec{p}\\cdot\\vec{q}}{|\\vec{q}|^2}$ hanyalah **skalar pengali**. Rumus vektor proyeksi belum selesai sampai skalar itu dikalikan kembali dengan $\\vec{q}$ — dan hasil akhirnya harus berupa vektor. **Opsi B**.",
+          "toastWrong": "Belum tepat — perhatikan **jenis objek** yang dihasilkan, bukan nilainya. Soal meminta sebuah *vektor*, tetapi yang ia peroleh sebuah *angka*. Langkah mana dalam rumus yang bertugas mengubah angka menjadi vektor?"
+        }
+      ]
+    }
+  ]
+}

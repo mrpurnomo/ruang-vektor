@@ -1,0 +1,670 @@
+{
+  "id": "01_konsep_dasar",
+  "title": "Konsep Dasar Vektor",
+  "subtopics": [
+    {
+      "id": "pengertian_notasi",
+      "title": "Pengertian & Anatomi Vektor",
+
+      "materi": [
+        { "t": "p",
+          "x": "Bayangkan temanmu bertanya, *\"Rumahmu jauh, nggak?\"* dan kamu menjawab **\"3 kilometer.\"** Apakah temanmu sudah bisa sampai ke rumahmu? **Belum.** Ia tahu seberapa jauh, tapi tidak tahu ke mana." },
+
+        { "t": "def", "title": "Definisi Vektor",
+          "x": "**Vektor** adalah besaran yang memiliki **nilai (panjang)** dan **arah**. Bandingkan dengan **skalar**, yang hanya punya nilai: suhu $30^\\circ$C, massa $5$ kg, waktu $2$ jam." },
+
+        { "t": "warn", "title": "Vektor Bukan Titik",
+          "x": "Ini kekeliruan nomor satu di kelas 11. Titik $A(3,2)$ menjawab **\"di mana?\"** — ia statis. Vektor menjawab **\"bergerak ke mana, sejauh apa?\"** — ia **perpindahan**. Vektor yang sama boleh digambar di mana saja, asalkan panjang dan arahnya tidak berubah." },
+
+        { "t": "steps", "title": "Empat Bagian Tanda Panah",
+          "items": [
+            "**Titik pangkal** — tempat panah dimulai (ekornya).",
+            "**Titik ujung** — tempat panah berakhir (mata panahnya).",
+            "**Panjang** — jarak dari pangkal ke ujung. Inilah nilainya.",
+            "**Arah** — ke mana mata panah menunjuk."
+          ] },
+
+        { "t": "list", "title": "Membaca Perpindahan",
+          "items": [
+            "Komponen $x$ → perpindahan **horizontal**. Ke kanan **positif**, ke kiri **negatif**.",
+            "Komponen $y$ → perpindahan **vertikal**. Ke atas **positif**, ke bawah **negatif**."
+          ] },
+
+        { "t": "p",
+          "x": "Vektor $\\vec{AB}$ berarti bergerak **dari** $A$ **menuju** $B$. Sekarang balik urutannya: $\\vec{BA}$ bergerak dari $B$ menuju $A$ — panjangnya persis sama, arahnya berlawanan." },
+
+        { "t": "tex", "x": "\\vec{BA} = -\\vec{AB}" },
+
+        { "t": "tip", "title": "Arti Tanda Minus pada Vektor",
+          "x": "Tanda minus pada vektor **bukan** berarti \"negatif\" seperti pada bilangan. Ia berarti **arah berlawanan**. Panjangnya sama sekali tidak berubah." }
+      ],
+
+      "simulation": {
+        "engine": "vector_anatomy",
+        "title": "Simulasi: Bedah Satu Tanda Panah",
+        "brief": "Satu panah tergambar di bidang koordinat. Ketuk bagian yang diminta — aplikasi hanya mengonfirmasi, tidak menunjukkan lebih dulu.",
+        "config": {
+          "vector": { "from": [-3, -1], "to": [2, 3], "name": "AB" },
+          "xRange": [-6, 6],
+          "yRange": [-4, 4],
+          "targets": ["pangkal", "ujung", "arahX", "arahY"],
+          "reverseCase": { "name": "BA", "askSign": true }
+        },
+        "toasts": {
+          "salahBagian": "Belum tepat — yang kamu ketuk adalah **{{terketuk}}**, sedangkan yang diminta **{{diminta}}**. Ingat: nama vektor $\\vec{AB}$ dibaca dari pangkal $A$ menuju ujung $B$, jadi huruf **pertama** selalu pangkalnya.",
+          "arahSalah": "Belum tepat — perhatikan ke mana panahnya bergerak secara **{{sumbu}}**. Ke kanan dan ke atas bernilai positif; ke kiri dan ke bawah bernilai negatif.",
+          "tandaSalah": "Belum tepat — $\\vec{BA}$ menempuh jalur yang sama persis tetapi ke arah sebaliknya, jadi **setiap komponennya berganti tanda**, bukan berganti besar.",
+          "sudahTerpilih": "Bagian itu sudah kamu tentukan. Lanjutkan ke bagian yang masih berwarna abu.",
+          "success": "Tepat! Pangkal $A$, ujung $B$, perpindahan $5$ ke kanan dan $4$ ke atas — dan $\\vec{BA}$ adalah kebalikannya."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_01_1",
+          "input_type": "single_choice",
+          "subtopic": "pengertian_notasi",
+          "prompt": "Sebuah mobil bergerak dengan kelajuan $60$ km/jam **ke arah timur**.",
+          "after": "**Bagian mana dari pernyataan itu yang menjadikannya besaran vektor?**",
+          "options": [
+            { "label": "Angka $60$, karena vektor selalu punya nilai." },
+            { "label": "Satuan km/jam, karena satuan menentukan jenis besaran." },
+            { "label": "Frasa \"ke arah timur\"." },
+            { "label": "Kata \"mobil\", karena benda bergerak selalu vektor." },
+            { "label": "Seluruh pernyataan, karena semua besaran gerak adalah vektor." }
+          ],
+          "answerIndex": 2,
+          "explanation": "Nilai $60$ km/jam saja hanya menjadikannya **kelajuan** — sebuah skalar. Yang menambahkan unsur **arah**, dan karenanya menjadikannya vektor (kecepatan), adalah frasa \"ke arah timur\". **Opsi C**.",
+          "toastWrong": "Belum tepat — angka dan satuan dimiliki skalar maupun vektor. Cari bagian yang menjawab pertanyaan **\"ke mana?\"**, bukan \"seberapa besar?\"."
+        },
+        {
+          "id": "b1_01_2",
+          "input_type": "single_choice",
+          "subtopic": "pengertian_notasi",
+          "prompt": "Vektor $\\vec{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.",
+          "after": "**Pernyataan yang benar tentang $\\vec{QP}$ adalah ....**",
+          "options": [
+            { "tex": "\\vec{QP} = \\vec{PQ}" },
+            { "tex": "\\vec{QP} = -\\vec{PQ}" },
+            { "tex": "|\\vec{QP}| = -|\\vec{PQ}|" },
+            { "tex": "\\vec{QP} = \\vec{0}" },
+            { "tex": "\\vec{QP} \\perp \\vec{PQ}" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$\\vec{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\\vec{QP} = -\\vec{PQ}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — perhatikan bahwa panjangnya **tidak berubah**, yang berubah hanya arahnya. Dan ingat: panjang vektor tidak pernah bernilai negatif, jadi opsi yang memberi tanda minus pada modulus pasti keliru."
+        },
+        {
+          "id": "b1_01_3",
+          "input_type": "multi_select",
+          "subtopic": "pengertian_notasi",
+          "prompt": "Perhatikan lima besaran berikut.",
+          "after": "**Pilih semua besaran yang termasuk besaran vektor.**",
+          "options": [
+            { "label": "Suhu ruangan $24^\\circ$C" },
+            { "label": "Gaya dorong $20$ N ke kanan" },
+            { "label": "Massa balok $5$ kg" },
+            { "label": "Kecepatan angin $15$ km/jam ke utara" },
+            { "label": "Waktu tempuh $2$ jam" }
+          ],
+          "answerIndices": [1, 3],
+          "perOptionFeedback": [
+            "Skalar — suhu punya nilai, tetapi tidak punya arah. Tidak ada \"$24^\\circ$C ke barat\".",
+            "**Vektor** — ada nilai ($20$ N) dan ada arah (ke kanan).",
+            "Skalar — massa hanya menyatakan banyaknya materi, tidak menunjuk ke mana pun.",
+            "**Vektor** — ada nilai ($15$ km/jam) dan ada arah (ke utara).",
+            "Skalar — waktu mengalir satu arah untuk semua orang; itu bukan \"arah\" dalam pengertian ruang."
+          ],
+          "explanation": "Yang menjadikan sebuah besaran vektor bukan satuannya, melainkan adanya **keterangan arah**. Hanya gaya dorong dan kecepatan angin yang menyebutkan arah.",
+          "toastWrong": "Ada pilihan yang belum tepat — periksa satu per satu: apakah besaran itu bisa ditanyai **\"ke mana?\"** dan pertanyaannya masuk akal? Kalau tidak, ia skalar."
+        }
+      ]
+    },
+
+    {
+      "id": "notasi_penyajian",
+      "title": "Empat Cara Menulis Vektor",
+
+      "materi": [
+        { "t": "p",
+          "x": "Satu vektor, empat cara menuliskannya. Soal TKA suka berganti-ganti notasi dalam satu paket soal — kalau kamu hanya hafal satu bentuk, kamu akan berhenti di baris pertama." },
+
+        { "t": "def", "title": "Notasi Vektor",
+          "x": "**Notasi** adalah cara menuliskan sebuah vektor. Keempat notasi di bawah ini menyatakan **objek yang sama persis** — memilih salah satunya tidak mengubah vektornya, hanya mengubah kenyamanan menghitungnya." },
+
+        { "t": "typegroup", "n": "1", "title": "Empat Notasi Vektor",
+          "lead": "Keempatnya menyatakan **vektor yang sama persis**. Yang berbeda hanya bajunya.",
+          "items": [
+            { "name": "Huruf bergaris / tebal", "tex": "\\vec{a} \\quad \\text{atau} \\quad \\mathbf{a}", "text": "Kalau disebut dari dua titiknya, tulis kedua hurufnya: $\\vec{AB}$, $\\vec{PQ}$." },
+            { "name": "Matriks kolom", "tex": "\\begin{pmatrix} x \\\\ y \\end{pmatrix} \\quad \\begin{pmatrix} x \\\\ y \\\\ z \\end{pmatrix}", "text": "Paling nyaman saat **menghitung**, karena komponen seletak tersusun sebaris." },
+            { "name": "Pasangan terurut", "tex": "(x,\\, y) \\quad (x,\\, y,\\, z)", "text": "Paling ringkas; paling sering muncul di **teks soal**." },
+            { "name": "Basis vektor satuan", "tex": "\\vec{v} = x\\hat{i} + y\\hat{j} + z\\hat{k}", "text": "Paling sering muncul di soal **fisika** dan soal bergaya universitas." }
+          ],
+          "note": "$\\hat{i}$ searah sumbu $X$, $\\hat{j}$ searah sumbu $Y$, $\\hat{k}$ searah sumbu $Z$." },
+
+        { "t": "tex",
+          "x": "\\vec{v} = \\begin{pmatrix} 3 \\\\ -1 \\\\ 2 \\end{pmatrix} = (3,\\, -1,\\, 2) = 3\\hat{i} - \\hat{j} + 2\\hat{k}" },
+
+        { "t": "warn", "title": "Jebakan Koefisien Satu",
+          "x": "Perhatikan komponen $y$ pada contoh di atas. Di bentuk $\\hat{i}\\hat{j}\\hat{k}$, angka $-1$ ditulis cukup sebagai $-\\hat{j}$, **bukan** $-1\\hat{j}$. Banyak siswa membaca $-\\hat{j}$ sebagai \"tidak ada komponen $y$\", padahal komponennya $-1$." },
+
+        { "t": "tip", "title": "Komponen yang Hilang Bernilai Nol",
+          "x": "Kalau sebuah huruf basis **tidak muncul**, komponennya $0$ — bukan $1$. Jadi $\\vec{u} = -2\\hat{i} + 4\\hat{k}$ berarti $\\vec{u} = (-2,\\, 0,\\, 4)$." }
+      ],
+
+      "simulation": {
+        "engine": "notation_morph",
+        "title": "Simulasi: Ganti Baju Vektor",
+        "brief": "Satu vektor ditampilkan dalam satu notasi. Tugasmu menuliskannya kembali dalam notasi yang diminta — komponen demi komponen.",
+        "config": {
+          "cases": [
+            { "v": [3, -1, 2], "from": "ijk", "to": "column" },
+            { "v": [-2, 0, 4], "from": "ijk", "to": "tuple" },
+            { "v": [5, -7], "from": "column", "to": "ijk" }
+          ]
+        },
+        "toasts": {
+          "komponenSalah": "Belum tepat — komponen **{{sumbu}}** belum sesuai. Periksa ulang koefisien $\\hat{{{basis}}}$ pada bentuk asalnya.",
+          "koefisienSatu": "Hati-hati — $-\\hat{j}$ **bukan** berarti komponen $y$ tidak ada. Huruf basis yang berdiri tanpa angka berkoefisien $1$, jadi $-\\hat{j}$ berarti komponen $y = -1$.",
+          "basisHilang": "Belum tepat — huruf basis $\\hat{{{basis}}}$ memang tidak muncul di bentuk asalnya. Itu berarti komponennya $0$, bukan $1$.",
+          "belumLengkap": "Masih ada komponen yang kosong. Isi semuanya lebih dulu, baru periksa.",
+          "success": "Tepat! Keempat notasi itu menyatakan vektor yang sama persis."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_02_1",
+          "input_type": "single_choice",
+          "subtopic": "notasi_penyajian",
+          "prompt": "Diketahui sebuah vektor dalam bentuk basis vektor satuan.",
+          "tex": "\\vec{v} = 5\\hat{i} - \\hat{j} + 3\\hat{k}",
+          "after": "**Bentuk matriks kolom dari $\\vec{v}$ adalah ....**",
+          "options": [
+            { "tex": "\\begin{pmatrix} 5 \\\\ 1 \\\\ 3 \\end{pmatrix}" },
+            { "tex": "\\begin{pmatrix} 5 \\\\ -1 \\\\ 3 \\end{pmatrix}" },
+            { "tex": "\\begin{pmatrix} 5 \\\\ 0 \\\\ 3 \\end{pmatrix}" },
+            { "tex": "\\begin{pmatrix} 5 \\\\ -3 \\\\ 1 \\end{pmatrix}" },
+            { "tex": "\\begin{pmatrix} -5 \\\\ 1 \\\\ -3 \\end{pmatrix}" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Koefisien $\\hat{i}$, $\\hat{j}$, dan $\\hat{k}$ berturut-turut menjadi komponen $x$, $y$, dan $z$. Suku $-\\hat{j}$ berkoefisien $-1$, jadi komponen $y = -1$. **Opsi B**.",
+          "toastWrong": "Belum tepat — perhatikan suku $-\\hat{j}$. Huruf basis yang berdiri tanpa angka di depannya berkoefisien **$1$**, sehingga $-\\hat{j}$ berarti komponen $y$ bernilai $-1$, bukan $0$ dan bukan $1$."
+        },
+        {
+          "id": "b1_02_2",
+          "input_type": "mathpad",
+          "subtopic": "notasi_penyajian",
+          "prompt": "Diketahui $\\vec{w} = (0,\\, -7,\\, 2)$.",
+          "after": "**Tentukan koefisien $\\hat{j}$ ketika $\\vec{w}$ ditulis dalam bentuk basis vektor satuan.**",
+          "answer": -7,
+          "tolerance": 1e-6,
+          "explanation": "Pada pasangan terurut $(x,\\, y,\\, z)$, bilangan di posisi kedua adalah komponen $y$, dan komponen $y$ menjadi koefisien $\\hat{j}$. Jadi $\\vec{w} = -7\\hat{j} + 2\\hat{k}$, dan koefisien $\\hat{j}$ adalah $-7$.",
+          "toastWrong": "Belum tepat — hitung posisinya dari kiri: komponen **pertama** menjadi koefisien $\\hat{i}$, **kedua** menjadi $\\hat{j}$, **ketiga** menjadi $\\hat{k}$. Jangan lupa membawa tandanya."
+        },
+        {
+          "id": "b1_02_3",
+          "input_type": "matrix_input",
+          "subtopic": "notasi_penyajian",
+          "prompt": "Diketahui $\\vec{u} = -2\\hat{i} + 4\\hat{k}$.",
+          "after": "**Tuliskan $\\vec{u}$ dalam bentuk vektor kolom.**",
+          "rows": 3,
+          "cols": 1,
+          "answer": [[-2], [0], [4]],
+          "explanation": "Huruf basis $\\hat{j}$ tidak muncul sama sekali, artinya komponen $y$ bernilai $0$. Maka $\\vec{u} = \\begin{pmatrix} -2 \\\\ 0 \\\\ 4 \\end{pmatrix}$.",
+          "toastWrong": "Belum tepat — periksa baris tengahnya. Huruf basis yang **tidak muncul** berarti komponennya $0$; jangan mengisinya dengan $1$ atau menggeser $4$ naik ke posisi $y$."
+        }
+      ]
+    },
+
+    {
+      "id": "vektor_posisi",
+      "title": "Vektor Posisi",
+
+      "materi": [
+        { "t": "def", "title": "Vektor Posisi",
+          "x": "**Vektor posisi** adalah vektor yang **pangkalnya selalu di titik pusat** $O(0,0)$. Jika titik $A$ berkoordinat $(x, y)$, maka $\\vec{OA} = \\vec{a} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}$." },
+
+        { "t": "p",
+          "x": "Perhatikan betapa mudahnya: **koordinat titiknya langsung menjadi komponen vektornya.** Tapi ini hanya berlaku untuk vektor posisi, justru karena pangkalnya di $O$." },
+
+        { "t": "p",
+          "x": "Bagaimana kalau pangkalnya **bukan** di titik pusat? Misalnya kamu diminta mencari $\\vec{AB}$ dengan $A$ dan $B$ dua titik sembarang. Di sinilah rumus yang paling sering dipakai di seluruh bab vektor muncul." },
+
+        { "t": "tex",
+          "x": "\\vec{AB} = B - A = \\begin{pmatrix} x_2 - x_1 \\\\ y_2 - y_1 \\\\ z_2 - z_1 \\end{pmatrix}" },
+
+        { "t": "warn", "title": "Jebakan Paling Mahal di Bab Ini",
+          "x": "**Ujung dikurangi pangkal.** Bukan sebaliknya. $\\vec{AB}$ dibaca \"dari $A$ ke $B$\", jadi $B$ berdiri di depan. Kalau tertukar, yang kamu dapat adalah $\\vec{BA}$ — panjangnya benar, tetapi **seluruh tandanya terbalik**. Di soal pilihan ganda, jawaban terbalik itu hampir selalu disediakan sebagai pengecoh." },
+
+        { "t": "tip", "title": "Cara Mengingat",
+          "x": "Huruf **belakang** dikurangi huruf **depan**. $\\vec{AB} = B - A$. $\\vec{PQ} = Q - P$. Urutannya sama dengan urutan huruf pada nama vektornya, tinggal dibalik operasinya." },
+
+        { "t": "steps", "title": "Langkah Mencari $\\vec{AB}$",
+          "items": [
+            "Tandai mana pangkal ($A$) dan mana ujung ($B$) dari **nama** vektornya.",
+            "Tulis koordinat ujung di atas, koordinat pangkal di bawah.",
+            "Kurangkan komponen **seletak**: $x$ dengan $x$, $y$ dengan $y$, $z$ dengan $z$.",
+            "Periksa tanda tiap hasilnya — ini langkah yang paling sering dilewati."
+          ] }
+      ],
+
+      "simulation": {
+        "engine": "position_vector",
+        "title": "Simulasi: Ujung Dikurangi Pangkal",
+        "brief": "Dua titik tergambar di bidang. Tentukan sendiri mana pangkal dan mana ujungnya, lalu kurangkan komponen seletaknya satu per satu.",
+        "config": {
+          "cases": [
+            { "A": [2, 1], "B": [5, 3], "ask": "AB" },
+            { "A": [2, 1], "B": [5, 3], "ask": "BA" },
+            { "A": [1, 4, -2], "B": [5, 2, 3], "ask": "AB" }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-4, 4]
+        },
+        "toasts": {
+          "pangkalUjungTertukar": "Belum tepat — kamu menempatkan **{{titik}}** sebagai ujung, padahal pada $\\vec{{{nama}}}$ huruf **pertama** adalah pangkal dan huruf **kedua** adalah ujung. Rumusnya selalu **ujung dikurangi pangkal**.",
+          "komponenTidakSeletak": "Belum tepat — kamu mengurangkan komponen $x$ dengan komponen $y$. Pengurangan vektor hanya boleh memasangkan komponen yang **seletak**.",
+          "tandaTerbalik": "Hasilmu benar besarnya, tetapi **seluruh tandanya terbalik**. Yang kamu hitung adalah $\\vec{{{kebalikan}}}$, bukan $\\vec{{{nama}}}$. Periksa lagi siapa yang berdiri di depan tanda kurang.",
+          "hasilSalah": "Belum tepat — kerjakan satu komponen saja dulu. Untuk komponen $x$: berapa koordinat $x$ **ujung**, dikurangi berapa koordinat $x$ **pangkal**?",
+          "success": "Tepat! $\\vec{AB} = B - A$, dan $\\vec{BA}$ adalah kebalikan tandanya seluruhnya."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_03_1",
+          "input_type": "mathpad",
+          "subtopic": "vektor_posisi",
+          "prompt": "Diketahui titik $A(3,\\, -2)$ dan $B(7,\\, 5)$.",
+          "after": "**Tentukan komponen $x$ dari vektor $\\vec{AB}$.**",
+          "answer": 4,
+          "tolerance": 1e-6,
+          "explanation": "$\\vec{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.",
+          "toastWrong": "Belum tepat — periksa urutan pengurangannya. Pada $\\vec{AB}$, titik $B$ adalah **ujung** sehingga ia berdiri di depan: $x_B - x_A$, bukan $x_A - x_B$."
+        },
+        {
+          "id": "b1_03_2",
+          "input_type": "matrix_input",
+          "subtopic": "vektor_posisi",
+          "prompt": "Diketahui titik $A(1,\\, 4,\\, -2)$ dan $B(5,\\, 2,\\, 3)$ di ruang.",
+          "after": "**Tentukan $\\vec{AB}$ dalam bentuk vektor kolom.**",
+          "rows": 3,
+          "cols": 1,
+          "answer": [[4], [-2], [5]],
+          "explanation": "$\\vec{AB} = B - A = \\begin{pmatrix} 5-1 \\\\ 2-4 \\\\ 3-(-2) \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -2 \\\\ 5 \\end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.",
+          "toastWrong": "Belum tepat — periksa baris ketiganya. $3 - (-2)$ bukan $1$, melainkan $3 + 2 = 5$. Dua tanda minus yang bertemu menjadi tambah."
+        },
+        {
+          "id": "b1_03_3",
+          "input_type": "single_choice",
+          "subtopic": "vektor_posisi",
+          "prompt": "Diketahui vektor posisi $\\vec{OA} = (2,\\, 5)$ dan $\\vec{OB} = (-1,\\, 3)$.",
+          "after": "**Tentukan $\\vec{AB}$.**",
+          "options": [
+            { "tex": "(3,\\, 2)" },
+            { "tex": "(-3,\\, -2)" },
+            { "tex": "(1,\\, 8)" },
+            { "tex": "(-3,\\, 2)" },
+            { "tex": "(3,\\, -2)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Vektor posisi $\\vec{OA}$ dan $\\vec{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\\vec{AB} = B - A = (-1-2,\\; 3-5) = (-3,\\, -2)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $(3,2)$, kamu menghitung $A - B$, yaitu $\\vec{BA}$. Kalau jawabanmu $(1,8)$, kamu **menjumlahkan** keduanya, bukan mengurangkan."
+        },
+        {
+          "id": "b1_03_4",
+          "input_type": "single_choice",
+          "subtopic": "vektor_posisi",
+          "prompt": "Diketahui $\\vec{PQ} = (6,\\, -4)$ dan koordinat titik $P(2,\\, 1)$.",
+          "after": "**Tentukan koordinat titik $Q$.**",
+          "options": [
+            { "tex": "Q(4,\\, -5)" },
+            { "tex": "Q(8,\\, -3)" },
+            { "tex": "Q(-4,\\, 5)" },
+            { "tex": "Q(12,\\, -4)" },
+            { "tex": "Q(3,\\, -2)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Dari $\\vec{PQ} = Q - P$ diperoleh $Q = P + \\vec{PQ} = (2+6,\\; 1+(-4)) = (8,\\, -3)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — rumusnya $\\vec{PQ} = Q - P$. Untuk mencari $Q$, pindahkan $P$ ke ruas kanan sehingga menjadi $Q = P + \\vec{PQ}$. Jadi yang dilakukan adalah **menambah**, bukan mengurangi."
+        }
+      ]
+    },
+
+    {
+      "id": "komponen_r2_r3",
+      "title": "Komponen di Bidang & Ruang",
+
+      "materi": [
+        { "t": "p",
+          "x": "Anggap komponen vektor sebagai daftar instruksi jalan kaki. Vektor $\\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix}$ berbunyi: *\"Jalan 4 langkah ke kanan, lalu 3 langkah ke bawah.\"*" },
+
+        { "t": "typegroup", "n": "2", "title": "Arti Tanda Setiap Komponen",
+          "lead": "Tanda komponen bukan hiasan — ia **arah**.",
+          "items": [
+            { "name": "Komponen $x$", "tex": "x > 0 \\;\\Rightarrow\\; \\text{kanan}", "text": "Bernilai negatif berarti ke **kiri**." },
+            { "name": "Komponen $y$", "tex": "y > 0 \\;\\Rightarrow\\; \\text{atas}", "text": "Bernilai negatif berarti ke **bawah**." },
+            { "name": "Komponen $z$", "tex": "z > 0 \\;\\Rightarrow\\; \\text{keluar bidang}", "text": "Bernilai negatif berarti **masuk** ke dalam bidang." }
+          ],
+          "note": "Komponen bernilai $0$ berarti vektor itu tidak bergerak sama sekali pada arah tersebut." },
+
+        { "t": "tip", "title": "Kabar Baik dari R² ke R³",
+          "x": "**Semua rumus yang kamu pelajari di bidang (R²) berlaku apa adanya di ruang (R³)** — kamu tinggal menambahkan satu suku lagi. Tidak ada rumus baru yang harus dihafal, hanya satu komponen tambahan yang harus diingat." },
+
+        { "t": "warn", "title": "Batas Kurikulum TKA",
+          "x": "Rincian materi Kemendikdasmen menyebut dengan tegas: **komponen vektor maksimum tiga**. Jadi kamu tidak akan pernah menemui vektor berdimensi empat atau lebih di ujian." },
+
+        { "t": "def", "title": "Vektor Nol",
+          "x": "$\\vec{0} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$ — vektor yang semua komponennya nol. Panjangnya nol, dan yang lebih penting: **ia tidak menunjuk ke arah mana pun.** Sifat inilah yang membuatnya jadi kasus istimewa di hampir setiap operasi vektor." }
+      ],
+
+      "simulation": {
+        "engine": "component_builder",
+        "title": "Simulasi: Susun Vektor dari Instruksinya",
+        "brief": "Kamu diberi instruksi perpindahan dalam kalimat. Bangun vektornya komponen demi komponen — aplikasi baru menggambar panahnya setelah kedua komponen kamu tentukan.",
+        "config": {
+          "cases": [
+            { "text": "Jalan 4 langkah ke kanan, lalu 3 langkah ke bawah.", "answer": [4, -3] },
+            { "text": "Jalan 5 langkah ke kiri, tidak bergerak naik maupun turun.", "answer": [-5, 0] },
+            { "text": "Naik 2 langkah, lalu maju 3 langkah keluar bidang, tanpa bergerak mendatar.", "answer": [0, 2, 3] }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-4, 4]
+        },
+        "toasts": {
+          "tandaSalah": "Besarnya sudah benar, tandanya belum. Instruksi menyebut **{{arah}}**, dan arah itu bernilai **{{tanda}}** pada komponen ${{sumbu}}$.",
+          "sumbuTertukar": "Belum tepat — nilai itu milik komponen ${{benar}}$, bukan ${{salah}}$. Perpindahan mendatar selalu masuk ke komponen $x$, perpindahan tegak ke komponen $y$.",
+          "nolBukanKosong": "Instruksi menyebut \"tidak bergerak\" pada arah itu. Itu berarti komponennya bernilai **$0$** — dan nol tetap harus ditulis, bukan dikosongkan.",
+          "success": "Tepat! Setiap komponen sekarang punya arti: seberapa jauh, dan ke arah mana."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_04_1",
+          "input_type": "single_choice",
+          "subtopic": "komponen_r2_r3",
+          "prompt": "Seekor semut bergerak $7$ satuan ke kiri, lalu $2$ satuan ke atas.",
+          "after": "**Vektor perpindahan semut tersebut adalah ....**",
+          "options": [
+            { "tex": "(7,\\, 2)" },
+            { "tex": "(-7,\\, 2)" },
+            { "tex": "(7,\\, -2)" },
+            { "tex": "(-7,\\, -2)" },
+            { "tex": "(2,\\, -7)" }
+          ],
+          "answerIndex": 1,
+          "explanation": "Ke kiri berarti komponen $x$ **negatif**; ke atas berarti komponen $y$ **positif**. Maka perpindahannya $(-7,\\, 2)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — pisahkan dua hal: **besar** langkahnya, dan **arah**-nya. Ke kiri dan ke bawah bernilai negatif; ke kanan dan ke atas bernilai positif."
+        },
+        {
+          "id": "b1_04_2",
+          "input_type": "mathpad",
+          "subtopic": "komponen_r2_r3",
+          "prompt": "Sebuah drone bergerak $3$ meter ke timur, $4$ meter ke selatan, dan naik $12$ meter. Arah timur dijadikan sumbu $x$ positif, arah utara sumbu $y$ positif, dan ke atas sumbu $z$ positif.",
+          "after": "**Tentukan nilai komponen $y$ dari vektor perpindahan drone tersebut.**",
+          "answer": -4,
+          "tolerance": 1e-6,
+          "explanation": "Arah utara ditetapkan sebagai $y$ positif, maka arah **selatan** adalah $y$ negatif. Perpindahan $4$ meter ke selatan berarti komponen $y = -4$.",
+          "toastWrong": "Belum tepat — perhatikan perjanjian arah yang disebut soal: **utara** adalah $y$ positif. Karena drone bergerak ke selatan, tandanya harus berlawanan."
+        },
+        {
+          "id": "b1_04_3",
+          "input_type": "multi_select",
+          "subtopic": "komponen_r2_r3",
+          "prompt": "Perhatikan pernyataan-pernyataan tentang komponen vektor berikut.",
+          "after": "**Pilih semua pernyataan yang benar.**",
+          "options": [
+            { "label": "Vektor $(0,\\, 5)$ tidak bergerak sama sekali pada arah mendatar." },
+            { "label": "Vektor $(-3,\\, 0)$ adalah vektor nol karena salah satu komponennya $0$." },
+            { "label": "Semua rumus vektor di R² berlaku di R³ dengan menambahkan satu suku." },
+            { "label": "Vektor di kurikulum TKA dapat memiliki lebih dari tiga komponen." },
+            { "label": "Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif." }
+          ],
+          "answerIndices": [0, 2, 4],
+          "perOptionFeedback": [
+            "**Benar** — komponen $x = 0$ berarti tidak ada perpindahan mendatar sama sekali.",
+            "Salah — vektor nol mensyaratkan **semua** komponennya $0$. Vektor $(-3,0)$ masih punya panjang $3$.",
+            "**Benar** — inilah sebabnya R³ tidak menuntut hafalan rumus baru.",
+            "Salah — rincian Kemendikdasmen membatasi komponen vektor **maksimum tiga**.",
+            "**Benar** — panjang tidak pernah negatif; tanda selalu bicara soal arah."
+          ],
+          "explanation": "Kuncinya ada pada dua hal: vektor nol menuntut **semua** komponen nol, dan tanda negatif selalu berarti arah, bukan panjang negatif.",
+          "toastWrong": "Ada pilihan yang belum tepat — periksa terutama pernyataan tentang vektor nol. Apakah cukup **satu** komponen bernilai nol, atau harus **semuanya**?"
+        }
+      ]
+    },
+
+    {
+      "id": "panjang_vektor",
+      "title": "Modulus (Panjang Vektor)",
+
+      "materi": [
+        { "t": "p",
+          "x": "Modulus, atau panjang vektor, dinotasikan dengan tanda mutlak $|\\vec{v}|$. Dari mana rumusnya? Gambar saja vektornya di bidang koordinat, lalu tarik garis bantu ke sumbu-sumbunya. Yang terbentuk adalah **segitiga siku-siku**." },
+
+        { "t": "def", "title": "Modulus Vektor",
+          "x": "Komponen $x$ dan $y$ menjadi kedua sisi tegak, dan vektornya sendiri menjadi sisi miring. Jadi rumus modulus **bukan rumus baru** — ia Teorema Pythagoras yang kamu pelajari sejak SMP." },
+
+        { "t": "tex", "x": "|\\vec{v}| = \\sqrt{x^2 + y^2} \\qquad |\\vec{v}| = \\sqrt{x^2 + y^2 + z^2}" },
+
+        { "t": "p",
+          "x": "Perhatikan bahwa setiap komponen **dikuadratkan** lebih dulu. Akibatnya tanda komponen sama sekali tidak berpengaruh: $|(3,-4)| = |(-3,4)| = 5$. Masuk akal — panjang adalah jarak, dan jarak tidak pernah negatif." },
+
+        { "t": "tex", "x": "|\\vec{v}| = |-\\vec{v}|" },
+
+        { "t": "warn", "title": "Jawaban Ditulis dalam Bentuk Akar Eksak",
+          "x": "Ini bukan selera, ini cara menulis jawaban yang benar di lembar jawaban TKA. $|(2,5)| = \\sqrt{29}$, **bukan** $5{,}385164807$. Dan $|(2,4)| = \\sqrt{20} = 2\\sqrt{5}$, **bukan** $4{,}472135955$." },
+
+        { "t": "steps", "title": "Menyederhanakan Bentuk Akar",
+          "items": [
+            "Cari **faktor kuadrat terbesar** dari bilangan di dalam akar.",
+            "Pecah akarnya: $\\sqrt{20} = \\sqrt{4 \\cdot 5} = \\sqrt{4} \\cdot \\sqrt{5}$.",
+            "Tarik keluar faktor kuadratnya: $\\sqrt{4} \\cdot \\sqrt{5} = 2\\sqrt{5}$.",
+            "Kalau bilangannya prima (seperti $29$), ia sudah paling sederhana — biarkan apa adanya."
+          ] },
+
+        { "t": "tip", "title": "Trik Hemat Waktu yang Wajib Dikuasai",
+          "x": "Kalau soal hanya menanyakan **mana yang lebih panjang**, jangan pernah repot mengakarkan. Berlaku $|\\vec{u}| > |\\vec{v}|$ jika dan hanya jika $|\\vec{u}|^2 > |\\vec{v}|^2$. Cukup bandingkan $x^2+y^2+z^2$-nya: selalu bilangan bulat, tanpa akar, tanpa pembulatan, tanpa peluang salah hitung." },
+
+        { "t": "p",
+          "x": "🔗 Kalau modulusnya diketahui tetapi komponennya memuat huruf — misalnya $\\vec{AB} = (2m,\\, m+3,\\, m)$ dengan $|\\vec{AB}| = 9$ — itu **Taktik TKA 1**, dibahas tuntas di **Bab 4 · Parameter Tersembunyi pada Modulus**." }
+      ],
+
+      "simulation": {
+        "engine": "magnitude_builder",
+        "title": "Simulasi: Bangun Akarnya Sendiri",
+        "brief": "Empat langkah, satu per satu: kuadratkan tiap komponen, jumlahkan, akarkan, lalu sederhanakan. Tidak ada tombol yang melompati langkah.",
+        "config": {
+          "cases": [
+            { "v": [3, 4], "expect": { "k": 5, "r": 1 } },
+            { "v": [2, 4], "expect": { "k": 2, "r": 5 } },
+            { "v": [2, 5], "expect": { "k": 1, "r": 29 } },
+            { "v": [1, -2, 2], "expect": { "k": 3, "r": 1 } }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-4, 4],
+          "showGuides": true
+        },
+        "toasts": {
+          "lupaKuadrat": "Belum tepat — komponennya harus **dikuadratkan** lebih dulu, bukan langsung dijumlahkan. $3 + 4$ bukan panjang; $3^2 + 4^2$ baru menuju ke sana.",
+          "tandaIkutMasuk": "Hasil kuadrat tidak pernah negatif. $({{nilai}})^2 = {{kuadrat}}$ — tanda minusnya ikut terkuadratkan, jadi hilang.",
+          "belumDisederhanakan": "Hasilmu benar nilainya, tetapi belum paling sederhana. $\\sqrt{{{radikan}}}$ masih memuat faktor kuadrat; tarik keluar faktor kuadrat terbesarnya.",
+          "terlanjurDesimal": "Jawaban dalam bentuk desimal tidak diterima di sini — dan tidak diterima juga di lembar jawaban TKA. Tuliskan dalam bentuk akar eksak, misalnya $2\\sqrt{5}$.",
+          "jumlahSalah": "Belum tepat — jumlahkan **seluruh** kuadrat komponennya, termasuk yang bernilai nol.",
+          "success": "Tepat! Dan perhatikan: hasilnya bentuk akar eksak, bukan desimal panjang."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_05_1",
+          "input_type": "mathpad",
+          "subtopic": "panjang_vektor",
+          "prompt": "Diketahui vektor $\\vec{v} = (6,\\, 8)$.",
+          "after": "**Tentukan panjang vektor $\\vec{v}$.**",
+          "answer": 10,
+          "tolerance": 1e-6,
+          "explanation": "$|\\vec{v}| = \\sqrt{6^2 + 8^2} = \\sqrt{36 + 64} = \\sqrt{100} = 10$. Ini kelipatan dari tripel Pythagoras $(3,4,5)$.",
+          "toastWrong": "Belum tepat — kuadratkan dulu **setiap** komponennya, baru dijumlahkan, baru diakarkan. Kalau hasilmu $14$, kamu menjumlahkan $6+8$ tanpa mengkuadratkan."
+        },
+        {
+          "id": "b1_05_2",
+          "input_type": "single_choice",
+          "subtopic": "panjang_vektor",
+          "prompt": "Diketahui vektor $\\vec{a} = (2,\\, 4)$.",
+          "after": "**Panjang vektor $\\vec{a}$ dalam bentuk akar paling sederhana adalah ....**",
+          "options": [
+            { "tex": "2\\sqrt{5}" },
+            { "tex": "4\\sqrt{5}" },
+            { "tex": "5\\sqrt{2}" },
+            { "tex": "2\\sqrt{10}" },
+            { "tex": "6" }
+          ],
+          "answerIndex": 0,
+          "explanation": "$|\\vec{a}| = \\sqrt{2^2 + 4^2} = \\sqrt{4 + 16} = \\sqrt{20}$. Faktor kuadrat terbesar dari $20$ adalah $4$, sehingga $\\sqrt{20} = \\sqrt{4 \\cdot 5} = 2\\sqrt{5}$. **Opsi A**.",
+          "toastWrong": "Belum tepat — kalau kamu memilih $6$, kamu menjumlahkan $2+4$ tanpa mengkuadratkan. Kalau kamu memilih $2\\sqrt{10}$, kamu menarik keluar $2$ dari $\\sqrt{20}$ padahal $20 = 4 \\times 5$, bukan $4 \\times 10$."
+        },
+        {
+          "id": "b1_05_3",
+          "input_type": "single_choice",
+          "subtopic": "panjang_vektor",
+          "prompt": "Diketahui vektor di ruang $\\vec{p} = (1,\\, -2,\\, 2)$.",
+          "after": "**Tentukan $|\\vec{p}|$.**",
+          "options": [
+            { "tex": "1" },
+            { "tex": "3" },
+            { "tex": "\\sqrt{5}" },
+            { "tex": "\\sqrt{7}" },
+            { "tex": "5" }
+          ],
+          "answerIndex": 1,
+          "explanation": "$|\\vec{p}| = \\sqrt{1^2 + (-2)^2 + 2^2} = \\sqrt{1 + 4 + 4} = \\sqrt{9} = 3$. Perhatikan $(-2)^2 = 4$, bukan $-4$. **Opsi B**.",
+          "toastWrong": "Belum tepat — periksa komponen keduanya. $(-2)^2 = 4$, **bukan** $-4$: tanda minus ikut terkuadratkan sehingga hilang. Kalau kamu mendapat $\\sqrt{1}$, kemungkinan kamu mengurangkan alih-alih menjumlahkan."
+        },
+        {
+          "id": "b1_05_4",
+          "input_type": "single_choice",
+          "subtopic": "panjang_vektor",
+          "prompt": "Diketahui $\\vec{u} = (3,\\, 4)$ dan $\\vec{v} = (1,\\, 6)$.",
+          "after": "**Tanpa menghitung akarnya, tentukan pernyataan yang benar.**",
+          "options": [
+            { "tex": "|\\vec{u}| > |\\vec{v}|" },
+            { "tex": "|\\vec{u}| < |\\vec{v}|" },
+            { "tex": "|\\vec{u}| = |\\vec{v}|" },
+            { "tex": "|\\vec{u}| = 2|\\vec{v}|" },
+            { "text": "Tidak dapat dibandingkan tanpa menghitung akarnya." }
+          ],
+          "answerIndex": 1,
+          "explanation": "$|\\vec{u}|^2 = 9 + 16 = 25$ dan $|\\vec{v}|^2 = 1 + 36 = 37$. Karena $25 < 37$, maka $|\\vec{u}| < |\\vec{v}|$. Membandingkan kuadratnya sudah cukup — akar kuadrat adalah fungsi naik, sehingga urutannya tidak berubah. **Opsi B**.",
+          "toastWrong": "Belum tepat — kamu tidak perlu mengakarkan sama sekali. Bandingkan saja $x^2+y^2$ keduanya: $25$ lawan $37$. Yang kuadratnya lebih besar, vektornya lebih panjang."
+        }
+      ]
+    },
+
+    {
+      "id": "vektor_satuan",
+      "title": "Vektor Satuan",
+
+      "materi": [
+        { "t": "p",
+          "x": "Kadang kamu hanya butuh **arah** sebuah vektor, tanpa peduli panjangnya. Untuk itulah vektor satuan ada." },
+
+        { "t": "def", "title": "Vektor Satuan",
+          "x": "**Vektor satuan** ($\\hat{e}$) adalah vektor yang **searah** dengan vektor asalnya, tetapi panjangnya **tepat $1$ satuan**." },
+
+        { "t": "tex", "x": "\\hat{e} = \\frac{\\vec{v}}{|\\vec{v}|}" },
+
+        { "t": "p",
+          "x": "Rumus itu sebenarnya sederhana sekali kalau dibaca sebagai kalimat: **bagi setiap komponen dengan panjang vektornya.**" },
+
+        { "t": "steps", "title": "Contoh dengan $\\vec{v} = (3,\\, 4)$",
+          "items": [
+            "Hitung panjangnya dulu: $|\\vec{v}| = \\sqrt{9+16} = \\sqrt{25} = 5$.",
+            "Bagi setiap komponen dengan $5$: $\\hat{e} = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$.",
+            "**Periksa hasilnya** — panjang vektor satuan harus tepat $1$: $\\sqrt{\\tfrac{9}{25} + \\tfrac{16}{25}} = \\sqrt{\\tfrac{25}{25}} = 1$."
+          ] },
+
+        { "t": "tip", "title": "Biasakan Langkah Ketiga",
+          "x": "Memeriksa bahwa $|\\hat{e}| = 1$ itu gratis, cepat, dan menangkap hampir semua kesalahan aritmetika sebelum kamu menyerahkan lembar jawaban." },
+
+        { "t": "warn", "title": "Kasus Batas: Vektor Nol",
+          "x": "Vektor nol **tidak punya vektor satuan**. Rumus $\\hat{e} = \\frac{\\vec{v}}{|\\vec{v}|}$ akan membagi dengan nol, dan pembagian dengan nol tidak terdefinisi. Tapi alasan sebenarnya lebih dalam: vektor nol memang **tidak menunjuk ke arah mana pun** — meminta arahnya sama saja dengan bertanya \"ke mana arah diam?\"." }
+      ],
+
+      "simulation": {
+        "engine": "unit_vector",
+        "title": "Simulasi: Buang Panjang, Sisakan Arah",
+        "brief": "Hitung panjangnya dulu, baru bagikan ke tiap komponen. Kasus terakhir sengaja tidak punya jawaban — dan kamu yang harus menjelaskan kenapa.",
+        "config": {
+          "cases": [
+            { "v": [3, 4] },
+            { "v": [-6, 8] },
+            { "v": [2, -1, 2] },
+            { "v": [0, 0], "isZero": true }
+          ],
+          "xRange": [-6, 6],
+          "yRange": [-4, 4]
+        },
+        "toasts": {
+          "belumHitungPanjang": "Kamu belum menentukan $|\\vec{v}|$. Pembaginya harus ada lebih dulu — tanpa itu, tidak ada yang bisa dibagi.",
+          "hanyaSatuKomponen": "Belum tepat — **setiap** komponen harus dibagi dengan panjang yang sama. Membagi hanya satu komponen mengubah arah vektornya, bukan memperpendeknya.",
+          "dibagiKomponen": "Belum tepat — pembaginya adalah **panjang vektor** $|\\vec{v}|$, bukan salah satu komponennya.",
+          "panjangBukanSatu": "Hasilmu belum berpanjang $1$. Periksa ulang: $\\left(\\tfrac{{{x}}}{{{n}}}\\right)^2 + \\left(\\tfrac{{{y}}}{{{n}}}\\right)^2$ seharusnya bernilai tepat $1$.",
+          "vektorNol": "Benar — di sinilah rumusnya buntu. $|\\vec{0}| = 0$, sehingga $\\frac{\\vec{0}}{0}$ tidak terdefinisi. Dan secara makna: vektor nol memang tidak menunjuk ke arah mana pun.",
+          "memaksaVektorNol": "Belum tepat — vektor nol **tidak punya** vektor satuan. Jawaban $(0,0)$ pun keliru, karena panjang vektor satuan harus $1$, sedangkan $|(0,0)| = 0$.",
+          "success": "Tepat! Arahnya sama persis dengan vektor asal, panjangnya tepat $1$."
+        }
+      },
+
+      "quiz": [
+        {
+          "id": "b1_06_1",
+          "input_type": "single_choice",
+          "subtopic": "vektor_satuan",
+          "prompt": "Diketahui vektor $\\vec{a} = (6,\\, 8)$.",
+          "after": "**Vektor satuan dari $\\vec{a}$ adalah ....**",
+          "options": [
+            { "tex": "\\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)" },
+            { "tex": "\\left(\\tfrac{6}{5},\\, \\tfrac{8}{5}\\right)" },
+            { "tex": "\\left(\\tfrac{1}{6},\\, \\tfrac{1}{8}\\right)" },
+            { "tex": "(6,\\, 8)" },
+            { "tex": "\\left(\\tfrac{8}{10},\\, \\tfrac{6}{10}\\right)" }
+          ],
+          "answerIndex": 0,
+          "explanation": "$|\\vec{a}| = \\sqrt{36+64} = 10$, sehingga $\\hat{e} = \\left(\\tfrac{6}{10},\\, \\tfrac{8}{10}\\right) = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$. Periksa: $\\tfrac{9}{25} + \\tfrac{16}{25} = 1$. **Opsi A**.",
+          "toastWrong": "Belum tepat — hitung dulu $|\\vec{a}|$, dan pastikan yang kamu pakai sebagai pembagi adalah **panjangnya** ($10$), bukan salah satu komponennya. Kalau pembagimu $5$, kamu memakai setengah panjangnya."
+        },
+        {
+          "id": "b1_06_2",
+          "input_type": "mathpad",
+          "subtopic": "vektor_satuan",
+          "prompt": "Vektor $\\hat{e}$ adalah vektor satuan dari sebuah vektor $\\vec{w}$ yang panjangnya $13$ satuan.",
+          "after": "**Tentukan panjang vektor $\\hat{e}$.**",
+          "answer": 1,
+          "tolerance": 1e-6,
+          "explanation": "Menurut definisinya, panjang vektor satuan **selalu** $1$ — berapa pun panjang vektor asalnya. Angka $13$ di soal tidak memengaruhi jawaban sama sekali.",
+          "toastWrong": "Belum tepat — perhatikan definisinya, bukan angkanya. Vektor satuan dibuat justru supaya panjangnya **selalu** sama, berapa pun panjang vektor asalnya. Angka $13$ di soal adalah pengecoh."
+        },
+        {
+          "id": "b1_06_3",
+          "input_type": "single_choice",
+          "subtopic": "vektor_satuan",
+          "prompt": "Seorang siswa mencoba menghitung vektor satuan dari $\\vec{0} = (0,\\, 0)$.",
+          "after": "**Manakah alasan yang paling tepat mengapa hal itu tidak dapat dilakukan?**",
+          "options": [
+            { "label": "Karena komponen vektor nol terlalu kecil untuk dibagi." },
+            { "label": "Karena $|\\vec{0}| = 0$, sehingga rumus $\\hat{e} = \\tfrac{\\vec{v}}{|\\vec{v}|}$ membagi dengan nol — dan vektor nol memang tidak menunjuk ke arah mana pun." },
+            { "label": "Karena vektor satuan hanya berlaku untuk vektor di R³." },
+            { "label": "Karena hasilnya adalah $(0,\\, 0)$, dan itu sudah merupakan vektor satuan." },
+            { "label": "Karena vektor nol tidak boleh ditulis dalam bentuk kolom." }
+          ],
+          "answerIndex": 1,
+          "explanation": "Dua alasan yang saling menguatkan: secara aljabar, pembagian dengan nol tidak terdefinisi; secara makna, vektor nol tidak punya arah untuk diwakili. **Opsi B**.",
+          "toastWrong": "Belum tepat — kalau kamu memilih opsi D, periksa lagi: panjang $(0,0)$ adalah $0$, sedangkan vektor satuan **harus** berpanjang $1$. Jadi $(0,0)$ justru tidak memenuhi definisinya."
+        }
+      ]
+    }
+  ]
+}
