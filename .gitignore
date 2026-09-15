@@ -1,0 +1,15 @@
+# Nol-build: tidak ada node_modules di repo (Blueprint §2.1)
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Keluaran pengujian
+tests/__screenshots__/
+tests/.playwright/
+tests/out/
+
+# Sistem
+.DS_Store
+Thumbs.db
+desktop.ini
