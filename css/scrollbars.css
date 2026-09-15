@@ -1,103 +1,107 @@
-/* ============================================================
-   scrollbars.css — Scrollbar bertema "Studio Belajar Cerah"
-   Scrollbar bawaan OS tidak boleh terlihat di mana pun (PRD §7.3)
-   ============================================================ */
+@layer utilities {
 
-/* ------------------------------------------------------------
-   Standar (Firefox & browser modern)
-   ------------------------------------------------------------ */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--brand-primary) var(--bg-deep);
-}
+  /* ============================================================
+     scrollbars.css — Scrollbar bertema "Studio Belajar Cerah"
+     Scrollbar bawaan OS tidak boleh terlihat di mana pun (PRD §7.3)
+     ============================================================ */
 
-/* ------------------------------------------------------------
-   WebKit / Blink (Chrome, Edge, Safari)
-   ------------------------------------------------------------ */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+  /* ------------------------------------------------------------
+     Standar (Firefox & browser modern)
+     ------------------------------------------------------------ */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand-primary) var(--bg-deep);
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-deep);
-  border-radius: var(--r-pill);
-}
+  /* ------------------------------------------------------------
+     WebKit / Blink (Chrome, Edge, Safari)
+     ------------------------------------------------------------ */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--brand-primary);
-  border-radius: var(--r-pill);
-  /* Border transparan menciptakan jarak visual antara thumb dan track */
-  border: 2px solid var(--bg-deep);
-  background-clip: padding-box;
-  transition: background-color var(--dur-fast) var(--ease-out);
-}
+  ::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+    border-radius: var(--r-pill);
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-primary-hi);
-  background-clip: padding-box;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--brand-primary);
+    border-radius: var(--r-pill);
+    /* Border transparan menciptakan jarak visual antara thumb dan track */
+    border: 2px solid var(--bg-deep);
+    background-clip: padding-box;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
 
-::-webkit-scrollbar-thumb:active {
-  background: var(--brand-primary-hi);
-  background-clip: padding-box;
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-primary-hi);
+    background-clip: padding-box;
+  }
 
-/* Sudut pertemuan scrollbar horizontal & vertikal */
-::-webkit-scrollbar-corner { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--brand-primary-hi);
+    background-clip: padding-box;
+  }
 
-/* Hilangkan tombol panah bawaan Windows */
-::-webkit-scrollbar-button { display: none; }
+  /* Sudut pertemuan scrollbar horizontal & vertikal */
+  ::-webkit-scrollbar-corner { background: var(--bg-deep); }
 
-/* ------------------------------------------------------------
-   Varian kontekstual
-   ------------------------------------------------------------ */
+  /* Hilangkan tombol panah bawaan Windows */
+  ::-webkit-scrollbar-button { display: none; }
 
-/* Panel di atas permukaan putih: track mengikuti warna kartu */
-.workspace__body::-webkit-scrollbar-track,
-.modal__body::-webkit-scrollbar-track {
-  background: transparent;
-}
+  /* ------------------------------------------------------------
+     Varian kontekstual
+     ------------------------------------------------------------ */
 
-.workspace__body::-webkit-scrollbar-thumb,
-.modal__body::-webkit-scrollbar-thumb {
-  border-color: transparent;
-}
+  /* Panel di atas permukaan putih: track mengikuti warna kartu */
+  .workspace__body::-webkit-scrollbar-track,
+  .modal__body::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-/* Scroll horizontal pada konten lebar (tabel, rumus KaTeX panjang) */
-.data-table-wrap::-webkit-scrollbar,
-.katex-display::-webkit-scrollbar {
-  height: 7px;
-}
+  .workspace__body::-webkit-scrollbar-thumb,
+  .modal__body::-webkit-scrollbar-thumb {
+    border-color: transparent;
+  }
 
-.data-table-wrap::-webkit-scrollbar-thumb,
-.katex-display::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
+  /* Scroll horizontal pada konten lebar (tabel, rumus KaTeX panjang) */
+  .data-table-wrap::-webkit-scrollbar,
+  .katex-display::-webkit-scrollbar {
+    height: 7px;
+  }
 
-.data-table-wrap::-webkit-scrollbar-thumb:hover,
-.katex-display::-webkit-scrollbar-thumb:hover {
-  background: var(--ink-300);
-  background-clip: padding-box;
-}
+  .data-table-wrap::-webkit-scrollbar-thumb,
+  .katex-display::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
 
-.data-table-wrap,
-.katex-display {
-  scrollbar-color: var(--border-strong) transparent;
-}
+  .data-table-wrap::-webkit-scrollbar-thumb:hover,
+  .katex-display::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-300);
+    background-clip: padding-box;
+  }
 
-/* Area yang sengaja tidak menampilkan scrollbar sama sekali */
-.no-scrollbar { scrollbar-width: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
+  .data-table-wrap,
+  .katex-display {
+    scrollbar-color: var(--border-strong) transparent;
+  }
 
-/* ------------------------------------------------------------
-   Momentum scroll di iOS untuk panel internal
-   ------------------------------------------------------------ */
-.workspace__body,
-.modal__body,
-.data-table-wrap {
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;   /* cegah scroll "bocor" ke halaman induk */
+  /* Area yang sengaja tidak menampilkan scrollbar sama sekali */
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* ------------------------------------------------------------
+     Momentum scroll di iOS untuk panel internal
+     ------------------------------------------------------------ */
+  .workspace__body,
+  .modal__body,
+  .data-table-wrap {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;   /* cegah scroll "bocor" ke halaman induk */
+  }
+
 }

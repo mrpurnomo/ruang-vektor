@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <!-- Jangan pernah nonaktifkan zoom (aksesibilitas) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Ruang Matriks — media belajar matriks interaktif untuk Matematika Tingkat Lanjut - Kelas 11. Dimainkan dalam mode lanskap.">
-  <meta name="theme-color" content="#EFF4FF">
-  <title>Vektor Kelas 11</title>
+  <meta name="description" content="Ruang Vektor — media belajar vektor interaktif untuk Matematika Tingkat Lanjut Kelas 11. Dimainkan dalam mode lanskap.">
+  <meta name="theme-color" content="#0A1B45">
+  <title>Ruang Vektor — Matematika Tingkat Lanjut Kelas 11</title>
 
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,38 +20,74 @@
         integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
         crossorigin="anonymous">
 
-  <!-- Gaya aplikasi (urutan penting: token → layout → komponen → matriks → scrollbar → animasi) -->
-  <!-- CSS Inti & Layout -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
+  <!-- ============================================================
+       GAYA APLIKASI
+
+       Urutan <link> ini TETAP DIJAGA rapi, tetapi yang menjadi kontrak
+       sesungguhnya adalah deklarasi @layer di baris pertama tokens.css:
+
+         reset → tokens → layout → components → domain → utilities → overrides
+
+       Dengan lapisan, "siapa menang" dideklarasikan sekali di satu tempat,
+       bukan disimpulkan dari urutan berkas. Satu berkas = satu komponen.
+       ============================================================ -->
+
+  <!-- Fondasi -->
+  <link rel="stylesheet" href="css/tokens.css">        <!-- palet, reset, utilitas -->
+
+  <!-- Tata letak -->
+  <link rel="stylesheet" href="css/layout.css">        <!-- menu, kartu bab, langkah  -->
+  <link rel="stylesheet" href="css/workspace.css">     <!-- Sidebar & Stage           -->
+  <link rel="stylesheet" href="css/shell.css">         <!-- latar, header, footer      -->
+  <link rel="stylesheet" href="css/screens.css">       <!-- layar masuk & empty-state  -->
+
+  <!-- Komponen -->
+  <link rel="stylesheet" href="css/components.css">    <!-- tombol, kartu, modal, toast -->
+  <link rel="stylesheet" href="css/mathpad.css">       <!-- papan angka kustom          -->
+  <link rel="stylesheet" href="css/lesson.css">        <!-- blok materi & Mini Kuis     -->
+  <link rel="stylesheet" href="css/quiz.css">          <!-- ujian CBT                   -->
+
+  <!-- Domain vektor -->
+  <link rel="stylesheet" href="css/vector.css">        <!-- vektor kolom, sel, chip     -->
+  <link rel="stylesheet" href="css/plane.css">         <!-- bidang kartesius SVG        -->
+  <link rel="stylesheet" href="css/simulations.css">   <!-- kerangka engine simulasi    -->
+  <link rel="stylesheet" href="css/scratchpad.css">    <!-- papan coret                 -->
+
+  <!-- Utilitas -->
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/scrollbars.css">
 
-  <!-- CSS Khusus -->
-  <link rel="stylesheet" href="css/workspace.css">
-  <link rel="stylesheet" href="css/scratchpad.css">
-  <link rel="stylesheet" href="css/mathpad.css">
-  <link rel="stylesheet" href="css/quiz.css">
-  <link rel="stylesheet" href="css/vector.css">
-
-  <!-- Favicon: kotak biru TERANG dengan glif navy gelap — terbaca di tab
-       terang maupun gelap (versi lama gelap-di-atas-gelap tidak terlihat). -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234D8DFF'/><g fill='%2306172E'><rect x='24' y='26' width='20' height='20' rx='5'/><rect x='56' y='26' width='20' height='20' rx='5'/><rect x='24' y='54' width='20' height='20' rx='5'/><rect x='56' y='54' width='20' height='20' rx='5'/></g></svg>">
+  <!-- Favicon: kotak KUNING dengan panah vektor navy. Terbaca di tab terang
+       maupun gelap, dan bentuknya sama dengan lencana merek di header —
+       yang dilihat siswa saat menunggu adalah MEREKNYA, bukan roda berputar
+       yang bisa milik aplikasi mana pun. -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FFC800'/><g stroke='%230A1B45' stroke-width='9' stroke-linecap='round' stroke-linejoin='round' fill='none'><path d='M22 78 L70 30'/><path d='M46 26 L74 26 L74 54'/></g></svg>">
 </head>
 <body>
 
-  <!-- Latar: tiga bidang warna lembut yang mengambang pelan, ditumpuk
-       pola titik halus. Dekoratif murni, jadi disembunyikan dari
-       pembaca layar dan tidak pernah menangkap pointer. -->
+  <!-- ============================================================
+       LATAR GEOMETRIS
+
+       Bukan hiasan acak: ia BIDANG KARTESIUS. Kisi satuan, kisi mayor,
+       dua batang vektor yang hanyut pelan, dan satu busur sudut di
+       antaranya. Subjek aplikasi ini memang geometri koordinat, jadi
+       lantai aplikasinya pun sebuah bidang koordinat.
+
+       Dekoratif murni: disembunyikan dari pembaca layar dan tidak pernah
+       menangkap pointer.
+       ============================================================ -->
   <div class="backdrop" aria-hidden="true">
     <span class="blob blob--1"></span>
     <span class="blob blob--2"></span>
     <span class="blob blob--3"></span>
   </div>
 
-  <!-- Pengunci orientasi. CSS yang menyalakannya di mode potret; markup-nya
-       selalu ada agar pembaca layar tetap menemukan pesannya. -->
+  <!-- ============================================================
+       PENGUNCI ORIENTASI
+
+       CSS yang menyalakannya di mode potret; markupnya SELALU ada agar
+       pembaca layar tetap menemukan pesannya.
+       ============================================================ -->
   <div class="rotate-lock" role="alertdialog" aria-live="polite"
        aria-labelledby="rotate-title" aria-describedby="rotate-text">
     <div class="rotate-lock__panel">
@@ -66,9 +102,11 @@
       </span>
       <h2 class="rotate-lock__title" id="rotate-title">Putar Perangkatmu</h2>
       <p class="rotate-lock__text" id="rotate-text">
-        Mohon putar perangkat Anda ke mode Landscape untuk pengalaman belajar terbaik.
+        Mohon putar perangkat Anda ke mode <strong>Landscape</strong> untuk
+        pengalaman belajar terbaik. Bidang kartesius dan papan angka butuh
+        lebar layar penuh.
       </p>
-      <span class="rotate-lock__hint">Ruang Matriks</span>
+      <span class="rotate-lock__hint">Ruang Vektor</span>
     </div>
   </div>
 
@@ -76,54 +114,78 @@
        LAYAR MUAT
 
        Markupnya STATIS di HTML, bukan dibuat JavaScript: di jaringan
-       sekolah yang lambat, modul ES bisa perlu beberapa detik untuk
-       tiba, dan sepanjang itu layar tidak boleh kosong-putih.
+       sekolah yang lambat, modul ES bisa perlu beberapa detik untuk tiba,
+       dan sepanjang itu layar tidak boleh kosong-putih.
 
-       Bentuknya matriks 2x2 di dalam kurung siku — bukan spinner
-       generik. Bentuk itu sudah jadi tanda pengenal aplikasi ini:
-       ia sama dengan favicon dan dengan logo di header, sehingga
-       yang dilihat siswa selama menunggu adalah MEREKNYA, bukan
-       sebuah roda berputar yang bisa milik aplikasi mana pun.
+       Bentuknya dua vektor berpangkal sama dengan busur sudut yang menyapu
+       di antaranya — tanda pengenal aplikasi ini, bukan spinner generik.
        ============================================================ -->
   <div class="boot" id="boot-loader" role="status" aria-live="polite">
     <div class="boot__stage" aria-hidden="true">
-      <span class="boot__bracket boot__bracket--left"></span>
-      <div class="boot__grid">
-        <span class="boot__cell"></span>
-        <span class="boot__cell"></span>
-        <span class="boot__cell"></span>
-        <span class="boot__cell"></span>
-      </div>
-      <span class="boot__bracket boot__bracket--right"></span>
+      <span class="boot__axis boot__axis--x"></span>
+      <span class="boot__axis boot__axis--y"></span>
+      <span class="boot__arc"></span>
+      <span class="boot__vec boot__vec--a"></span>
+      <span class="boot__vec boot__vec--b"></span>
     </div>
-    <p class="boot__text">Memuat Ruang Matriks…</p>
+    <p class="boot__text">Memuat Ruang Vektor…</p>
   </div>
 
   <div id="app">
 
-    <!-- Header tetap: identitas & progres -->
+    <!-- ============================================================
+         HEADER — identitas · navigasi · progres
+
+         Catatan arsitektur: navigasi utama duduk DI HEADER, bukan sebagai
+         rail kiri. Layar belajar dan layar ujian sudah memakai kolom kiri
+         untuk `.ws-side` (Sidebar & Stage), dan rail kedua di sisi yang
+         sama akan menciptakan dua kolom kiri yang bersaing di viewport
+         lanskap 6 inci. Navigasi header tetap terlihat di setiap layar
+         tanpa mengambil ruang panggung.
+         ============================================================ -->
     <header class="app-header">
+
       <div class="brand">
         <button class="brand__mark" type="button" data-role="home" aria-label="Kembali ke menu utama">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          <!-- Ikon duotone: panah vektor bersudut membulat -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/>
-            <rect x="14" y="14" width="7" height="7" rx="1"/>
+            <path d="M4 20 L18 6"/>
+            <path d="M10 5h9v9"/>
           </svg>
         </button>
         <div class="brand__text">
-          <div class="brand__title">Ruang Matriks</div>
-          <div class="brand__sub">Matematika Tingkat Lanjut - Kelas 11</div>
+          <div class="brand__title">Ruang Vektor</div>
+          <div class="brand__sub">Matematika Tingkat Lanjut · Kelas 11</div>
         </div>
       </div>
 
       <!-- Progres duduk di TENGAH atas: ia milik seluruh aplikasi, bukan
-           milik salah satu sisi. Tombol layar penuh mengambang di kanan atas
-           (di luar #app), jadi kolom kanan header sengaja disisakan kosong
-           selebar tombol itu agar keduanya tidak pernah bertabrakan. -->
+           salah satu sisi. Angkanya kuning karena ia nilai yang bisa
+           dilihat, dikejar, dan dinaikkan siswa (Kontrak 11). -->
       <div class="header-center">
+
+        <nav class="navrail" aria-label="Navigasi utama">
+          <button class="navrail__item" type="button" data-nav="belajar" aria-current="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 18 L11 10"/>
+              <path d="M6.5 9.5H12V15"/>
+              <path d="M14 5h6v6"/>
+            </svg>
+            <span>Belajar</span>
+          </button>
+          <button class="navrail__item" type="button" data-nav="tka" aria-current="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 21V8"/>
+              <path d="M12 21V4"/>
+              <path d="M19 21v-9"/>
+            </svg>
+            <span>Latihan TKA</span>
+          </button>
+        </nav>
+
         <div class="progress-ring" role="img" aria-label="Persentase penguasaan kurikulum">
           <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
             <circle class="progress-ring__track" cx="20" cy="20" r="16" fill="none" stroke-width="4"/>
@@ -137,7 +199,9 @@
       <div class="header-slot" aria-hidden="true"></div>
     </header>
 
-    <!-- Satu layar terlihat pada satu waktu; tidak ada scroll di level body -->
+    <!-- Satu layar terlihat pada satu waktu; tidak ada scroll di level body.
+         Scroll hanya hidup di wadah yang ditandai eksplisit: .scroll-area,
+         .workspace__body, .ws-side__hint, .menu -->
     <main class="screen-host" id="screen-host"></main>
 
     <footer class="app-footer">
@@ -148,8 +212,9 @@
 
   </div>
 
-  <!-- Layar penuh: aksi global, jadi ia hidup di luar #app supaya tidak
-       ikut dibongkar setiap kali layar berganti. -->
+  <!-- Layar penuh: aksi global, jadi ia hidup DI LUAR #app supaya tidak
+       ikut dibongkar setiap kali layar berganti. Karena itu pula ia harus
+       disebut terpisah di aturan pengunci orientasi. -->
   <button class="fs-btn" type="button" data-role="fullscreen" aria-label="Masuk mode layar penuh">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -163,13 +228,17 @@
 
   <!-- Pesan bila JavaScript dimatikan -->
   <noscript>
-    <div style="padding:24px;text-align:center;font-family:system-ui">
+    <div style="padding:24px;text-align:center;font-family:system-ui;color:#F2F6FF">
       <h2>JavaScript diperlukan</h2>
       <p>Aplikasi ini sepenuhnya berjalan di browser dan membutuhkan JavaScript aktif.</p>
     </div>
   </noscript>
 
-  <!-- Pustaka pihak ketiga: defer agar tidak memblokir render -->
+  <!-- Pustaka pihak ketiga: defer agar tidak memblokir render.
+       CATATAN UTANG TEKNIS (PRD §3.3): keduanya masih dari CDN. Di lab
+       sekolah yang memblokir jsdelivr, rumus akan tampil sebagai LaTeX
+       mentah dan animasi GSAP mati diam-diam. Pemindahan ke
+       assets/vendor/ dijadwalkan di Tahap 1 Langkah 5. -->
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
           integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
           crossorigin="anonymous"></script>
@@ -177,7 +246,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
 
   <script>
-    // Daftarkan MotionPathPlugin begitu GSAP siap (lintasan lengkung ala Manim).
+    // Daftarkan MotionPathPlugin begitu GSAP siap (lintasan lengkung).
     window.addEventListener('load', function () {
       if (window.gsap && window.MotionPathPlugin) {
         window.gsap.registerPlugin(window.MotionPathPlugin);

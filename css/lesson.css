@@ -1,0 +1,315 @@
+/* ============================================================
+   lesson.css — Blok materi bacaan & kerangka Mini Kuis.
+
+   Semua yang ada di berkas ini hidup DI DALAM kartu putih, jadi
+   warnanya diambil dari skala --ink-*.
+
+   Blok materi yang didukung lessonRenderer: p · def · tip · warn ·
+   tex · steps · list · typegroup · carousel. Empat yang pertama sudah
+   ditangani .callout di components.css; sisanya di sini.
+   ============================================================ */
+
+@layer components {
+
+  /* ============================================================
+     1. TYPEGROUP — kelompok klasifikasi
+
+     Dipakai untuk "empat notasi vektor", "tanda hasil dot product",
+     "dua jenis diagonal". Penomorannya (block.n) hanya muncul kalau
+     datanya memang menyediakannya — nomor yang tidak menandai urutan
+     apa pun hanya dekorasi.
+     ============================================================ */
+
+  .typegroup {
+    display: grid;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    border-radius: var(--r-lg);
+    background: var(--bg-sunken);
+    border: 1px solid var(--border-soft);
+  }
+
+  .typegroup__head {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .typegroup__num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--r-sm);
+    background: var(--navy-800);
+    color: var(--value);
+    font-family: var(--font-value);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+
+  .typegroup__title {
+    font-size: var(--fs-md);
+    font-weight: 800;
+    letter-spacing: var(--tracking-display);
+    color: var(--ink-900);
+  }
+
+  .typegroup__lead {
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--ink-700);
+  }
+
+  .typegroup__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--sp-3);
+  }
+
+  .typegroup__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    padding-top: var(--sp-2);
+    border-top: 1px dashed var(--border-soft);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .typegroup__note::before {
+    content: '';
+    flex: none;
+    width: 18px;
+    height: 8px;
+    margin-top: 5px;
+    background: var(--accent-amber);
+    clip-path: polygon(0 34%, 58% 34%, 58% 0, 100% 50%, 58% 100%, 58% 66%, 0 66%);
+  }
+
+  /* --- Kartu tipe --- */
+  .typecard {
+    display: grid;
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-1);
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .typecard:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+
+  .typecard__name {
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    font-weight: 800;
+    color: var(--brand-primary);
+  }
+
+  /* Rumus duduk di panel navy: notasi adalah register yang berbeda dari
+     prosa, dan di aplikasi ini perbedaan itu ditunjukkan lewat latarnya. */
+  .typecard__figure {
+    display: grid;
+    place-items: center;
+    min-height: 54px;
+    padding: var(--sp-2);
+    border-radius: var(--r-sm);
+    background: var(--bg-instrument);
+    color: var(--on-navy);
+  }
+
+  .typecard__figure .katex-display { margin: 0; }
+
+  .typecard__text {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+
+  /* ============================================================
+     2. CAROUSEL MATERI
+     ============================================================ */
+
+  .materi-carousel { display: grid; gap: var(--sp-3); }
+
+  .materi-carousel__title {
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  .materi-carousel__viewport {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    /* Pasangan wajib dari overflow: tanpa ini, flex item menolak
+       menyusut dan gulirnya tidak pernah aktif. */
+    min-width: 0;
+  }
+
+  .materi-carousel__track {
+    display: flex;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-2);
+  }
+
+  .materi-carousel__slide {
+    flex: 0 0 min(260px, 72vw);
+    scroll-snap-align: start;
+    display: grid;
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-1);
+  }
+
+  .materi-carousel__name {
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    font-weight: 800;
+    color: var(--brand-primary);
+  }
+
+  .materi-carousel__figure {
+    display: grid;
+    place-items: center;
+    min-height: 54px;
+    padding: var(--sp-2);
+    border-radius: var(--r-sm);
+    background: var(--bg-instrument);
+    color: var(--on-navy);
+  }
+  .materi-carousel__figure .katex-display { margin: 0; }
+
+  .materi-carousel__text {
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+
+  /* ============================================================
+     3. NAVIGASI MINI KUIS
+
+     Rel langkah, bukan titik-titik. Di Mini Kuis navigasinya TERKUNCI:
+     siswa tidak boleh melewati soal yang belum dikuasai, jadi rel ini
+     menunjukkan posisi — bukan menawarkan lompatan.
+     ============================================================ */
+
+  .quiz-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+
+  .quiz-nav__track {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .quiz-nav__step {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 6px;
+    border-radius: var(--r-pill);
+    background: var(--border-soft);
+    transition: background var(--dur-base) var(--ease-out);
+  }
+
+  .quiz-nav__step[data-state="done"] { background: var(--success); }
+  .quiz-nav__step[data-state="active"] { background: var(--value); }
+  .quiz-nav__step[data-state="wrong"] { background: var(--danger); }
+
+  .quiz-nav__count {
+    flex: none;
+    font-family: var(--font-value);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-500);
+    /* Lebar TETAP: "1/10" dan "10/10" tidak boleh menggeser relnya. */
+    min-width: 52px;
+    text-align: right;
+  }
+
+
+  /* ============================================================
+     4. KUNCI JAWABAN
+
+     Hanya muncul SESUDAH jawaban siswa dinilai. Sebelum itu, nilainya
+     tidak boleh ada di DOM sama sekali — itu uji regresi terpenting
+     untuk aksioma "aplikasi tidak pernah menghitung untuk siswa".
+     ============================================================ */
+
+  .answer-key {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+    background: var(--success-soft);
+    border: 1px solid rgba(14, 159, 110, .28);
+  }
+
+  .answer-key__label {
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--success-hi);
+  }
+
+  .answer-key__value {
+    font-family: var(--font-value);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-900);
+  }
+
+
+  /* ============================================================
+     5. RINGKASAN SELESAI SUB-TOPIK
+     ============================================================ */
+
+  .lesson-done__score {
+    font-family: var(--font-value);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--value-deep);
+  }
+
+  .lesson-done__title {
+    font-size: var(--fs-lg);
+    font-weight: 900;
+    letter-spacing: var(--tracking-display);
+    color: var(--ink-900);
+  }
+
+
+  /* ============================================================
+     6. LANSKAP PENDEK — materi tetap terbaca di ponsel 6 inci
+     ============================================================ */
+
+  @media (orientation: landscape) and (max-height: 460px) {
+    .typegroup { padding: var(--sp-3); gap: var(--sp-2); }
+    .typegroup__grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .typecard__figure, .materi-carousel__figure { min-height: 44px; }
+  }
+}

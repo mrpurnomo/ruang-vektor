@@ -1,0 +1,194 @@
+/* ============================================================
+   screens.css — Layar penuh yang berdiri langsung di atas kanvas navy:
+   layar masuk dan layar "belum tersedia".
+
+   Keduanya tidak punya Sidebar & Stage, tidak punya panggung, dan
+   tidak punya kartu materi. Ia satu kartu putih di tengah bidang
+   kartesius — dan itulah kesan pertama aplikasi ini.
+   ============================================================ */
+
+@layer layout {
+
+  /* ============================================================
+     1. LAYAR MASUK
+     ============================================================ */
+
+  .login {
+    height: 100%;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: var(--sp-5);
+  }
+
+  /* Header disembunyikan di layar masuk: belum ada progres untuk
+     ditampilkan, dan cincin progres kosong adalah angka yang tidak
+     bisa ditelusuri siswa (Kontrak 11). */
+  .is-login-screen .app-header .header-center,
+  .is-login-screen .app-header .brand__sub { visibility: hidden; }
+
+  .login__card {
+    position: relative;
+    width: min(460px, calc(100vw - 40px));
+    display: grid;
+    justify-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-6) var(--sp-5) var(--sp-5);
+    border-radius: var(--r-2xl);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-lift);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* Pita kuning tipis di kepala kartu — penanda yang sama dipakai
+     seluruh kartu "pintu masuk" di aplikasi ini. */
+  .login__card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--value), var(--value-hi));
+  }
+
+  .login__mark {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: var(--r-lg);
+    background: var(--navy-800);
+    color: var(--value);
+    box-shadow: var(--shadow-2);
+  }
+
+  .login__eyebrow { color: var(--accent-amber); }
+
+  .login__title {
+    font-size: var(--fs-2xl);
+    font-weight: 900;
+    letter-spacing: var(--tracking-display);
+    color: var(--ink-900);
+  }
+
+  .login__lead {
+    max-width: 34ch;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--ink-500);
+  }
+
+  .login__fields {
+    width: 100%;
+    display: grid;
+    gap: var(--sp-3);
+    margin-top: var(--sp-2);
+  }
+
+  .login__field { display: grid; gap: 6px; text-align: left; }
+
+  .login__label {
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  /* Field teks pun tidak pernah memanggil keyboard OS: mathpad mode teks
+     yang mengisinya. Karena itu kursornya disembunyikan dan seluruh
+     kotaknya bisa diketuk. */
+  .login__input {
+    width: 100%;
+    min-height: var(--touch-min);
+    padding: 10px var(--sp-4);
+    border-radius: var(--r-md);
+    border: 2px solid var(--border-soft);
+    background: var(--bg-sunken);
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--ink-900);
+    cursor: pointer;
+    caret-color: transparent;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .login__input::placeholder { color: var(--ink-300); font-weight: 400; }
+  .login__input:hover { border-color: var(--brand-primary-line); }
+
+  .login__input[data-active="true"] {
+    border-color: var(--value-deep);
+    background: var(--value-soft);
+    box-shadow: var(--glow-value);
+  }
+
+  .login__input.is-invalid {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+  }
+
+  .login__submit { width: 100%; margin-top: var(--sp-2); }
+
+  .login__note {
+    max-width: 38ch;
+    font-size: var(--fs-xs);
+    line-height: 1.55;
+    color: var(--ink-500);
+  }
+
+
+  /* ============================================================
+     2. LAYAR "BELUM TERSEDIA"
+
+     Layar kosong adalah undangan untuk bertindak, bukan permintaan
+     maaf. Ia menyebut apa yang belum ada dan ke mana harus pergi
+     sementara ini.
+     ============================================================ */
+
+  .soon {
+    height: 100%;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: var(--sp-5);
+  }
+
+  .soon__card {
+    width: min(520px, calc(100vw - 40px));
+    display: grid;
+    justify-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-6) var(--sp-5);
+    border-radius: var(--r-2xl);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-lift);
+    text-align: center;
+  }
+
+  .soon__mark {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: var(--r-lg);
+    background: var(--value-soft);
+    color: var(--accent-amber);
+  }
+
+  .soon__title {
+    font-size: var(--fs-xl);
+    font-weight: 900;
+    letter-spacing: var(--tracking-display);
+    color: var(--ink-900);
+  }
+
+  .soon__text {
+    max-width: 42ch;
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--ink-500);
+  }
+}

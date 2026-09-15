@@ -1,0 +1,555 @@
+/* ============================================================
+   mathpad.css — Papan angka kustom
+
+   SATU-SATUNYA jalur input angka di aplikasi ini (Kontrak 3).
+
+   Kenapa ia wajib ada, dan kenapa ia besar: keyboard bawaan OS menutupi
+   separuh layar ponsel — termasuk soalnya — mengizinkan karakter sampah,
+   dan merusak tata letak 100dvh yang sudah dirancang presisi. Karena itu
+   setiap field angka dipasangi `readOnly` + `inputmode="none"` sehingga
+   keyboard native TIDAK PERNAH muncul, lalu papan inilah yang mengisinya.
+
+   ARAH DESAIN: papan ini adalah satu-satunya objek NAVY yang duduk di
+   atas kartu putih. Ia sengaja dibuat terasa seperti ALAT, bukan seperti
+   bagian dari halaman — sama seperti bidang kartesius SVG. Dan pratinjau
+   nilainya kuning, karena kuning di aplikasi ini berarti "angka yang
+   keluar dari kepala siswa".
+
+   Kontrak perilaku yang harus dijaga CSS ini (dan mudah dirusak):
+   · klik di luar pad = SIMPAN  → scrim tidak boleh menelan pointer-event
+   · Escape = BATAL             → tidak ada gaya "tersimpan" yang menetap
+   · pad hidup di document.body → posisinya fixed, bukan absolute
+   ============================================================ */
+
+@layer components {
+
+  /* ============================================================
+     1. FIELD ANGKA — pintu masuk ke papan
+
+     Tampilannya harus langsung berkata "ini diisi, dan diisi dengan
+     angka": mono, tabular, rata tengah, dan bertepi tebal. Kursor teks
+     disembunyikan karena tidak ada pengetikan langsung di sini.
+     ============================================================ */
+
+  .numfield {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    min-height: var(--touch-min);
+    padding: 8px var(--sp-4);
+    border-radius: var(--r-md);
+    border: 2px solid var(--border-strong);
+    background: var(--bg-sunken);
+    font-family: var(--font-value);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-900);
+    text-align: center;
+    cursor: pointer;
+    caret-color: transparent;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+
+  .numfield::placeholder { color: var(--ink-300); font-weight: 400; }
+  .numfield:hover { border-color: var(--brand-primary); }
+
+  /* Field yang sedang diisi memakai warna NILAI, bukan warna merek —
+     supaya mata siswa selalu tahu kotak mana yang sedang menunggu
+     angkanya, bahkan saat papan menutupi separuh layar. */
+  .numfield[data-active="true"] {
+    border-color: var(--value-deep);
+    background: var(--value-soft);
+    box-shadow: var(--glow-value);
+  }
+
+  .numfield--ok { border-color: var(--success); background: var(--success-soft); }
+  .numfield--no { border-color: var(--danger); background: var(--danger-soft); }
+
+  /* Varian sel: dipakai di dalam kurung vektor kolom, jadi ia harus
+     ramping dan TIDAK PERNAH menyentuh garis kurungnya. */
+  .numfield--cell {
+    min-width: 62px;
+    padding: 6px var(--sp-2);
+    font-size: var(--fs-base);
+    border-radius: var(--r-sm);
+  }
+
+
+  /* ============================================================
+     2. SCRIM
+
+     Menggelapkan halaman, tetapi TIDAK memblokir klik: kontraknya
+     berbunyi "klik di luar pad = SIMPAN", dan itu hanya bekerja bila
+     pointer benar-benar sampai ke elemen di bawahnya.
+     ============================================================ */
+
+  .mathpad-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-mathpad) - 1);
+    background: rgba(4, 10, 26, .46);
+    backdrop-filter: blur(2px);
+    animation: mpScrimIn var(--dur-base) var(--ease-out) both;
+  }
+
+  @keyframes mpScrimIn { from { opacity: 0; } to { opacity: 1; } }
+
+
+  /* ============================================================
+     3. BADAN PAPAN
+     ============================================================ */
+
+  .mathpad {
+    position: fixed;
+    z-index: var(--z-mathpad);
+    width: min(360px, calc(100vw - 32px));
+    padding: var(--sp-3);
+    display: none;
+    flex-direction: column;
+    gap: var(--sp-3);
+    border-radius: var(--r-xl);
+    border: 1px solid var(--border-navy);
+    background:
+      linear-gradient(180deg, var(--navy-700), var(--navy-800) 62%);
+    box-shadow: var(--shadow-4), var(--sheen-navy);
+    color: var(--on-navy);
+  }
+
+  .mathpad[data-open="true"] {
+    display: flex;
+    animation: mpRise var(--dur-base) var(--ease-spring) both;
+  }
+
+  @keyframes mpRise {
+    from { opacity: 0; transform: translateY(14px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+
+  /* ============================================================
+     4. KEPALA: pratinjau nilai + pemilih mode
+     ============================================================ */
+
+  .mathpad__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  /* Pratinjau adalah JANTUNG papan ini. Ia besar, mono, dan KUNING,
+     karena isinya persis satu hal: angka yang sedang disusun siswa. */
+  .mathpad__preview {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-navy);
+    background: rgba(4, 10, 26, .55);
+    font-family: var(--font-value);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--value);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    direction: ltr;
+    transition: box-shadow var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .mathpad__preview[data-empty="true"] {
+    color: var(--on-navy-3);
+    font-weight: 400;
+  }
+
+  /* Batas digit tercapai: papan menjelaskan lewat GERAK + WARNA, bukan
+     dengan menerima digit ke-5 diam-diam. Kontrak 4 berlaku juga di sini —
+     penolakan yang tidak dijelaskan mengajarkan "coba lagi acak". */
+  .mathpad__preview.is-limit {
+    border-color: var(--danger-on-navy);
+    box-shadow: 0 0 0 2px rgba(255, 122, 122, .35);
+    animation: mpLimit 420ms var(--ease-out);
+  }
+
+  @keyframes mpLimit {
+    0%, 100% { transform: translateX(0); }
+    22%      { transform: translateX(-6px); }
+    45%      { transform: translateX(5px); }
+    70%      { transform: translateX(-3px); }
+  }
+
+  .mathpad__mode {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-1);
+    padding: 3px;
+    border-radius: var(--r-pill);
+    background: rgba(4, 10, 26, .5);
+    border: 1px solid var(--border-navy);
+  }
+
+  .mathpad__mode button {
+    min-height: 32px;
+    padding: 0 var(--sp-2);
+    border-radius: var(--r-pill);
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: var(--on-navy-3);
+    transition: color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+
+  .mathpad__mode button:hover { color: var(--on-navy); }
+
+  .mathpad__mode button[aria-pressed="true"] {
+    background: var(--value);
+    color: var(--value-ink);
+  }
+
+  /* Spesifisitas [data-theme] (0,2,0) menang atas kelas tunggal (0,1,0).
+     Aturan warisan ini dipertahankan agar tidak ada komponen lama yang
+     tiba-tiba kehilangan warna teksnya. */
+  [data-theme="light"] .mathpad__mode button[aria-pressed="true"] { color: var(--value-ink); }
+
+
+  /* ============================================================
+     5. MODE PECAHAN — tersusun VERTIKAL
+
+     Pembilang di atas, garis, penyebut di bawah — persis seperti pecahan
+     ditulis di buku. Menyusunnya mendatar ("3/4") menghemat ruang tetapi
+     memutus hubungan visual dengan bentuk yang dikerjakan siswa di
+     kertas, dan itu harga yang tidak sepadan.
+     ============================================================ */
+
+  .mathpad__fraction { display: none; }
+  .mathpad[data-mode="fraction"] .mathpad__fraction { display: block; }
+
+  .mathpad__frac-stack {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: var(--sp-2);
+    border-radius: var(--r-md);
+    background: rgba(4, 10, 26, .4);
+    border: 1px solid var(--border-navy);
+  }
+
+  .mathpad__frac-slot {
+    min-width: 96px;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    padding: 0 var(--sp-3);
+    border-radius: var(--r-sm);
+    border: 2px solid transparent;
+    background: transparent;
+    font-family: var(--font-value);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--on-navy-2);
+    transition: all var(--dur-fast) var(--ease-out);
+  }
+
+  .mathpad__frac-slot[data-active="true"] {
+    border-color: var(--value-deep);
+    background: rgba(255, 200, 0, .12);
+    color: var(--value);
+  }
+
+  .mathpad__frac-bar {
+    width: 104px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--on-navy-2);
+  }
+
+  .mathpad__frac-caption {
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--on-navy-3);
+  }
+
+  /* ------------------------------------------------------------
+     MODE AKAR — disiapkan untuk Tahap 5.
+
+     Jawaban di domain Vektor berbentuk akar eksak ($\sqrt{29}$,
+     $3\sqrt{5}$), bukan desimal. Strukturnya mengikuti pola pecahan
+     persis: satu slot koefisien di depan, satu slot radikan di bawah
+     tanda akar. Gaya sudah siap; markup-nya menyusul bersama
+     `mode: 'surd'` di mathpad.js.
+     ------------------------------------------------------------ */
+
+  .mathpad__surd { display: none; }
+  .mathpad[data-mode="surd"] .mathpad__surd { display: block; }
+
+  .mathpad__surd-stack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-1);
+    padding: var(--sp-2);
+    border-radius: var(--r-md);
+    background: rgba(4, 10, 26, .4);
+    border: 1px solid var(--border-navy);
+  }
+
+  .mathpad__surd-slot {
+    min-width: 64px;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-sm);
+    border: 2px solid transparent;
+    font-family: var(--font-value);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--on-navy-2);
+    transition: all var(--dur-fast) var(--ease-out);
+  }
+
+  .mathpad__surd-slot[data-active="true"] {
+    border-color: var(--value-deep);
+    background: rgba(255, 200, 0, .12);
+    color: var(--value);
+  }
+
+  /* Tanda akar digambar, bukan diketik — supaya garis atapnya benar-benar
+     menaungi slot radikannya berapa pun lebarnya. */
+  .mathpad__surd-radical {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    padding-left: 18px;
+    border-top: 2px solid var(--on-navy-2);
+    margin-top: 6px;
+  }
+  .mathpad__surd-radical::before {
+    content: '√';
+    position: absolute;
+    left: 0;
+    top: -6px;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--on-navy-2);
+  }
+
+
+  /* ============================================================
+     6. TOMBOL ANGKA — kisi 4 kolom
+
+     44px adalah lantai sentuh, bukan target. Tombolnya dibuat besar
+     karena seluruh aplikasi dirancang untuk diselesaikan dengan jempol,
+     satu tangan, di ponsel 6 inci lanskap.
+     ============================================================ */
+
+  .mathpad__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-2);
+  }
+
+  .mp-key {
+    min-height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-navy);
+    background: rgba(242, 246, 255, .07);
+    font-family: var(--font-value);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--on-navy);
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 90ms var(--ease-out),
+                background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .mp-key:hover {
+    background: rgba(242, 246, 255, .14);
+    border-color: var(--on-navy-line);
+  }
+  .mp-key:active { transform: scale(.92); }
+  .mp-key svg { width: 20px; height: 20px; }
+
+  /* Tombol bantu (tanda, bersihkan) — biru terang, bukan biru royal:
+     royal terlalu gelap untuk dibaca di atas navy. */
+  .mp-key--util {
+    background: var(--brand-on-navy-soft);
+    border-color: rgba(123, 167, 255, .28);
+    color: var(--brand-on-navy);
+  }
+
+  .mp-key--danger {
+    background: rgba(255, 122, 122, .12);
+    border-color: rgba(255, 122, 122, .30);
+    color: var(--danger-on-navy);
+  }
+
+  /* Tombol konfirmasi: satu-satunya tombol berlatar penuh di papan ini.
+     Ia yang menutup pad dan menyimpan nilainya. */
+  .mp-key--confirm {
+    background: var(--value);
+    border-color: var(--value);
+    color: var(--value-ink);
+    box-shadow: 0 6px 18px -8px rgba(255, 200, 0, .75);
+  }
+  .mp-key--confirm:hover { background: var(--value-hi); border-color: var(--value-hi); }
+  [data-theme="light"] .mp-key--confirm { color: var(--value-ink); }
+
+  .mp-key--wide { grid-column: span 2; }
+
+
+  /* ============================================================
+     7. MODE VARIABEL — deret huruf matematis (x, y, z, k, m, …)
+     ============================================================ */
+
+  .mathpad__letters { display: none; }
+  .mathpad[data-mode="letter"] .mathpad__letters {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--sp-1);
+  }
+
+  .mp-letter {
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-navy);
+    background: rgba(242, 246, 255, .06);
+    font-family: var(--font-value);
+    font-size: var(--fs-base);
+    font-style: italic;
+    font-weight: 700;
+    color: var(--on-navy);
+    transition: background var(--dur-fast) var(--ease-out), transform 90ms var(--ease-out);
+  }
+  .mp-letter:hover { background: rgba(242, 246, 255, .14); }
+  .mp-letter:active { transform: scale(.92); }
+
+  .mp-letter--case {
+    font-style: normal;
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    color: var(--brand-on-navy);
+    background: var(--brand-on-navy-soft);
+  }
+
+
+  /* ============================================================
+     8. MODE TEKS — papan huruf penuh (dipakai layar masuk)
+
+     Hanya mode ini yang melebar, karena isinya memang deret QWERTY.
+     ============================================================ */
+
+  .mathpad__abc { display: none; }
+  .mathpad--text .mathpad__abc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+
+  .mathpad--text { width: min(720px, calc(100vw - 24px)); }
+  .mathpad--text .mathpad__grid,
+  .mathpad--text .mathpad__mode,
+  .mathpad--text .mathpad__fraction,
+  .mathpad--text .mathpad__letters { display: none; }
+
+  .mathpad--text .mathpad__preview {
+    justify-content: flex-start;
+    font-family: var(--font-body);
+    font-size: var(--fs-md);
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--on-navy);
+  }
+
+  .mathpad__abc-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .mp-abc {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-xs);
+    border: 1px solid var(--border-navy);
+    background: rgba(242, 246, 255, .07);
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--on-navy);
+    transition: background var(--dur-fast) var(--ease-out), transform 90ms var(--ease-out);
+  }
+  .mp-abc:hover { background: rgba(242, 246, 255, .16); }
+  .mp-abc:active { transform: scale(.94); }
+
+  .mp-abc--util {
+    background: var(--brand-on-navy-soft);
+    border-color: rgba(123, 167, 255, .28);
+    color: var(--brand-on-navy);
+    font-size: var(--fs-xs);
+  }
+
+  .mp-abc--wide { flex: 1.6 1 0; }
+  .mp-abc--space { flex: 4 1 0; }
+
+  .mp-abc--ok {
+    background: var(--value);
+    border-color: var(--value);
+    color: var(--value-ink);
+  }
+  .mp-abc--ok:hover { background: var(--value-hi); }
+
+
+  /* ============================================================
+     9. PONSEL — papan berlabuh di tepi bawah
+
+     Di layar sempit, papan mengambang justru lebih sering menutupi
+     soalnya. Melabuhkannya di bawah membuat posisinya bisa diprediksi,
+     dan ruang aman iOS ikut dihormati.
+     ============================================================ */
+
+  @media (max-width: 768px) {
+    .mathpad {
+      left: 0 !important;
+      right: 0;
+      bottom: 0 !important;
+      top: auto !important;
+      width: 100%;
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+      padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
+    }
+    .mathpad__preview { min-height: 46px; font-size: 1.4rem; }
+    .mp-key { min-height: 44px; }
+  }
+
+  /* Lanskap pendek (ponsel 6 inci diputar): papan harus tetap muat utuh
+     bersama soalnya, jadi ia menyusut alih-alih menggulung. */
+  @media (orientation: landscape) and (max-height: 460px) {
+    .mathpad { gap: var(--sp-2); padding: var(--sp-2); }
+    .mathpad__preview { min-height: 40px; font-size: 1.25rem; }
+    .mp-key { min-height: 40px; font-size: var(--fs-md); }
+    .mathpad__mode button { min-height: 28px; }
+  }
+}

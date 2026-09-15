@@ -36,7 +36,7 @@
 | **Bentuk** | Single Page Application (SPA), satu berkas `index.html` |
 | **Bahasa antarmuka** | Bahasa Indonesia, seluruhnya |
 | **Orientasi** | **Lanskap saja**. Potret memunculkan `.rotate-lock` |
-| **Tema** | **Premium Light Theme**, permanen. Mode gelap dicabut |
+| **Tema** | **Deep Navy Canvas · White Cards · Vibrant Yellow**, permanen. Tidak ada pengalih tema |
 | **Distribusi** | Hosting statis · GitHub Pages · **flash disk di lab sekolah (offline)** |
 | **Footer wajib** | `© Penta Putra Purnomo, S.Pd., Gr. \| SMAS YPVDP Bontang.` |
 
@@ -121,9 +121,13 @@ Sebelum menambahkan mekanik apa pun. Satu "tidak" = rancang ulang.
 
 ### 2.5 Fitur yang dicabut permanen
 
-Mode gelap & pengalihnya · streak harian · pengatur kecepatan animasi ·
-lencana tanpa sistem lencana · mekanik "titik temu".
+**Pengalih tema** (mode gelap/terang) · streak harian · pengatur kecepatan
+animasi · lencana tanpa sistem lencana · mekanik "titik temu".
 **Jangan dihidupkan lagi.**
+
+> Yang dicabut adalah **pengalihnya**, bukan pilihan warnanya. Aplikasi ini
+> memakai satu tema tetap berkanvas navy (§7.1); yang dilarang adalah
+> menghadirkan dua tema yang bisa ditukar siswa.
 
 ---
 
@@ -484,41 +488,80 @@ Setiap soal **wajib** punya `id`, `input_type`, `subtopic`, `prompt`, `after`,
 
 ## 7. ATURAN UI/UX
 
-### 7.1 Tema: Premium Light Theme (permanen)
+### 7.1 Tema: Deep Navy Canvas · White Cards · Vibrant Yellow (permanen)
 
-`<html data-theme="light">` dipasang permanen. Tidak ada pengalih tema.
+Satu tema, dipasang permanen. **Tidak ada pengalih tema dan tidak ada mode
+gelap** — yang dicabut di Blueprint §1.5 adalah *pengalihnya*, bukan
+pilihan warnanya. `<html data-theme="light">` **tetap dipasang**: sejumlah
+komponen memakainya untuk menentukan warna teks tombol, dan mencabutnya akan
+mematikan aturan-aturan itu diam-diam. Ia menandai *"kartu bacanya terang"*,
+bukan *"kanvasnya terang"*.
 
 **Palet sumber** — angka inilah acuan desain:
 
 ```css
---ink:     #0A1B45;   /* tinta pekat  */
---royal:   #1D4ED8;   /* brand utama  */
---cyan:    #06B6D4;   /* aksen dingin */
---yellow:  #FFC800;   /* sorotan      */
---magenta: #EC0F8C;   /* penekanan    */
---paper:   #EFF4FF;   /* latar off-white elegan */
---white:   #FFFFFF;
+--navy-900: #060F2B;   /* sumur terdalam       */
+--navy-800: #0A1B45;   /* KANVAS UTAMA         */
+--navy-700: #122A5E;   /* bilah header & footer */
+--yellow:   #FFC800;   /* WARNA NILAI          */
+--royal:    #1D4ED8;   /* interaktif, di atas putih */
+--white:    #FFFFFF;   /* KARTU BACA           */
 ```
 
 **Pemetaan semantik** — inilah yang dipakai komponen:
 
 ```css
---bg-canvas:     var(--paper);
---bg-surface:    var(--white);
---ink-900:       var(--ink);
+--bg-canvas:     var(--navy-800);   /* bidang kartesius        */
+--bg-surface:    var(--white);      /* kartu baca — selalu putih */
+--bg-instrument: var(--navy-800);   /* panel alat DI DALAM kartu */
+--ink-900:       var(--ink);        /* teks di atas KARTU      */
+--on-navy:       #F2F6FF;           /* teks di atas KANVAS     */
+--value:         var(--yellow);
 --brand-primary: var(--royal);
---accent-amber:  #B98600;
---success:       #0E9F6E;
 ```
 
 > **Ganti nilainya, PERTAHANKAN namanya.** Kalau menambah warna: tambahkan di
 > palet sumber lalu petakan — **jangan pernah menulis hex langsung di berkas
 > komponen.**
 
-Karakter visual yang dituju: latar putih/off-white bersih, teks tinta pekat,
-**kontras tinggi**, whitespace lega, bayangan halus berlapis untuk kartu materi,
-sudut membulat konsisten, aksen Royal Blue dengan Cyan/Amber sebagai penanda
-status — bukan sebagai dekorasi.
+#### Tiga aturan yang menjaga tema ini tetap benar
+
+**1. Dua skala tinta, bukan satu.**
+`--ink-*` untuk teks di atas **kartu putih**; `--on-navy-*` untuk teks di atas
+**kanvas navy**. Memakai yang salah menghasilkan teks yang **hilang**, bukan
+sekadar jelek. Tinta *bawaan* adalah tinta kartu, karena hampir seluruh teks
+aplikasi hidup di dalam kartu — daftar elemen yang duduk langsung di kanvas
+sengaja dijaga pendek dan dicatat di `css/shell.css` §8.
+
+**2. Kuning adalah warna NILAI.**
+Kuning dipakai hampir eksklusif untuk **angka yang dihasilkan atau harus
+dihasilkan siswa**: pratinjau papan angka, isian jawaban yang sedang aktif,
+penghitung progres, dan tombol aksi utama. Label, judul, dan kerangka tidak
+pernah kuning. Aturan ini membuat Aksioma §2.1 terbaca dari paletnya sendiri.
+
+> Konsekuensi kontras: `#FFC800` di atas putih hanya mencapai 1,6:1. Ia hanya
+> boleh dipakai sebagai **latar** atau **di atas navy**. Untuk teks kuning di
+> atas putih, pakai `--accent-amber` (`#8A6200`, 6,4:1).
+
+**3. Navy di dalam kartu berarti "ini alat".**
+Satu-satunya objek gelap di dalam kartu putih adalah **bidang kartesius SVG**
+dan **papan angka**. Keduanya instrumen, bukan bacaan — dan latar gelapnya
+yang menyatakan itu tanpa satu kata pun.
+
+#### Karakter visual
+
+Modern, **flat design** tanpa bevel: kanvas navy pekat sebagai bidang
+koordinat (kisi satuan + kisi mayor + dua batang vektor yang hanyut pelan),
+kartu putih opak dengan sudut membulat dan bayangan dalam yang mengangkatnya
+dari kanvas, kontras tinggi, whitespace lega, ikon SVG duotone bersudut
+membulat, dan aksen kuning yang muncul tepat di tempat siswa harus bertindak.
+
+#### Struktur eyebrow & ikonografi
+
+Penanda struktural aplikasi ini adalah **panah vektor**, bukan garis atau
+titik generik: eyebrow diawali batang berujung runcing (`clip-path`), swatch
+legenda berbentuk panah, dan lencana merek adalah panah bersudut membulat.
+Penanda itu diambil dari kosakata subjeknya sendiri.
 
 ### 7.2 Arsitektur "Sidebar & Stage" — ini arsitektur, bukan gaya
 
@@ -604,12 +647,34 @@ tidak menahan apa pun.
 
 ```css
 /* Satu-satunya baris yang menentukan urutan. Di tokens.css, paling atas. */
-@layer reset, tokens, layout, components, domain, utilities, overrides;
+@layer reset, tokens, layout, components, domain, workspace, utilities, overrides;
 ```
 
-1. **Satu komponen = satu berkas.** `.plane__*` hanya boleh ada di `plane.css`.
-2. **`overrides` harus tetap kosong atau nyaris kosong.**
-3. Ukur dukungan peramban di perangkat kelas yang sebenarnya sebelum memutuskan.
+| Lapisan | Berkas |
+|---|---|
+| `reset` · `tokens` · `utilities` | `tokens.css` |
+| `layout` | `layout.css` → `shell.css` → `screens.css` |
+| `components` | `components.css` · `mathpad.css` · `lesson.css` · `quiz.css` |
+| `domain` | `vector.css` · `plane.css` · `simulations.css` · `scratchpad.css` |
+| `workspace` | `workspace.css` |
+| `utilities` | `animations.css` · `scrollbars.css` |
+
+1. **Satu komponen = satu berkas.** `.plane__*` hanya boleh ada di `plane.css`;
+   kerangka aplikasi hanya di `shell.css`; papan angka hanya di `mathpad.css`.
+2. **`overrides` harus tetap kosong atau nyaris kosong.** Saat ini: kosong.
+3. **`workspace` berdiri SESUDAH `domain`, bukan bagian dari `layout`.**
+   Arsitektur Sidebar & Stage bertugas *menyesuaikan* setiap komponen —
+   termasuk komponen domain — ke kolom selebar 190px: menyembunyikan brief
+   simulasi di lanskap pendek, meratakan legenda jadi satu kolom, merampingkan
+   tab langkah. Itu hanya bermakna kalau ia bisa mengalahkan berkas yang
+   mendefinisikan komponennya.
+
+   > Ini terukur, bukan teoretis. Sebelum urutan ini dipakai,
+   > `vector.css .sim__brief { display: flex }` (domain) mengalahkan
+   > `workspace.css .ws-side__hint .sim__brief { display: none }` (layout),
+   > dan brief yang seharusnya lenyap di layar setinggi 360px tetap tampil —
+   > mendorong prompt langkah keluar dari kartu.
+4. Ukur dukungan peramban di perangkat kelas yang sebenarnya sebelum memutuskan.
 
 ### 7.8 Aturan tampilan lain
 
@@ -862,7 +927,7 @@ Keputusan sadar, bukan kelalaian. Masing-masing disertai alasannya.
 |---|---|
 | **Perkalian silang (cross product)** sebagai sub-topik inti | Tidak ada di `Rancangan_Materi_Vektor_TKA.md`, dan tidak disebut di rincian TKA Kemendikdasmen (yang mencakup: *vektor pada bidang dan ruang · panjang vektor · operasi vektor*, **komponen maksimum tiga**). `vector.js` tetap menyediakan `cross()` untuk keperluan internal (uji kesejajaran di R³) — **tetapi tidak pernah ditawarkan ke siswa sebagai materi**. Bila kelak dibutuhkan, `validator.canCross()` sudah menyiapkan kalimat penolakannya |
 | **Backend / akun guru / bank soal daring** | Nol-build & offline-first. Ditinjau ulang hanya bila skor terpusat benar-benar dibutuhkan |
-| **Mode gelap** | Dicabut permanen; sejumlah komponen memakai `data-theme="light"` untuk menentukan warna teks tombol |
+| **Pengalih tema (mode gelap/terang)** | Dicabut permanen. Atribut `data-theme="light"` TETAP dipasang karena sejumlah komponen memakainya untuk menentukan warna teks tombol — ia menandai "kartu bacanya terang", bukan "kanvasnya terang" |
 | **Streak harian & lencana** | Mengukur kehadiran, bukan penguasaan (kontrak 11) |
 | **Pengatur kecepatan animasi** | Satu-satunya penyimpangan kecepatan yang sah adalah `prefers-reduced-motion` |
 | **Mode potret** | Kanvas kartesius + Sidebar & Stage tidak bermakna di bawah ~700px lebar |

@@ -1,0 +1,373 @@
+/* ============================================================
+   plane.css — Bidang kartesius SVG
+
+   Ini komponen domain terbesar di aplikasi. Ia SVG murni, bukan
+   <canvas> bitmap, karena setiap panah harus menjadi node DOM yang
+   bisa diketuk, diukur, ditema, dan diberi aria-label.
+
+   ARAH DESAIN: bidang ini adalah satu-satunya objek NAVY yang duduk di
+   dalam kartu putih. Ia terbaca sebagai ALAT — sebuah layar instrumen
+   di tengah halaman — dan justru di situlah kuning bekerja paling
+   keras: panah aktif dan nilai yang sedang dikerjakan menyala di atas
+   bidang gelap.
+
+   ------------------------------------------------------------
+   ENAM ATURAN YANG TIDAK BOLEH DILANGGAR
+   ------------------------------------------------------------
+   1. SUMBU Y TERBALIK. Di layar, y bertambah KE BAWAH. Semua konversi
+      lewat toScreen()/toMath(), tidak pernah aritmetika langsung.
+   2. SKALA x HARUS SAMA DENGAN SKALA y. `preserveAspectRatio` di bawah
+      menjaganya. Kalau tidak, sudut 45° tampil bukan 45° — dan itu
+      kebohongan matematis, bukan cacat estetika.
+   3. LAPISAN KISI & SUMBU TIDAK MENANGKAP POINTER. Tanpa ini,
+      elementFromPoint() mengembalikan garis kisi dan siswa tidak
+      pernah berhasil mengetuk panahnya.
+   4. KEPALA PANAH memakai markerUnits="userSpaceOnUse" — kalau tidak,
+      ia ikut membesar saat garisnya ditebalkan untuk sorotan, dan
+      panah tersorot tampak seperti panah yang berbeda.
+   5. LABEL lewat <foreignObject> berisi HTML, bukan <text>: <text> SVG
+      tidak bisa merender KaTeX dan tidak bisa ditata token CSS.
+   6. destroy() WAJIB melepas ResizeObserver — ia selamat dari
+      innerHTML = ''.
+   ============================================================ */
+
+@layer domain {
+
+  /* ============================================================
+     1. WADAH
+     ============================================================ */
+
+  .plane-host {
+    position: relative;
+    width: 100%;
+    /* Tinggi DICADANGKAN sejak awal: bidang yang mengembang-mengempis
+       saat panah ditambahkan akan menggeser seluruh panggung. */
+    min-height: clamp(200px, 34vh, 340px);
+    display: grid;
+    place-items: stretch;
+  }
+
+  .plane {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(120% 120% at 50% 0%, var(--navy-700), var(--navy-800) 60%, var(--navy-900));
+    border: 1px solid var(--border-navy);
+    box-shadow: inset 0 1px 0 rgba(160, 200, 255, .10),
+                0 10px 30px -18px rgba(2, 8, 26, .9);
+    touch-action: none;   /* seret panah tidak boleh menggulir halaman */
+    overflow: visible;
+  }
+
+
+  /* ============================================================
+     2. LAPISAN KISI & SUMBU — di belakang, dan TULI terhadap pointer
+     ============================================================ */
+
+  .plane__layer--grid,
+  .plane__layer--axis,
+  .plane__layer--label { pointer-events: none; }
+
+  .plane__layer--shape,
+  .plane__layer--interactive { pointer-events: auto; }
+
+  .plane__grid-line {
+    stroke: var(--grid-line);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plane__grid-line--major {
+    stroke: var(--grid-line-major);
+    stroke-width: 1;
+  }
+
+  .plane__axis {
+    stroke: var(--axis-line);
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plane__axis-tick {
+    stroke: var(--axis-line);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plane__origin {
+    fill: var(--on-navy-3);
+  }
+
+  /* Label sumbu & angka satuan: kecil, mono, dan tidak pernah bersaing
+     dengan panahnya. */
+  .plane__axis-label,
+  .plane__tick-label {
+    font-family: var(--font-value);
+    font-size: 11px;
+    font-weight: 500;
+    fill: var(--on-navy-3);
+    user-select: none;
+  }
+
+  .plane__axis-label { font-style: italic; font-weight: 700; fill: var(--on-navy-2); }
+
+
+  /* ============================================================
+     3. PANAH VEKTOR
+
+     Warna kepala panah DISETEL EKSPLISIT di setiap nada, karena
+     <marker> tidak mewarisi currentColor di semua peramban.
+     ============================================================ */
+
+  .plane__arrow {
+    --tone: var(--brand-on-navy);
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+
+  .plane__arrow-line {
+    stroke: var(--tone);
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    transition: stroke-width var(--dur-fast) var(--ease-out),
+                stroke var(--dur-base) var(--ease-out);
+  }
+
+  .plane__arrow-head { fill: var(--tone); }
+
+  /* Jalur ketuk tak terlihat: lebar 22px supaya panah setipis 3px tetap
+     bisa dikenai jempol di ponsel 6 inci. */
+  .plane__arrow-hit {
+    stroke: transparent;
+    stroke-width: 22;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* --- Nada warna --- */
+  .plane__arrow--blue   { --tone: var(--brand-on-navy); }
+  .plane__arrow--amber  { --tone: var(--value); }
+  .plane__arrow--cyan   { --tone: var(--cyan); }
+  .plane__arrow--coral  { --tone: #FF7AB8; }
+  .plane__arrow--success{ --tone: var(--success-on-navy); }
+  .plane__arrow--muted  { --tone: var(--on-navy-3); }
+  .plane__arrow--ghost  { --tone: var(--on-navy-3); opacity: .35; }
+
+  /* --- Status --- */
+  .plane__arrow.is-tappable { cursor: pointer; }
+  .plane__arrow.is-tappable .plane__arrow-hit { cursor: pointer; }
+
+  .plane__arrow.is-tappable:hover .plane__arrow-line,
+  .plane__arrow.is-tappable:focus-visible .plane__arrow-line { stroke-width: 4.4; }
+
+  /* Sorotan menebalkan GARIS saja. Kepala panah tidak ikut membesar —
+     itu yang membuat panah tersorot tetap terasa panah yang sama. */
+  .plane__arrow.is-highlight .plane__arrow-line {
+    stroke-width: 5;
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--tone) 65%, transparent));
+  }
+
+  .plane__arrow.is-muted { opacity: .3; }
+
+  .plane__arrow.is-locked { pointer-events: none; opacity: .55; }
+
+  /* Denyut mengubah OPASITAS DAN LEBAR, bukan sekadar tepi — supaya
+     tetap terbaca oleh siswa yang sulit membedakan warna. */
+  .plane__arrow.is-pulse .plane__arrow-line { animation: planePulse 1.5s var(--ease) infinite; }
+
+  @keyframes planePulse {
+    0%, 100% { stroke-width: 3.2; opacity: 1; }
+    50%      { stroke-width: 5.4; opacity: .78; }
+  }
+
+  /* Semua tujuan yang sah menyala saat satu sumber sudah diketuk. */
+  .is-tap-armed .plane__arrow--target .plane__arrow-line {
+    stroke-dasharray: 7 5;
+    animation: planeMarch 700ms linear infinite;
+  }
+
+  @keyframes planeMarch { to { stroke-dashoffset: -12; } }
+
+
+  /* ============================================================
+     4. TITIK, RUAS, GARIS BANTU
+     ============================================================ */
+
+  .plane__point {
+    fill: var(--value);
+    stroke: var(--navy-900);
+    stroke-width: 2;
+    transition: r var(--dur-fast) var(--ease-spring);
+  }
+
+  .plane__point--ghost { fill: var(--on-navy-3); }
+  .plane__point.is-tappable { cursor: pointer; }
+  .plane__point.is-tappable:hover { r: 7.5; }
+
+  .plane__segment {
+    stroke: var(--on-navy-2);
+    stroke-width: 2;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .plane__segment--dashed { stroke-dasharray: 6 5; }
+
+  /* Garis bantu komponen: putus-putus tipis menuju sumbu. Ia MENGKONFIRMASI
+     pembacaan siswa, bukan menuntunnya — karena itu ia hanya digambar
+     setelah siswa memilih komponennya. */
+  .plane__guide {
+    stroke: var(--value-line);
+    stroke-width: 1.6;
+    stroke-dasharray: 4 4;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plane__parallelogram {
+    fill: color-mix(in srgb, var(--brand-on-navy) 12%, transparent);
+    stroke: var(--brand-on-navy);
+    stroke-width: 1.4;
+    stroke-dasharray: 5 4;
+    vector-effect: non-scaling-stroke;
+  }
+
+
+  /* ============================================================
+     5. BUSUR SUDUT — DIGAMBAR TANPA ANGKA
+
+     Ini penerapan paling langsung dari aksioma §1.1. Menuliskan besar
+     sudutnya di busur akan menghapus seluruh pelajaran
+     cos θ = (u·v)/(‖u‖‖v‖). Busurnya menandai SUDUT MANA yang sedang
+     dibicarakan; besarnya diisi siswa lewat papan angka.
+     ============================================================ */
+
+  .plane__arc {
+    fill: none;
+    stroke: var(--value);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    opacity: .9;
+  }
+
+  .plane__arc--right {
+    /* Penanda siku-siku: kotak kecil, bukan busur. */
+    fill: none;
+    stroke: var(--success-on-navy);
+    stroke-width: 2;
+  }
+
+  /* Slot label sudut: ADA sejak awal dengan tinggi tercadangkan, tetapi
+     kosong. Memunculkannya belakangan akan menggeser bidangnya. */
+  .plane__arc-slot {
+    min-width: 34px;
+    min-height: 20px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-value);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--value);
+  }
+
+
+  /* ============================================================
+     6. PROYEKSI
+     ============================================================ */
+
+  .plane__proj-drop {
+    stroke: var(--value);
+    stroke-width: 1.8;
+    stroke-dasharray: 5 4;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .plane__proj-foot {
+    fill: none;
+    stroke: var(--value);
+    stroke-width: 2;
+  }
+
+
+  /* ============================================================
+     7. LABEL — <foreignObject> berisi HTML hasil renderToString()
+     ============================================================ */
+
+  .plane__label {
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .plane__label-inner {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: var(--r-xs);
+    background: rgba(6, 15, 43, .78);
+    border: 1px solid var(--border-navy);
+    font-family: var(--font-value);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--on-navy);
+    white-space: nowrap;
+    /* Lebar TETAP untuk label yang berganti nama: "u" → "proj_v u"
+       menggeser gambar 15px terukur kalau dibiarkan mengikuti isi. */
+    min-width: 28px;
+    justify-content: center;
+  }
+
+  .plane__label--blue  .plane__label-inner { color: var(--brand-on-navy); }
+  .plane__label--amber .plane__label-inner { color: var(--value); }
+  .plane__label--muted .plane__label-inner { color: var(--on-navy-3); }
+
+  .plane__label .katex { color: inherit; }
+
+
+  /* ============================================================
+     8. KETERANGAN WARNA
+
+     Bahasa warna, bukan jargon: teksnya berbunyi "yang berwarna biru",
+     bukan "yang disorot". Siswa tidak tahu apa itu "disorot".
+     ============================================================ */
+
+  .plane-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    padding-top: var(--sp-2);
+  }
+
+  .plane-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-xs);
+    color: var(--ink-700);
+  }
+
+  .plane-legend__swatch {
+    width: 22px;
+    height: 8px;
+    flex: none;
+    border-radius: 2px;
+    background: currentColor;
+    clip-path: polygon(0 34%, 62% 34%, 62% 0, 100% 50%, 62% 100%, 62% 66%, 0 66%);
+  }
+
+  .plane-legend__item--blue .plane-legend__swatch  { color: var(--brand-primary); }
+  .plane-legend__item--amber .plane-legend__swatch { color: var(--value-deep); }
+  .plane-legend__item--muted .plane-legend__swatch { color: var(--ink-300); }
+
+
+  /* ============================================================
+     9. LANSKAP PENDEK
+     ============================================================ */
+
+  @media (orientation: landscape) and (max-height: 460px) {
+    .plane-host { min-height: clamp(160px, 42vh, 240px); }
+    .plane__label-inner { font-size: 11px; padding: 1px 5px; }
+  }
+}

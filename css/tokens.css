@@ -1,306 +1,429 @@
 /* ============================================================
-   base.css — Design token, reset, tipografi
-   Tema: "TRANSFORMASI" — kertas terang, kartu putih, aksen cerah.
+   tokens.css — Design token, reset, tipografi
+   Tema: "RUANG VEKTOR" — bidang kartesius navy, kartu putih, nilai kuning.
 
-   Fase 9 mengganti tema "Blueprint Studio" yang gelap. Nama token LAMA
-   sengaja dipertahankan (--bg-surface, --ink-900, --brand-primary, …) dan
-   hanya NILAINYA yang diganti, supaya seluruh CSS komponen yang sudah
-   matang ikut berpindah tema tanpa perlu ditulis ulang satu per satu.
+   ------------------------------------------------------------
+   TIGA ATURAN YANG MENJAGA BERKAS INI TETAP BISA DIPAKAI
+   ------------------------------------------------------------
+   1. GANTI NILAINYA, PERTAHANKAN NAMANYA. Seluruh komponen di
+      css/components.css, quiz.css, vector.css, workspace.css sudah
+      matang dan hanya membaca nama token. Tema berpindah tanpa satu
+      pun berkas komponen ditulis ulang.
+   2. DUA SKALA TINTA, BUKAN SATU. --ink-* dipakai untuk teks di atas
+      KARTU PUTIH; --on-navy-* untuk teks di atas KANVAS NAVY. Memakai
+      yang salah menghasilkan teks yang hilang, bukan sekadar jelek.
+   3. KUNING ADALAH WARNA NILAI. Kuning dipakai hampir eksklusif untuk
+      ANGKA YANG DIHASILKAN ATAU HARUS DIHASILKAN SISWA — pratinjau
+      papan angka, isian jawaban, penghitung progres, dan tombol aksi
+      utama. Label, judul, dan kerangka tidak pernah kuning. Aturan ini
+      membuat aksioma pedagogis (§1.1 Blueprint) terbaca dari paletnya.
    ============================================================ */
 
-:root {
-  /* =========================================================
-     PALET SUMBER — angka-angka inilah yang jadi acuan desain
-     ========================================================= */
-  --ink: #0A1B45;
-  --ink-2: #33477D;
-  --ink-3: #6479AD;
+/* Satu-satunya baris yang menentukan urutan kaskade seluruh aplikasi.
+   Urutan `<link>` di index.html tetap dijaga rapi, tetapi lapisan inilah
+   yang menjadi kontrak sesungguhnya.
 
-  --royal: #1D4ED8;
-  --blue: #2563EB;
-  --blue-100: #DCE8FF;
-  --blue-50: #EFF5FF;
-  --cyan: #06B6D4;
-  --cyan-100: #CBF3FC;
-  --yellow: #FFC800;
-  --yellow-100: #FFF1BF;
-  --magenta: #EC0F8C;
-  --magenta-100: #FFD7EE;
+   Kenapa `workspace` berdiri SESUDAH `domain`, dan bukan bagian dari
+   `layout`: arsitektur Sidebar & Stage bertugas MENYESUAIKAN setiap
+   komponen — termasuk komponen domain — ke kolom selebar 190px. Ia
+   menyembunyikan brief simulasi di lanskap pendek, meratakan legenda
+   menjadi satu kolom, dan merampingkan tab langkah. Semua itu hanya
+   bermakna kalau ia bisa mengalahkan berkas yang mendefinisikan komponen
+   tersebut.
 
-  --paper: #EFF4FF;
-  --white: #FFFFFF;
+   Ini terukur, bukan teoretis: sebelum urutan ini dipakai,
+   `vector.css .sim__brief { display: flex }` (domain) mengalahkan
+   `workspace.css .ws-side__hint .sim__brief { display: none }` (layout),
+   dan brief yang seharusnya lenyap di layar 360px tetap tampil —
+   mendorong prompt langkah keluar dari kartu. */
+@layer reset, tokens, layout, components, domain, workspace, utilities, overrides;
 
-  --sh-1: 0 3px 12px rgba(14, 38, 94, .07);
-  --sh-2: 0 16px 40px -16px rgba(14, 38, 94, .32);
-  --sh-3: 0 34px 74px -26px rgba(14, 38, 94, .46);
+@layer tokens {
 
-  --pop: cubic-bezier(.34, 1.4, .5, 1);
-  --ease: cubic-bezier(.22, .85, .28, 1);
+  :root {
+    /* =========================================================
+       PALET SUMBER — enam angka inilah acuan desain
+       ========================================================= */
 
-  --display: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --body: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Navy: kanvas, bukan sekadar "latar gelap". Ia bidang kartesius. */
+    --navy-900: #060F2B;   /* sumur terdalam — di belakang segalanya   */
+    --navy-800: #0A1B45;   /* KANVAS UTAMA                              */
+    --navy-700: #122A5E;   /* panel navy terangkat — header, footer     */
+    --navy-600: #1B3C82;   /* garis sumbu, tepi panel navy              */
+    --navy-500: #2A56B0;   /* garis kisi tebal                          */
 
-  /* =========================================================
-     PEMETAAN KE NAMA TOKEN LAMA
-     Satu tema saja — tidak ada lagi mode gelap.
-     ========================================================= */
+    /* Biru interaktif: dipakai DI ATAS PUTIH, tidak pernah di atas navy. */
+    --royal: #1D4ED8;
+    --blue: #2563EB;
+    --blue-100: #DCE8FF;
+    --blue-50: #EFF5FF;
 
-  /* --- Permukaan --- */
-  --bg-canvas: var(--paper);
-  --bg-deep: #E4ECFB;
-  --bg-surface: var(--white);
-  --bg-surface-2: var(--white);
-  --bg-sunken: var(--blue-50);
-  --bg-elevated: var(--white);
+    /* Kuning: warna NILAI. Lihat aturan 3 di atas. */
+    --yellow: #FFC800;
+    --yellow-hi: #FFD839;
+    --yellow-deep: #E0A800;
+    --yellow-100: #FFF1BF;
 
-  /* --- Teks --- */
-  --ink-900: var(--ink);
-  --ink-700: var(--ink-2);
-  --ink-500: var(--ink-3);
-  --ink-300: #93A6D0;
+    --cyan: #22D3EE;
+    --cyan-100: #CBF3FC;
+    --magenta: #EC0F8C;
+    --magenta-100: #FFD7EE;
 
-  /* --- Merek & aksen --- */
-  --brand-primary: var(--royal);
-  --brand-primary-hi: #143FB4;
-  --brand-primary-dark: #143FB4;
-  --brand-primary-soft: var(--blue-50);
-  --brand-primary-line: rgba(29, 78, 216, .28);
+    /* Tinta untuk kartu putih. --ink tetap sama dengan --navy-800:
+       satu warna yang berperan ganda sebagai kanvas dan sebagai tinta,
+       sehingga kartu putih terasa "dipotong" dari bidang yang sama. */
+    --ink: #0A1B45;
+    --ink-2: #33477D;
+    --ink-3: #6479AD;
 
-  --accent-coral: var(--magenta);
-  --accent-coral-hi: #C40C75;
-  --accent-coral-soft: var(--magenta-100);
+    --paper: #EFF4FF;
+    --white: #FFFFFF;
 
-  --accent-amber: #B98600;
-  --accent-amber-hi: #9A7000;
-  --accent-amber-dark: #9A7000;
-  --accent-amber-soft: var(--yellow-100);
+    --sh-1: 0 3px 12px rgba(2, 8, 26, .30);
+    --sh-2: 0 18px 44px -18px rgba(2, 8, 26, .62);
+    --sh-3: 0 38px 80px -28px rgba(2, 8, 26, .74);
 
-  --success: #0E9F6E;
-  --success-hi: #0B7F58;
-  --success-soft: #D6F5EA;
+    --pop: cubic-bezier(.34, 1.4, .5, 1);
+    --ease: cubic-bezier(.22, .85, .28, 1);
 
-  --danger: #DC2626;
-  --danger-hi: #B41C1C;
-  --danger-soft: #FDE3E3;
+    --display: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --body: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* --- Garis --- */
-  --grid-line: rgba(37, 99, 235, .10);
-  --border-soft: rgba(29, 78, 216, .13);
-  --border-strong: rgba(29, 78, 216, .26);
+    /* =========================================================
+       PEMETAAN SEMANTIK — inilah yang dipakai komponen
+       Satu tema saja. Tidak ada mode gelap, tidak ada pengalih.
+       ========================================================= */
 
-  /* --- Bayangan: lembut, menyebar, khas kartu mengambang --- */
-  --shadow-1: var(--sh-1);
-  --shadow-2: 0 8px 22px -12px rgba(14, 38, 94, .28), 0 2px 6px rgba(14, 38, 94, .06);
-  --shadow-3: var(--sh-2);
-  --shadow-4: var(--sh-3);
-  --shadow-float: var(--sh-2);
-  --glow-primary: 0 0 0 1px var(--brand-primary-line), 0 14px 30px -14px rgba(29, 78, 216, .55);
-  --glow-success: 0 0 0 1px rgba(14, 159, 110, .34), 0 14px 30px -14px rgba(14, 159, 110, .45);
-  --glow-amber: 0 0 0 1px rgba(255, 200, 0, .55), 0 14px 30px -14px rgba(185, 134, 0, .45);
-  --ring-focus: 0 0 0 3px rgba(29, 78, 216, .32);
+    /* --- Permukaan --- */
+    --bg-canvas: var(--navy-800);      /* kanvas navy: bidang kartesius  */
+    --bg-deep: var(--navy-700);        /* bilah header & footer          */
+    --bg-surface: var(--white);        /* KARTU BACA — selalu putih      */
+    --bg-surface-2: var(--white);
+    --bg-sunken: var(--blue-50);       /* cekungan DI DALAM kartu putih  */
+    --bg-elevated: var(--white);
+    --bg-instrument: var(--navy-800);  /* panel alat di dalam kartu putih
+                                          (bidang kartesius SVG)         */
 
-  --sheen: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -2px 0 rgba(14, 38, 94, .06);
+    /* --- Teks di atas KARTU PUTIH --- */
+    --ink-900: var(--ink);
+    --ink-700: var(--ink-2);
+    --ink-500: var(--ink-3);
+    --ink-300: #93A6D0;
+
+    /* --- Teks di atas KANVAS NAVY --- */
+    --on-navy: #F2F6FF;
+    --on-navy-2: #B9C9EE;
+    --on-navy-3: #7E95C9;
+    --on-navy-line: rgba(160, 190, 255, .18);
+
+    /* --- Merek & aksen --- */
+    --brand-primary: var(--royal);
+    --brand-primary-hi: #143FB4;
+    --brand-primary-dark: #143FB4;
+    --brand-primary-soft: var(--blue-50);
+    --brand-primary-line: rgba(29, 78, 216, .28);
+
+    /* Di atas navy, royal terlalu gelap untuk dipakai sebagai aksen.
+       Pasangan terangnya dipakai oleh komponen yang hidup di kanvas. */
+    --brand-on-navy: #7BA7FF;
+    --brand-on-navy-soft: rgba(123, 167, 255, .14);
+
+    --accent-coral: var(--magenta);
+    --accent-coral-hi: #C40C75;
+    --accent-coral-soft: var(--magenta-100);
+
+    /* Amber: versi "aman kontras" dari kuning untuk TEKS di atas putih.
+       Kuning murni (#FFC800) pada putih hanya mencapai 1.6:1 — ia hanya
+       boleh dipakai sebagai LATAR tombol atau di atas navy. */
+    --accent-amber: #8A6200;
+    --accent-amber-hi: #6E4E00;
+    --accent-amber-dark: #6E4E00;
+    --accent-amber-soft: var(--yellow-100);
+
+    /* --- Warna NILAI: angka yang keluar dari kepala siswa --- */
+    --value: var(--yellow);
+    --value-hi: var(--yellow-hi);
+    --value-deep: var(--yellow-deep);
+    --value-ink: #2A1D00;              /* teks di ATAS kuning            */
+    --value-soft: var(--yellow-100);
+    --value-line: rgba(255, 200, 0, .42);
+
+    --success: #0E9F6E;
+    --success-hi: #0B7F58;
+    --success-soft: #D6F5EA;
+    --success-on-navy: #3DD68C;
+
+    --danger: #DC2626;
+    --danger-hi: #B41C1C;
+    --danger-soft: #FDE3E3;
+    --danger-on-navy: #FF7A7A;
+
+    /* --- Garis --- */
+    --grid-line: rgba(122, 162, 255, .085);   /* kisi di kanvas navy     */
+    --grid-line-major: rgba(122, 162, 255, .16);
+    --axis-line: rgba(160, 196, 255, .34);
+    --border-soft: rgba(29, 78, 216, .13);    /* tepi DI DALAM kartu     */
+    --border-strong: rgba(29, 78, 216, .26);
+    --border-navy: rgba(150, 185, 255, .16);  /* tepi panel DI navy      */
+
+    /* --- Bayangan: lebih dalam, karena jatuh di atas navy --- */
+    --shadow-1: var(--sh-1);
+    --shadow-2: 0 10px 26px -14px rgba(2, 8, 26, .55), 0 2px 6px rgba(2, 8, 26, .22);
+    --shadow-3: var(--sh-2);
+    --shadow-4: var(--sh-3);
+    --shadow-float: var(--sh-2);
+    --shadow-lift: 0 26px 60px -28px rgba(2, 8, 26, .78);
+
+    --glow-primary: 0 0 0 1px var(--brand-primary-line), 0 14px 30px -14px rgba(29, 78, 216, .55);
+    --glow-success: 0 0 0 1px rgba(14, 159, 110, .34), 0 14px 30px -14px rgba(14, 159, 110, .45);
+    --glow-amber: 0 0 0 1px var(--value-line), 0 14px 32px -14px rgba(255, 200, 0, .50);
+    --glow-value: 0 0 0 1px var(--value-line), 0 0 26px -6px rgba(255, 200, 0, .45);
+    --ring-focus: 0 0 0 3px rgba(255, 200, 0, .55);
+
+    --sheen: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -2px 0 rgba(2, 8, 26, .10);
+    --sheen-navy: inset 0 1px 0 rgba(160, 200, 255, .12), inset 0 -2px 0 rgba(0, 0, 0, .22);
+  }
+
+  :root {
+    /* --- Radius: membulat konsisten, flat design tanpa bevel --- */
+    --r-xs: 8px;
+    --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 22px;
+    --r-xl: 28px;
+    --r-2xl: 34px;
+    --r-pill: 999px;
+
+    /* --- Spasi: ritme 4/8px --- */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 48px;
+    --sp-8: 64px;
+
+    /* --- Tipografi ---
+       Montserrat & Roboto dipertahankan karena keduanya sudah di-vendor
+       lokal (Blueprint §2.4) dan menambah keluarga ketiga berarti
+       menambah ±200 KB serta satu kelas kegagalan di lab sekolah.
+       Karakter tipografi justru dibangun dari ATURAN pemakaiannya:
+       ANGKA, KOMPONEN, DAN KOORDINAT SELALU MONO. Di aplikasi ini
+       notasi matematika adalah register yang berbeda dari prosa, dan
+       tipografinya harus mengatakan itu. */
+    --font-ui: var(--display);
+    --font-body: var(--body);
+    --font-mono: 'Roboto Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+    --font-value: var(--font-mono);
+
+    --fs-xs: 0.75rem;
+    --fs-sm: 0.875rem;
+    --fs-base: 1rem;
+    --fs-md: 1.125rem;
+    --fs-lg: 1.375rem;
+    --fs-xl: 1.75rem;
+    --fs-2xl: 2.25rem;
+    --fs-3xl: 3rem;
+
+    --tracking-eyebrow: .16em;
+    --tracking-display: -0.025em;
+
+    /* --- Motion: satu ritme untuk seluruh aplikasi --- */
+    --dur-fast: 150ms;
+    --dur-base: 220ms;
+    --dur-slow: 320ms;
+    --dur-screen: 420ms;
+    --ease-out: cubic-bezier(.22, .8, .36, 1);
+    --ease-in: cubic-bezier(.55, .06, .68, .19);
+    --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+    /* --- Skala z-index --- */
+    --z-base: 0;
+    --z-sticky: 10;
+    --z-overlay: 20;
+    --z-mathpad: 40;
+    --z-modal: 100;
+    --z-toast: 1000;
+    --z-rotate-lock: 9999;
+
+    --touch-min: 44px;
+
+    /* Tinggi bilah: dipakai bersama oleh header, footer, dan #app grid.
+       Satu sumber angka supaya tinggi panggung tidak pernah salah hitung. */
+    --h-header: 58px;
+    --h-footer: 34px;
+  }
+
+  /* ------------------------------------------------------------
+     LANSKAP PENDEK — ponsel 6 inci yang diputar (±740×360)
+
+     Di tinggi 360px, header + footer bawaan memakan 26% layar sebelum
+     satu baris materi pun tergambar. Bilahnya menyusut dan skala tipografi
+     turun satu tingkat — bukan komponennya yang ditulis ulang, karena
+     semuanya sudah membaca token yang sama.
+     ------------------------------------------------------------ */
+  @media (orientation: landscape) and (max-height: 470px) {
+    :root {
+      --h-header: 46px;
+      --h-footer: 24px;
+
+      --fs-xs: 0.68rem;
+      --fs-sm: 0.8rem;
+      --fs-base: 0.9rem;
+      --fs-md: 1rem;
+      --fs-lg: 1.15rem;
+      --fs-xl: 1.4rem;
+      --fs-2xl: 1.7rem;
+
+      --sp-5: 18px;
+      --sp-6: 24px;
+
+      --touch-min: 40px;
+    }
+  }
+
 }
 
-:root {
-  /* --- Radius --- */
-  --r-xs: 8px;
-  --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 22px;
-  --r-xl: 28px;
-  --r-2xl: 34px;
-  --r-pill: 999px;
+@layer reset {
 
-  /* --- Spasi: ritme 4/8px --- */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
-  --sp-7: 48px;
-  --sp-8: 64px;
+  /* ------------------------------------------------------------
+     Reset
+     ------------------------------------------------------------ */
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; padding: 0; }
 
-  /* --- Tipografi --- */
-  /* Montserrat 700/800/900 untuk judul: geometris, tegas, dan tetap ramah.
-     Roboto untuk teks isi karena keterbacaannya tinggi di ukuran kecil. */
-  --font-ui: var(--display);
-  --font-body: var(--body);
-  --font-mono: 'Roboto Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-size: 16px;
+    color-scheme: dark;
+  }
 
-  --fs-xs: 0.75rem;
-  --fs-sm: 0.875rem;
-  --fs-base: 1rem;
-  --fs-md: 1.125rem;
-  --fs-lg: 1.375rem;
-  --fs-xl: 1.75rem;
-  --fs-2xl: 2.25rem;
-  --fs-3xl: 3rem;
+  /* data-theme="light" TETAP dipasang di <html>. Sejumlah komponen
+     memakainya untuk menentukan warna teks tombol, dan mencabutnya akan
+     mematikan aturan-aturan itu diam-diam. Ia menandai "kartu bacanya
+     terang", bukan "kanvasnya terang". */
+  [data-theme="light"] { color-scheme: dark; }
 
-  /* --- Motion: satu ritme untuk seluruh aplikasi --- */
-  --dur-fast: 150ms;
-  --dur-base: 220ms;
-  --dur-slow: 320ms;
-  --dur-screen: 420ms;
-  --ease-out: cubic-bezier(.22, .8, .36, 1);
-  --ease-in: cubic-bezier(.55, .06, .68, .19);
-  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  /* TINTA BAWAAN ADALAH TINTA KARTU, BUKAN TINTA KANVAS.
 
-  /* --- Skala z-index --- */
-  --z-base: 0;
-  --z-sticky: 10;
-  --z-overlay: 20;
-  --z-mathpad: 40;
-  --z-modal: 100;
-  --z-toast: 1000;
+     Hampir seluruh teks aplikasi ini hidup di dalam kartu putih. Kalau
+     bawaannya --on-navy, setiap judul yang lupa menyebut warnanya akan
+     menjadi putih di atas putih — hilang total, dan hanya ketahuan
+     dengan mengukur, bukan membaca kode. (Itu persis yang terjadi saat
+     tema ini pertama dipasang.)
 
-  --touch-min: 44px;
+     Dengan bawaan --ink-900, risikonya terbalik dan jauh lebih jinak:
+     komponen kanvas yang lupa menyebut warnanya tampil gelap-di-navy —
+     dan jumlahnya sedikit serta bisa didaftar habis. Daftarnya ada di
+     shell.css §8. */
+  body {
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    line-height: 1.6;
+    color: var(--ink-900);
+    background-color: var(--bg-canvas);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior: none;
+    position: relative;
+  }
+
+  /* ------------------------------------------------------------
+     KUNCI VIEWPORT — kebijakan tanpa-scroll yang ketat.
+     Scroll hanya boleh hidup di wadah yang ditandai eksplisit
+     (.scroll-area, .workspace__body, .ws-side__hint, .menu);
+     di luar itu semuanya dikunci.
+     ------------------------------------------------------------ */
+  html, body {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden !important;
+    overscroll-behavior: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    touch-action: manipulation;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-ui);
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: var(--tracking-display);
+    color: inherit;
+  }
+
+  h1 { font-size: var(--fs-2xl); font-weight: 900; }
+  h2 { font-size: var(--fs-xl); }
+  h3 { font-size: var(--fs-lg); }
+  h4 { font-size: var(--fs-md); }
+
+  p { line-height: 1.68; }
+  strong { font-weight: 700; color: inherit; }
+
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { background: none; border: none; cursor: pointer; }
+  ul, ol { list-style: none; }
+  img, svg { display: block; max-width: 100%; }
+
+  :focus { outline: none; }
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
+    border-radius: var(--r-sm);
+  }
 }
 
-/* ------------------------------------------------------------
-   Reset
-   ------------------------------------------------------------ */
-*, *::before, *::after { box-sizing: border-box; }
-* { margin: 0; padding: 0; }
+@layer utilities {
 
-html {
-  -webkit-text-size-adjust: 100%;
-  font-size: 16px;
-  color-scheme: dark;
-}
+  /* ------------------------------------------------------------
+     Utilitas
+     ------------------------------------------------------------ */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 
-[data-theme="light"] { color-scheme: light; }
+  .hidden { display: none !important; }
+  .text-muted { color: var(--ink-500); }
+  .text-sm { font-size: var(--fs-sm); }
+  .tabular { font-variant-numeric: tabular-nums; }
 
-body {
-  font-family: var(--font-body);
-  font-size: var(--fs-base);
-  line-height: 1.6;
-  color: var(--ink-900);
-  background-color: var(--bg-canvas);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overscroll-behavior: none;
-  position: relative;
-}
+  /* Angka selalu mono. Dipasang di sini sebagai utilitas supaya engine
+     simulasi bisa menandai nilai apa pun tanpa menulis CSS baru. */
+  .num { font-family: var(--font-value); font-variant-numeric: tabular-nums; }
+  .val { font-family: var(--font-value); color: var(--value-deep); font-weight: 700; }
 
-/* Latar kertas cetak biru: grid halus + cahaya lembut di kejauhan.
-   Dipasang sebagai pseudo-element agar tidak ikut ter-scroll dan
-   tidak bisa "menabrak" konten (semua konten hidup di dalam kartu). */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  /* Dua lapis: kotak besar 120px + kotak kecil 24px, khas kertas blueprint */
-  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
-  background-position: -1px -1px;
-  pointer-events: none;
-}
+  /* Teks yang kebetulan berdiri di atas kanvas navy. */
+  .on-navy { color: var(--on-navy); }
+  .on-navy-muted { color: var(--on-navy-2); }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(900px 520px at 12% -8%, rgba(77, 141, 255, .16), transparent 62%),
-    radial-gradient(760px 460px at 92% 4%, rgba(255, 122, 102, .10), transparent 60%);
-}
+  /* KaTeX mewarisi warna teks tema (default-nya hitam). */
+  .katex { font-size: 1.06em; color: inherit; }
+  .katex .mord, .katex .mbin, .katex .mrel,
+  .katex .mopen, .katex .mclose, .katex .mpunct,
+  .katex .minner, .katex .mop { color: inherit; }
 
-[data-theme="light"] body::after {
-  background:
-    radial-gradient(900px 520px at 12% -8%, rgba(44, 99, 224, .10), transparent 62%),
-    radial-gradient(760px 460px at 92% 4%, rgba(224, 80, 58, .06), transparent 60%);
-}
+  .katex-display {
+    margin: var(--sp-4) 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0;
+    color: inherit;
+  }
 
-/* ------------------------------------------------------------
-   KUNCI VIEWPORT — kebijakan tanpa-scroll yang ketat.
-   Scroll hanya boleh hidup di dalam satu wadah yang ditandai
-   eksplisit (.scroll-area); di luar itu, semuanya dikunci.
-   ------------------------------------------------------------ */
-html, body {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden !important;
-  overscroll-behavior: none;
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  touch-action: manipulation;
-}
-
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-ui);
-  font-weight: 800;
-  line-height: 1.22;
-  letter-spacing: -0.02em;
-  color: var(--ink-900);
-}
-
-h1 { font-size: var(--fs-2xl); }
-h2 { font-size: var(--fs-xl); }
-h3 { font-size: var(--fs-lg); }
-h4 { font-size: var(--fs-md); }
-
-p { line-height: 1.68; }
-strong { font-weight: 700; color: var(--ink-900); }
-
-button, input, select, textarea { font: inherit; color: inherit; }
-button { background: none; border: none; cursor: pointer; }
-ul, ol { list-style: none; }
-img, svg { display: block; max-width: 100%; }
-
-:focus { outline: none; }
-:focus-visible {
-  outline: none;
-  box-shadow: var(--ring-focus);
-  border-radius: var(--r-sm);
-}
-
-/* ------------------------------------------------------------
-   Utilitas
-   ------------------------------------------------------------ */
-.sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.hidden { display: none !important; }
-.text-muted { color: var(--ink-500); }
-.text-sm { font-size: var(--fs-sm); }
-.tabular { font-variant-numeric: tabular-nums; }
-
-/* KaTeX harus mewarisi warna teks tema (default-nya hitam) */
-.katex { font-size: 1.06em; color: inherit; }
-.katex .mord, .katex .mbin, .katex .mrel,
-.katex .mopen, .katex .mclose, .katex .mpunct,
-.katex .minner, .katex .mop { color: inherit; }
-
-.katex-display {
-  margin: var(--sp-4) 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 2px 0;
-  color: var(--ink-900);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

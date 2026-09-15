@@ -1,0 +1,232 @@
+/* ============================================================
+   simulations.css — Kerangka bersama seluruh engine simulasi.
+
+   Berkas ini TIDAK memuat gaya khas satu engine pun. Isinya hanya hal
+   yang dipakai kelas dasar `Simulation`: wadah panggung, slot bertinggi
+   tetap, overlay selesai, penanda tujuan-yang-sah, dan isyarat ketuk.
+
+   Dua kontrak tata letak yang dijaga berkas ini — dan yang paling
+   mudah dirusak:
+
+   · NOL PERGESERAN TATA LETAK. Banner selesai memakai position:absolute
+     sehingga tidak pernah menempati ruang. Tombol yang selesai dipakai
+     disembunyikan dengan visibility, bukan dibuang — remove() akan
+     mengempiskan barisnya dan seluruh panggung melompat.
+
+   · MEMESAN RUANG BERARTI MEMESAN RUANG YANG BENAR-BENAR DIPAKAI.
+     Kotak KOSONG yang di-visibility:hidden hanya memesan ruang seukuran
+     isinya, dan isi kosong tingginya nol. Karena itu .reserved-slot
+     punya min-height sendiri, bukan mengandalkan isinya.
+   ============================================================ */
+
+@layer domain {
+
+  /* ============================================================
+     1. WADAH SIMULASI
+     ============================================================ */
+
+  .sim-host {
+    display: grid;
+    gap: var(--sp-3);
+    min-height: 0;
+  }
+
+  /* Panggung tidak boleh mengembang-mengempis saat langkah bertambah. */
+  .sim {
+    position: relative;
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    min-height: clamp(200px, 34vh, 320px);
+  }
+
+  .sim--busy { cursor: progress; }
+
+  /* complete() memasang kelas ini dan ia mematikan pointer SELURUH
+     simulasi. Untuk simulasi multi-kasus itu bencana — engine seperti
+     itu memasang locksOnComplete = false dan mengurus penguncian
+     sendiri per kasus. */
+  .sim--done { pointer-events: none; }
+  .sim--done .sim__done-overlay { pointer-events: auto; }
+
+
+  /* ============================================================
+     2. SLOT BERTINGGI TETAP
+     ============================================================ */
+
+  /* Baris, bukan kolom: isinya hampir selalu satu persamaan yang tumbuh
+     ke samping ("2² + 5² = 29"). Menyusunnya ke bawah memutus bacaannya
+     sebagai satu kalimat matematika. */
+  .reserved-slot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: 64px;
+    border-radius: var(--r-md);
+  }
+
+  .reserved-slot .op-glyph {
+    font-family: var(--font-value);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--ink-700);
+  }
+
+  /* Baris tombol yang isinya muncul di tengah alur. Ruangnya dipesan
+     sejak awal supaya kemunculannya tidak mendorong apa pun. */
+  .workstrip-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-3);
+    min-height: 62px;
+  }
+
+
+  /* ============================================================
+     3. OVERLAY SELESAI
+
+     Absolut, tidak menempati ruang, dan tidak pernah menyisip ke dalam
+     aliran. Inilah yang membuat "berhasil" tidak menggeser panggung.
+     ============================================================ */
+
+  .sim__done-overlay {
+    position: absolute;
+    left: 50%;
+    bottom: var(--sp-3);
+    transform: translateX(-50%);
+    z-index: var(--z-overlay);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    max-width: calc(100% - var(--sp-5));
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-pill);
+    background: var(--success);
+    color: #FFFFFF;
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    box-shadow: var(--shadow-3);
+    animation: simDone var(--dur-slow) var(--ease-spring) both;
+  }
+
+  .sim__done-overlay svg { width: 18px; height: 18px; flex: none; }
+
+  @keyframes simDone {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(.92); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+
+  /* Slide yang sudah selesai tetap TERLIHAT selesai saat dikunjungi
+     ulang — state-nya tidak boleh bocor antar slide. */
+  .slide-solved {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--r-pill);
+    background: var(--success-soft);
+    border: 1px solid rgba(14, 159, 110, .3);
+    color: var(--success-hi);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+
+
+  /* ============================================================
+     4. TUJUAN YANG SAH & ISYARAT KETUK
+
+     Ketukan adalah jalur WAJIB; seret hanya pelengkap. Saat satu sumber
+     sudah diketuk, body mendapat .is-tap-armed dan SEMUA tujuan yang sah
+     menyala sekaligus — supaya siswa tidak perlu menebak ke mana
+     ketukan berikutnya boleh jatuh.
+     ============================================================ */
+
+  .is-tap-armed [data-dropzone] {
+    outline: 2px dashed var(--value-deep);
+    outline-offset: 3px;
+    border-radius: var(--r-sm);
+    animation: tapArm 1.3s var(--ease) infinite;
+  }
+
+  @keyframes tapArm {
+    0%, 100% { outline-color: var(--value-deep); background-color: transparent; }
+    50%      { outline-color: var(--value); background-color: var(--value-soft); }
+  }
+
+  /* Isyarat tangan: muncul hanya bila siswa diam beberapa detik pada
+     langkah pertama. Ia menunjukkan CARA berinteraksi, tidak pernah
+     menunjukkan jawabannya. */
+  .cue-hand {
+    position: absolute;
+    z-index: var(--z-overlay);
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    color: var(--value);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .45));
+    animation: cueTap 1.5s var(--ease) infinite;
+  }
+
+  @keyframes cueTap {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: .95; }
+    45%      { transform: translate(0, 7px) scale(.88); opacity: 1; }
+  }
+
+
+  /* ============================================================
+     5. PANEL PETUNJUK DI SISI KIRI
+
+     Brief, legenda, prompt, checklist, pemilih kasus, dan slider
+     langkah semuanya KENDALI — mereka milik .ws-side, bukan panggung.
+     Menempelkannya ke panggung merusak arsitektur Sidebar & Stage.
+     ============================================================ */
+
+  .sim__brief {
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    background: var(--bg-sunken);
+    border-left: 3px solid var(--brand-primary);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  .sim__prompt {
+    display: grid;
+    gap: 4px;
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    background: var(--value-soft);
+    border-left: 3px solid var(--value-deep);
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--ink-900);
+    /* Tinggi dicadangkan: prompt berganti tiap langkah, dan panjangnya
+       berubah-ubah. Tanpa ini panel kiri berdenyut setiap langkah. */
+    min-height: 76px;
+  }
+
+  .sim__prompt-step {
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--accent-amber);
+  }
+
+
+  /* ============================================================
+     6. LANSKAP PENDEK
+     ============================================================ */
+
+  @media (orientation: landscape) and (max-height: 460px) {
+    .sim { min-height: clamp(150px, 40vh, 240px); }
+    .sim__prompt { min-height: 62px; padding: var(--sp-2); }
+    .workstrip-row { min-height: 52px; }
+  }
+}
