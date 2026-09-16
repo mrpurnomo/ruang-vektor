@@ -1,8 +1,7 @@
 @layer components {
 
   /* ============================================================
-     phase18.css — Fase 18: Mesin Ujian CBT & Arsip Soal
-     DIMUAT PALING AKHIR, sesudah phase17.css.
+     quiz.css — Mesin Ujian CBT (Latihan Soal TKA)
      ============================================================ */
 
   /* ------------------------------------------------------------
@@ -97,9 +96,10 @@
 
   .exam-history__title,
   .exam-nav__title {
+    font-family: var(--font-ui);
     font-size: var(--fs-xs);
-    font-weight: 800;
-    letter-spacing: .07em;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
     color: var(--ink-3);
   }
@@ -134,9 +134,9 @@
   }
 
   .exam-history__chip[data-tone="perfect"] { border-color: var(--success); }
-  .exam-history__chip[data-tone="perfect"] b { color: var(--success); }
+  .exam-history__chip[data-tone="perfect"] b { color: var(--success-hi); }
   .exam-history__chip[data-tone="good"] { border-color: var(--brand-primary-line); }
-  .exam-history__chip[data-tone="low"] b { color: var(--danger); }
+  .exam-history__chip[data-tone="low"] b { color: var(--danger-hi); }
 
   /* ------------------------------------------------------------
      3. KISI NAVIGASI SOAL
@@ -160,11 +160,11 @@
     min-width: 44px;
     min-height: 44px;
     border-radius: var(--r-sm);
-    border: 2px solid var(--border-soft);
+    border: 1px solid var(--border-strong);
     background: var(--bg-surface);
     color: var(--ink-2);
     font-family: var(--font-mono);
-    font-weight: 800;
+    font-weight: 700;
     font-size: var(--fs-sm);
     cursor: pointer;
     transition: transform var(--dur-fast) var(--ease-out),
@@ -172,32 +172,33 @@
                 border-color var(--dur-fast) var(--ease-out);
   }
 
-  .exam-nav__item:hover { transform: translateY(-1px); border-color: var(--royal); }
+  .exam-nav__item:hover { border-color: var(--royal); color: var(--royal); }
 
   /* Sudah diisi — belum tentu benar, dan memang belum dinilai. */
   .exam-nav__item[data-state="answered"] {
     background: var(--blue-50);
     border-color: var(--royal);
     color: var(--royal);
+    box-shadow: inset 0 -3px 0 var(--royal);
   }
 
   .exam-nav__item[data-state="correct"] {
     background: var(--success-soft);
     border-color: var(--success);
-    color: var(--success);
+    color: var(--success-hi);
   }
 
   .exam-nav__item[data-state="wrong"] {
     background: var(--danger-soft);
     border-color: var(--danger);
-    color: var(--danger);
+    color: var(--danger-hi);
   }
 
   /* Soal yang sedang dibuka: cincin tebal, bukan sekadar warna —
      ia harus terbaca di atas keempat status di atas. */
   .exam-nav__item[aria-current="true"] {
-    box-shadow: 0 0 0 3px var(--yellow);
-    transform: translateY(-1px);
+    outline: 3px solid var(--ink-900);
+    outline-offset: 2px;
   }
 
   .exam-nav__legend {
@@ -214,8 +215,8 @@
     content: '';
     width: 11px;
     height: 11px;
-    border-radius: 3px;
-    border: 2px solid var(--border-soft);
+    border-radius: var(--r-xs);
+    border: 1px solid var(--border-strong);
     background: var(--bg-surface);
   }
 
@@ -275,10 +276,11 @@
     width: 30px;
     height: 30px;
     flex: none;
-    border-radius: var(--r-pill);
+    border-radius: var(--r-sm);
     background: var(--bg-sunken);
-    border: 1px solid var(--border-soft);
-    font-weight: 800;
+    border: 1px solid var(--border-strong);
+    font-family: var(--font-ui);
+    font-weight: 700;
     font-size: var(--fs-sm);
     color: var(--ink-2);
   }
@@ -289,8 +291,10 @@
     color: var(--white);
   }
 
-  .option--correct .option__letter { background: var(--success); border-color: var(--success); color: var(--white); }
-  .option--wrong .option__letter { background: var(--danger); border-color: var(--danger); color: var(--white); }
+  .option--correct .option__letter,
+  .option--correct[aria-checked="true"] .option__letter { background: var(--success); border-color: var(--success); color: var(--white); }
+  .option--wrong .option__letter,
+  .option--wrong[aria-checked="true"] .option__letter { background: var(--danger); border-color: var(--danger); color: var(--white); }
 
   /* Opsi yang DIPILIH siswa tetap ditandai walau salah — tanpa itu,
      siswa yang keliru tidak pernah tahu ia tadi memilih apa. */
@@ -305,13 +309,16 @@
     justify-items: center;
     padding: var(--sp-3);
     border-radius: var(--r-lg);
-    border: 2px solid var(--border-soft);
-    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    background: var(--ruler-x), var(--bg-surface);
+    padding-top: calc(var(--sp-3) + 6px);
   }
 
   .exam-score__label {
+    font-family: var(--font-ui);
+    font-weight: 700;
     font-size: var(--fs-xs);
-    letter-spacing: .07em;
+    letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
     color: var(--ink-3);
   }
@@ -319,20 +326,22 @@
   .exam-score__value {
     font-family: var(--font-mono);
     font-size: 2.4rem;
-    font-weight: 900;
+    font-weight: 700;
+    letter-spacing: -.03em;
     line-height: 1.1;
     color: var(--ink);
   }
 
   .exam-score__sub { font-size: var(--fs-xs); color: var(--ink-2); }
 
-  .exam-score[data-tone="perfect"] { border-color: var(--success); background: var(--success-soft); }
-  .exam-score[data-tone="perfect"] .exam-score__value { color: var(--success); }
-  .exam-score[data-tone="good"] { border-color: var(--brand-primary-line); background: var(--blue-50); }
+  .exam-score[data-tone="perfect"] { border-color: var(--success); background: var(--ruler-x), var(--success-soft); }
+  .exam-score[data-tone="perfect"] .exam-score__value { color: var(--success-hi); }
+  .exam-score[data-tone="good"] { border-color: var(--brand-primary-line); background: var(--ruler-x), var(--blue-50); }
   .exam-score[data-tone="good"] .exam-score__value { color: var(--royal); }
-  .exam-score[data-tone="mid"] { border-color: var(--yellow); background: var(--yellow-100); }
-  .exam-score[data-tone="low"] { border-color: var(--danger); background: var(--danger-soft); }
-  .exam-score[data-tone="low"] .exam-score__value { color: var(--danger); }
+  .exam-score[data-tone="mid"] { border-color: var(--value-deep); background: var(--ruler-x), var(--value-soft); }
+  .exam-score[data-tone="mid"] .exam-score__value { color: var(--accent-amber); }
+  .exam-score[data-tone="low"] { border-color: var(--danger); background: var(--ruler-x), var(--danger-soft); }
+  .exam-score[data-tone="low"] .exam-score__value { color: var(--danger-hi); }
 
   .exam-yours {
     display: flex;
@@ -365,7 +374,7 @@
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    border-radius: var(--r-pill);
+    border-radius: var(--r-xs);
     background: var(--bg-sunken);
     border: 1px solid var(--border-soft);
     font-size: var(--fs-xs);
@@ -373,7 +382,7 @@
     color: var(--ink-2);
   }
 
-  .quiz-attempt[data-tone="perfect"] { border-color: var(--success); color: var(--success); }
+  .quiz-attempt[data-tone="perfect"] { border-color: var(--success); color: var(--success-hi); }
 
   /* ------------------------------------------------------------
      Lanskap pendek

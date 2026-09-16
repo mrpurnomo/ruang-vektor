@@ -1,7 +1,7 @@
 @layer utilities {
 
   /* ============================================================
-     scrollbars.css — Scrollbar bertema "Studio Belajar Cerah"
+     scrollbars.css — Scrollbar bertema instrumen: batang grafit tipis
      Scrollbar bawaan OS tidak boleh terlihat di mana pun (PRD §7.3)
      ============================================================ */
 
@@ -10,7 +10,7 @@
      ------------------------------------------------------------ */
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--brand-primary) var(--bg-deep);
+    scrollbar-color: var(--border-strong) transparent;
   }
 
   /* ------------------------------------------------------------
@@ -22,21 +22,20 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--bg-deep);
-    border-radius: var(--r-pill);
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--brand-primary);
-    border-radius: var(--r-pill);
+    background: var(--border-strong);
+    border-radius: var(--r-xs);
     /* Border transparan menciptakan jarak visual antara thumb dan track */
-    border: 2px solid var(--bg-deep);
+    border: 2px solid transparent;
     background-clip: padding-box;
     transition: background-color var(--dur-fast) var(--ease-out);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--brand-primary-hi);
+    background: var(--royal);
     background-clip: padding-box;
   }
 
@@ -46,7 +45,7 @@
   }
 
   /* Sudut pertemuan scrollbar horizontal & vertikal */
-  ::-webkit-scrollbar-corner { background: var(--bg-deep); }
+  ::-webkit-scrollbar-corner { background: transparent; }
 
   /* Hilangkan tombol panah bawaan Windows */
   ::-webkit-scrollbar-button { display: none; }

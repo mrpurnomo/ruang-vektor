@@ -1,12 +1,18 @@
 @layer components {
 
   /* ============================================================
-     components.css — Tombol, kartu, Mathpad, Toast, Modal, Slider
+     components.css — Tombol, pelat, materi, opsi, toast, modal,
+     badge, progres.
+
+     Bahasa bentuk komponen: sudut 3–6px, tepi rambut, tanpa kilau dan
+     tanpa bayangan tebal. Tekanan tombol terasa seperti sakelar alat:
+     turun 1px, tidak memantul.
      ============================================================ */
 
   /* ------------------------------------------------------------
      TOMBOL — tidak ada tautan teks telanjang di aplikasi ini.
-     Setiap aksi punya kotak, batas, padding, dan status hover.
+     Label tombol memakai huruf label instrumen: Barlow Condensed
+     kapital berjarak. Satu register untuk "hal yang bisa ditekan".
      ------------------------------------------------------------ */
   .btn {
     display: inline-flex;
@@ -14,11 +20,14 @@
     justify-content: center;
     gap: var(--sp-2);
     min-height: var(--touch-min);
-    padding: 10px var(--sp-5);
-    border-radius: var(--r-pill);
+    padding: 8px var(--sp-5);
+    border-radius: var(--r-md);
     font-family: var(--font-ui);
-    font-weight: 800;
-    font-size: var(--fs-sm);
+    font-weight: 700;
+    font-size: calc(var(--fs-sm) + 1px);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: 1.1;
     white-space: nowrap;
     cursor: pointer;
     border: 1px solid transparent;
@@ -32,94 +41,88 @@
 
   .btn svg { width: 17px; height: 17px; flex: 0 0 auto; }
 
-  .btn:hover:not([disabled]) { transform: translateY(-2px); }
-  .btn:active:not([disabled]) { transform: translateY(0) scale(.96); }
+  .btn:active:not([disabled]) { transform: translateY(1px); }
 
   .btn[disabled] {
-    opacity: .40;
+    opacity: .42;
     cursor: not-allowed;
     pointer-events: none;
-    filter: saturate(.5);
   }
 
-  /* Tombol aksi utama = KUNING. Ia satu-satunya tombol berwarna penuh di
-     sebagian besar layar, dan warnanya sama dengan warna nilai — karena
-     yang dilakukannya memang satu hal: memajukan pekerjaan siswa sendiri.
-     Tinta gelap di atas kuning mencapai 11:1, jauh di atas ambang 4,5:1. */
-  .btn--primary {
-    background: linear-gradient(180deg, var(--value-hi), var(--value));
-    color: var(--value-ink);
-    box-shadow: 0 6px 20px -6px rgba(255, 200, 0, .55), var(--sheen);
-  }
+  /* Tombol aksi utama = KOBALT (ARAH). Ia memajukan siswa ke langkah
+     berikutnya — itu arah, bukan besaran. Amber disimpan untuk angka.
+     Putih di atas kobalt ±7,6:1. Bayangan bawah 2px adalah "ketebalan
+     pelat" tombol: ia hilang saat ditekan. */
+  .btn--primary,
   [data-theme="light"] .btn--primary {
+    background: var(--royal);
+    color: var(--white);
+    box-shadow: 0 2px 0 var(--brand-primary-dark);
+  }
+  .btn--primary:hover:not([disabled]) { background: var(--brand-primary-hi); }
+  .btn--primary:active:not([disabled]) { box-shadow: 0 1px 0 var(--brand-primary-dark); }
+
+  .btn--coral,
+  [data-theme="light"] .btn--coral {
+    background: var(--accent-coral);
+    color: var(--white);
+    box-shadow: 0 2px 0 var(--accent-coral-hi);
+  }
+  .btn--coral:hover:not([disabled]) { background: var(--accent-coral-hi); }
+
+  .btn--success,
+  [data-theme="light"] .btn--success {
+    background: var(--success);
+    color: var(--white);
+    box-shadow: 0 2px 0 var(--success-hi);
+  }
+  .btn--success:hover:not([disabled]) { background: var(--success-hi); }
+
+  /* Amber: satu-satunya tombol bernada BESARAN — Latihan TKA, tempat
+     skor dikejar. Tinta gelap di atas amber ±10:1. */
+  .btn--amber,
+  [data-theme="light"] .btn--amber {
+    background: var(--value);
     color: var(--value-ink);
-    background: linear-gradient(180deg, var(--value-hi), var(--value));
+    box-shadow: 0 2px 0 var(--value-deep);
   }
-  .btn--primary:hover:not([disabled]) {
-    background: var(--value-hi);
-    box-shadow: 0 10px 30px -8px rgba(255, 200, 0, .75), var(--sheen);
-  }
+  .btn--amber:hover:not([disabled]) { background: var(--value-hi); }
 
-  .btn--coral {
-    background: linear-gradient(180deg, var(--accent-coral-hi), var(--accent-coral));
-    color: #2A0B05;
-    box-shadow: 0 4px 16px rgba(255, 122, 102, .32), var(--sheen);
-  }
-  [data-theme="light"] .btn--coral { color: #fff; background: linear-gradient(180deg, var(--accent-coral), var(--accent-coral-hi)); }
-  .btn--coral:hover:not([disabled]) { box-shadow: 0 8px 26px rgba(255, 122, 102, .46), var(--sheen); }
-
-  .btn--success {
-    background: linear-gradient(180deg, var(--success-hi), var(--success));
-    color: #04240F;
-    box-shadow: 0 4px 16px rgba(61, 214, 140, .32), var(--sheen);
-  }
-  [data-theme="light"] .btn--success { color: #fff; background: linear-gradient(180deg, var(--success), var(--success-hi)); }
-  .btn--success:hover:not([disabled]) { box-shadow: 0 8px 26px rgba(61, 214, 140, .46), var(--sheen); }
-
-  .btn--amber {
-    background: linear-gradient(180deg, var(--accent-amber-hi), var(--accent-amber));
-    color: #2B1B00;
-    box-shadow: 0 4px 16px rgba(255, 194, 77, .32), var(--sheen);
-  }
-  [data-theme="light"] .btn--amber { color: #fff; background: linear-gradient(180deg, var(--accent-amber), var(--accent-amber-hi)); }
-
-  /* "Ghost" tetap berupa KOTAK dengan batas jelas — bukan teks polos */
+  /* "Ghost" tetap berupa KOTAK dengan batas jelas — bukan teks polos. */
   .btn--ghost {
-    background: var(--bg-surface-2);
+    background: var(--bg-surface);
     color: var(--ink-900);
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-1);
   }
 
   .btn--ghost:hover:not([disabled]) {
-    background: var(--bg-elevated);
-    border-color: var(--brand-primary);
-    color: var(--brand-primary);
-    box-shadow: var(--shadow-3);
+    border-color: var(--royal);
+    color: var(--royal);
+    box-shadow: inset 0 0 0 1px var(--royal);
   }
 
-  /* Varian paling ringan pun tetap punya batas & latar */
+  /* Varian paling ringan pun tetap punya batas & latar. */
   .btn--quiet {
     background: var(--bg-sunken);
-    color: var(--ink-500);
+    color: var(--ink-700);
     border-color: var(--border-soft);
     min-height: 38px;
-    padding: 8px var(--sp-4);
+    padding: 6px var(--sp-4);
     font-size: var(--fs-xs);
   }
 
   .btn--quiet:hover:not([disabled]) {
-    background: var(--bg-surface-2);
+    background: var(--bg-surface);
     color: var(--ink-900);
     border-color: var(--border-strong);
   }
 
   .btn--danger {
-    background: var(--danger-soft);
+    background: var(--bg-surface);
     color: var(--danger);
-    border-color: rgba(255, 92, 99, .36);
+    border-color: color-mix(in srgb, var(--danger) 45%, transparent);
   }
-  .btn--danger:hover:not([disabled]) { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .btn--danger:hover:not([disabled]) { background: var(--danger); color: var(--white); border-color: var(--danger); }
 
   .btn--icon {
     width: var(--touch-min);
@@ -128,72 +131,72 @@
     border-radius: var(--r-md);
   }
 
-  .btn--sm { min-height: 38px; padding: 7px var(--sp-4); font-size: var(--fs-xs); }
-  .btn--lg { min-height: 52px; padding: 14px var(--sp-6); font-size: var(--fs-base); }
+  .btn--sm { min-height: 36px; padding: 6px var(--sp-4); font-size: var(--fs-xs); }
+  .btn--lg { min-height: 50px; padding: 12px var(--sp-6); font-size: var(--fs-base); }
   .btn--block { width: 100%; }
 
-  /* Denyut pemandu: dipakai pada tombol "langkah berikutnya" */
+  /* Denyut pemandu pada tombol "langkah berikutnya": cincin yang
+     memancar keluar, seperti gelombang dari titik asal. */
   .btn--pulse {
     position: relative;
-    animation: btnPulse 2s var(--ease-out) infinite;
+    animation: btnPulse 1.8s var(--ease-out) infinite;
   }
 
   @keyframes btnPulse {
-    0%, 100% { box-shadow: 0 4px 16px rgba(77, 141, 255, .34), 0 0 0 0 rgba(77, 141, 255, .50), var(--sheen); }
-    50%      { box-shadow: 0 8px 26px rgba(77, 141, 255, .50), 0 0 0 12px rgba(77, 141, 255, 0), var(--sheen); }
+    0%   { box-shadow: 0 2px 0 var(--brand-primary-dark), 0 0 0 0 color-mix(in srgb, var(--royal) 45%, transparent); }
+    100% { box-shadow: 0 2px 0 var(--brand-primary-dark), 0 0 0 10px color-mix(in srgb, var(--royal) 0%, transparent); }
   }
 
   .btn--success.btn--pulse { animation-name: btnPulseSuccess; }
 
   @keyframes btnPulseSuccess {
-    0%, 100% { box-shadow: 0 4px 16px rgba(61, 214, 140, .34), 0 0 0 0 rgba(61, 214, 140, .50), var(--sheen); }
-    50%      { box-shadow: 0 8px 26px rgba(61, 214, 140, .50), 0 0 0 12px rgba(61, 214, 140, 0), var(--sheen); }
+    0%   { box-shadow: 0 2px 0 var(--success-hi), 0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent); }
+    100% { box-shadow: 0 2px 0 var(--success-hi), 0 0 0 10px color-mix(in srgb, var(--success) 0%, transparent); }
   }
 
   /* ------------------------------------------------------------
-     Kartu mengambang
+     Pelat
      ------------------------------------------------------------ */
   .card {
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
-    border-radius: var(--r-xl);
-    box-shadow: var(--shadow-3);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
     padding: var(--sp-5);
   }
 
   .card--float {
-    box-shadow: var(--shadow-float);
-    transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+    box-shadow: var(--shadow-2);
+    transition: border-color var(--dur-base) var(--ease-out);
   }
 
-  .card--float:hover { transform: translateY(-4px); box-shadow: var(--shadow-4); }
+  .card--float:hover { border-color: var(--border-strong); }
 
   .panel {
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
     border-radius: var(--r-md);
-    box-shadow: var(--shadow-1);
     padding: var(--sp-4);
   }
 
   .panel__label {
     font-family: var(--font-ui);
     font-size: var(--fs-xs);
-    font-weight: 800;
-    letter-spacing: .07em;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
     color: var(--ink-500);
     margin-bottom: var(--sp-3);
   }
 
   /* ------------------------------------------------------------
-     KARTU KONTEN — materi & simulasi TIDAK PERNAH langsung di atas grid
+     KARTU KONTEN — materi & simulasi tidak pernah langsung di film
      ------------------------------------------------------------ */
   .content-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
-    border-radius: var(--r-xl);
-    box-shadow: var(--shadow-3);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
     padding: var(--sp-6);
     margin-bottom: var(--sp-4);
   }
@@ -201,16 +204,16 @@
   .content-card--tight { padding: var(--sp-4); }
 
   @media (max-width: 768px) {
-    .content-card { padding: var(--sp-4); border-radius: var(--r-lg); }
+    .content-card { padding: var(--sp-4); }
   }
 
   /* ------------------------------------------------------------
-     Blok materi
+     Blok materi — halaman buku catatan teknik
      ------------------------------------------------------------ */
-  .materi { max-width: 74ch; margin-inline: auto; }
+  .materi { max-width: 72ch; margin-inline: auto; }
   .materi > * + * { margin-top: var(--sp-4); }
-  .materi p { color: var(--ink-700); }
-  .materi ul { display: grid; gap: var(--sp-3); }
+  .materi p { color: var(--ink-700); font-size: 1.0625rem; }
+  .materi ul { display: grid; gap: var(--sp-2); }
 
   .materi li {
     position: relative;
@@ -218,42 +221,45 @@
     color: var(--ink-700);
   }
 
+  /* Butir daftar = panah vektor kecil, bukan titik. */
   .materi li::before {
     content: '';
     position: absolute;
-    left: 6px; top: .62em;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--brand-primary);
-    box-shadow: 0 0 8px rgba(77, 141, 255, .6);
+    left: 0; top: .62em;
+    width: 12px; height: 7px;
+    background: var(--royal);
+    clip-path: var(--arrow-shape);
   }
 
+  /* Langkah bernomor: urutannya sungguhan (langkah hitung), jadi
+     nomornya adalah informasi. Nomor mono dalam sel berbingkai. */
   .materi ol { display: grid; gap: var(--sp-3); counter-reset: steps; }
-  .materi ol li { padding-left: var(--sp-6); }
+  .materi ol li { padding-left: calc(var(--sp-6) + 2px); }
 
   .materi ol li::before {
     counter-increment: steps;
     content: counter(steps);
-    top: 2px; left: 0;
+    top: 1px; left: 0;
     width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--brand-primary-soft);
-    border: 1px solid var(--brand-primary-line);
-    color: var(--brand-primary);
-    font-family: var(--font-ui);
+    clip-path: none;
+    border-radius: var(--r-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--royal);
+    color: var(--royal);
+    font-family: var(--font-value);
     font-size: var(--fs-xs);
-    font-weight: 800;
+    font-weight: 700;
     display: grid;
     place-items: center;
-    box-shadow: none;
   }
 
-  /* Callout */
+  /* Callout: pita kiri tebal + judul label instrumen. Latarnya sangat
+     encer supaya rumus di dalamnya tetap duduk di "kertas". */
   .callout {
     display: flex;
     gap: var(--sp-3);
-    padding: var(--sp-4);
-    border-radius: var(--r-md);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
     border: 1px solid var(--co-line);
     border-left: 3px solid var(--co-accent);
     background: var(--co-bg);
@@ -265,20 +271,22 @@
 
   .callout__title {
     font-family: var(--font-ui);
-    font-weight: 800;
+    font-weight: 700;
     font-size: var(--fs-sm);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
     color: var(--co-accent);
     margin-bottom: 2px;
   }
 
-  .callout__text { font-size: var(--fs-sm); color: var(--ink-700); }
+  .callout__text { font-size: var(--fs-base); color: var(--ink-700); }
 
-  .callout--def  { --co-accent: var(--brand-primary); --co-bg: var(--brand-primary-soft); --co-line: var(--brand-primary-line); }
-  .callout--tip  { --co-accent: var(--success); --co-bg: var(--success-soft); --co-line: rgba(61, 214, 140, .30); }
-  .callout--warn { --co-accent: var(--accent-coral); --co-bg: var(--accent-coral-soft); --co-line: rgba(255, 122, 102, .30); }
+  .callout--def  { --co-accent: var(--royal);        --co-bg: var(--brand-primary-soft); --co-line: var(--brand-primary-line); }
+  .callout--tip  { --co-accent: var(--success-hi);   --co-bg: var(--success-soft);       --co-line: color-mix(in srgb, var(--success) 28%, transparent); }
+  .callout--warn { --co-accent: var(--accent-coral); --co-bg: var(--accent-coral-soft);  --co-line: color-mix(in srgb, var(--accent-coral) 28%, transparent); }
 
   /* ------------------------------------------------------------
-     SLIDER / CAROUSEL — dipakai simulasi bertahap & kuis
+     SLIDER / CAROUSEL — simulasi bertahap & kuis
      ------------------------------------------------------------ */
   .slider {
     position: relative;
@@ -306,7 +314,6 @@
     padding: 2px;
   }
 
-  /* Bilah navigasi slider */
   .slider__nav {
     display: flex;
     align-items: center;
@@ -322,36 +329,36 @@
     align-items: center;
     gap: var(--sp-2);
     padding: 6px var(--sp-3);
-    border-radius: var(--r-pill);
+    border-radius: var(--r-sm);
     background: var(--bg-sunken);
     border: 1px solid var(--border-soft);
   }
 
+  /* Titik jadi TIK skala: garis tegak. Posisi aktif = tik panjang kobalt. */
   .slider-dot {
     position: relative;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--border-strong);
+    width: 3px; height: 10px;
+    border-radius: 1px;
+    background: var(--ink-300);
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: all var(--dur-base) var(--ease-out);
+    transition: background var(--dur-base) var(--ease-out),
+                height var(--dur-base) var(--ease-out);
   }
 
-  /* Perbesar area sentuh tanpa memperbesar titiknya secara visual */
+  /* Area sentuh diperbesar tanpa memperbesar tiknya. */
   .slider-dot::after {
     content: '';
     position: absolute;
-    inset: -9px;
+    inset: -12px -9px;
   }
 
-  .slider-dot:hover { background: var(--ink-500); transform: scale(1.2); }
+  .slider-dot:hover { background: var(--ink-700); }
 
   .slider-dot[aria-current="true"] {
-    width: 26px;
-    border-radius: var(--r-pill);
-    background: var(--brand-primary);
-    box-shadow: 0 0 10px rgba(77, 141, 255, .6);
+    height: 18px;
+    background: var(--royal);
   }
 
   .slider-dot[data-done="true"]:not([aria-current="true"]) { background: var(--success); }
@@ -368,7 +375,7 @@
   }
 
   /* ------------------------------------------------------------
-     Kuis — satu soal per layar penuh
+     Kuis — satu soal per layar
      ------------------------------------------------------------ */
   .quiz-slider {
     display: flex;
@@ -382,22 +389,22 @@
   .quiz__card {
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
-    border-radius: var(--r-xl);
-    box-shadow: var(--shadow-3);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
     padding: var(--sp-6);
   }
 
   .quiz__prompt {
-    font-family: var(--font-ui);
+    font-family: var(--font-body);
     font-size: var(--fs-md);
-    font-weight: 700;
-    line-height: 1.5;
+    font-weight: 500;
+    line-height: 1.55;
     margin-bottom: var(--sp-4);
     color: var(--ink-900);
   }
 
   .quiz__hint {
-    font-size: var(--fs-xs);
+    font-size: var(--fs-sm);
     color: var(--ink-500);
     margin-bottom: var(--sp-3);
   }
@@ -410,7 +417,7 @@
     margin-bottom: var(--sp-3);
   }
 
-  .options { display: grid; gap: var(--sp-3); }
+  .options { display: grid; gap: var(--sp-2); }
 
   .option {
     display: flex;
@@ -420,89 +427,94 @@
     min-height: var(--touch-min);
     padding: var(--sp-3) var(--sp-4);
     border-radius: var(--r-md);
-    background: var(--bg-sunken);
-    border: 2px solid var(--border-soft);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
     text-align: left;
     cursor: pointer;
     color: var(--ink-900);
     transition:
       border-color var(--dur-fast) var(--ease-out),
       background-color var(--dur-fast) var(--ease-out),
-      transform var(--dur-fast) var(--ease-out),
       box-shadow var(--dur-fast) var(--ease-out);
   }
 
   .option:hover:not(.option--locked) {
-    border-color: var(--brand-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
+    border-color: var(--royal);
+    box-shadow: inset 3px 0 0 var(--royal);
   }
 
-  .option:active:not(.option--locked) { transform: translateY(0) scale(.99); }
+  .option:active:not(.option--locked) { transform: translateY(1px); }
 
   .option__box {
-    width: 24px; height: 24px;
-    flex: 0 0 24px;
-    border-radius: 7px;
-    border: 2px solid var(--border-strong);
+    width: 22px; height: 22px;
+    flex: 0 0 22px;
+    border-radius: var(--r-xs);
+    border: 1.5px solid var(--ink-500);
     display: grid;
     place-items: center;
     color: transparent;
-    transition: all var(--dur-fast) var(--ease-out);
+    transition: background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                color var(--dur-fast) var(--ease-out);
   }
 
   .options[data-multi="false"] .option__box { border-radius: 50%; }
   .option__box svg { width: 14px; height: 14px; }
 
   .option[aria-checked="true"] {
-    border-color: var(--brand-primary);
+    border-color: var(--royal);
     background: var(--brand-primary-soft);
+    box-shadow: inset 3px 0 0 var(--royal);
   }
 
   .option[aria-checked="true"] .option__box {
-    background: var(--brand-primary);
-    border-color: var(--brand-primary);
-    color: #06172E;
+    background: var(--royal);
+    border-color: var(--royal);
+    color: var(--white);
   }
 
-  .option--correct { border-color: var(--success) !important; background: var(--success-soft) !important; }
-  .option--correct .option__box { background: var(--success); border-color: var(--success); color: #04240F; }
+  .option--correct { border-color: var(--success) !important; background: var(--success-soft) !important; box-shadow: inset 3px 0 0 var(--success) !important; }
+  /* [aria-checked] ikut disebut: tanpa itu, kotak kobalt "terpilih"
+     (0,2,1) mengalahkan status benar/salah (0,2,0) — terlihat sebagai
+     centang biru di dalam baris merah. */
+  .option--correct .option__box,
+  .option--correct[aria-checked="true"] .option__box { background: var(--success); border-color: var(--success); color: var(--white); }
 
-  .option--wrong { border-color: var(--danger) !important; background: var(--danger-soft) !important; }
-  .option--wrong .option__box { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .option--wrong { border-color: var(--danger) !important; background: var(--danger-soft) !important; box-shadow: inset 3px 0 0 var(--danger) !important; }
+  .option--wrong .option__box,
+  .option--wrong[aria-checked="true"] .option__box { background: var(--danger); border-color: var(--danger); color: var(--white); }
 
   .option--locked { cursor: default; }
 
   .option-feedback {
-    font-size: var(--fs-xs);
-    line-height: 1.55;
-    padding: var(--sp-2) var(--sp-4) 0 calc(var(--sp-4) + 24px + var(--sp-3));
-    margin-top: calc(var(--sp-3) * -1 + 2px);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    padding: var(--sp-1) var(--sp-4) 0 calc(var(--sp-4) + 22px + var(--sp-3));
     margin-bottom: var(--sp-1);
   }
 
-  .option-feedback--ok { color: var(--success); }
-  .option-feedback--no { color: var(--danger); }
+  .option-feedback--ok { color: var(--success-hi); }
+  .option-feedback--no { color: var(--danger-hi); }
 
   .explain {
     margin-top: var(--sp-4);
-    padding: var(--sp-4);
-    border-radius: var(--r-md);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
     background: var(--bg-sunken);
     border: 1px solid var(--border-soft);
-    border-left: 3px solid var(--brand-primary);
-    font-size: var(--fs-sm);
+    border-left: 3px solid var(--royal);
+    font-size: var(--fs-base);
     color: var(--ink-700);
   }
 
   .explain__title {
     font-family: var(--font-ui);
-    font-weight: 800;
-    font-size: var(--fs-xs);
+    font-weight: 700;
+    font-size: var(--fs-sm);
     text-transform: uppercase;
-    letter-spacing: .07em;
-    color: var(--brand-primary);
-    margin-bottom: var(--sp-2);
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--royal);
+    margin-bottom: var(--sp-1);
   }
 
   /* Bilah aksi bawah */
@@ -511,29 +523,22 @@
     align-items: center;
     gap: var(--sp-3);
     flex-wrap: wrap;
-    padding: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
     margin-top: var(--sp-4);
     border-radius: var(--r-lg);
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
-    box-shadow: var(--shadow-2);
   }
 
   .actionbar__spacer { flex: 1 1 auto; }
-  .actionbar__note { font-size: var(--fs-xs); color: var(--ink-500); }
+  .actionbar__note { font-size: var(--fs-sm); color: var(--ink-500); }
 
   /* ------------------------------------------------------------
      TOAST
      ------------------------------------------------------------ */
-  /* Umpan balik muncul DEKAT penyebabnya: toast.js mengukur kolom panggung
-     dan menulis titik tengah serta lebarnya ke --toast-anchor-x/-w.
-     Tanpa tambatan (menu, layar masuk), nilai cadangannya memusatkan toast
-     ke jendela.
-
-     Terukur saat Tahap 1: JS menulis kedua properti itu, tetapi tak satu
-     aturan CSS pun membacanya — aturannya tertinggal di berkas fase
-     aplikasi asal — sehingga toast di layar belajar melayang di tengah
-     jendela, menutupi panel kiri. */
+  /* Umpan balik muncul DEKAT penyebabnya: toast.js menulis titik tengah
+     dan lebar kolom panggung ke --toast-anchor-x/-w. Tanpa tambatan
+     (menu, layar masuk), cadangannya memusatkan toast ke jendela. */
   .toast-host {
     position: fixed;
     left: var(--toast-anchor-x, 50%);
@@ -543,14 +548,12 @@
     display: flex;
     flex-direction: column-reverse;
     gap: var(--sp-2);
-    width: min(540px, calc(var(--toast-anchor-w, 100vw) - 32px));
+    width: min(520px, calc(var(--toast-anchor-w, 100vw) - 32px));
     pointer-events: none;
   }
 
   /* Papan angka terbuka: toast menyingkir ke tepi SEBERANG papan, dan
-     ketukan menembusnya. Toast yang duduk di atas deret tombol papan akan
-     menelan ketukan siswa — papan terasa mati tepat saat ia dibutuhkan.
-     Tepi papan ditulis mathpad.js ke <html data-mathpad="top|bottom">. */
+     ketukan menembusnya (tepi papan ditulis mathpad.js ke <html>). */
   [data-mathpad="bottom"] .toast-host {
     top: calc(var(--h-header) + var(--sp-3));
     bottom: auto;
@@ -558,40 +561,49 @@
   }
   [data-mathpad] .toast { pointer-events: none; }
 
+  /* Toast = pita cetak alat: pelat putih, pita warna di kiri, tanpa
+     sudut membulat besar. */
   .toast {
     display: flex;
     align-items: flex-start;
     gap: var(--sp-3);
     padding: var(--sp-3) var(--sp-4);
-    border-radius: var(--r-md);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
     background: var(--bg-elevated);
     border: 1px solid var(--border-strong);
-    border-left: 3px solid var(--t-accent, var(--brand-primary));
+    border-left: 4px solid var(--t-accent, var(--royal));
     box-shadow: var(--shadow-4);
     pointer-events: auto;
     cursor: pointer;
-    animation: toastIn var(--dur-base) var(--ease-spring) both;
+    animation: toastIn var(--dur-base) var(--ease-out) both;
   }
 
   .toast[data-closing="true"] { animation: toastOut var(--dur-fast) var(--ease-in) both; }
 
   @keyframes toastIn {
-    from { opacity: 0; transform: translateY(14px) scale(.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes toastOut {
     from { opacity: 1; transform: translateY(0); }
-    to   { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 0; transform: translateY(6px); }
   }
 
   .toast__icon { flex: 0 0 20px; color: var(--t-accent); padding-top: 1px; }
   .toast__icon svg { width: 20px; height: 20px; }
-  .toast__body { flex: 1; min-width: 0; font-size: var(--fs-sm); line-height: 1.55; color: var(--ink-700); }
-  .toast__title { font-family: var(--font-ui); font-weight: 800; font-size: var(--fs-sm); color: var(--t-accent); }
+  .toast__body { flex: 1; min-width: 0; font-size: var(--fs-base); line-height: 1.5; color: var(--ink-700); }
+  .toast__title {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--fs-sm);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--t-accent);
+  }
 
-  .toast--info    { --t-accent: var(--brand-primary); }
-  .toast--success { --t-accent: var(--success); }
+  .toast--info    { --t-accent: var(--royal); }
+  .toast--success { --t-accent: var(--success-hi); }
   .toast--error   { --t-accent: var(--danger); }
   .toast--warn    { --t-accent: var(--accent-amber); }
 
@@ -605,9 +617,9 @@
     display: grid;
     place-items: center;
     padding: var(--sp-4);
-    background: rgba(3, 8, 18, .68);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--navy-800) 55%, transparent);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     opacity: 0;
     transition: opacity var(--dur-base) var(--ease-out);
   }
@@ -615,88 +627,97 @@
   .modal-scrim[data-open="true"] { opacity: 1; }
 
   .modal {
-    width: min(470px, 100%);
+    width: min(460px, 100%);
     max-height: calc(100dvh - 48px);
     display: flex;
     flex-direction: column;
     padding: var(--sp-5);
-    border-radius: var(--r-xl);
-    background: var(--bg-elevated);
+    border-radius: var(--r-lg);
+    background: var(--reticle), var(--bg-elevated);
     border: 1px solid var(--border-strong);
     box-shadow: var(--shadow-4);
-    transform: scale(.94) translateY(12px);
-    transition: transform var(--dur-base) var(--ease-spring);
+    transform: translateY(10px);
+    transition: transform var(--dur-base) var(--ease-out);
   }
 
-  .modal-scrim[data-open="true"] .modal { transform: scale(1) translateY(0); }
+  .modal-scrim[data-open="true"] .modal { transform: translateY(0); }
 
   .modal__icon {
-    width: 48px; height: 48px;
+    width: 44px; height: 44px;
     border-radius: var(--r-md);
     display: grid;
     place-items: center;
     margin-bottom: var(--sp-3);
     background: var(--m-soft, var(--brand-primary-soft));
-    border: 1px solid var(--m-accent, var(--brand-primary));
-    color: var(--m-accent, var(--brand-primary));
+    color: var(--m-accent, var(--royal));
   }
 
-  .modal__icon svg { width: 24px; height: 24px; }
+  .modal__icon svg { width: 22px; height: 22px; }
   .modal--danger { --m-accent: var(--danger); --m-soft: var(--danger-soft); }
-  .modal--success { --m-accent: var(--success); --m-soft: var(--success-soft); }
+  .modal--success { --m-accent: var(--success-hi); --m-soft: var(--success-soft); }
 
-  .modal__title { font-family: var(--font-ui); font-size: var(--fs-lg); font-weight: 800; }
-  .modal__body { margin-top: var(--sp-2); color: var(--ink-700); font-size: var(--fs-sm); overflow-y: auto; min-height: 0; }
+  .modal__title { font-family: var(--font-ui); font-size: var(--fs-xl); font-weight: 700; line-height: 1.05; }
+  .modal__body { margin-top: var(--sp-2); color: var(--ink-700); font-size: var(--fs-base); overflow-y: auto; min-height: 0; }
   .modal__actions { display: flex; gap: var(--sp-3); margin-top: var(--sp-5); flex-wrap: wrap; }
   .modal__actions .btn { flex: 1 1 140px; }
 
   /* ------------------------------------------------------------
      Badge & progres
      ------------------------------------------------------------ */
+  /* Badge = label cetak: persegi, kapital, huruf sempit. */
   .badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px var(--sp-3);
-    border-radius: var(--r-pill);
+    gap: 5px;
+    padding: 3px 7px;
+    border-radius: var(--r-xs);
     font-family: var(--font-ui);
     font-size: var(--fs-xs);
-    font-weight: 800;
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: 1.2;
     background: var(--bg-sunken);
     border: 1px solid var(--border-soft);
-    color: var(--ink-500);
+    color: var(--ink-700);
+    vertical-align: middle;
   }
 
   .badge svg { width: 13px; height: 13px; }
-  .badge--success { background: var(--success-soft); border-color: rgba(61, 214, 140, .32); color: var(--success); }
-  .badge--danger  { background: var(--danger-soft);  border-color: rgba(255, 92, 99, .32); color: var(--danger); }
-  .badge--amber   { background: var(--accent-amber-soft); border-color: rgba(255, 194, 77, .32); color: var(--accent-amber); }
-  .badge--primary { background: var(--brand-primary-soft); border-color: var(--brand-primary-line); color: var(--brand-primary); }
+  .badge--success { background: var(--success-soft); border-color: transparent; color: var(--success-hi); }
+  .badge--danger  { background: var(--danger-soft);  border-color: transparent; color: var(--danger-hi); }
+  .badge--amber   { background: var(--value);        border-color: transparent; color: var(--value-ink); }
+  .badge--primary { background: var(--brand-primary-soft); border-color: transparent; color: var(--royal); }
 
-  /* display:block WAJIB: app.js merender bilah ini sebagai <span> di dalam
-     kartu bab (supaya sah berada di dalam <button>). Span bawaan bersifat
-     inline, lebarnya nol, dan bilahnya tampil sebagai garis tegak 1px. */
+  /* display:block WAJIB: app.js merender bilah ini sebagai <span> di
+     dalam kartu bab. Span bawaan inline, lebarnya nol.
+
+     Lintasannya adalah MISTAR: tik tiap 10%. Isi sependek 1/6 pun
+     bisa dibaca terhadap skalanya, bukan ditebak. */
   .progressbar {
     display: block;
+    position: relative;
     width: 100%;
     height: 8px;
-    border-radius: var(--r-pill);
-    background: var(--bg-deep);
-    border: 1px solid var(--border-soft);
+    border-radius: var(--r-xs);
+    background:
+      repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--tick) calc(10% - 1px) 10%),
+      var(--bg-deep);
     overflow: hidden;
   }
 
-  /* Isi progres = KUNING. Ia angka yang bisa dilihat, dikejar, dan dinaikkan
-     siswa (Kontrak 11) — persis makna warna nilai di aplikasi ini. Tepi
-     kanannya dipertegas dengan amber supaya isi sependek 1/6 pun tetap
-     terbedakan dari lintasannya. */
+  /* Isi progres = AMBER (BESARAN). Tepi kanannya grafit tegas: jarum
+     yang menunjuk angka pada mistar. */
   .progressbar__fill {
+    display: block;
     height: 100%;
-    border-radius: var(--r-pill);
-    background: linear-gradient(90deg, var(--value), var(--value-deep));
-    box-shadow: inset -2px 0 0 var(--accent-amber);
+    background: var(--value);
+    box-shadow: inset -2px 0 0 var(--ink-900);
     transition: width var(--dur-slow) var(--ease-out);
   }
+
+  .progressbar__fill[style*="width:0%"],
+  .progressbar__fill[style*="width: 0%"] { box-shadow: none; }
 
   .empty-state {
     display: grid;
@@ -710,8 +731,8 @@
   .empty-state svg { width: 44px; height: 44px; color: var(--ink-300); }
 
   .skeleton {
-    border-radius: var(--r-md);
-    background: linear-gradient(90deg, var(--bg-sunken) 25%, var(--bg-surface-2) 37%, var(--bg-sunken) 63%);
+    border-radius: var(--r-sm);
+    background: linear-gradient(90deg, var(--bg-deep) 25%, var(--bg-sunken) 37%, var(--bg-deep) 63%);
     background-size: 400% 100%;
     animation: shimmer 1.4s ease-in-out infinite;
   }
@@ -721,7 +742,7 @@
     to   { background-position: 0 50%; }
   }
 
-  /* Tombol ganti tema */
+  /* Tombol ganti tema (warisan; tidak ada pengalih tema aktif) */
   .theme-toggle {
     display: inline-grid;
     place-items: center;
@@ -731,10 +752,9 @@
     background: var(--bg-sunken);
     border: 1px solid var(--border-soft);
     color: var(--ink-500);
-    transition: all var(--dur-fast) var(--ease-out);
   }
 
-  .theme-toggle:hover { color: var(--accent-amber); border-color: var(--accent-amber); transform: translateY(-2px); }
+  .theme-toggle:hover { color: var(--royal); border-color: var(--royal); }
   .theme-toggle svg { width: 19px; height: 19px; }
 
   @media (max-width: 768px) {

@@ -1,10 +1,10 @@
 /* ============================================================
-   screens.css — Layar penuh yang berdiri langsung di atas kanvas navy:
+   screens.css — Layar penuh yang berdiri langsung di atas film:
    layar masuk dan layar "belum tersedia".
 
-   Keduanya tidak punya Sidebar & Stage, tidak punya panggung, dan
-   tidak punya kartu materi. Ia satu kartu putih di tengah bidang
-   kartesius — dan itulah kesan pertama aplikasi ini.
+   Keduanya tidak punya Sidebar & Stage. Masing-masing SATU pelat di
+   tengah meja gambar, dibingkai sudut bidik — kesan pertama aplikasi
+   ini adalah alat yang sedang dibidikkan, bukan formulir.
    ============================================================ */
 
 @layer layout {
@@ -15,9 +15,9 @@
 
   /* Kartu dipusatkan lewat margin:auto, BUKAN place-content:center.
      Di layar yang lebih pendek dari kartunya, place-content:center
-     mendorong kelebihannya ke atas DAN ke bawah sekaligus — bagian atas
-     kartu terpotong di luar jangkauan gulir dan tidak pernah bisa dilihat.
-     margin:auto memusatkan saat muat, dan menempel ke atas saat tidak. */
+     mendorong kelebihannya ke atas DAN ke bawah — bagian atas kartu
+     terpotong di luar jangkauan gulir. margin:auto memusatkan saat muat,
+     dan menempel ke atas saat tidak. */
   .login {
     height: 100%;
     min-height: 0;
@@ -28,97 +28,102 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-navy) transparent;
+    scrollbar-color: var(--border-strong) transparent;
   }
   .login > .login__card { margin-block: auto; flex: none; }
 
-  /* Header disembunyikan di layar masuk: belum ada progres untuk
-     ditampilkan, dan cincin progres kosong adalah angka yang tidak
-     bisa ditelusuri siswa (Kontrak 11). */
+  /* Header disembunyikan di layar masuk: belum ada progres, dan cincin
+     kosong adalah angka yang tidak bisa ditelusuri siswa (Kontrak 11). */
   .is-login-screen .app-header .header-center,
   .is-login-screen .app-header .brand__sub { visibility: hidden; }
 
   .login__card {
     position: relative;
-    width: min(460px, calc(100vw - 40px));
+    width: min(440px, calc(100vw - 40px));
     display: grid;
     justify-items: center;
     gap: var(--sp-2);
-    padding: var(--sp-5) var(--sp-5) var(--sp-4);
-    border-radius: var(--r-2xl);
-    background: var(--bg-surface);
+    padding: var(--sp-6) var(--sp-5) var(--sp-4);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border-soft);
+    background: var(--reticle), var(--bg-surface);
     box-shadow: var(--shadow-lift);
     text-align: center;
     overflow: hidden;
   }
 
-  /* Pita kuning tipis di kepala kartu — penanda yang sama dipakai
-     seluruh kartu "pintu masuk" di aplikasi ini. */
+  /* Mistar di tepi atas pelat masuk: skala yang sama dengan bezel. */
   .login__card::before {
     content: '';
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--value), var(--value-hi));
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 9px;
+    background: var(--ruler-x);
+    pointer-events: none;
   }
 
+  /* Tanda merek: layar instrumen kecil dengan panah amber. */
   .login__mark {
     display: grid;
     place-items: center;
-    width: 62px;
-    height: 62px;
-    border-radius: var(--r-lg);
+    width: 58px;
+    height: 58px;
+    margin-bottom: var(--sp-1);
+    border-radius: var(--r-md);
     background: var(--navy-800);
     color: var(--value);
-    box-shadow: var(--shadow-2);
   }
 
-  .login__eyebrow { color: var(--accent-amber); }
+  .login__eyebrow { color: var(--royal); }
 
   .login__title {
-    font-size: var(--fs-2xl);
-    font-weight: 900;
-    letter-spacing: var(--tracking-display);
+    font-size: var(--fs-3xl);
+    font-weight: 700;
+    line-height: .95;
+    letter-spacing: -.01em;
     color: var(--ink-900);
   }
 
   .login__lead {
     max-width: 34ch;
-    font-size: var(--fs-sm);
-    line-height: 1.6;
-    color: var(--ink-500);
+    font-size: var(--fs-base);
+    line-height: 1.55;
+    color: var(--ink-700);
   }
 
   .login__fields {
     width: 100%;
     display: grid;
     gap: var(--sp-3);
-    margin-top: var(--sp-2);
+    margin-top: var(--sp-3);
   }
 
-  .login__field { display: grid; gap: 6px; text-align: left; }
+  .login__field { display: grid; gap: 4px; text-align: left; }
 
   .login__label {
     font-family: var(--font-ui);
     font-size: var(--fs-xs);
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
-    color: var(--ink-500);
+    color: var(--ink-700);
   }
 
-  /* Field teks pun tidak pernah memanggil keyboard OS: mathpad mode teks
-     yang mengisinya. Karena itu kursornya disembunyikan dan seluruh
-     kotaknya bisa diketuk. */
+  /* Field teks tidak pernah memanggil keyboard OS: mathpad mode teks
+     yang mengisinya. Kursornya disembunyikan dan seluruh kotak bisa
+     diketuk. Bentuknya garis isian lembar kerja: dasar tebal, sisi tipis. */
   .login__input {
     width: 100%;
     min-height: var(--touch-min);
-    padding: 10px var(--sp-4);
-    border-radius: var(--r-md);
-    border: 2px solid var(--border-soft);
+    padding: 10px var(--sp-3);
+    border-radius: var(--r-sm) var(--r-sm) 0 0;
+    border: 1px solid var(--border-soft);
+    border-bottom: 2px solid var(--ink-700);
     background: var(--bg-sunken);
-    font-size: var(--fs-base);
-    font-weight: 600;
+    font-size: var(--fs-md);
+    font-weight: 500;
     color: var(--ink-900);
     cursor: pointer;
     caret-color: transparent;
@@ -127,21 +132,24 @@
                 box-shadow var(--dur-fast) var(--ease-out);
   }
 
-  .login__input::placeholder { color: var(--ink-300); font-weight: 400; }
-  .login__input:hover { border-color: var(--brand-primary-line); }
+  .login__input::placeholder { color: var(--ink-500); font-weight: 400; }
+  .login__input:hover { border-bottom-color: var(--royal); }
 
+  /* Isian yang sedang diisi = warna BESARAN: kotak mana yang menunggu. */
   .login__input[data-active="true"] {
     border-color: var(--value-deep);
+    border-bottom-color: var(--value-deep);
     background: var(--value-soft);
-    box-shadow: var(--glow-value);
+    box-shadow: 0 2px 0 var(--value-deep);
   }
 
   .login__input.is-invalid {
     border-color: var(--danger);
+    border-bottom-color: var(--danger);
     background: var(--danger-soft);
   }
 
-  .login__submit { width: 100%; margin-top: var(--sp-2); }
+  .login__submit { width: 100%; margin-top: var(--sp-3); }
 
   .login__note {
     display: flex;
@@ -149,6 +157,7 @@
     justify-content: center;
     gap: 6px;
     max-width: 38ch;
+    margin-top: var(--sp-1);
     font-size: var(--fs-xs);
     line-height: 1.55;
     color: var(--ink-500);
@@ -160,8 +169,7 @@
      2. LAYAR "BELUM TERSEDIA"
 
      Layar kosong adalah undangan untuk bertindak, bukan permintaan
-     maaf. Ia menyebut apa yang belum ada dan ke mana harus pergi
-     sementara ini.
+     maaf. Ia menyebut apa yang belum ada dan ke mana harus pergi.
      ============================================================ */
 
   .soon {
@@ -181,8 +189,9 @@
     justify-items: center;
     gap: var(--sp-3);
     padding: var(--sp-6) var(--sp-5);
-    border-radius: var(--r-2xl);
-    background: var(--bg-surface);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border-soft);
+    background: var(--reticle), var(--bg-surface);
     box-shadow: var(--shadow-lift);
     text-align: center;
   }
@@ -190,24 +199,75 @@
   .soon__mark {
     display: grid;
     place-items: center;
-    width: 58px;
-    height: 58px;
-    border-radius: var(--r-lg);
-    background: var(--value-soft);
-    color: var(--accent-amber);
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-md);
+    background: var(--navy-800);
+    color: var(--value);
   }
 
   .soon__title {
-    font-size: var(--fs-xl);
-    font-weight: 900;
+    font-size: var(--fs-2xl);
+    font-weight: 700;
     letter-spacing: var(--tracking-display);
     color: var(--ink-900);
   }
 
   .soon__text {
     max-width: 42ch;
-    font-size: var(--fs-sm);
-    line-height: 1.65;
-    color: var(--ink-500);
+    font-size: var(--fs-base);
+    line-height: 1.6;
+    color: var(--ink-700);
+  }
+
+  /* ------------------------------------------------------------
+     PELAT MASUK LANSKAP — dua kolom
+
+     Tersusun tegak, pelat ini setinggi ±550px; ruang di antara bezel
+     layar 1024×600 hanya 464px (terukur). Aplikasi ini memang hanya
+     lanskap, jadi pelatnya ikut lanskap: identitas di kolom kiri, isian
+     dan tombol di kolom kanan. Urutan DOM tidak berubah — hanya posisi
+     grid setiap kelas yang diatur.
+     ------------------------------------------------------------ */
+  @media (min-width: 720px) {
+    .login__card {
+      width: min(780px, calc(100vw - 40px));
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      grid-template-rows: auto auto auto 1fr auto auto;
+      column-gap: var(--sp-6);
+      row-gap: var(--sp-2);
+      justify-items: start;
+      align-items: start;
+      padding: var(--sp-6);
+      text-align: left;
+    }
+
+    .login__mark    { grid-column: 1; grid-row: 1; }
+    .login__eyebrow { grid-column: 1; grid-row: 2; margin-top: var(--sp-2); }
+    .login__title   { grid-column: 1; grid-row: 3; }
+    .login__lead    { grid-column: 1; grid-row: 4; }
+    .login__fields  { grid-column: 2; grid-row: 1 / span 4; margin-top: 0; align-self: center; }
+    .login__submit  { grid-column: 2; grid-row: 5; }
+    .login__note    { grid-column: 2; grid-row: 6; justify-content: flex-start; }
+
+    /* Garis pemisah tegak di antara dua kolom: tepi pelat yang dilipat. */
+    .login__fields::before {
+      content: '';
+      position: absolute;
+      top: var(--sp-6);
+      bottom: var(--sp-6);
+      /* padding kiri + lebar kolom 1 (1 dari 2,1 fr) + separuh celah */
+      left: calc(var(--sp-6) + (100% - 3 * var(--sp-6)) / 2.1 + var(--sp-6) / 2);
+      width: 1px;
+      background: var(--border-soft);
+    }
+  }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .login__card { padding: var(--sp-4) var(--sp-5); row-gap: 6px; }
+    .login__mark { width: 44px; height: 44px; }
+    .login__title { font-size: var(--fs-2xl); }
+    .login__fields { gap: var(--sp-2); }
+    .login__submit { margin-top: var(--sp-1); }
   }
 }

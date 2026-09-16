@@ -64,6 +64,7 @@ membuat peramban menjalankan modul JS basi).
 | 3 | Konten lengkap: `content/*.md` (4 bab) + `data/lessons.json` + `data/chapters/*.json` + `data/quizzes.json`. Seluruh kunci numerik diverifikasi ulang secara independen | `74741cf` |
 | **4** | **Arsitektur HTML/CSS**: `index.html`, 15 berkas CSS berlapis `@layer`, tema kanvas navy + kartu putih + kuning, Sidebar & Stage, pengunci orientasi, mathpad/modal/toast bergaya kustom | `5e3b560` |
 | **5 · Tahap 1** | **Inti JS tersambung & fungsional**: boot, router + penjaga identitas + penjaga keluar, `progressStore` reaktif, `sessionState`, mathpad (batas digit, mode Akar), toast/modal, navrail, vendor lokal | `73e746e` |
+| **6 · Visual** | **Perombakan visual "Instrumen Ukur"**: film abu dingin berpetak mm + pelat bersudut 2–8px + layar instrumen gelap; ARAH = kobalt `#2F3DE0`, BESARAN = amber `#FFB000`; tanda tangan = mistar (bezel header, panggung), sudut bidik (pelat pintu masuk), piringan busur derajat (cincin progres); font Barlow / Barlow Condensed / JetBrains Mono (vendor lokal, font lama dilepas). DOM & nama kelas tidak berubah; urutan `@layer` tetap. Terukur: kontras 0 pelanggaran di 6 rute, 0 luapan di 740×360 / 1024×600 / 1440×900, rasio sidebar 26,5 / 23,8 / 28%, 0 galat konsol | (commit ini) |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -206,8 +207,18 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### ⚠️ Tugas PERTAMA sesi baru BUKAN melanjutkan Tahap 2 JavaScript.
-> ### Tugas utamanya: **PEROMBAKAN VISUAL (UI/UX OVERHAUL) TOTAL.**
+> ### ✅ Perombakan visual SELESAI (lihat baris "6 · Visual" di §2 dan komentar `css/tokens.css`).
+> ### Langkah berikutnya: Tahap 2 JavaScript — setelah pengguna menyetujui tampilan baru.
+>
+> Kontrak visual baru yang wajib dijaga: `--ink-*` = teks di FILM & PELAT (terang);
+> `--on-navy-*` = teks di LAYAR INSTRUMEN gelap (bezel, mathpad, bidang kartesius,
+> figur rumus). Kisi bidang kartesius memakai `--scope-grid*`/`--scope-axis`,
+> BUKAN `--grid-line*` (itu tinta gelap untuk film). Amber hanya untuk besaran;
+> aksi utama kobalt. Utang: `tests/smoke.py` masih menguji Montserrat/Roboto;
+> PRD §7.1 masih menjelaskan tema kanvas navy; warna pena papan coret
+> (`js/core/ui/scratchpad.js`) & konfeti (`flyToAnimation.js`) masih palet lama.
+>
+> *Catatan misi sebelumnya (arsip):*
 
 **Instruksi pengguna (dikutip apa adanya):**
 > "Desain visual saat ini terlalu mirip dengan warisan Ruang Matriks (gaya
@@ -288,7 +299,7 @@ vektor-lab-interaktif/
 ├── skills/                    pustaka skills mentah (bukan kode aplikasi)
 │
 ├── assets/vendor/             VENDOR.md · katex/ (js, css, 20 font woff2) · gsap/ (gsap, MotionPath) ·
-│                              fonts/ (Montserrat 700–900, Roboto 400–900, Roboto Mono 400/700 + fonts.css)
+│                              fonts/ (Barlow 400–700, Barlow Condensed 600/700, JetBrains Mono variabel + fonts.css)
 │
 ├── css/                       15 berkas, semuanya dibungkus @layer
 │   ├── tokens.css             [tokens·reset·utilities] deklarasi urutan layer, palet, skala, reset

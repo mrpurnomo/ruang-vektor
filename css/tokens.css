@@ -1,93 +1,123 @@
 /* ============================================================
    tokens.css — Design token, reset, tipografi
-   Tema: "RUANG VEKTOR" — bidang kartesius navy, kartu putih, nilai kuning.
+   Tema: "RUANG VEKTOR · INSTRUMEN UKUR"
+
+   Aplikasi ini bukan lagi kartu mengambang di atas kanvas gelap.
+   Ia MEJA GAMBAR TEKNIK: lantainya film gambar abu-abu dingin berpetak
+   milimeter, bidang kerjanya pelat yang dipotong presisi (sudut 2–8px,
+   tepi rambut 1px, bayangan tipis), dan setiap alat ukur — bidang
+   kartesius, papan angka — adalah LAYAR INSTRUMEN gelap yang ditanam di
+   pelat itu. Header adalah bezel alatnya, lengkap dengan skala mistar.
 
    ------------------------------------------------------------
-   TIGA ATURAN YANG MENJAGA BERKAS INI TETAP BISA DIPAKAI
+   EMPAT ATURAN YANG MENJAGA BERKAS INI TETAP BISA DIPAKAI
    ------------------------------------------------------------
-   1. GANTI NILAINYA, PERTAHANKAN NAMANYA. Seluruh komponen di
-      css/components.css, quiz.css, vector.css, workspace.css sudah
-      matang dan hanya membaca nama token. Tema berpindah tanpa satu
-      pun berkas komponen ditulis ulang.
-   2. DUA SKALA TINTA, BUKAN SATU. --ink-* dipakai untuk teks di atas
-      KARTU PUTIH; --on-navy-* untuk teks di atas KANVAS NAVY. Memakai
-      yang salah menghasilkan teks yang hilang, bukan sekadar jelek.
-   3. KUNING ADALAH WARNA NILAI. Kuning dipakai hampir eksklusif untuk
-      ANGKA YANG DIHASILKAN ATAU HARUS DIHASILKAN SISWA — pratinjau
-      papan angka, isian jawaban, penghitung progres, dan tombol aksi
-      utama. Label, judul, dan kerangka tidak pernah kuning. Aturan ini
-      membuat aksioma pedagogis (§1.1 Blueprint) terbaca dari paletnya.
+   1. GANTI NILAINYA, PERTAHANKAN NAMANYA. Komponen hanya membaca nama
+      token. Beberapa nama lama (--navy-*, --royal, --yellow) sengaja
+      dipertahankan dan kini menunjuk warna baru; maknanya dijelaskan di
+      samping setiap token.
+   2. DUA SKALA TINTA, TETAP. --ink-* = teks di atas PELAT dan FILM (dua-
+      duanya terang). --on-navy-* = teks di atas LAYAR INSTRUMEN gelap
+      (header, footer, papan angka, bidang kartesius, figur rumus).
+      "Navy" di nama token kini berarti "permukaan instrumen gelap".
+   3. ARAH = KOBALT, BESARAN = AMBER. Vektor punya dua sifat, dan palet
+      ini punya dua warna kerja:
+        · KOBALT untuk ARAH — navigasi, aksi yang memajukan langkah,
+          pilihan yang sedang ditunjuk. Ke mana siswa bergerak.
+        · AMBER untuk BESARAN — angka yang keluar dari kepala siswa:
+          pratinjau papan angka, isian aktif, progres, skor.
+      Label, judul, dan kerangka tidak pernah amber. Aksioma pedagogis
+      (§1.1 Blueprint) tetap terbaca dari paletnya.
+   4. TANDA UKUR ADALAH TANDA TANGAN. Skala mistar (--ruler-*), sudut
+      bidik (--reticle) dan jarum busur derajat hanya dipakai di bingkai
+      yang memang "mengukur": bezel header, panggung kerja, kartu pintu
+      masuk. Jangan ditaburkan ke komponen lain.
    ============================================================ */
 
 /* Satu-satunya baris yang menentukan urutan kaskade seluruh aplikasi.
-   Urutan `<link>` di index.html tetap dijaga rapi, tetapi lapisan inilah
-   yang menjadi kontrak sesungguhnya.
 
-   Kenapa `workspace` berdiri SESUDAH `domain`, dan bukan bagian dari
-   `layout`: arsitektur Sidebar & Stage bertugas MENYESUAIKAN setiap
-   komponen — termasuk komponen domain — ke kolom selebar 190px. Ia
-   menyembunyikan brief simulasi di lanskap pendek, meratakan legenda
-   menjadi satu kolom, dan merampingkan tab langkah. Semua itu hanya
-   bermakna kalau ia bisa mengalahkan berkas yang mendefinisikan komponen
-   tersebut.
-
-   Ini terukur, bukan teoretis: sebelum urutan ini dipakai,
+   Kenapa `workspace` berdiri SESUDAH `domain`: arsitektur Sidebar & Stage
+   bertugas MENYESUAIKAN setiap komponen — termasuk komponen domain — ke
+   kolom selebar 190px. Terukur: sebelum urutan ini dipakai,
    `vector.css .sim__brief { display: flex }` (domain) mengalahkan
-   `workspace.css .ws-side__hint .sim__brief { display: none }` (layout),
-   dan brief yang seharusnya lenyap di layar 360px tetap tampil —
-   mendorong prompt langkah keluar dari kartu. */
+   `workspace.css .ws-side__hint .sim__brief { display: none }` dan brief
+   yang seharusnya lenyap di layar 360px mendorong prompt keluar kartu.
+   Perombakan visual tidak mengubah urutan ini. */
 @layer reset, tokens, layout, components, domain, workspace, utilities, overrides;
 
 @layer tokens {
 
   :root {
     /* =========================================================
-       PALET SUMBER — enam angka inilah acuan desain
+       PALET SUMBER
+       Enam warna inti: Film · Pelat · Grafit · Layar · Kobalt · Amber
        ========================================================= */
 
-    /* Navy: kanvas, bukan sekadar "latar gelap". Ia bidang kartesius. */
-    --navy-900: #060F2B;   /* sumur terdalam — di belakang segalanya   */
-    --navy-800: #0A1B45;   /* KANVAS UTAMA                              */
-    --navy-700: #122A5E;   /* panel navy terangkat — header, footer     */
-    --navy-600: #1B3C82;   /* garis sumbu, tepi panel navy              */
-    --navy-500: #2A56B0;   /* garis kisi tebal                          */
+    /* FILM — lantai meja gambar. Abu-abu dingin, bukan krem. */
+    --film: #E2E6EC;
+    --film-deep: #D5DAE2;
 
-    /* Biru interaktif: dipakai DI ATAS PUTIH, tidak pernah di atas navy. */
-    --royal: #1D4ED8;
-    --blue: #2563EB;
-    --blue-100: #DCE8FF;
-    --blue-50: #EFF5FF;
+    /* PELAT — bidang kerja. Hampir putih, sedikit dingin supaya
+       tidak menyilaukan di proyektor kelas. */
+    --plate: #FAFBFC;
+    --plate-sunken: #EEF1F5;
+    --plate-deep: #E3E8EF;
 
-    /* Kuning: warna NILAI. Lihat aturan 3 di atas. */
-    --yellow: #FFC800;
-    --yellow-hi: #FFD839;
-    --yellow-deep: #E0A800;
-    --yellow-100: #FFF1BF;
+    /* GRAFIT — tinta. Bukan hitam murni: pensil teknik 2H–4B. */
+    --graphite: #0D1320;
+    --graphite-2: #384255;
+    --graphite-3: #586377;
+    --graphite-4: #8B95A6;
 
-    --cyan: #22D3EE;
-    --cyan-100: #CBF3FC;
-    --magenta: #EC0F8C;
-    --magenta-100: #FFD7EE;
+    /* LAYAR INSTRUMEN — nama lama --navy-* dipertahankan (aturan 1).
+       Maknanya kini: permukaan alat ukur gelap, dari yang terdalam. */
+    --navy-900: #070B13;   /* sumur terdalam — isian LCD papan angka   */
+    --navy-800: #0B101B;   /* LAYAR UTAMA — bezel header, bidang       */
+    --navy-700: #131A28;   /* panel instrumen terangkat                */
+    --navy-600: #1C2536;   /* tombol di atas layar                     */
+    --navy-500: #2A3549;   /* tepi tegas di atas layar                 */
 
-    /* Tinta untuk kartu putih. --ink tetap sama dengan --navy-800:
-       satu warna yang berperan ganda sebagai kanvas dan sebagai tinta,
-       sehingga kartu putih terasa "dipotong" dari bidang yang sama. */
-    --ink: #0A1B45;
-    --ink-2: #33477D;
-    --ink-3: #6479AD;
+    /* KOBALT — ARAH. Tinta biru teknik yang pekat, bukan biru UI umum. */
+    --royal: #2F3DE0;
+    --blue: #3B49EA;
+    --blue-100: #D9DCFB;
+    --blue-50: #ECEEFD;
 
-    --paper: #EFF4FF;
+    /* AMBER — BESARAN. Nama lama --yellow-* dipertahankan (aturan 1). */
+    --yellow: #FFB000;
+    --yellow-hi: #FFC23A;
+    --yellow-deep: #E09A00;
+    --yellow-100: #FFF0C7;
+
+    --cyan: #3DD6F0;
+    --cyan-100: #D3F5FB;
+    --magenta: #B8316F;      /* beri — aksen peringatan, jauh dari merah galat */
+    --magenta-100: #F7E1EB;
+
+    /* Tinta pendek (dipakai langsung oleh beberapa komponen lama). */
+    --ink: var(--graphite);
+    --ink-2: var(--graphite-2);
+    --ink-3: var(--graphite-3);
+
+    --paper: var(--plate-sunken);
     --white: #FFFFFF;
 
-    --sh-1: 0 3px 12px rgba(2, 8, 26, .30);
-    --sh-2: 0 18px 44px -18px rgba(2, 8, 26, .62);
-    --sh-3: 0 38px 80px -28px rgba(2, 8, 26, .74);
+    /* Bayangan PRESISI: satu garis kontak 1px + satu penumbra lebar
+       yang sangat encer. Pelat logam di atas meja, bukan bantal tanah
+       liat. Tidak ada "sheen", tidak ada bevel. */
+    --sh-1: 0 1px 0 rgba(13, 19, 32, .05), 0 1px 3px rgba(13, 19, 32, .07);
+    --sh-2: 0 1px 0 rgba(13, 19, 32, .05), 0 14px 30px -20px rgba(13, 19, 32, .38);
+    --sh-3: 0 1px 0 rgba(13, 19, 32, .05), 0 30px 60px -34px rgba(13, 19, 32, .50);
 
-    --pop: cubic-bezier(.34, 1.4, .5, 1);
-    --ease: cubic-bezier(.22, .85, .28, 1);
+    --pop: cubic-bezier(.3, 1.3, .5, 1);
+    --ease: cubic-bezier(.2, .8, .25, 1);
 
-    --display: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --body: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Barlow Condensed: rumpun DIN — huruf papan teknik dan label alat.
+       Barlow: saudara lebarnya untuk teks bacaan, supaya tipografi
+       terbaca sebagai SATU sistem. JetBrains Mono: angka dengan nol
+       bergaris dan digit yang tidak mungkin tertukar (0/O, 1/l). */
+    --display: 'Barlow Condensed', 'Bahnschrift', 'Arial Narrow', system-ui, sans-serif;
+    --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
     /* =========================================================
        PEMETAAN SEMANTIK — inilah yang dipakai komponen
@@ -95,112 +125,171 @@
        ========================================================= */
 
     /* --- Permukaan --- */
-    --bg-canvas: var(--navy-800);      /* kanvas navy: bidang kartesius  */
-    /* --bg-deep BUKAN warna bilah header. Maknanya sejak tema asal:
-       "permukaan sedikit lebih dalam DI DALAM kartu terang" — lintasan
-       bilah progres, sel kosong, jalur scrollbar. Sempat dipetakan ke navy
-       di Langkah 4 dan terukur merusak 10 pemakainya sekaligus: bilah
-       progres 0/6 tampil sebagai batang navy penuh yang terbaca 100%.
-       Ganti nilainya, pertahankan MAKNANYA — bukan hanya namanya. */
-    --bg-deep: #E4ECFB;
-    --bg-surface: var(--white);        /* KARTU BACA — selalu putih      */
-    --bg-surface-2: var(--white);
-    --bg-sunken: var(--blue-50);       /* cekungan DI DALAM kartu putih  */
-    --bg-elevated: var(--white);
-    --bg-instrument: var(--navy-800);  /* panel alat di dalam kartu putih
-                                          (bidang kartesius SVG)         */
+    --bg-canvas: var(--film);          /* lantai aplikasi: film gambar   */
+    /* --bg-deep: "permukaan sedikit lebih dalam DI DALAM pelat" —
+       lintasan bilah progres, sel kosong, jalur scrollbar. BUKAN warna
+       bezel. (Pernah dipetakan ke navy dan merusak 10 pemakai.) */
+    --bg-deep: var(--plate-deep);
+    --bg-surface: var(--plate);        /* PELAT BACA                     */
+    --bg-surface-2: var(--plate);
+    --bg-sunken: var(--plate-sunken);  /* cekungan DI DALAM pelat        */
+    --bg-elevated: var(--white);       /* toast, modal — satu tingkat di
+                                          atas pelat                     */
+    --bg-instrument: var(--navy-800);  /* layar alat di dalam pelat      */
 
-    /* --- Teks di atas KARTU PUTIH --- */
-    --ink-900: var(--ink);
-    --ink-700: var(--ink-2);
-    --ink-500: var(--ink-3);
-    --ink-300: #93A6D0;
+    /* --- Teks di atas PELAT & FILM --- */
+    --ink-900: var(--graphite);
+    --ink-700: var(--graphite-2);
+    --ink-500: var(--graphite-3);
+    --ink-300: var(--graphite-4);
 
-    /* --- Teks di atas KANVAS NAVY --- */
-    --on-navy: #F2F6FF;
-    --on-navy-2: #B9C9EE;
-    --on-navy-3: #7E95C9;
-    --on-navy-line: rgba(160, 190, 255, .18);
+    /* Teks yang duduk langsung di FILM. Nilainya sama dengan tinta
+       pelat — keduanya terang — tetapi namanya terpisah supaya
+       pemakainya bisa didaftar habis (shell.css §8). */
+    --on-canvas: var(--graphite);
+    --on-canvas-2: var(--graphite-2);
+    --on-canvas-3: var(--graphite-3);
 
-    /* --- Merek & aksen --- */
+    /* --- Teks di atas LAYAR INSTRUMEN gelap --- */
+    --on-navy: #EEF1F7;
+    --on-navy-2: #B3BCCD;
+    --on-navy-3: #8490A7;
+    --on-navy-line: rgba(170, 185, 215, .20);
+
+    /* --- Merek = ARAH --- */
     --brand-primary: var(--royal);
-    --brand-primary-hi: #143FB4;
-    --brand-primary-dark: #143FB4;
+    --brand-primary-hi: #2330C2;
+    --brand-primary-dark: #1E2AA8;
     --brand-primary-soft: var(--blue-50);
-    --brand-primary-line: rgba(29, 78, 216, .28);
+    --brand-primary-line: rgba(47, 61, 224, .28);
 
-    /* Di atas navy, royal terlalu gelap untuk dipakai sebagai aksen.
-       Pasangan terangnya dipakai oleh komponen yang hidup di kanvas. */
-    --brand-on-navy: #7BA7FF;
-    --brand-on-navy-soft: rgba(123, 167, 255, .14);
+    /* Kobalt terlalu gelap di atas layar instrumen; pasangan terangnya
+       dipakai oleh komponen yang hidup di layar. */
+    --brand-on-navy: #939CFF;
+    --brand-on-navy-soft: rgba(147, 156, 255, .14);
 
     --accent-coral: var(--magenta);
-    --accent-coral-hi: #C40C75;
+    --accent-coral-hi: #962459;
+    --accent-coral-dark: #962459;
     --accent-coral-soft: var(--magenta-100);
 
-    /* Amber: versi "aman kontras" dari kuning untuk TEKS di atas putih.
-       Kuning murni (#FFC800) pada putih hanya mencapai 1.6:1 — ia hanya
-       boleh dipakai sebagai LATAR tombol atau di atas navy. */
-    --accent-amber: #8A6200;
-    --accent-amber-hi: #6E4E00;
-    --accent-amber-dark: #6E4E00;
+    /* Amber AMAN KONTRAS untuk TEKS di atas pelat. Amber murni (#FFB000)
+       di atas putih hanya ±1,9:1 — ia hanya boleh jadi LATAR, garis,
+       atau teks di atas layar instrumen. */
+    --accent-amber: #8A5300;
+    --accent-amber-hi: #6E4200;
+    --accent-amber-dark: #6E4200;
     --accent-amber-soft: var(--yellow-100);
 
-    /* --- Warna NILAI: angka yang keluar dari kepala siswa --- */
+    /* --- BESARAN: angka yang keluar dari kepala siswa --- */
     --value: var(--yellow);
     --value-hi: var(--yellow-hi);
     --value-deep: var(--yellow-deep);
-    --value-ink: #2A1D00;              /* teks di ATAS kuning            */
+    --value-ink: #1C1200;              /* teks di ATAS amber             */
     --value-soft: var(--yellow-100);
-    --value-line: rgba(255, 200, 0, .42);
+    --value-line: rgba(255, 176, 0, .45);
 
-    --success: #0E9F6E;
-    --success-hi: #0B7F58;
-    --success-soft: #D6F5EA;
-    --success-on-navy: #3DD68C;
+    --success: #08875A;
+    --success-hi: #066B47;
+    --success-soft: #DDF3EA;
+    --success-on-navy: #45D69B;
 
-    --danger: #DC2626;
-    --danger-hi: #B41C1C;
-    --danger-soft: #FDE3E3;
-    --danger-on-navy: #FF7A7A;
+    --danger: #CC2B2B;
+    --danger-hi: #A52222;
+    --danger-soft: #FBE5E3;
+    --danger-on-navy: #FF8A80;
 
     /* --- Garis --- */
-    --grid-line: rgba(122, 162, 255, .085);   /* kisi di kanvas navy     */
-    --grid-line-major: rgba(122, 162, 255, .16);
-    --axis-line: rgba(160, 196, 255, .34);
-    --border-soft: rgba(29, 78, 216, .13);    /* tepi DI DALAM kartu     */
-    --border-strong: rgba(29, 78, 216, .26);
-    --border-navy: rgba(150, 185, 255, .16);  /* tepi panel DI navy      */
+    --grid-line: rgba(13, 19, 32, .055);       /* petak milimeter di film */
+    --grid-line-major: rgba(13, 19, 32, .10);
+    --axis-line: rgba(13, 19, 32, .30);
+    --border-soft: rgba(13, 19, 32, .11);      /* tepi rambut DI pelat    */
+    --border-strong: rgba(13, 19, 32, .24);
+    --border-navy: rgba(170, 185, 215, .16);   /* tepi DI layar instrumen */
 
-    /* --- Bayangan: lebih dalam, karena jatuh di atas navy --- */
+    /* Kisi & sumbu DI DALAM layar instrumen (bidang kartesius). */
+    --scope-grid: rgba(150, 170, 210, .09);
+    --scope-grid-major: rgba(150, 170, 210, .18);
+    --scope-axis: rgba(200, 212, 235, .42);
+
+    /* --- Kedalaman --- */
     --shadow-1: var(--sh-1);
-    --shadow-2: 0 10px 26px -14px rgba(2, 8, 26, .55), 0 2px 6px rgba(2, 8, 26, .22);
+    --shadow-2: var(--sh-2);
     --shadow-3: var(--sh-2);
     --shadow-4: var(--sh-3);
     --shadow-float: var(--sh-2);
-    --shadow-lift: 0 26px 60px -28px rgba(2, 8, 26, .78);
+    --shadow-lift: var(--sh-3);
 
-    --glow-primary: 0 0 0 1px var(--brand-primary-line), 0 14px 30px -14px rgba(29, 78, 216, .55);
-    --glow-success: 0 0 0 1px rgba(14, 159, 110, .34), 0 14px 30px -14px rgba(14, 159, 110, .45);
-    --glow-amber: 0 0 0 1px var(--value-line), 0 14px 32px -14px rgba(255, 200, 0, .50);
-    --glow-value: 0 0 0 1px var(--value-line), 0 0 26px -6px rgba(255, 200, 0, .45);
-    --ring-focus: 0 0 0 3px rgba(255, 200, 0, .55);
+    --glow-primary: 0 0 0 1px var(--brand-primary), 0 0 0 4px var(--brand-primary-soft);
+    --glow-success: 0 0 0 1px var(--success), 0 0 0 4px var(--success-soft);
+    --glow-amber: 0 0 0 1px var(--value-deep), 0 0 0 4px var(--value-soft);
+    --glow-value: 0 0 0 1px var(--value-deep), 0 0 0 4px var(--value-line);
+    /* Cincin fokus dua lapis: celah pelat lalu garis kobalt. Terbaca di
+       atas pelat terang maupun layar gelap. */
+    --ring-focus: 0 0 0 2px var(--plate), 0 0 0 4px var(--royal);
 
-    --sheen: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -2px 0 rgba(2, 8, 26, .10);
-    --sheen-navy: inset 0 1px 0 rgba(160, 200, 255, .12), inset 0 -2px 0 rgba(0, 0, 0, .22);
+    /* Warisan: dulu kilau "tanah liat". Kini bayangan kosong supaya
+       daftar box-shadow yang masih menyebutnya tetap sah. */
+    --sheen: 0 0 #0000;
+    --sheen-navy: inset 0 1px 0 rgba(200, 212, 235, .06);
+
+    /* =========================================================
+       TANDA UKUR — elemen tanda tangan (aturan 4)
+       ========================================================= */
+
+    --tick: rgba(13, 19, 32, .22);
+    --tick-major: rgba(13, 19, 32, .42);
+    --tick-on-navy: rgba(200, 212, 235, .22);
+    --tick-on-navy-major: rgba(200, 212, 235, .50);
+
+    /* Mistar mendatar di tepi ATAS sebuah bingkai: tik kecil tiap 8px,
+       tik mayor tiap 40px (lima satuan). */
+    --ruler-x:
+      repeating-linear-gradient(90deg, var(--tick-major) 0 1px, transparent 1px 40px) top left / 100% 9px no-repeat,
+      repeating-linear-gradient(90deg, var(--tick) 0 1px, transparent 1px 8px) top left / 100% 5px no-repeat;
+
+    /* Mistar tegak di tepi KIRI bingkai. */
+    --ruler-y:
+      repeating-linear-gradient(180deg, var(--tick-major) 0 1px, transparent 1px 40px) top left / 9px 100% no-repeat,
+      repeating-linear-gradient(180deg, var(--tick) 0 1px, transparent 1px 8px) top left / 5px 100% no-repeat;
+
+    /* Mistar di tepi BAWAH bezel gelap. */
+    --ruler-bezel:
+      repeating-linear-gradient(90deg, var(--tick-on-navy-major) 0 1px, transparent 1px 40px) bottom left / 100% 7px no-repeat,
+      repeating-linear-gradient(90deg, var(--tick-on-navy) 0 1px, transparent 1px 8px) bottom left / 100% 4px no-repeat;
+
+    /* Sudut bidik: empat siku di empat pojok, seperti tanda potong dan
+       jendela bidik alat ukur. Digambar sebagai latar — bukan ::before —
+       supaya tidak berebut pseudo-elemen dengan komponennya. */
+    --reticle-c: var(--royal);
+    --reticle:
+      linear-gradient(var(--reticle-c), var(--reticle-c)) top left / 14px 2px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) top left / 2px 14px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) top right / 14px 2px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) top right / 2px 14px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) bottom left / 14px 2px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) bottom left / 2px 14px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) bottom right / 14px 2px no-repeat,
+      linear-gradient(var(--reticle-c), var(--reticle-c)) bottom right / 2px 14px no-repeat;
+
+    /* Kepala panah vektor untuk clip-path (eyebrow, legenda, catatan). */
+    --arrow-shape: polygon(0 40%, 70% 40%, 70% 0, 100% 50%, 70% 100%, 70% 60%, 0 60%);
   }
 
   :root {
-    /* --- Radius: membulat konsisten, flat design tanpa bevel --- */
-    --r-xs: 8px;
-    --r-sm: 12px;
-    --r-md: 16px;
-    --r-lg: 22px;
-    --r-xl: 28px;
-    --r-2xl: 34px;
+    /* --- Radius: PRESISI, bukan bantal ---
+       Sudut kecil dan konsisten membuat antarmuka terbaca sebagai benda
+       yang dipotong mesin. --r-pill tetap berarti "bulat penuh" dan
+       hanya dipakai untuk titik & cincin. */
+    --r-xs: 2px;
+    --r-sm: 3px;
+    --r-md: 4px;
+    --r-lg: 6px;
+    --r-xl: 8px;
+    --r-2xl: 10px;
     --r-pill: 999px;
 
-    /* --- Spasi: ritme 4/8px --- */
+    /* --- Spasi: ritme 4/8px — sama dengan kisi milimeter --- */
     --sp-1: 4px;
     --sp-2: 8px;
     --sp-3: 12px;
@@ -211,16 +300,13 @@
     --sp-8: 64px;
 
     /* --- Tipografi ---
-       Montserrat & Roboto dipertahankan karena keduanya sudah di-vendor
-       lokal (Blueprint §2.4) dan menambah keluarga ketiga berarti
-       menambah ±200 KB serta satu kelas kegagalan di lab sekolah.
-       Karakter tipografi justru dibangun dari ATURAN pemakaiannya:
-       ANGKA, KOMPONEN, DAN KOORDINAT SELALU MONO. Di aplikasi ini
-       notasi matematika adalah register yang berbeda dari prosa, dan
-       tipografinya harus mengatakan itu. */
+       ANGKA, KOMPONEN, DAN KOORDINAT SELALU MONO. Label instrumen selalu
+       Barlow Condensed kapital berjarak lebar. Prosa selalu Barlow.
+       Tiga register, tiga suara — siswa bisa membedakan "ini penjelasan",
+       "ini nama alat", dan "ini nilai" tanpa membaca kata-katanya. */
     --font-ui: var(--display);
     --font-body: var(--body);
-    --font-mono: 'Roboto Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
     --font-value: var(--font-mono);
 
     --fs-xs: 0.75rem;
@@ -228,21 +314,23 @@
     --fs-base: 1rem;
     --fs-md: 1.125rem;
     --fs-lg: 1.375rem;
-    --fs-xl: 1.75rem;
-    --fs-2xl: 2.25rem;
-    --fs-3xl: 3rem;
+    --fs-xl: 1.8rem;
+    --fs-2xl: 2.4rem;
+    --fs-3xl: 3.2rem;
 
-    --tracking-eyebrow: .16em;
-    --tracking-display: -0.025em;
+    --tracking-eyebrow: .14em;
+    --tracking-display: -0.005em;
+    --tracking-label: .06em;
 
-    /* --- Motion: satu ritme untuk seluruh aplikasi --- */
-    --dur-fast: 150ms;
-    --dur-base: 220ms;
-    --dur-slow: 320ms;
-    --dur-screen: 420ms;
-    --ease-out: cubic-bezier(.22, .8, .36, 1);
+    /* --- Motion: cepat, tegas, tanpa pantulan berlebihan ---
+       Alat ukur bergerak seperti jarum yang diredam, bukan per. */
+    --dur-fast: 120ms;
+    --dur-base: 200ms;
+    --dur-slow: 300ms;
+    --dur-screen: 360ms;
+    --ease-out: cubic-bezier(.2, .8, .25, 1);
     --ease-in: cubic-bezier(.55, .06, .68, .19);
-    --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    --ease-spring: cubic-bezier(.3, 1.25, .5, 1);
 
     /* --- Skala z-index --- */
     --z-base: 0;
@@ -255,32 +343,28 @@
 
     --touch-min: 44px;
 
-    /* Tinggi bilah: dipakai bersama oleh header, footer, dan #app grid.
-       Satu sumber angka supaya tinggi panggung tidak pernah salah hitung. */
+    /* Tinggi bilah: dipakai bersama oleh header, footer, dan #app grid. */
     --h-header: 58px;
-    --h-footer: 34px;
+    --h-footer: 30px;
   }
 
   /* ------------------------------------------------------------
      LANSKAP PENDEK — ponsel 6 inci yang diputar (±740×360)
-
-     Di tinggi 360px, header + footer bawaan memakan 26% layar sebelum
-     satu baris materi pun tergambar. Bilahnya menyusut dan skala tipografi
-     turun satu tingkat — bukan komponennya yang ditulis ulang, karena
-     semuanya sudah membaca token yang sama.
+     Bilah menyusut dan skala tipografi turun satu tingkat; komponen
+     tidak ditulis ulang karena semuanya membaca token yang sama.
      ------------------------------------------------------------ */
   @media (orientation: landscape) and (max-height: 470px) {
     :root {
       --h-header: 46px;
-      --h-footer: 24px;
+      --h-footer: 22px;
 
-      --fs-xs: 0.68rem;
+      --fs-xs: 0.7rem;
       --fs-sm: 0.8rem;
       --fs-base: 0.9rem;
       --fs-md: 1rem;
       --fs-lg: 1.15rem;
-      --fs-xl: 1.4rem;
-      --fs-2xl: 1.7rem;
+      --fs-xl: 1.45rem;
+      --fs-2xl: 1.8rem;
 
       --sp-5: 18px;
       --sp-6: 24px;
@@ -302,35 +386,27 @@
   html {
     -webkit-text-size-adjust: 100%;
     font-size: 16px;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
-  /* data-theme="light" TETAP dipasang di <html>. Sejumlah komponen
-     memakainya untuk menentukan warna teks tombol, dan mencabutnya akan
-     mematikan aturan-aturan itu diam-diam. Ia menandai "kartu bacanya
-     terang", bukan "kanvasnya terang". */
-  [data-theme="light"] { color-scheme: dark; }
+  /* data-theme="light" TETAP dipasang di <html>: sejumlah komponen
+     memakainya untuk menentukan warna teks tombol. */
+  [data-theme="light"] { color-scheme: light; }
 
-  /* TINTA BAWAAN ADALAH TINTA KARTU, BUKAN TINTA KANVAS.
-
-     Hampir seluruh teks aplikasi ini hidup di dalam kartu putih. Kalau
-     bawaannya --on-navy, setiap judul yang lupa menyebut warnanya akan
-     menjadi putih di atas putih — hilang total, dan hanya ketahuan
-     dengan mengukur, bukan membaca kode. (Itu persis yang terjadi saat
-     tema ini pertama dipasang.)
-
-     Dengan bawaan --ink-900, risikonya terbalik dan jauh lebih jinak:
-     komponen kanvas yang lupa menyebut warnanya tampil gelap-di-navy —
-     dan jumlahnya sedikit serta bisa didaftar habis. Daftarnya ada di
-     shell.css §8. */
+  /* TINTA BAWAAN = TINTA PELAT. Film dan pelat sama-sama terang, jadi
+     bawaan ini benar di hampir semua tempat. Yang wajib menyebut tintanya
+     sendiri kini justru LAYAR INSTRUMEN gelap — dan jumlahnya sedikit:
+     bezel header/footer, papan angka, bidang kartesius, figur rumus. */
   body {
     font-family: var(--font-body);
     font-size: var(--fs-base);
+    font-weight: 400;
     line-height: 1.6;
     color: var(--ink-900);
     background-color: var(--bg-canvas);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-variant-numeric: lining-nums;
     overscroll-behavior: none;
     position: relative;
   }
@@ -338,8 +414,7 @@
   /* ------------------------------------------------------------
      KUNCI VIEWPORT — kebijakan tanpa-scroll yang ketat.
      Scroll hanya boleh hidup di wadah yang ditandai eksplisit
-     (.scroll-area, .workspace__body, .ws-side__hint, .menu);
-     di luar itu semuanya dikunci.
+     (.workspace__body, .ws-side__hint, .menu, .login).
      ------------------------------------------------------------ */
   html, body {
     height: 100%;
@@ -352,26 +427,31 @@
     touch-action: manipulation;
   }
 
+  /* Judul: Barlow Condensed tebal. Huruf sempit memberi judul panjang
+     berbahasa Indonesia ("Perkalian Skalar dan Vektor Satuan") ruang
+     untuk tetap satu baris di kolom 190px. */
   h1, h2, h3, h4, h5 {
     font-family: var(--font-ui);
-    font-weight: 800;
-    line-height: 1.18;
+    font-weight: 700;
+    line-height: 1.08;
     letter-spacing: var(--tracking-display);
     color: inherit;
   }
 
-  h1 { font-size: var(--fs-2xl); font-weight: 900; }
+  h1 { font-size: var(--fs-2xl); }
   h2 { font-size: var(--fs-xl); }
   h3 { font-size: var(--fs-lg); }
   h4 { font-size: var(--fs-md); }
 
-  p { line-height: 1.68; }
-  strong { font-weight: 700; color: inherit; }
+  p { line-height: 1.65; }
+  strong { font-weight: 600; color: inherit; }
 
   button, input, select, textarea { font: inherit; color: inherit; }
   button { background: none; border: none; cursor: pointer; }
   ul, ol { list-style: none; }
   img, svg { display: block; max-width: 100%; }
+
+  ::selection { background: var(--value-soft); color: var(--ink-900); }
 
   :focus { outline: none; }
   :focus-visible {
@@ -401,17 +481,17 @@
   .text-sm { font-size: var(--fs-sm); }
   .tabular { font-variant-numeric: tabular-nums; }
 
-  /* Angka selalu mono. Dipasang di sini sebagai utilitas supaya engine
-     simulasi bisa menandai nilai apa pun tanpa menulis CSS baru. */
+  /* Angka selalu mono. Utilitas supaya engine simulasi bisa menandai
+     nilai apa pun tanpa menulis CSS baru. */
   .num { font-family: var(--font-value); font-variant-numeric: tabular-nums; }
-  .val { font-family: var(--font-value); color: var(--value-deep); font-weight: 700; }
+  .val { font-family: var(--font-value); color: var(--accent-amber); font-weight: 700; }
 
-  /* Teks yang kebetulan berdiri di atas kanvas navy. */
+  /* Teks yang kebetulan berdiri di atas layar instrumen gelap. */
   .on-navy { color: var(--on-navy); }
   .on-navy-muted { color: var(--on-navy-2); }
 
   /* KaTeX mewarisi warna teks tema (default-nya hitam). */
-  .katex { font-size: 1.06em; color: inherit; }
+  .katex { font-size: 1.08em; color: inherit; }
   .katex .mord, .katex .mbin, .katex .mrel,
   .katex .mopen, .katex .mclose, .katex .mpunct,
   .katex .minner, .katex .mop { color: inherit; }

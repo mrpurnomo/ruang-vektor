@@ -103,9 +103,9 @@
     gap: var(--sp-2);
     max-width: calc(100% - var(--sp-5));
     padding: var(--sp-2) var(--sp-4);
-    border-radius: var(--r-pill);
+    border-radius: var(--r-md);
     background: var(--success);
-    color: #FFFFFF;
+    color: var(--white);
     font-family: var(--font-ui);
     font-size: var(--fs-sm);
     font-weight: 700;
@@ -127,9 +127,9 @@
     align-items: center;
     gap: var(--sp-2);
     padding: var(--sp-2) var(--sp-3);
-    border-radius: var(--r-pill);
+    border-radius: var(--r-sm);
     background: var(--success-soft);
-    border: 1px solid rgba(14, 159, 110, .3);
+    border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
     color: var(--success-hi);
     font-size: var(--fs-xs);
     font-weight: 700;
@@ -167,7 +167,7 @@
     height: 30px;
     pointer-events: none;
     color: var(--value);
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .45));
+    filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--navy-900) 60%, transparent));
     animation: cueTap 1.5s var(--ease) infinite;
   }
 
@@ -187,9 +187,9 @@
 
   .sim__brief {
     padding: var(--sp-3);
-    border-radius: var(--r-md);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
     background: var(--bg-sunken);
-    border-left: 3px solid var(--brand-primary);
+    border-left: 3px solid var(--royal);
     font-size: var(--fs-sm);
     line-height: 1.6;
     color: var(--ink-700);
@@ -199,7 +199,7 @@
     display: grid;
     gap: 4px;
     padding: var(--sp-3);
-    border-radius: var(--r-md);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
     background: var(--value-soft);
     border-left: 3px solid var(--value-deep);
     font-size: var(--fs-sm);
@@ -212,8 +212,8 @@
 
   .sim__prompt-step {
     font-family: var(--font-ui);
-    font-size: 10px;
-    font-weight: 800;
+    font-size: var(--fs-xs);
+    font-weight: 700;
     letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
     color: var(--accent-amber);

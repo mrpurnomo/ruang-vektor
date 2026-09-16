@@ -165,7 +165,7 @@ aplikasi dipakai di lab sekolah dengan jaringan yang tidak bisa diandalkan.
 assets/vendor/
 ├── katex/   katex.min.css · katex.min.js · fonts/
 ├── gsap/    gsap.min.js · MotionPathPlugin.min.js
-└── fonts/   Montserrat + Roboto + Roboto Mono (woff2, subset latin)
+└── fonts/   Barlow + Barlow Condensed + JetBrains Mono (woff2, subset latin)
 ```
 
 Dimuat **tanpa** atribut `integrity` (SRI hanya bermakna untuk CDN).
