@@ -65,6 +65,7 @@ membuat peramban menjalankan modul JS basi).
 | **4** | **Arsitektur HTML/CSS**: `index.html`, 15 berkas CSS berlapis `@layer`, tema kanvas navy + kartu putih + kuning, Sidebar & Stage, pengunci orientasi, mathpad/modal/toast bergaya kustom | `5e3b560` |
 | **5 · Tahap 1** | **Inti JS tersambung & fungsional**: boot, router + penjaga identitas + penjaga keluar, `progressStore` reaktif, `sessionState`, mathpad (batas digit, mode Akar), toast/modal, navrail, vendor lokal | `73e746e` |
 | **6 · Visual** | **Perombakan visual "Instrumen Ukur"**: film abu dingin berpetak mm + pelat bersudut 2–8px + layar instrumen gelap; ARAH = kobalt `#2F3DE0`, BESARAN = amber `#FFB000`; tanda tangan = mistar (bezel header, panggung), sudut bidik (pelat pintu masuk), piringan busur derajat (cincin progres); font Barlow / Barlow Condensed / JetBrains Mono (vendor lokal, font lama dilepas). DOM & nama kelas tidak berubah; urutan `@layer` tetap. Terukur: kontras 0 pelanggaran di 6 rute, 0 luapan di 740×360 / 1024×600 / 1440×900, rasio sidebar 26,5 / 23,8 / 28%, 0 galat konsol | (commit ini) |
+| **7 · Tahap 2** | **Mesin matematika domain (TDD)**: `surd.js` (pecahan & akar eksak `(n/d)√r`, jumlah suku, rasionalisasi, `parseSurd` untuk keluaran papan angka, `isSimplestForm`), `vector.js` (R²/R³ dengan `dim` tersimpan; eksak masuk → eksak keluar; fungsi `*Exact` mengembalikan bentuk akar), `validator.js` (`can*` berkalimat + `checkExactAnswer` / `checkVectorAnswer` berkode `correct·empty·unreadable·not-simplest·decimal·sign·wrong`; kalimat TIDAK membocorkan kunci). `node tests/engine.test.mjs` → 111/111, termasuk 500 pasang vektor acak berbenih; uji mutasi 18 mutan, 17 tertangkap + 1 kode mati dibuang, 1 celah (minor y–z) ditutup | (commit ini) |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -78,10 +79,10 @@ membuat peramban menjalankan modul JS basi).
 - Nol kebocoran state antar layar (papan angka, scrim, papan coret, tambatan toast).
 
 ### Yang BELUM ada
-- `js/domain/vector.js`, `surd.js`, `validator.js`, `plane/*.js` → **berkas kosong** (Tahap 2–3).
+- `js/domain/plane/*.js` → **berkas kosong** (Tahap 3). `vector.js`, `surd.js`, `validator.js` selesai di Tahap 2.
 - `js/lesson/simulations/sim*.js` → kosong; **25 engine belum ada**, semua sub-topik
   menampilkan "Simulasi sedang disiapkan" dan tetap membuka Mini Kuis (Tahap 4).
-- `tests/engine.test.mjs`, `tests/validate_data.py` → kosong. `tests/smoke.py` &
+- `tests/validate_data.py` → kosong (`engine.test.mjs` terisi, 111 uji). `tests/smoke.py` &
   `archive_soal.py` masih warisan Matriks, belum diadaptasi.
 - Pertanyaan terbuka ke pengguna: Mini Kuis menampilkan kunci (hijau) langsung setelah
   jawaban salah lalu mengizinkan "Coba Lagi" — perilaku warisan, dipertanyakan secara
@@ -208,7 +209,11 @@ Aturan:
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
 > ### ✅ Perombakan visual SELESAI (lihat baris "6 · Visual" di §2 dan komentar `css/tokens.css`).
-> ### Langkah berikutnya: Tahap 2 JavaScript — setelah pengguna menyetujui tampilan baru.
+> ### Tahap 2 SELESAI (baris "7 · Tahap 2"). Langkah berikutnya: Tahap 3 — `plane/vectorPlane.js` + `arrow.js`, setelah pengguna menyetujui.
+>
+> Kontrak domain: tampilkan jawaban lewat `toLatexS(...Exact())`, nilai isian lewat
+> `checkExactAnswer(displayString, key)` — kirim TEKS tampilan papan angka ("2√5"),
+> bukan nilai desimalnya. Perkalian silang sengaja tidak ada.
 >
 > Kontrak visual baru yang wajib dijaga: `--ink-*` = teks di FILM & PELAT (terang);
 > `--on-navy-*` = teks di LAYAR INSTRUMEN gelap (bezel, mathpad, bidang kartesius,
