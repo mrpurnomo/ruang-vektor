@@ -7,7 +7,7 @@
  * Fokus dijebak di dalam modal dan dikembalikan saat ditutup.
  */
 
-import { renderMixed } from '../engine/katexRenderer.js';
+import { renderMixed } from '../render/katexRenderer.js';
 import { icon } from './icons.js';
 
 let openInstance = null;

@@ -287,12 +287,21 @@
      5. RINGKASAN SELESAI SUB-TOPIK
      ============================================================ */
 
+  /* Isinya KALIMAT ("Skor Mini Kuis kamu: 100 dari 100."), bukan angka
+     tunggal — hanya angkanya (<strong>) yang diperlakukan sebagai nilai:
+     mono, tabular, dan amber (versi kuning yang aman kontras di atas putih). */
   .lesson-done__score {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--ink-700);
+  }
+
+  .lesson-done__score strong {
     font-family: var(--font-value);
-    font-size: var(--fs-2xl);
+    font-size: 1.35em;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
-    color: var(--value-deep);
+    color: var(--accent-amber);
   }
 
   .lesson-done__title {

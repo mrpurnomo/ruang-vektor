@@ -1,11 +1,11 @@
 /**
- * modules/kuis/quizResult.js
+ * quiz/quizResult.js
  * Layar hasil kuis: skor, rincian sub-topik yang lemah, dan jalur remedial
  * langsung kembali ke Mode Belajar.
  */
 
-import { icon } from '../../ui/icons.js';
-import { renderMixed } from '../../engine/katexRenderer.js';
+import { icon } from '../core/ui/icons.js';
+import { renderMixed } from '../core/render/katexRenderer.js';
 
 function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -14,29 +14,25 @@ function el(tag, className, html) {
   return node;
 }
 
-const SUBTOPIC_LABELS = {
-  pengertian_letak: 'Pengertian & Letak Baris/Kolom',
-  ordo_matriks: 'Ordo Matriks',
-  jenis_matriks: 'Jenis-Jenis Matriks',
-  transpose: 'Transpose Matriks',
-  kesamaan_matriks: 'Kesamaan Dua Matriks',
-  penjumlahan_pengurangan: 'Penjumlahan & Pengurangan',
-  perkalian_skalar: 'Perkalian Skalar',
-  kombinasi_operasi: 'Kombinasi Operasi',
-  perkalian_matriks: 'Perkalian Dua Matriks',
-  sifat_operasi: 'Sifat-Sifat Operasi',
-  determinan_2x2: 'Determinan 2×2',
-  determinan_3x3: 'Determinan 3×3 (Sarrus)',
-  singular_nonsingular: 'Matriks Singular',
-  sifat_determinan: 'Sifat-Sifat Determinan',
-  invers_2x2: 'Invers 2×2',
-  invers_3x3: 'Invers 3×3 (Adjoin)',
-  persamaan_matriks: 'Persamaan Matriks',
-  translasi_data: 'Translasi Data & Aturan Domino',
-  spldv_matriks: 'Model Invers SPLDV (Gaya UTBK)',
-  ekstraksi_elemen: 'Ekstraksi Elemen Tersembunyi (Sniper)',
-  analisis_multi_kondisi: 'Analisis Multi-Kondisi',
-};
+/**
+ * Judul sub-topik untuk daftar "perlu diperkuat".
+ *
+ * Dulu berkas ini menyimpan PETA ID → JUDUL yang ditulis tangan — berisi
+ * sub-topik "Ruang Matriks". Itu pengetahuan domain di dalam mesin soal
+ * yang seharusnya generik (Blueprint §3.2), dan ia pasti basi begitu
+ * kurikulumnya berganti. Judul kini diturunkan dari data yang sama yang
+ * dibaca siswa: pemanggil mengirim `ctx.subtopicTitles`.
+ *
+ * Tanpa peta, ID dirapikan jadi judul yang masih terbaca — lebih baik
+ * daripada menampilkan `kesamaan_vektor` mentah.
+ */
+function subtopicLabel(ctx, id) {
+  const titles = ctx.subtopicTitles;
+  if (titles instanceof Map && titles.has(id)) return titles.get(id);
+  if (titles && typeof titles === 'object' && titles[id]) return titles[id];
+  const words = String(id).replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
 
 /** Cari bab pemilik sebuah sub-topik dari manifest. */
 function findChapterOf(manifest, subtopicId) {
@@ -93,7 +89,7 @@ export function renderQuizResult(host, ctx) {
           ${icon('refresh', { size: 15 })}
         </span>
         <span class="subtopic-item__title">
-          ${SUBTOPIC_LABELS[id] || id}
+          ${subtopicLabel(ctx, id)}
           ${chapter ? `<br><span class="text-sm text-muted">Bab ${chapter.number} · ${chapter.title}</span>` : ''}
         </span>
         ${icon('chevron-right', { size: 16 })}
@@ -134,5 +130,4 @@ export function renderQuizResult(host, ctx) {
   host.appendChild(wrap);
 }
 
-export { SUBTOPIC_LABELS };
 export default renderQuizResult;

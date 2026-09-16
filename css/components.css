@@ -525,18 +525,38 @@
   /* ------------------------------------------------------------
      TOAST
      ------------------------------------------------------------ */
+  /* Umpan balik muncul DEKAT penyebabnya: toast.js mengukur kolom panggung
+     dan menulis titik tengah serta lebarnya ke --toast-anchor-x/-w.
+     Tanpa tambatan (menu, layar masuk), nilai cadangannya memusatkan toast
+     ke jendela.
+
+     Terukur saat Tahap 1: JS menulis kedua properti itu, tetapi tak satu
+     aturan CSS pun membacanya — aturannya tertinggal di berkas fase
+     aplikasi asal — sehingga toast di layar belajar melayang di tengah
+     jendela, menutupi panel kiri. */
   .toast-host {
     position: fixed;
-    left: 50%;
+    left: var(--toast-anchor-x, 50%);
     bottom: var(--sp-5);
     transform: translateX(-50%);
     z-index: var(--z-toast);
     display: flex;
     flex-direction: column-reverse;
     gap: var(--sp-2);
-    width: min(540px, calc(100vw - 32px));
+    width: min(540px, calc(var(--toast-anchor-w, 100vw) - 32px));
     pointer-events: none;
   }
+
+  /* Papan angka terbuka: toast menyingkir ke tepi SEBERANG papan, dan
+     ketukan menembusnya. Toast yang duduk di atas deret tombol papan akan
+     menelan ketukan siswa — papan terasa mati tepat saat ia dibutuhkan.
+     Tepi papan ditulis mathpad.js ke <html data-mathpad="top|bottom">. */
+  [data-mathpad="bottom"] .toast-host {
+    top: calc(var(--h-header) + var(--sp-3));
+    bottom: auto;
+    flex-direction: column;
+  }
+  [data-mathpad] .toast { pointer-events: none; }
 
   .toast {
     display: flex;
@@ -653,7 +673,12 @@
   .badge--amber   { background: var(--accent-amber-soft); border-color: rgba(255, 194, 77, .32); color: var(--accent-amber); }
   .badge--primary { background: var(--brand-primary-soft); border-color: var(--brand-primary-line); color: var(--brand-primary); }
 
+  /* display:block WAJIB: app.js merender bilah ini sebagai <span> di dalam
+     kartu bab (supaya sah berada di dalam <button>). Span bawaan bersifat
+     inline, lebarnya nol, dan bilahnya tampil sebagai garis tegak 1px. */
   .progressbar {
+    display: block;
+    width: 100%;
     height: 8px;
     border-radius: var(--r-pill);
     background: var(--bg-deep);
@@ -661,11 +686,15 @@
     overflow: hidden;
   }
 
+  /* Isi progres = KUNING. Ia angka yang bisa dilihat, dikejar, dan dinaikkan
+     siswa (Kontrak 11) — persis makna warna nilai di aplikasi ini. Tepi
+     kanannya dipertegas dengan amber supaya isi sependek 1/6 pun tetap
+     terbedakan dari lintasannya. */
   .progressbar__fill {
     height: 100%;
     border-radius: var(--r-pill);
-    background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-hi));
-    box-shadow: 0 0 10px rgba(77, 141, 255, .5);
+    background: linear-gradient(90deg, var(--value), var(--value-deep));
+    box-shadow: inset -2px 0 0 var(--accent-amber);
     transition: width var(--dur-slow) var(--ease-out);
   }
 

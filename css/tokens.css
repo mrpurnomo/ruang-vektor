@@ -96,7 +96,13 @@
 
     /* --- Permukaan --- */
     --bg-canvas: var(--navy-800);      /* kanvas navy: bidang kartesius  */
-    --bg-deep: var(--navy-700);        /* bilah header & footer          */
+    /* --bg-deep BUKAN warna bilah header. Maknanya sejak tema asal:
+       "permukaan sedikit lebih dalam DI DALAM kartu terang" — lintasan
+       bilah progres, sel kosong, jalur scrollbar. Sempat dipetakan ke navy
+       di Langkah 4 dan terukur merusak 10 pemakainya sekaligus: bilah
+       progres 0/6 tampil sebagai batang navy penuh yang terbaca 100%.
+       Ganti nilainya, pertahankan MAKNANYA — bukan hanya namanya. */
+    --bg-deep: #E4ECFB;
     --bg-surface: var(--white);        /* KARTU BACA — selalu putih      */
     --bg-surface-2: var(--white);
     --bg-sunken: var(--blue-50);       /* cekungan DI DALAM kartu putih  */

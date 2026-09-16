@@ -15,14 +15,21 @@ bahkan **flash disk di lab sekolah tanpa internet**.
 
 ## Menjalankan
 
-ES Modules butuh `http://`, **bukan** `file://`. Nyalakan server statis apa pun
-dari direktori ini:
+ES Modules butuh `http://`, **bukan** `file://`. Dari direktori ini:
 
 ```bash
-python -m http.server 5173
+python tests/serve.py
 ```
 
 Lalu buka <http://localhost:5173>.
+
+Server statis apa pun juga bisa dipakai (`python -m http.server 5173`, hosting
+statis, GitHub Pages). `tests/serve.py` hanya menambahkan `Cache-Control:
+no-cache`, supaya peramban tidak terus menjalankan modul lama setelah berkas
+diperbarui — hal yang terjadi dengan server bawaan Python.
+
+**Tanpa internet?** Tetap jalan. KaTeX, GSAP, dan seluruh font dimuat dari
+`assets/vendor/`; CDN hanya dipakai sebagai cadangan bila berkas lokal hilang.
 
 > Aplikasi hanya berjalan dalam **mode lanskap**. Di potret akan muncul pengunci
 > orientasi.
@@ -35,6 +42,7 @@ Lalu buka <http://localhost:5173>.
 |---|---|---|
 | `node tests/engine.test.mjs` | Uji matematika vektor murni (tanpa peramban) | instan |
 | `python tests/validate_data.py` | Validasi konsistensi `data/**.json` | instan |
+| `python tests/serve.py` | Server dev tanpa cache basi | — |
 | `python tests/smoke.py` | Uji perilaku & geometri (Playwright) | ±12 menit |
 | `python tests/archive_soal.py` | Bangkitkan arsip soal guru dari `quizzes.json` | instan |
 

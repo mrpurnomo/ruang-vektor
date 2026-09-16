@@ -280,10 +280,16 @@
   .navrail__item svg { width: 16px; height: 16px; flex: none; }
   .navrail__item:hover { color: var(--on-navy); background: rgba(242, 246, 255, .07); }
 
-  .navrail__item[aria-current="true"] {
+  /* aria-current="page" adalah nilai yang dipasang app.js — ia sekaligus
+     memberi tahu pembaca layar tab mana yang sedang dibuka. */
+  .navrail__item[aria-current="page"] {
     background: var(--value);
     color: var(--value-ink);
   }
+
+  .navrail__item:disabled { opacity: .35; cursor: default; }
+  .navrail__item:disabled:hover { background: transparent; color: var(--on-navy-3); }
+  .is-login-screen .navrail { visibility: hidden; }
 
   /* Lanskap pendek: ikon saja. Label adalah hal pertama yang dikorbankan,
      bukan ukuran sasaran sentuhnya. */
@@ -634,16 +640,63 @@
      di dalam kartu.
      ============================================================ */
 
-  .menu__title,
-  .workspace__eyebrow + .workspace__title { color: inherit; }
-
-  .menu { color: var(--on-navy); }
+  /* JANGAN PERNAH mewarnai WADAH (`.menu`) dengan tinta kanvas.
+     Warna diwariskan: `.menu { color: on-navy }` mengalir ke dalam kartu
+     hero dan kartu mode yang putih, dan judul keduanya menjadi putih di
+     atas putih. Terukur di Tahap 1 — hero__title rgb(242,246,255) di atas
+     rgb(255,255,255). Yang diwarnai hanyalah elemen yang MEMANG duduk di
+     kanvas, satu per satu. */
   .menu__title { color: var(--on-navy); }
   .menu__lead { color: var(--on-navy-2); }
   .menu__eyebrow { color: var(--value); }
-  .menu__greet { color: var(--on-navy); }
-  .menu__identity { color: var(--on-navy-2); }
   .menu__footer { color: var(--on-navy-3); }
+
+  /* Sapaan: asal sekolah + nama + tombol Ganti Akun di satu baris. */
+  .menu__greet {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--on-navy-2);
+  }
+  .menu__greet svg { color: var(--success-on-navy); flex: none; }
+
+  .menu__identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-4);
+  }
+
+  /* Ganti Akun: berkotak, berbatas, bernada tenang — ia pintu keluar yang
+     harus mudah ditemukan (perangkat kelas dipakai bergantian), tapi tidak
+     boleh bersaing dengan aksi belajar. Tidak ada tautan teks telanjang. */
+  .btn--switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--border-navy);
+    background: rgba(242, 246, 255, .06);
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--on-navy-2);
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+  .btn--switch:hover,
+  .btn--switch:focus-visible {
+    color: var(--value);
+    border-color: var(--value-line);
+    background: rgba(242, 246, 255, .1);
+  }
 
   /* Eyebrow bergaya vektor: garis pendek berujung panah, bukan titik.
      Dipakai ulang oleh setiap eyebrow di aplikasi. */

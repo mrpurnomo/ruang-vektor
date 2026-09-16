@@ -1,16 +1,17 @@
 /**
- * modules/belajar/simulations/simCore.js
- * Perkakas bersama seluruh simulasi: render matriks, chip, drop-zone,
- * pengendali langkah (slider), dan jalur penolakan yang selalu disertai Toast.
+ * lesson/simulations/simCore.js
+ * Perkakas bersama seluruh simulasi: render kisi berkurung (vektor kolom),
+ * chip, drop-zone, pengendali langkah (slider), dan jalur penolakan yang
+ * selalu disertai Toast — plus kelas dasar `Simulation`.
  */
 
-import { formatNumber, ordoText } from '../../../engine/matrix.js';
-import { renderMixed } from '../../../engine/katexRenderer.js';
-import { fillTemplate } from '../../../engine/validator.js';
-import { icon } from '../../../ui/icons.js';
-import toast from '../../../ui/toast.js';
-import { rejectShake, hideDragCue } from '../../../interactions/flyToAnimation.js';
-import { resetDragSystem } from '../../../interactions/dragDrop.js';
+import { formatNumber } from '../../core/numeric.js';
+import { renderMixed } from '../../core/render/katexRenderer.js';
+import { fillTemplate } from '../../core/text.js';
+import { icon } from '../../core/ui/icons.js';
+import toast from '../../core/ui/toast.js';
+import { rejectShake, hideDragCue } from '../../core/interactions/flyToAnimation.js';
+import { resetDragSystem } from '../../core/interactions/dragDrop.js';
 
 export function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -20,8 +21,16 @@ export function el(tag, className, html) {
 }
 
 /* ============================================================
-   Matriks
+   Kisi berkurung
+
+   Vektor kolom memakai kurung yang sama persis dengan matriks — sebuah
+   vektor R³ adalah kisi 3×1. Helper ini karena itu dipertahankan apa adanya
+   (Blueprint §9.1) dan dipakai engine vektor lewat `renderColumnVector()`.
    ============================================================ */
+export function renderColumnVector(components, options = {}) {
+  return renderMatrix(components.map((c) => [c]), { addressPrefix: '', ...options });
+}
+
 export function renderMatrix(matrix, options = {}) {
   const {
     name = null,
@@ -60,7 +69,9 @@ export function renderMatrix(matrix, options = {}) {
   });
 
   bracket.appendChild(grid);
-  if (showOrdo) bracket.appendChild(el('span', 'matrix__ordo', ordoText(matrix)));
+  if (showOrdo) {
+    bracket.appendChild(el('span', 'matrix__ordo', `${matrix.length}×${matrix[0].length}`));
+  }
   root.appendChild(bracket);
 
   return { root, cells, grid, bracket };

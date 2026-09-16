@@ -525,8 +525,9 @@ export function createScratchpad(host) {
      Kanvas punya DUA ukuran: kotak CSS-nya, dan jumlah piksel
      sebenarnya (dikali `devicePixelRatio` supaya garisnya tidak
      buram di layar retina). Keduanya harus dihitung ulang setiap
-     panggung berubah — dan karena goresannya vektor, isinya
-     digambar ulang TAJAM, bukan diregangkan.
+     panggung berubah — dan karena goresannya disimpan sebagai garis
+     berkoordinat, bukan piksel, isinya digambar ulang TAJAM, bukan
+     diregangkan.
      ============================================================ */
   function resize() {
     const r = canvas.getBoundingClientRect();

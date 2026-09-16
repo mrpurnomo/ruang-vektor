@@ -7,7 +7,7 @@
  * penjelas yang harus benar-benar dibaca, bukan sekadar dilirik.
  */
 
-import { renderMixed } from '../engine/katexRenderer.js';
+import { renderMixed } from '../render/katexRenderer.js';
 import { icon } from './icons.js';
 
 const DURATIONS = { info: 3500, success: 3500, warn: 4500, error: 5000 };
@@ -112,9 +112,18 @@ const ICON_FOR = {
   error: 'alert-circle',
 };
 
+/**
+ * Judul bawaan per tipe.
+ *
+ * `success` SENGAJA tanpa judul. Toast sukses dipakai untuk dua hal yang
+ * berbeda register-nya: jawaban yang benar ("Tepat! $ec{AB} = B - A$") dan
+ * notifikasi sistem ("Progres berhasil direset"). Judul bawaan "Tepat!"
+ * membuat yang kedua terbaca aneh — seolah siswa menjawab sesuatu — dan
+ * kalimat jawaban yang benar sudah membuka dirinya dengan "Tepat!".
+ */
 const TITLE_FOR = {
   info: null,
-  success: 'Tepat!',
+  success: null,
   warn: 'Perhatikan',
   error: 'Belum tepat',
 };
@@ -147,7 +156,16 @@ export function showToast(message, options = {}) {
   el.className = `toast toast--${type}`;
   el.setAttribute('role', type === 'error' ? 'alert' : 'status');
 
-  const title = options.title !== undefined ? options.title : TITLE_FOR[type];
+  let title = options.title !== undefined ? options.title : TITLE_FOR[type];
+
+  // Kalimat penjelas yang sudah DIBUKA dengan judulnya sendiri ("Belum tepat —
+  // …") tidak perlu judul lagi di atasnya. Tanpa ini siswa membaca "Belum
+  // tepat / Belum tepat — …": pengulangan yang membuang satu baris layar
+  // dan membuat pesan terdengar seperti galat sistem.
+  if (title && typeof message === 'string'
+      && message.trim().toLowerCase().startsWith(String(title).toLowerCase().replace(/[!.]$/, ''))) {
+    title = null;
+  }
 
   el.innerHTML = `
     <span class="toast__icon">${icon(ICON_FOR[type] || 'info')}</span>
@@ -195,7 +213,30 @@ export function clearToasts() {
   [...active].forEach((el) => dismiss(el, true));
 }
 
+const VALID_TYPES = new Set(['info', 'success', 'warn', 'error']);
+
+/**
+ * Pintu tunggal bergaya `toast.show('error', 'Pesan')`.
+ *
+ * Tipe yang tidak dikenal TIDAK dilempar sebagai galat: ia dicatat di konsol
+ * dan ditampilkan sebagai `info`. Umpan balik yang gagal muncul karena salah
+ * ketik nama tipe lebih merugikan siswa daripada umpan balik bernada netral.
+ *
+ * @param {'info'|'success'|'warn'|'error'} type
+ * @param {string} message  mendukung $latex$ dan **tebal**
+ * @param {{title?: string, duration?: number}} [options]
+ */
+export function show(type, message, options = {}) {
+  let safeType = type;
+  if (!VALID_TYPES.has(type)) {
+    console.warn(`[toast] tipe "${type}" tidak dikenal — ditampilkan sebagai info`);
+    safeType = 'info';
+  }
+  return showToast(message, { ...options, type: safeType });
+}
+
 export const toast = {
+  show,
   anchorTo: anchorToasts,
   info: (msg, opts) => showToast(msg, { ...opts, type: 'info' }),
   success: (msg, opts) => showToast(msg, { ...opts, type: 'success' }),

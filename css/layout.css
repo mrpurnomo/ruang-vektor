@@ -236,6 +236,14 @@
     background: var(--accent-coral);
   }
 
+  /* Setiap kartu PUTIH menyatakan tintanya sendiri, apa pun yang diwariskan
+     wadahnya. Pertahanan kedua terhadap tinta kanvas yang bocor ke dalam
+     kartu (lihat shell.css §8). */
+  .hero__panel,
+  .mode-card,
+  .chapter-item,
+  .subtopic-item { color: var(--ink-900); }
+
   .hero__title {
     font-family: var(--font-ui);
     font-size: clamp(1.5rem, 2.8vw, 2.1rem);

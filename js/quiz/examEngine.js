@@ -22,14 +22,15 @@
  * Tipe soal: mathpad · single_choice (A–E) · multi_select · matrix_input
  */
 
-import { renderMixed, renderToString } from '../../engine/katexRenderer.js';
-import { numbersMatch } from '../../engine/validator.js';
-import { attachMathpad } from '../../ui/mathpad.js';
-import { icon } from '../../ui/icons.js';
-import { confirmAction } from '../../ui/modal.js';
-import toast from '../../ui/toast.js';
-import { celebrate } from '../../interactions/flyToAnimation.js';
-import { createScratchpad } from '../../ui/scratchpad.js';
+import { renderMixed, renderToString } from '../core/render/katexRenderer.js';
+import { renderQuestionBody, renderDataTable } from './questionBody.js';
+import { numbersMatch } from '../core/numeric.js';
+import { attachMathpad } from '../core/ui/mathpad.js';
+import { icon } from '../core/ui/icons.js';
+import { confirmAction } from '../core/ui/modal.js';
+import toast from '../core/ui/toast.js';
+import { celebrate } from '../core/interactions/flyToAnimation.js';
+import { createScratchpad } from '../core/ui/scratchpad.js';
 
 function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -287,26 +288,8 @@ export class ExamEngine {
     }
     card.appendChild(meta);
 
-    card.appendChild(el('div', 'quiz__prompt', renderMixed(q.prompt)));
-
-    /**
-     * Tabel data ditulis sebagai DATA (`q.table`), bukan sebagai markdown di
-     * dalam `prompt`.
-     *
-     * ⚠️ `renderMixed()` meng-escape seluruh masukannya dan tidak mengenal
-     * sintaks tabel — pipa-pipanya tampil mentah di layar sebagai
-     * `| Tipe Kamar | Hotel A | ...`. Soal TKA nomor 4 justru menyajikan
-     * datanya sebagai tabel, jadi tabelnya dibangun sebagai node DOM
-     * sungguhan, memakai gaya `.data-table` yang sama dengan Bab 4.
-     */
-    if (q.table) card.appendChild(this.buildTable(q.table));
-
-    if (q.tex) card.appendChild(el('div', 'quiz__tex', renderToString(q.tex, { display: true })));
-
-    // Kalimat penutup soal (pertanyaannya sendiri) berdiri SESUDAH tabel atau
-    // rumusnya — kalau ia ikut di `prompt`, siswa membaca pertanyaannya
-    // sebelum melihat datanya.
-    if (q.after) card.appendChild(el('div', 'quiz__prompt quiz__after', renderMixed(q.after)));
+    // prompt → table → tex → after, lewat perender tunggal (lihat questionBody.js).
+    renderQuestionBody(card, q);
 
     this.answerHost = el('div', 'quiz__answer');
     card.appendChild(this.answerHost);
@@ -331,26 +314,9 @@ export class ExamEngine {
     this.renderActions();
   }
 
+  /** Dipertahankan demi pemanggil lama; kini hanya meneruskan ke perender tunggal. */
   buildTable(table) {
-    const wrap = el('div', 'data-table-wrap');
-    const tbl = el('table', 'data-table');
-
-    const thead = el('thead');
-    const headRow = el('tr');
-    (table.headers || []).forEach((h) => headRow.appendChild(el('th', null, renderMixed(h))));
-    thead.appendChild(headRow);
-    tbl.appendChild(thead);
-
-    const tbody = el('tbody');
-    (table.rows || []).forEach((row) => {
-      const tr = el('tr');
-      row.forEach((cell) => tr.appendChild(el('td', null, renderMixed(String(cell)))));
-      tbody.appendChild(tr);
-    });
-    tbl.appendChild(tbody);
-
-    wrap.appendChild(tbl);
-    return wrap;
+    return renderDataTable(table);
   }
 
   /* ---------------- isian angka ---------------- */
@@ -440,7 +406,7 @@ export class ExamEngine {
     }
   }
 
-  /* ---------------- isian matriks ---------------- */
+  /* ---------------- isian berkurung (vektor kolom / kisi) ---------------- */
   renderMatrixInput(q) {
     /**
      * Matriks punya DUA penyimpanan, dan itu disengaja.
@@ -729,19 +695,38 @@ export class ExamEngine {
     }
   }
 
-  async confirmExit() {
-    if (this.submitted) {
-      if (this.options.onExit) this.options.onExit();
-      return;
-    }
-    const ok = await confirmAction({
+  /**
+   * Adakah jawaban yang akan HILANG bila layar ini ditinggal?
+   *
+   * Dibaca penjaga keluar di app.js. Ujian yang belum disentuh sama sekali,
+   * atau yang sudah dikumpulkan, boleh ditinggal tanpa bertanya — pertanyaan
+   * yang tidak perlu mengajarkan siswa untuk menekan "Ya" tanpa membaca.
+   */
+  hasUnsavedWork() {
+    if (this.submitted || this.leaveApproved) return false;
+    return this.answers.some((a) => a !== null);
+  }
+
+  /** Kalimat konfirmasi keluar — dipakai tombol keluar DAN penjaga keluar. */
+  static leavePrompt() {
+    return {
       title: 'Keluar dari ujian?',
       body: 'Jawaban yang sudah kamu isi pada sesi ini **tidak akan tersimpan**.',
       confirmLabel: 'Ya, Keluar',
       cancelLabel: 'Batal, Lanjut Mengerjakan',
       variant: 'danger',
-    });
-    if (ok && this.options.onExit) this.options.onExit();
+    };
+  }
+
+  async confirmExit() {
+    if (this.hasUnsavedWork()) {
+      const ok = await confirmAction(ExamEngine.leavePrompt());
+      if (!ok) return;
+    }
+    // Ditandai SEBELUM onExit: onExit berpindah rute, dan penjaga keluar
+    // tidak boleh bertanya kedua kalinya atas keputusan yang sama.
+    this.leaveApproved = true;
+    if (this.options.onExit) this.options.onExit();
   }
 }
 

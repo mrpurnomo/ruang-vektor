@@ -8,17 +8,18 @@
  *    ke bagian mana pun tanpa mengulang langkah sebelumnya.
  */
 
-import { renderMixed, renderToString } from '../../engine/katexRenderer.js';
-import { icon } from '../../ui/icons.js';
+import { renderMixed, renderToString } from '../core/render/katexRenderer.js';
+import { icon } from '../core/ui/icons.js';
 import { mountSimulation } from './simulations/index.js';
-import { QuizEngine } from '../kuis/quizEngine.js';
+import { QuizEngine } from '../quiz/quizEngine.js';
+import { renderQuestionBody } from '../quiz/questionBody.js';
 import {
   markSubtopicStarted, markSubtopicCompleted, recordAttempt,
-  setChapterCompleteIfDone, unlockBadge, getSubtopicProgress,
-} from '../../state/progressStore.js';
-import toast, { anchorToasts } from '../../ui/toast.js';
-import { createScratchpad } from '../../ui/scratchpad.js';
-import { lessonKey, getResume, patchResume, clearResume } from '../../state/sessionState.js';
+  setChapterCompleteIfDone, getSubtopicProgress,
+} from '../core/state/progressStore.js';
+import toast, { anchorToasts } from '../core/ui/toast.js';
+import { createScratchpad } from '../core/ui/scratchpad.js';
+import { lessonKey, getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 const STEPS = [
   { id: 'materi', label: 'Materi' },
@@ -580,8 +581,7 @@ export class LessonView {
       meta.appendChild(el('span', 'badge badge--primary', `Soal ${index + 1}`));
       card.appendChild(meta);
 
-      card.appendChild(el('div', 'quiz__prompt', renderMixed(q.prompt)));
-      if (q.tex) card.appendChild(el('div', null, renderToString(q.tex, { display: true })));
+      renderQuestionBody(card, q);
 
       card.appendChild(this.buildAnswerKey(q));
 
@@ -676,11 +676,13 @@ export class LessonView {
       markSubtopicCompleted(chapter.id, subtopic.id, result.score);
       const chapterDone = setChapterCompleteIfDone(chapter.id, subtopicOrder);
 
-      if (unlockBadge('first_lesson_complete')) {
-        toast.info('Lencana baru terbuka: **Langkah Pertama**!');
-      }
-      if (chapterDone && unlockBadge(`chapter_${chapter.id}`)) {
-        toast.info(`Lencana baru: **Bab ${chapter.number} Tuntas**!`);
+      // Tidak ada toast "lencana baru" di sini. Sistem lencana dicabut
+      // permanen (Blueprint §1.5): tidak ada satu layar pun yang menampilkan
+      // lencana, menjelaskan artinya, atau bisa dikejar siswa dengan sengaja
+      // — Kontrak 11. Yang diumumkan hanya pencapaian yang BISA DITELUSURI:
+      // bab yang seluruh sub-topiknya tuntas, dan itu terlihat di daftar bab.
+      if (chapterDone) {
+        toast.success(`**Bab ${chapter.number} tuntas** — seluruh sub-topiknya sudah kamu selesaikan.`);
       }
     }
 

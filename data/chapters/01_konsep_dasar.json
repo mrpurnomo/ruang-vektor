@@ -554,7 +554,7 @@
             { "tex": "|\\vec{u}| < |\\vec{v}|" },
             { "tex": "|\\vec{u}| = |\\vec{v}|" },
             { "tex": "|\\vec{u}| = 2|\\vec{v}|" },
-            { "text": "Tidak dapat dibandingkan tanpa menghitung akarnya." }
+            { "label": "Tidak dapat dibandingkan tanpa menghitung akarnya." }
           ],
           "answerIndex": 1,
           "explanation": "$|\\vec{u}|^2 = 9 + 16 = 25$ dan $|\\vec{v}|^2 = 1 + 36 = 37$. Karena $25 < 37$, maka $|\\vec{u}| < |\\vec{v}|$. Membandingkan kuadratnya sudah cukup — akar kuadrat adalah fungsi naik, sehingga urutannya tidak berubah. **Opsi B**.",

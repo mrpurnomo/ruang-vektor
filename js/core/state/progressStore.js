@@ -1,9 +1,18 @@
 /**
- * state/progressStore.js
- * Pembungkus localStorage sesuai skema di PRD §9.
+ * core/state/progressStore.js
+ * PENCAPAIAN siswa — `localStorage`, umur: selamanya sampai "Reset Progres".
  *
  * Semua tulis-baca progres lewat modul ini agar migrasi skema terpusat dan
  * kegagalan localStorage (mode privat, kuota penuh) tidak merusak aplikasi.
+ *
+ * JANGAN dicampur dengan `sessionState.js` (Blueprint §4.3): berkas ini
+ * menyimpan apa yang sudah DICAPAI; sessionState menyimpan di mana siswa
+ * sedang BERADA. Umur keduanya berbeda, dan mencampurnya menghasilkan siswa
+ * yang mendarat di tengah sub-topik dengan progres kosong.
+ *
+ * REAKTIF: setiap perubahan memanggil pelanggan `subscribe()`. Cincin
+ * progres di header berlangganan ke sini, jadi ia naik PADA SAAT sub-topik
+ * dituntaskan — bukan baru ketika siswa berpindah layar.
  */
 
 const STORAGE_KEY = 'vektorLab.v1';
@@ -12,6 +21,55 @@ const MAX_QUIZ_HISTORY = 50;
 
 let cache = null;
 let storageAvailable = true;
+
+/* ------------------------------------------------------------------
+   Pelanggan perubahan
+   ------------------------------------------------------------------ */
+const listeners = new Set();
+let notifying = false;
+
+/**
+ * Dengarkan setiap perubahan progres. Mengembalikan fungsi berhenti
+ * berlangganan — WAJIB dipanggil oleh pelanggan yang umurnya lebih pendek
+ * dari aplikasi, supaya tidak ada pendengar yatim yang menulis ke DOM yang
+ * sudah lenyap.
+ *
+ * @param {(state: object) => void} fn
+ * @returns {() => void}
+ */
+export function subscribe(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+function notify() {
+  // Pelanggan yang menulis progres dari dalam callback-nya akan memicu
+  // notify() lagi. Tanpa penjaga ini, dua pelanggan seperti itu saling
+  // memanggil tanpa akhir.
+  if (notifying) return;
+  notifying = true;
+  try {
+    listeners.forEach((fn) => {
+      try { fn(cache); } catch (err) { console.error('[progressStore] pelanggan gagal:', err); }
+    });
+  } finally {
+    notifying = false;
+  }
+}
+
+/**
+ * Tab lain di perangkat yang sama menulis progres → baca ulang di sini.
+ * Tanpa ini, dua tab yang terbuka saling menimpa pencapaian satu sama lain
+ * dengan salinan cache yang sudah basi.
+ */
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key !== STORAGE_KEY && event.key !== null) return;
+    cache = null;
+    load();
+    notify();
+  });
+}
 
 function defaultState() {
   const now = new Date().toISOString();
@@ -49,6 +107,14 @@ function load() {
   if (cache) return cache;
 
   try {
+    // Uji tulis SUNGGUHAN (Blueprint §4.3). Di mode privat Safari objek
+    // localStorage ada dan getItem() bekerja, tetapi setItem() melempar —
+    // memeriksa keberadaannya saja akan melaporkan penyimpanan tersedia
+    // padahal tidak satu pun progres akan bertahan.
+    const probe = `${STORAGE_KEY}.probe`;
+    localStorage.setItem(probe, '1');
+    localStorage.removeItem(probe);
+
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       cache = defaultState();
@@ -70,15 +136,21 @@ function load() {
 }
 
 function persist() {
-  if (!storageAvailable) return false;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
-    return true;
-  } catch (err) {
-    console.warn('[progressStore] gagal menyimpan:', err);
-    storageAvailable = false;
-    return false;
+  let ok = false;
+  if (storageAvailable) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+      ok = true;
+    } catch (err) {
+      console.warn('[progressStore] gagal menyimpan:', err);
+      storageAvailable = false;
+    }
   }
+  // Pelanggan diberi tahu BAHKAN saat penyimpanan gagal: cache di memori
+  // tetap berubah, dan layar harus mencerminkan apa yang siswa kerjakan di
+  // sesi ini meski tidak bertahan setelah tab ditutup.
+  notify();
+  return ok;
 }
 
 export function getState() {
@@ -255,6 +327,7 @@ export function resetAll() {
 }
 
 export default {
+  subscribe,
   getState,
   touchSession,
   getSubtopicProgress,

@@ -1,6 +1,13 @@
 /**
- * ui/mathpad.js
+ * core/ui/mathpad.js
  * Numpad on-screen kustom — satu-satunya jalur input angka di aplikasi ini.
+ *
+ * Empat mode angka + satu mode teks:
+ *   decimal  — bilangan bulat & desimal, 4 digit bagian bulat
+ *   fraction — pecahan bertumpuk pembilang/penyebut
+ *   surd     — bentuk akar k√r, jawaban eksak seperti 2√5 atau √29
+ *   letter   — satu huruf variabel
+ *   text     — papan huruf penuh (nama, asal sekolah)
  *
  * Kenapa ini wajib (PRD §7.4): keyboard bawaan OS akan mendorong/merusak
  * tata letak 100vh yang sudah dirancang presisi, dan gayanya keluar dari tema.
@@ -9,6 +16,22 @@
  */
 
 import { icon } from './icons.js';
+import toast from './toast.js';
+
+/**
+ * Batas isian angka.
+ *
+ * Bagian bulat dinaikkan dari 2 ke 4 digit (Blueprint §4.6): batas −99…99
+ * adalah keputusan era sel kecil, sedangkan soal pemodelan bisa menyebut
+ * gaya 250 N atau jarak 1200 m. Batasnya TETAP ADA — digit berikutnya
+ * ditolak dengan penjelasan, bukan diterima diam-diam lalu terpotong.
+ */
+const LIMITS = {
+  intDigits: 4,
+  decimalDigits: 3,
+  radicandDigits: 4,
+  textChars: 40,
+};
 
 let padEl = null;
 let scrimEl = null;
@@ -61,6 +84,7 @@ function build() {
       <div class="mathpad__mode" data-role="mode">
         <button type="button" data-mode-btn="decimal" aria-pressed="true">Angka</button>
         <button type="button" data-mode-btn="fraction" aria-pressed="false">Pecahan</button>
+        <button type="button" data-mode-btn="surd" aria-pressed="false">Akar</button>
         <button type="button" data-mode-btn="letter" aria-pressed="false">Variabel</button>
       </div>
     </div>
@@ -75,6 +99,18 @@ function build() {
         <button type="button" class="mathpad__frac-slot" data-slot="den"
                 aria-label="Penyebut">1</button>
         <span class="mathpad__frac-caption">Penyebut</span>
+      </div>
+    </div>
+    <div class="mathpad__surd">
+      <!-- Bentuk akar eksak: koefisien di depan, radikan di bawah atap akar.
+           Keduanya SLOT yang dipilih siswa, sama seperti pembilang/penyebut. -->
+      <div class="mathpad__surd-stack">
+        <button type="button" class="mathpad__surd-slot" data-slot="coef" data-active="true"
+                aria-label="Koefisien di depan akar">1</button>
+        <span class="mathpad__surd-radical">
+          <button type="button" class="mathpad__surd-slot" data-slot="rad"
+                  aria-label="Bilangan di dalam akar">?</button>
+        </span>
       </div>
     </div>
     <div class="mathpad__grid" data-role="grid"></div>
@@ -101,7 +137,7 @@ function build() {
   buildAbc(padEl.querySelector('[data-role="abc"]'));
 
   // Papan huruf: variabel dibatasi SATU huruf (A–Z / a–z), sesuai konvensi
-  // penulisan variabel matriks di buku.
+  // penulisan variabel di buku pelajaran.
   const letters = padEl.querySelector('[data-role="letters"]');
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach((ch) => {
     const btn = document.createElement('button');
@@ -143,7 +179,7 @@ function build() {
       e.preventDefault();
       if (!session) return;
       session.activeSlot = slot.dataset.slot;
-      syncFraction();
+      sync();
     });
   });
 
@@ -261,8 +297,8 @@ function typeText(ch) {
 
   // 40 karakter cukup untuk nama lengkap maupun nama sekolah, dan menjaga
   // sapaan di menu tetap muat satu baris.
-  if (session.buffer.length >= 40) {
-    flashLimit();
+  if (session.buffer.length >= LIMITS.textChars) {
+    flashLimit(`Isian ini paling banyak ${LIMITS.textChars} karakter.`);
     return;
   }
 
@@ -296,6 +332,10 @@ function handleKey(k) {
     if (session.mode === 'fraction') {
       session.numerator = '';
       session.denominator = '';
+    } else if (session.mode === 'surd') {
+      session.coef = '';
+      session.radicand = '';
+      session.activeSlot = 'rad';
     } else {
       session.buffer = '';
     }
@@ -310,6 +350,13 @@ function handleKey(k) {
   }
 
   if (k.key === 'sign') {
+    if (session.mode === 'surd') {
+      // Tanda milik KOEFISIEN, tidak pernah milik radikan: √(−5) bukan
+      // bilangan real, dan menerimanya diam-diam mengajarkan hal yang salah.
+      session.coef = session.coef.startsWith('-') ? session.coef.slice(1) : `-${session.coef}`;
+      sync();
+      return;
+    }
     mutateActive((cur) => (cur.startsWith('-') ? cur.slice(1) : `-${cur}`));
     sync();
     return;
@@ -318,20 +365,41 @@ function handleKey(k) {
   // Tombol digit / desimal
   mutateActive((cur) => {
     if (k.value === '.') {
-      if (session.mode === 'fraction') return cur; // pecahan tidak menerima desimal
+      if (session.mode === 'fraction') {
+        flashLimit('Pecahan ditulis dengan bilangan bulat — pembilang dan penyebutnya tidak memakai koma.');
+        return cur;
+      }
+      if (session.mode === 'surd') {
+        flashLimit('Bentuk akar ditulis dengan bilangan bulat, misalnya 2√5. Koma tidak dipakai di sini.');
+        return cur;
+      }
       if (cur.includes('.')) return cur;
       return cur === '' || cur === '-' ? `${cur}0.` : `${cur}.`;
     }
     if (cur === '0') return k.value;
     if (cur === '-0') return `-${k.value}`;
 
-    // Batas isian: maksimal DUA digit untuk bagian bulat (−99 … 99).
-    // Batas ini disengaja agar matriks tetap terbaca di layar kecil dan
-    // perhitungan mentalnya tetap masuk akal untuk siswa.
-    const digits = cur.replace('-', '').replace('.', '');
-    const maxDigits = session.mode === 'decimal' && cur.includes('.') ? 4 : 2;
-    if (digits.length >= maxDigits) {
-      flashLimit();
+    const unsigned = cur.replace('-', '');
+    const [intPart, decPart] = unsigned.split('.');
+
+    if (session.mode === 'surd' && session.activeSlot === 'rad') {
+      if (unsigned.length >= LIMITS.radicandDigits) {
+        flashLimit(`Bilangan di dalam akar paling banyak ${LIMITS.radicandDigits} digit.`);
+        return cur;
+      }
+      return cur + k.value;
+    }
+
+    if (decPart !== undefined) {
+      if (decPart.length >= LIMITS.decimalDigits) {
+        flashLimit(`Paling banyak ${LIMITS.decimalDigits} angka di belakang koma.`);
+        return cur;
+      }
+      return cur + k.value;
+    }
+
+    if (intPart.length >= LIMITS.intDigits) {
+      flashLimit(`Paling banyak ${LIMITS.intDigits} digit. Periksa lagi — jawaban soal di sini tidak pernah sepanjang itu.`);
       return cur;
     }
     return cur + k.value;
@@ -347,14 +415,34 @@ function setLetter(ch) {
   sync();
 }
 
-/** Kedipkan pratinjau saat siswa menabrak batas dua digit. */
-function flashLimit() {
+/**
+ * Tolak satu ketukan: guncang pratinjau DAN jelaskan alasannya.
+ *
+ * Kontrak 4 berlaku juga untuk papan ini — guncangan merah tanpa kalimat
+ * hanya mengajarkan "coba ketuk lagi". Kalimatnya dibatasi sekali per
+ * 2,5 detik: siswa yang menekan tombol yang sama lima kali tidak perlu
+ * membaca lima toast yang identik.
+ */
+let lastLimitMessage = '';
+let lastLimitAt = 0;
+let limitTimer = null;
+
+function flashLimit(message) {
   const preview = padEl && padEl.querySelector('[data-role="preview"]');
-  if (!preview) return;
-  preview.classList.remove('is-limit');
-  void preview.offsetWidth;
-  preview.classList.add('is-limit');
-  setTimeout(() => preview.classList.remove('is-limit'), 420);
+  if (preview) {
+    preview.classList.remove('is-limit');
+    void preview.offsetWidth;          // mulai ulang animasi yang sama
+    preview.classList.add('is-limit');
+    clearTimeout(limitTimer);
+    limitTimer = setTimeout(() => preview.classList.remove('is-limit'), 420);
+  }
+
+  if (!message) return;
+  const now = Date.now();
+  if (message === lastLimitMessage && now - lastLimitAt < 2500) return;
+  lastLimitMessage = message;
+  lastLimitAt = now;
+  toast.warn(message, { title: 'Batas isian' });
 }
 
 /** Terapkan perubahan ke buffer yang sedang aktif (biasa / pembilang / penyebut). */
@@ -362,6 +450,9 @@ function mutateActive(fn) {
   if (session.mode === 'fraction') {
     if (session.activeSlot === 'den') session.denominator = fn(session.denominator);
     else session.numerator = fn(session.numerator);
+  } else if (session.mode === 'surd') {
+    if (session.activeSlot === 'coef') session.coef = fn(session.coef);
+    else session.radicand = fn(session.radicand).replace('-', '');
   } else {
     session.buffer = fn(session.buffer);
   }
@@ -369,6 +460,12 @@ function mutateActive(fn) {
 
 function setMode(mode) {
   if (!session) return;
+  if (session.mode !== mode) {
+    // Slot awal tiap mode: pembilang untuk pecahan, RADIKAN untuk akar —
+    // yang paling sering diisi lebih dulu di bentuk √29.
+    if (mode === 'fraction') session.activeSlot = 'num';
+    if (mode === 'surd') session.activeSlot = 'rad';
+  }
   session.mode = mode;
   padEl.dataset.mode = mode;
   padEl.querySelectorAll('[data-mode-btn]').forEach((btn) => {
@@ -378,7 +475,18 @@ function setMode(mode) {
 
   // Mode pecahan menambah tinggi pad, jadi posisinya harus dihitung ulang —
   // tanpa ini, deretan tombol bawah bisa terpotong di luar layar.
-  if (session.field) requestAnimationFrame(() => position(session.field));
+  //
+  // Sesi DITANGKAP sekarang dan diperiksa ulang di dalam callback. Terukur
+  // saat Tahap 1: mengetuk mode lalu langsung "✓" menutup papan di frame
+  // yang sama, dan callback yang membaca `session.field` sesudahnya
+  // melempar TypeError karena `session` sudah null. Hal yang sama terjadi
+  // bila layar berganti tepat setelah papan dibuka.
+  const opened = session;
+  if (opened.field) {
+    requestAnimationFrame(() => {
+      if (session === opened) position(opened.field);
+    });
+  }
 }
 
 function syncFraction() {
@@ -387,6 +495,23 @@ function syncFraction() {
   });
   padEl.querySelector('[data-slot="num"]').textContent = session.numerator || '0';
   padEl.querySelector('[data-slot="den"]').textContent = session.denominator || '1';
+}
+
+function syncSurd() {
+  padEl.querySelectorAll('[data-slot]').forEach((slot) => {
+    slot.dataset.active = String(slot.dataset.slot === session.activeSlot);
+  });
+  const coef = session.coef;
+  padEl.querySelector('[data-slot="coef"]').textContent =
+    coef === '' ? '1' : coef === '-' ? '−1' : coef;
+  padEl.querySelector('[data-slot="rad"]').textContent = session.radicand || '?';
+}
+
+/** Koefisien sebagai bilangan: kosong berarti 1, "-" saja berarti −1. */
+function surdCoef() {
+  if (session.coef === '' ) return 1;
+  if (session.coef === '-') return -1;
+  return Number(session.coef);
 }
 
 function sync() {
@@ -398,6 +523,9 @@ function sync() {
   if (session.mode === 'fraction') {
     syncFraction();
     text = `${session.numerator || '0'}/${session.denominator || '1'}`;
+  } else if (session.mode === 'surd') {
+    syncSurd();
+    text = displayValue();
   } else {
     text = session.buffer;
   }
@@ -417,6 +545,12 @@ function displayValue() {
     if (!session.numerator) return '';
     return `${session.numerator}/${session.denominator || '1'}`;
   }
+  if (session.mode === 'surd') {
+    // Akar tanpa radikan belum sebuah jawaban — kotaknya tetap kosong,
+    // bukan menampilkan "2√" yang tampak seperti jawaban setengah jadi.
+    if (!session.radicand) return '';
+    return `${session.coef}√${session.radicand}`;
+  }
   return session.buffer;
 }
 
@@ -434,6 +568,14 @@ function currentValue() {
     const d = Number(session.denominator || '1');
     if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0) return NaN;
     return n / d;
+  }
+  if (session.mode === 'surd') {
+    // Nilai desimal di sini HANYA untuk pemeriksa jawaban. Yang ditampilkan
+    // ke siswa tetap bentuk eksaknya lewat displayValue().
+    const k = surdCoef();
+    const r = Number(session.radicand);
+    if (!session.radicand || !Number.isFinite(k) || !Number.isFinite(r) || r < 0) return NaN;
+    return k * Math.sqrt(r);
   }
   const v = Number(session.buffer);
   return Number.isFinite(v) ? v : NaN;
@@ -470,8 +612,30 @@ function layakDisimpanOtomatis() {
  * Posisikan pad di dekat field pemicu (popover di desktop).
  * Di mobile, CSS mengambil alih dan menjadikannya bottom-sheet.
  */
+/**
+ * Beri tahu CSS di tepi mana papan berada, supaya toast menyingkir ke tepi
+ * SEBERANGNYA.
+ *
+ * Terukur saat pertama dijalankan: toast galat "Namamu belum diisi" muncul
+ * di dasar layar — persis di atas deret Z–M dan tombol "Selesai" papan
+ * huruf. Toast berada di lapisan z-index tertinggi dan bisa diketuk, jadi
+ * ketukan siswa pada tombol di bawahnya justru menutup toast. Papan terasa
+ * "tidak merespons" tepat ketika siswa sedang diminta mengisinya.
+ */
+function markPadEdge() {
+  if (!padEl) return;
+  const r = padEl.getBoundingClientRect();
+  const edge = (r.top + r.height / 2) > window.innerHeight / 2 ? 'bottom' : 'top';
+  document.documentElement.dataset.mathpad = edge;
+}
+
 function position(anchor) {
-  if (window.innerWidth <= 768) return;
+  if (window.innerWidth <= 768) {
+    // Bottom-sheet: CSS menempelkannya ke dasar layar.
+    const opened = session;
+    requestAnimationFrame(() => { if (session === opened) markPadEdge(); });
+    return;
+  }
 
   const rect = anchor.getBoundingClientRect();
   const padRect = padEl.getBoundingClientRect();
@@ -504,6 +668,7 @@ function position(anchor) {
   padEl.style.top = `${top}px`;
   padEl.style.left = `${left}px`;
   padEl.style.setProperty('--mp-origin', origin);
+  markPadEdge();
 }
 
 /**
@@ -514,8 +679,16 @@ function position(anchor) {
 export function openMathpad(field, options = {}) {
   build();
 
+  // Sesi lama yang masih terbuka ditutup DENGAN MENYIMPAN lebih dulu. Tanpa
+  // ini, membuka kotak kedua (mis. lewat keyboard) menimpa `session` begitu
+  // saja: pendengar keydown terpasang dua kali dan angka di kotak pertama
+  // hilang tanpa pernah dikirim.
+  if (session) close({ simpan: true });
+
   const initial = options.initial != null ? String(options.initial) : '';
   const isFraction = initial.includes('/');
+  const surdMatch = /^(-?\d*)√(\d+)$/.exec(initial);
+  const isSurd = Boolean(surdMatch);
   const isLetter = /^[A-Za-z]$/.test(initial);
 
   // Mode teks dipilih eksplisit lewat opsi; ia tidak pernah ditebak dari isi
@@ -525,11 +698,13 @@ export function openMathpad(field, options = {}) {
   session = {
     field,
     abcUpper: true,
-    buffer: isFraction ? '' : initial,
+    buffer: (isFraction || isSurd) ? '' : initial,
     numerator: isFraction ? initial.split('/')[0] : '',
     denominator: isFraction ? initial.split('/')[1] : '',
-    mode: textMode ? 'text' : (options.mode || (isFraction ? 'fraction' : isLetter ? 'letter' : 'decimal')),
-    activeSlot: 'num',
+    coef: isSurd ? surdMatch[1] : '',
+    radicand: isSurd ? surdMatch[2] : '',
+    mode: textMode ? 'text' : (options.mode || (isFraction ? 'fraction' : isSurd ? 'surd' : isLetter ? 'letter' : 'decimal')),
+    activeSlot: isSurd ? 'rad' : 'num',
     committed: false,
     // Pembanding untuk auto-simpan: hanya yang BERUBAH yang dikirim.
     initialDisplay: initial,
@@ -546,13 +721,18 @@ export function openMathpad(field, options = {}) {
   if (textMode) toggleAbcCase(), toggleAbcCase();   // pulihkan huruf besar
 
   // Toggle mode ditampilkan sesuai izin konteks.
+  // Mode akar hanya ditawarkan bila konteksnya memintanya (allowSurd), atau
+  // bila isian awalnya memang sudah berbentuk akar.
   const fracBtn = padEl.querySelector('[data-mode-btn="fraction"]');
+  const surdBtn = padEl.querySelector('[data-mode-btn="surd"]');
   const letterBtn = padEl.querySelector('[data-mode-btn="letter"]');
-  if (fracBtn) fracBtn.style.display = options.allowFraction === false ? 'none' : '';
-  if (letterBtn) letterBtn.style.display = options.allowLetter ? '' : 'none';
+  const allowSurd = Boolean(options.allowSurd) || isSurd;
+  if (fracBtn) fracBtn.hidden = options.allowFraction === false;
+  if (surdBtn) surdBtn.hidden = !allowSurd;
+  if (letterBtn) letterBtn.hidden = !options.allowLetter;
 
-  padEl.querySelector('[data-role="mode"]').style.display =
-    (options.allowFraction === false && !options.allowLetter) ? 'none' : '';
+  padEl.querySelector('[data-role="mode"]').hidden =
+    (options.allowFraction === false && !options.allowLetter && !allowSurd);
 
   setMode(session.mode);
 
@@ -575,30 +755,57 @@ function onReposition() {
  * Keyboard fisik tetap didukung sebagai jalur alternatif (aksesibilitas).
  * Yang dilarang adalah keyboard VIRTUAL bawaan OS yang merusak tata letak.
  */
+/**
+ * Kenali tombol kendali lewat TIGA sumber, bukan `event.key` saja.
+ *
+ * Sebagian keyboard Android dan driver lama melaporkan `event.key` sebagai
+ * `"Unidentified"` sambil tetap mengisi `code` atau `keyCode`. Kalau hanya
+ * `key` yang diperiksa, papan tidak pernah bisa ditutup dengan Enter di
+ * perangkat itu — dan siswa tidak tahu kenapa. `code` dan `keyCode`
+ * menutup celah itu tanpa mengubah perilaku di perangkat yang normal.
+ */
+function keyIs(event, name) {
+  const CODES = {
+    Enter: { codes: ['Enter', 'NumpadEnter'], keyCode: 13 },
+    Escape: { codes: ['Escape'], keyCode: 27 },
+    Backspace: { codes: ['Backspace'], keyCode: 8 },
+  };
+  const spec = CODES[name];
+  return event.key === name
+    || (spec && spec.codes.includes(event.code))
+    || (spec && event.keyCode === spec.keyCode);
+}
+
 function onGlobalKey(event) {
   if (!session) return;
 
   // Mode teks: keyboard fisik diteruskan apa adanya (jalur aksesibilitas).
   // Yang dilarang tetap keyboard VIRTUAL bawaan OS, bukan papan fisik.
-  if (session.mode === 'text' && event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
+  if (session.mode === 'text' && event.key && event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
     event.preventDefault();
     typeText(event.key);
     return;
   }
 
-  if (event.key === 'Escape') {
+  if (keyIs(event, 'Escape')) {
     event.preventDefault();
     // Escape adalah SATU-SATUNYA gestur yang benar-benar membatalkan.
     close({ batal: true });
     return;
   }
-  if (event.key === 'Enter') {
+  if (keyIs(event, 'Enter')) {
     event.preventDefault();
     commit();
     close();
     return;
   }
-  if (event.key === 'Backspace') {
+  if (keyIs(event, 'Backspace')) {
+    if (session.mode === 'text') {
+      event.preventDefault();
+      session.buffer = session.buffer.slice(0, -1);
+      sync();
+      return;
+    }
     event.preventDefault();
     handleKey({ key: 'backspace' });
     return;
@@ -667,6 +874,7 @@ function close(opt = {}) {
 
   padEl.dataset.open = 'false';
   scrimEl.classList.add('hidden');
+  delete document.documentElement.dataset.mathpad;
 
   if (session) {
     if (session.field) delete session.field.dataset.active;
@@ -683,7 +891,23 @@ export function isMathpadOpen() {
  * Siapkan sebuah <input> agar HANYA bisa diisi lewat Mathpad.
  * Inilah pintu gerbang yang mencegah keyboard OS muncul.
  */
+const attached = new WeakMap();
+
 export function attachMathpad(input, options = {}) {
+  /**
+   * Pemasangan ULANG hanya memperbarui opsinya.
+   *
+   * Layar yang merender ulang soal bisa memanggil fungsi ini dua kali pada
+   * elemen yang sama. Tanpa penjaga ini, setiap pemanggilan menambah satu
+   * pendengar `pointerdown` lagi — satu ketukan membuka papan dua kali, dan
+   * `onCommit` terkirim ganda sehingga jawaban dinilai dua kali.
+   */
+  if (attached.has(input)) {
+    attached.set(input, options);
+    return input;
+  }
+  attached.set(input, options);
+
   input.readOnly = true;                    // keyboard virtual tidak muncul
   input.setAttribute('inputmode', 'none');  // sinyal eksplisit ke browser mobile
   input.setAttribute('autocomplete', 'off');
@@ -694,19 +918,23 @@ export function attachMathpad(input, options = {}) {
 
   const open = (event) => {
     event.preventDefault();
+    // Field yang dimatikan (soal sudah dinilai, pilihan dikunci) tidak boleh
+    // membuka papan — kalau tidak, jawaban yang sudah dikunci bisa diubah.
+    if (input.disabled) return;
+    const opts = attached.get(input) || {};
     // Cegah field mendapat fokus keyboard yang bisa memicu IME di sebagian browser.
     input.blur();
     input.dataset.padOpen = 'true';
     openMathpad(input, {
-      ...options,
+      ...opts,
       initial: input.value,
       onCommit: (value, display) => {
         input.value = display;
-        if (typeof options.onCommit === 'function') options.onCommit(value, display, input);
+        if (typeof opts.onCommit === 'function') opts.onCommit(value, display, input);
       },
       onClose: () => {
         delete input.dataset.padOpen;
-        if (typeof options.onClose === 'function') options.onClose();
+        if (typeof opts.onClose === 'function') opts.onClose();
       },
     });
   };

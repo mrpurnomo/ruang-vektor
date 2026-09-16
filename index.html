@@ -8,17 +8,20 @@
   <meta name="theme-color" content="#0A1B45">
   <title>Ruang Vektor — Matematika Tingkat Lanjut Kelas 11</title>
 
-  <!-- Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@400;700&display=swap">
+  <!-- ============================================================
+       PUSTAKA PIHAK KETIGA — LOKAL LEBIH DULU (Blueprint §2.4)
 
-  <!-- KaTeX -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
-        crossorigin="anonymous">
+       Lab sekolah sering memblokir jsdelivr dan Google Fonts. Tanpa salinan
+       lokal, rumus tampil sebagai LaTeX mentah, animasi mati diam-diam, dan
+       tipografi jatuh ke fallback sistem. Karena itu yang dimuat PERTAMA
+       selalu assets/vendor/; CDN hanya cadangan lewat onerror, untuk kasus
+       berkas lokal terhapus. Tanpa atribut integrity: SRI hanya bermakna
+       untuk berkas dari CDN.
+       ============================================================ -->
+  <link rel="stylesheet" href="assets/vendor/fonts/fonts.css"
+        onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&amp;family=Roboto:wght@400;500;700;900&amp;family=Roboto+Mono:wght@400;700&amp;display=swap'">
+  <link rel="stylesheet" href="assets/vendor/katex/katex.min.css"
+        onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'">
 
   <!-- ============================================================
        GAYA APLIKASI
@@ -26,7 +29,7 @@
        Urutan <link> ini TETAP DIJAGA rapi, tetapi yang menjadi kontrak
        sesungguhnya adalah deklarasi @layer di baris pertama tokens.css:
 
-         reset → tokens → layout → components → domain → utilities → overrides
+         reset → tokens → layout → components → domain → workspace → utilities → overrides
 
        Dengan lapisan, "siapa menang" dideklarasikan sekali di satu tempat,
        bukan disimpulkan dari urutan berkas. Satu berkas = satu komponen.
@@ -234,20 +237,30 @@
     </div>
   </noscript>
 
-  <!-- Pustaka pihak ketiga: defer agar tidak memblokir render.
-       CATATAN UTANG TEKNIS (PRD §3.3): keduanya masih dari CDN. Di lab
-       sekolah yang memblokir jsdelivr, rumus akan tampil sebagai LaTeX
-       mentah dan animasi GSAP mati diam-diam. Pemindahan ke
-       assets/vendor/ dijadwalkan di Tahap 1 Langkah 5. -->
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-          integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
-          crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
+  <!-- Pustaka pihak ketiga: lokal lebih dulu, CDN sebagai cadangan.
+
+       Pola cadangannya "cek global, baru tulis": setelah skrip lokal
+       dieksekusi, skrip sebaris berikutnya memeriksa apakah globalnya
+       (window.katex, window.gsap) benar-benar ada. Kalau berkas lokal
+       hilang, barulah CDN disisipkan lewat document.write — yang sah di
+       titik ini karena dokumen masih diurai.
+
+       Skripnya sengaja BUKAN defer: document.write tidak boleh dipanggil
+       dari skrip tertunda. Ketiganya kecil dan berada di dasar <body>,
+       jadi tidak ada render yang tertahan olehnya. Modul aplikasi di bawah
+       (type="module", tertunda secara bawaan) dijamin berjalan SESUDAH
+       seluruh pustaka siap. -->
+  <script src="assets/vendor/katex/katex.min.js"></script>
+  <script>window.katex || document.write('<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"><\/script>');</script>
+  <script src="assets/vendor/gsap/gsap.min.js"></script>
+  <script>window.gsap || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"><\/script>');</script>
+  <script src="assets/vendor/gsap/MotionPathPlugin.min.js"></script>
+  <script>window.MotionPathPlugin || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"><\/script>');</script>
 
   <script>
-    // Daftarkan MotionPathPlugin begitu GSAP siap (lintasan lengkung).
-    window.addEventListener('load', function () {
+    // Didaftarkan saat seluruh pustaka pasti sudah dieksekusi, termasuk
+    // bila salah satunya datang dari cadangan CDN.
+    window.addEventListener('DOMContentLoaded', function () {
       if (window.gsap && window.MotionPathPlugin) {
         window.gsap.registerPlugin(window.MotionPathPlugin);
       }

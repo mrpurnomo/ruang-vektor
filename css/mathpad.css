@@ -16,7 +16,7 @@
    keluar dari kepala siswa".
 
    Kontrak perilaku yang harus dijaga CSS ini (dan mudah dirusak):
-   · klik di luar pad = SIMPAN  → scrim tidak boleh menelan pointer-event
+   · klik di luar pad = SIMPAN  → scrim menangkap ketukan itu (lihat §2)
    · Escape = BATAL             → tidak ada gaya "tersimpan" yang menetap
    · pad hidup di document.body → posisinya fixed, bukan absolute
    ============================================================ */
@@ -82,9 +82,11 @@
   /* ============================================================
      2. SCRIM
 
-     Menggelapkan halaman, tetapi TIDAK memblokir klik: kontraknya
-     berbunyi "klik di luar pad = SIMPAN", dan itu hanya bekerja bila
-     pointer benar-benar sampai ke elemen di bawahnya.
+     Menggelapkan halaman DAN menangkap ketukan pertama di luar papan.
+     Ketukan itu menutup papan dengan MENYIMPAN (kontrak "klik di luar =
+     SIMPAN") dan sengaja tidak diteruskan ke elemen di bawahnya: jari yang
+     meleset ke luar papan tidak boleh sekaligus menekan tombol "Periksa"
+     atau membuka kotak lain. Ketukan berikutnya baru berlaku normal.
      ============================================================ */
 
   .mathpad-scrim {
@@ -186,9 +188,12 @@
     70%      { transform: translateX(-3px); }
   }
 
+  /* Kolom mengikuti jumlah mode yang DITAWARKAN konteksnya (2–4), jadi
+     tombol yang disembunyikan tidak meninggalkan lubang kosong. */
   .mathpad__mode {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     gap: var(--sp-1);
     padding: 3px;
     border-radius: var(--r-pill);
@@ -210,6 +215,8 @@
   }
 
   .mathpad__mode button:hover { color: var(--on-navy); }
+  .mathpad__mode[hidden],
+  .mathpad__mode button[hidden] { display: none; }
 
   .mathpad__mode button[aria-pressed="true"] {
     background: var(--value);
@@ -327,24 +334,34 @@
     color: var(--value);
   }
 
-  /* Tanda akar digambar, bukan diketik — supaya garis atapnya benar-benar
-     menaungi slot radikannya berapa pun lebarnya. */
+  /* Tanda akar: "√" sebagai item flex setinggi slot, dan ATAPNYA adalah
+     garis atas slot radikan itu sendiri. Tidak ada posisi absolut: atap
+     pasti menempel pada tanda akarnya dan ikut melebar mengikuti jumlah
+     digit — √5 dan √1296 sama-sama tertutup rapi. */
   .mathpad__surd-radical {
-    position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: stretch;
-    padding-left: 18px;
-    border-top: 2px solid var(--on-navy-2);
-    margin-top: 6px;
   }
+
   .mathpad__surd-radical::before {
     content: '√';
-    position: absolute;
-    left: 0;
-    top: -6px;
-    font-size: 1.5rem;
-    line-height: 1;
+    display: flex;
+    align-items: flex-end;
+    padding-right: 1px;
+    font-family: var(--font-body);
+    font-size: 2.1rem;
+    line-height: .95;
     color: var(--on-navy-2);
+  }
+
+  .mathpad__surd-radical .mathpad__surd-slot {
+    border-top: 2px solid var(--on-navy-2);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .mathpad__surd-radical .mathpad__surd-slot[data-active="true"] {
+    border-top-color: var(--value-deep);
   }
 
 

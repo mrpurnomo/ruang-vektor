@@ -1,25 +1,31 @@
 /**
- * app.js — Entry point.
+ * app.js — Entry point "Ruang Vektor".
  * Memuat manifest, memasang rute, dan merender tiap layar.
+ *
+ * Urutan boot (lihat `boot()` di dasar berkas):
+ *   1. pustaka pihak ketiga sudah dieksekusi (skrip sinkron di index.html)
+ *   2. init(): langganan progres, sesi, layar penuh, navigasi, rute, manifest
+ *   3. router.start() merender layar pertama
+ *   4. revealApp() di `finally` — layar muat SELALU turun, berhasil atau gagal
  */
 
-import * as router from './router.js';
-import { icon } from './ui/icons.js';
-import toast, { clearToasts, anchorToasts } from './ui/toast.js';
-import { showModal, confirmAction } from './ui/modal.js';
-import { renderMixed } from './engine/katexRenderer.js';
-import { LessonView } from './modules/belajar/lessonRenderer.js';
-import { QuizEngine } from './modules/kuis/quizEngine.js';
-import { ExamEngine } from './modules/kuis/examEngine.js';
-import { renderQuizResult } from './modules/kuis/quizResult.js';
+import * as router from './core/router.js';
+import { icon } from './core/ui/icons.js';
+import toast, { clearToasts, anchorToasts } from './core/ui/toast.js';
+import { showModal, confirmAction } from './core/ui/modal.js';
+import { renderMixed } from './core/render/katexRenderer.js';
+import { LessonView } from './lesson/lessonRenderer.js';
+import { QuizEngine } from './quiz/quizEngine.js';
+import { ExamEngine } from './quiz/examEngine.js';
+import { renderQuizResult } from './quiz/quizResult.js';
 import {
   touchSession, getOverallProgress, getChapterProgress, getSubtopicProgress,
   isSubtopicUnlocked, getLastVisited, saveQuizResult, getQuizHistory, getState,
-  isStorageAvailable, resetAll, getSettings, updateSettings,
-} from './state/progressStore.js';
-import { quizKey, clearAllResume } from './state/sessionState.js';
-import { attachMathpad, closeMathpad } from './ui/mathpad.js';
-import { killAllMotion } from './interactions/motion.js';
+  isStorageAvailable, resetAll, subscribe as subscribeProgress,
+} from './core/state/progressStore.js';
+import { quizKey, clearAllResume } from './core/state/sessionState.js';
+import { attachMathpad, closeMathpad } from './core/ui/mathpad.js';
+import { killAllMotion } from './core/interactions/motion.js';
 
 /* ------------------------------------------------------------
    State aplikasi
@@ -49,7 +55,7 @@ const screenHost = document.getElementById('screen-host');
    syarat supaya keputusan ini aman. Jangan hapus salah satunya tanpa
    yang lain.
    ------------------------------------------------------------ */
-const IDENTITY_KEY = 'matriksLab.identity.v1';
+const IDENTITY_KEY = 'vektorLab.identity.v1';
 
 /** Penyimpanan identitas; null kalau peramban memblokirnya (mode privat). */
 function identityStore() {
@@ -238,6 +244,19 @@ function updateHeader() {
     homeBtn.tabIndex = onLogin ? -1 : 0;
   }
 
+  syncNavrail(onLogin);
+  updateProgressRing();
+}
+
+/**
+ * Cincin progres di header.
+ *
+ * Dipisah dari `updateHeader()` karena ia punya DUA pemicu: perpindahan
+ * layar, dan setiap penulisan ke `progressStore` (lewat `subscribe`).
+ * Pemicu kedua itulah yang membuat angkanya naik PADA SAAT Mini Kuis
+ * dituntaskan, bukan setelah siswa kembali ke menu.
+ */
+function updateProgressRing() {
   if (!state.manifest) return;
 
   const overall = getOverallProgress(state.manifest);
@@ -252,6 +271,56 @@ function updateHeader() {
   }
   if (label) label.textContent = `${overall.percent}%`;
 
+  const holder = document.querySelector('.progress-ring');
+  if (holder) {
+    holder.setAttribute('aria-label',
+      `Penguasaan kurikulum ${overall.percent}% — ${overall.completed} dari ${overall.total} sub-topik tuntas`);
+  }
+}
+
+/* ------------------------------------------------------------
+   Navigasi utama (header)
+
+   Dua tujuan: Belajar dan Latihan TKA. Status aktifnya DIHITUNG dari rute
+   yang sedang tampil, tidak disimpan — sama seperti kunci sub-topik
+   (Blueprint §4.3). Menyimpannya sebagai state terpisah menciptakan dua
+   sumber kebenaran yang bisa saling bertentangan, dan tombol Back peramban
+   akan menampilkan tab yang salah.
+   ------------------------------------------------------------ */
+const NAV_TARGETS = {
+  belajar: { path: 'belajar', owns: (p) => p === 'belajar' || p.startsWith('belajar/') },
+  tka: { path: 'kuis', owns: (p) => p === 'kuis' || p.startsWith('kuis/') || p === 'tka' },
+};
+
+function syncNavrail(onLogin) {
+  const current = router.getCurrentPath();
+  document.querySelectorAll('[data-nav]').forEach((btn) => {
+    const target = NAV_TARGETS[btn.dataset.nav];
+    const active = Boolean(target && target.owns(current));
+    btn.setAttribute('aria-current', active ? 'page' : 'false');
+    // Lapis 2 penjaga masuk — sama dengan tombol rumah: di layar masuk,
+    // navigasi dikeluarkan dari urutan tab DAN dimatikan, bukan diredupkan.
+    btn.disabled = onLogin;
+    btn.tabIndex = onLogin ? -1 : 0;
+  });
+}
+
+function initNavrail() {
+  document.querySelectorAll('[data-nav]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = NAV_TARGETS[btn.dataset.nav];
+      if (!target) return;
+      if (!getIdentity()) {
+        toast.info('Isi dulu nama dan asal sekolahmu untuk masuk.');
+        return;
+      }
+      // Tab yang sudah aktif, diketuk di akarnya sendiri: tidak memuat ulang
+      // apa pun. Diketuk dari halaman dalamnya (mis. dari sebuah sub-topik):
+      // kembali ke akar tab itu — perilaku tab yang lazim.
+      if (router.getCurrentPath() === target.path) return;
+      router.navigate(target.path);
+    });
+  });
 }
 
 /* ------------------------------------------------------------
@@ -265,8 +334,8 @@ function renderLogin(params, options) {
 
     const card = el('div', 'login__card anim-rise');
 
-    card.appendChild(el('span', 'login__mark', icon('grid', { size: 30 })));
-    card.appendChild(el('div', 'login__eyebrow', 'Ruang Matriks'));
+    card.appendChild(el('span', 'login__mark', icon('arrow-up-right', { size: 30 })));
+    card.appendChild(el('div', 'login__eyebrow', 'Ruang Vektor'));
     card.appendChild(el('h1', 'login__title', 'Selamat Datang'));
     card.appendChild(el('p', 'login__lead',
       'Lengkapi identitas Anda untuk memulai sesi belajar.'));
@@ -335,27 +404,15 @@ function renderLogin(params, options) {
 }
 
 /* ------------------------------------------------------------
-   Layar: Latihan Soal TKA (placeholder rute #/tka)
+   Rute: #/tka
+
+   Dulu layar "segera hadir". Bank `tka_2026` kini ada di quizzes.json, jadi
+   rute ini hanyalah alamat pendek yang mudah diingat guru untuk langsung
+   membuka ujiannya. Pengalihannya memakai `replace` supaya tombol Back tidak
+   memantul kembali ke alamat pendek ini selamanya (Blueprint §4.2 butir 2).
    ------------------------------------------------------------ */
-function renderTka(params, options) {
-  mountScreen((container) => {
-    container.classList.add('soon');
-
-    const card = el('div', 'soon__card anim-rise');
-    card.appendChild(el('span', 'soon__mark', icon('trophy', { size: 28 })));
-    card.appendChild(el('h2', 'soon__title', 'Latihan Soal TKA'));
-    card.appendChild(el('p', 'soon__text',
-      'Mode ujian dengan soal acak lintas bab sedang disiapkan. Sementara ini, '
-      + 'perkuat dulu pemahamanmu lewat Belajar dan Kuis per bab.'));
-
-    const back = el('button', 'btn btn--primary');
-    back.type = 'button';
-    back.innerHTML = `${icon('home', { size: 17 })}<span>Kembali ke Menu</span>`;
-    back.addEventListener('click', () => router.navigate(''));
-    card.appendChild(back);
-
-    container.appendChild(card);
-  }, options);
+function renderTka() {
+  router.navigate('kuis/simulasi_tka/all', { replace: true });
 }
 
 /**
@@ -445,7 +502,7 @@ async function renderMenu(params, options) {
 
     const title = el('h1', 'menu__title', identity
       ? `Halo, ${firstName(identity.nama)}.`
-      : (overall.completed > 0 ? 'Selamat datang kembali.' : 'Ruang Matriks'));
+      : (overall.completed > 0 ? 'Selamat datang kembali.' : 'Ruang Vektor'));
 
     if (identity) {
       /**
@@ -476,7 +533,7 @@ async function renderMenu(params, options) {
       head.appendChild(title);
     }
     head.appendChild(el('p', 'menu__lead',
-      'Belajar matriks secara visual dan menyenangkan'));
+      'Arah dan besar — kamu yang menghitungnya, bukan aplikasinya.'));
     container.appendChild(head);
 
     /* ---------- HERO: dua panel ala Learnara ---------- */
@@ -616,7 +673,7 @@ async function renderMenu(params, options) {
       // Modal kustom, bukan confirm() bawaan.
       const ok = await confirmAction({
         title: 'Reset seluruh progres?',
-        body: 'Semua kemajuan belajar, riwayat kuis, lencana, dan simpanan Whiteboard akan **dihapus permanen**. Tindakan ini tidak bisa dibatalkan.',
+        body: 'Semua kemajuan belajar dan riwayat kuis akan **dihapus permanen**. Tindakan ini tidak bisa dibatalkan.',
         confirmLabel: 'Ya, Hapus Semua Progres',
         cancelLabel: 'Batal, Simpan Progres Saya',
         variant: 'danger',
@@ -627,9 +684,15 @@ async function renderMenu(params, options) {
         // Reset progres juga membuang ingatan posisi — kalau tidak, siswa
         // dengan progres kosong tetap mendarat di tengah sub-topik.
         clearAllResume();
+        // Siswa sudah berada di rute menu, jadi navigate('') maupun resolve()
+        // tidak memicu apa pun — router mengabaikan hash yang sama. refresh()
+        // adalah jalur eksplisit untuk menggambar ulang layar yang sedang
+        // tampil. Dulu navigate() + renderMenu() dipanggil berdampingan, dan
+        // dua pemasangan layar saling membongkar.
+        router.refresh();
+        // Toast SESUDAH refresh: mountScreen() membersihkan semua toast, jadi
+        // konfirmasi yang dimunculkan lebih dulu terhapus sebelum terbaca.
         toast.success('Progres berhasil direset.');
-        router.navigate('', { replace: true });
-        renderMenu({}, {});
       }
     });
     footer.appendChild(resetBtn);
@@ -829,13 +892,15 @@ function renderQuizMenu(params, options) {
     body.appendChild(el('div', 'panel__label', 'Latihan Soal TKA'));
 
     const tkaSet = buildTkaSet(state.quizzes);
+    const tkaTitle = (state.quizzes.tkaSimulation && state.quizzes.tkaSimulation.title)
+      || 'Latihan Soal TKA';
     const tkaItem = el('button', 'chapter-item');
     tkaItem.type = 'button';
     tkaItem.dataset.role = 'tka-entry';
     tkaItem.innerHTML = `
       <span class="chapter-item__num">${icon('trophy', { size: 18 })}</span>
       <span class="chapter-item__body">
-        <span class="chapter-item__title">Latihan Soal TKA</span>
+        <span class="chapter-item__title">${tkaTitle}</span>
         <span class="chapter-item__tag">${tkaSet.length} soal &middot; gaya ujian sesungguhnya</span>
         ${attemptChips('simulasi_tka', 'all')}
       </span>
@@ -928,14 +993,12 @@ function pickRandom(array, count) {
 /**
  * Susun set Latihan Soal TKA.
  *
- * Sejak Fase 18 urutannya TETAP, bukan diundi. Alasannya: empat soal
- * pertama adalah soal ASLI TKA 2025 dan harus selalu muncul — mengundinya
- * berarti sebagian siswa tidak pernah menemuinya. Enam sisanya dipilih
- * tangan dari bank bab sebagai soal HOTS penutup.
- *
- * `questionOrder` berisi id soal; `inlineBank` (bank `tka_2025`) memuat
- * soal aslinya. Bila sebuah id tidak ditemukan, ia dilewati dengan
- * peringatan — lebih baik ujiannya lebih pendek daripada gagal total.
+ * Urutannya TETAP (`tkaSimulation.questionOrder`), bukan diundi: set ini
+ * dirancang berjenjang — dibuka parameter tersembunyi, ditutup multi-kondisi
+ * kasus batas — dan mengundinya merusak jenjang itu. Id dicari di SELURUH
+ * bank, jadi urutan boleh mencampur soal bank TKA dengan soal bank bab.
+ * Id yang tidak ditemukan dilewati dengan peringatan — lebih baik ujiannya
+ * lebih pendek daripada gagal total.
  */
 function buildTkaSet(quizzes) {
   const config = quizzes.tkaSimulation || {};
@@ -1078,8 +1141,54 @@ function identityGuard(path) {
   return getIdentity() ? null : 'login';      // sisanya butuh perkenalan
 }
 
+/**
+ * Penjaga keluar — melindungi pekerjaan yang belum tersimpan.
+ *
+ * Satu-satunya layar yang bisa kehilangan pekerjaan adalah Ujian CBT: ia
+ * SENGAJA tidak mengingat jawaban antar sesi (Blueprint §4.9). Layar belajar
+ * dan Mini Kuis menyimpan posisinya di sessionState, jadi meninggalkannya
+ * tidak membuang apa pun.
+ *
+ * Penjaga router bersifat sinkron, sedangkan modal bersifat asinkron. Maka
+ * perpindahan pertama DITOLAK, modal ditampilkan, dan bila siswa setuju,
+ * perpindahan yang sama diulang dengan satu izin sekali pakai.
+ */
+let leaveApprovedFor = null;
+let leavePromptOpen = false;
+
+function unsavedWorkGuard(fromPath, toPath) {
+  if (leaveApprovedFor === toPath) {
+    leaveApprovedFor = null;
+    return true;
+  }
+  const view = state.activeView;
+  if (!view || typeof view.hasUnsavedWork !== 'function' || !view.hasUnsavedWork()) return true;
+
+  // Ketukan kedua saat modal masih terbuka tidak boleh menumpuk modal kedua.
+  if (!leavePromptOpen) {
+    leavePromptOpen = true;
+    const prompt = typeof view.constructor.leavePrompt === 'function'
+      ? view.constructor.leavePrompt()
+      : {
+        title: 'Tinggalkan layar ini?',
+        body: 'Pekerjaan yang belum disimpan akan hilang.',
+        confirmLabel: 'Ya, Tinggalkan',
+        cancelLabel: 'Batal',
+        variant: 'danger',
+      };
+    confirmAction(prompt).then((ok) => {
+      leavePromptOpen = false;
+      if (!ok) return;
+      leaveApprovedFor = toPath;
+      router.navigate(toPath);
+    });
+  }
+  return false;
+}
+
 function registerRoutes() {
   router.setGuard(identityGuard);
+  router.setLeaveGuard(unsavedWorkGuard);
   router.route('/login', renderLogin);
   router.route('/tka', renderTka);
   router.route('/', renderMenu);
@@ -1161,8 +1270,13 @@ function revealApp() {
 }
 
 async function init() {
+  // Berlangganan SEBELUM tulisan pertama (touchSession), supaya tidak ada
+  // perubahan progres yang terjadi tanpa pernah tercermin di header.
+  subscribeProgress(() => updateProgressRing());
+
   touchSession();
   initFullscreen();
+  initNavrail();
   registerRoutes();
 
   try {
@@ -1193,7 +1307,7 @@ async function init() {
 }
 
 // Ekspos sedikit permukaan untuk keperluan pengujian otomatis.
-window.__matriksLab = {
+window.__vektorLab = {
   state,
   router,
   navigate: (p) => router.navigate(p),

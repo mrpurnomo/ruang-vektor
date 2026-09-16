@@ -9,13 +9,14 @@
  * Setiap jawaban salah WAJIB memunculkan Toast penjelas (PRD §8.4).
  */
 
-import { renderMixed, renderToString } from '../../engine/katexRenderer.js';
-import { numbersMatch } from '../../engine/validator.js';
-import { attachMathpad } from '../../ui/mathpad.js';
-import { icon } from '../../ui/icons.js';
-import toast from '../../ui/toast.js';
-import { celebrate } from '../../interactions/flyToAnimation.js';
-import { getResume, patchResume, clearResume } from '../../state/sessionState.js';
+import { renderMixed, renderToString } from '../core/render/katexRenderer.js';
+import { renderQuestionBody } from './questionBody.js';
+import { numbersMatch } from '../core/numeric.js';
+import { attachMathpad } from '../core/ui/mathpad.js';
+import { icon } from '../core/ui/icons.js';
+import toast from '../core/ui/toast.js';
+import { celebrate } from '../core/interactions/flyToAnimation.js';
+import { getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -187,9 +188,8 @@ export class QuizEngine {
     if (q.source) meta.appendChild(el('span', 'badge badge--amber', q.source));
     card.appendChild(meta);
 
-    card.appendChild(el('div', 'quiz__prompt', renderMixed(q.prompt)));
-
-    if (q.tex) card.appendChild(el('div', null, renderToString(q.tex, { display: true })));
+    // prompt → table → tex → after, lewat perender tunggal (lihat questionBody.js).
+    renderQuestionBody(card, q);
 
     this.answerHost = el('div');
     card.appendChild(this.answerHost);
@@ -337,7 +337,7 @@ export class QuizEngine {
     });
   }
 
-  /* ---------------- isian matriks ---------------- */
+  /* ---------------- isian berkurung (vektor kolom / kisi) ---------------- */
   renderMatrixInput(q) {
     const wrap = el('div', 'matrix');
     const bracket = el('div', 'matrix__bracket');
@@ -386,7 +386,7 @@ export class QuizEngine {
       }
 
       if (!filled) {
-        toast.warn('Masih ada sel yang kosong — isi seluruh elemen matriks lebih dulu.');
+        toast.warn('Masih ada kotak yang kosong — isi seluruh komponennya lebih dulu.');
         return;
       }
       this.judge(ok, q);

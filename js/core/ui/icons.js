@@ -1,5 +1,5 @@
 /**
- * ui/icons.js
+ * core/ui/icons.js
  * Ikon SVG inline (stroke 2px, gaya konsisten — bukan emoji).
  * Emoji dilarang sebagai ikon struktural karena bergantung font OS dan
  * tidak bisa dikendalikan lewat design token.
@@ -48,6 +48,10 @@ const PATHS = {
   'sun': '<circle cx="12" cy="12" r="4.2"/><line x1="12" y1="2" x2="12" y2="4.4"/><line x1="12" y1="19.6" x2="12" y2="22"/><line x1="2" y1="12" x2="4.4" y2="12"/><line x1="19.6" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="6.6" y2="6.6"/><line x1="17.4" y1="17.4" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="6.6" y2="17.4"/><line x1="17.4" y1="6.6" x2="19.1" y2="4.9"/>',
   'moon': '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
 
+  /* --- Navigasi & merek. Nama sengaja GEOMETRIS, bukan nama topik:
+         berkas ini milik core dan tidak boleh tahu aplikasinya soal apa. --- */
+  'arrow-up-right': '<path d="M5 19 19 5"/><path d="M9 5h10v10"/>',
+  'bar-chart': '<path d="M5 21V10"/><path d="M12 21V4"/><path d="M19 21v-7"/>',
   /* --- Papan Coret (Fase 15) --- */
   'eye': '<path d="M2.2 12S6 5.5 12 5.5 21.8 12 21.8 12 18 18.5 12 18.5 2.2 12 2.2 12z"/><circle cx="12" cy="12" r="3"/>',
   'eraser': '<path d="M4 20.5h16"/><path d="M15.4 3.6a2 2 0 0 1 2.9 0l2.1 2.1a2 2 0 0 1 0 2.9L11.6 17.4H6.9l-3-3a2 2 0 0 1 0-2.9z"/><line x1="9.2" y1="9.8" x2="14.6" y2="15.2"/>',
