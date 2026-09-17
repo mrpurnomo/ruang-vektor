@@ -36,7 +36,7 @@
 | **Bentuk** | Single Page Application (SPA), satu berkas `index.html` |
 | **Bahasa antarmuka** | Bahasa Indonesia, seluruhnya |
 | **Orientasi** | **Lanskap saja**. Potret memunculkan `.rotate-lock` |
-| **Tema** | **Deep Navy Canvas · White Cards · Vibrant Yellow**, permanen. Tidak ada pengalih tema |
+| **Tema** | **Meja Gambar Teknik · Instrumen Ukur** — film milimeter abu-abu, pelat terang, layar instrumen gelap; Kobalt = ARAH, Amber = BESARAN. Permanen, tidak ada pengalih tema (§7.1) |
 | **Distribusi** | Hosting statis · GitHub Pages · **flash disk di lab sekolah (offline)** |
 | **Footer wajib** | `© Penta Putra Purnomo, S.Pd., Gr. \| SMAS YPVDP Bontang.` |
 
@@ -126,7 +126,7 @@ animasi · lencana tanpa sistem lencana · mekanik "titik temu".
 **Jangan dihidupkan lagi.**
 
 > Yang dicabut adalah **pengalihnya**, bukan pilihan warnanya. Aplikasi ini
-> memakai satu tema tetap berkanvas navy (§7.1); yang dilarang adalah
+> memakai satu tema tetap "Meja Gambar Teknik" (§7.1); yang dilarang adalah
 > menghadirkan dua tema yang bisa ditukar siswa.
 
 ---
@@ -488,79 +488,138 @@ Setiap soal **wajib** punya `id`, `input_type`, `subtopic`, `prompt`, `after`,
 
 ## 7. ATURAN UI/UX
 
-### 7.1 Tema: Deep Navy Canvas · White Cards · Vibrant Yellow (permanen)
+### 7.1 Tema: Meja Gambar Teknik · Instrumen Ukur (permanen)
+
+Aplikasi ini adalah **meja gambar teknik**. Lantainya **film gambar abu-abu
+dingin berpetak milimeter**; bidang kerjanya **pelat** terang yang dipotong
+presisi (sudut 2–8px, tepi rambut 1px, bayangan tipis); dan setiap alat ukur,
+yaitu bidang kartesius, papan angka, dan figur rumus, adalah **layar instrumen
+gelap** yang ditanam di pelat itu. Header adalah bezel alatnya, lengkap dengan
+skala mistar.
 
 Satu tema, dipasang permanen. **Tidak ada pengalih tema dan tidak ada mode
-gelap** — yang dicabut di Blueprint §1.5 adalah *pengalihnya*, bukan
-pilihan warnanya. `<html data-theme="light">` **tetap dipasang**: sejumlah
-komponen memakainya untuk menentukan warna teks tombol, dan mencabutnya akan
-mematikan aturan-aturan itu diam-diam. Ia menandai *"kartu bacanya terang"*,
-bukan *"kanvasnya terang"*.
+gelap.** Yang dicabut di Blueprint §1.5 adalah *pengalihnya*, bukan pilihan
+warnanya. `<html data-theme="light">` **tetap dipasang**: sejumlah komponen
+memakainya untuk warna teks tombol, dan mencabutnya mematikan aturan-aturan itu
+diam-diam. Artinya *"pelat bacanya terang"*.
 
-**Palet sumber** — angka inilah acuan desain:
+**Palet sumber** (`css/tokens.css`) — enam warna inti:
 
 ```css
---navy-900: #060F2B;   /* sumur terdalam       */
---navy-800: #0A1B45;   /* KANVAS UTAMA         */
---navy-700: #122A5E;   /* bilah header & footer */
---yellow:   #FFC800;   /* WARNA NILAI          */
---royal:    #1D4ED8;   /* interaktif, di atas putih */
---white:    #FFFFFF;   /* KARTU BACA           */
+/* FILM — lantai meja gambar, berpetak milimeter */
+--film:        #E2E6EC;
+/* PELAT — bidang kerja dan pelat baca */
+--plate:       #FAFBFC;   --plate-sunken: #EEF1F5;   --plate-deep: #E3E8EF;
+/* GRAFIT — tinta pensil teknik, bukan hitam murni */
+--graphite:    #0D1320;   --graphite-2: #384255;     --graphite-3: #586377;
+/* LAYAR INSTRUMEN — nama lama --navy-* dipertahankan, maknanya "alat gelap" */
+--navy-900:    #070B13;   --navy-800: #0B101B;       --navy-700: #131A28;
+/* KOBALT — ARAH */
+--royal:       #2F3DE0;
+/* AMBER — BESARAN (nama lama --yellow-* dipertahankan) */
+--yellow:      #FFB000;   --yellow-deep: #E09A00;
+/* Aksen pendukung */
+--cyan: #3DD6F0;   --magenta: #B8316F;   --success: #08875A;   --danger: #CC2B2B;
 ```
 
 **Pemetaan semantik** — inilah yang dipakai komponen:
 
 ```css
---bg-canvas:     var(--navy-800);   /* bidang kartesius        */
---bg-surface:    var(--white);      /* kartu baca — selalu putih */
---bg-instrument: var(--navy-800);   /* panel alat DI DALAM kartu */
---ink-900:       var(--ink);        /* teks di atas KARTU      */
---on-navy:       #F2F6FF;           /* teks di atas KANVAS     */
---value:         var(--yellow);
---brand-primary: var(--royal);
+--bg-canvas:     var(--film);       /* lantai aplikasi                      */
+--bg-surface:    var(--plate);      /* pelat baca                           */
+--bg-deep:       var(--plate-deep); /* cekungan DI DALAM pelat, bukan bezel */
+--bg-instrument: var(--navy-800);   /* layar alat di dalam pelat            */
+--ink-900:       var(--graphite);   /* teks di atas PELAT & FILM            */
+--on-navy:       #EEF1F7;           /* teks di atas LAYAR INSTRUMEN         */
+--brand-primary: var(--royal);      /* ARAH                                 */
+--value:         var(--yellow);     /* BESARAN                              */
+--accent-amber:  #8A5300;           /* amber aman-teks di atas pelat        */
+--scope-grid / --scope-axis         /* kisi & sumbu DI DALAM layar instrumen */
+--hit-min:       44px;              /* area sentuh — tidak pernah menyusut  */
 ```
 
-> **Ganti nilainya, PERTAHANKAN namanya.** Kalau menambah warna: tambahkan di
-> palet sumber lalu petakan — **jangan pernah menulis hex langsung di berkas
-> komponen.**
+> **Ganti nilainya, PERTAHANKAN namanya.** Beberapa nama lama (`--navy-*`,
+> `--royal`, `--yellow`) sengaja dipertahankan dan kini menunjuk warna baru.
+> Kalau menambah warna: tambahkan di palet sumber lalu petakan. **Jangan pernah
+> menulis hex langsung di berkas komponen.**
 
-#### Tiga aturan yang menjaga tema ini tetap benar
+**Tipografi** (vendor lokal, `assets/vendor/fonts/`): **Barlow Condensed**
+(rumpun DIN, untuk judul dan label alat), **Barlow** (teks bacaan, saudara
+lebarnya), **JetBrains Mono** (angka dengan nol bergaris dan digit yang tidak
+mungkin tertukar).
+
+#### Empat aturan yang menjaga tema ini tetap benar
 
 **1. Dua skala tinta, bukan satu.**
-`--ink-*` untuk teks di atas **kartu putih**; `--on-navy-*` untuk teks di atas
-**kanvas navy**. Memakai yang salah menghasilkan teks yang **hilang**, bukan
-sekadar jelek. Tinta *bawaan* adalah tinta kartu, karena hampir seluruh teks
-aplikasi hidup di dalam kartu — daftar elemen yang duduk langsung di kanvas
-sengaja dijaga pendek dan dicatat di `css/shell.css` §8.
+`--ink-*` untuk teks di atas **pelat dan film** (keduanya terang);
+`--on-navy-*` untuk teks di atas **layar instrumen gelap** (header, footer,
+papan angka, bidang kartesius, figur rumus). Memakai yang salah menghasilkan
+teks yang **hilang**, bukan sekadar jelek. Elemen yang duduk langsung di film
+didaftar habis di `css/shell.css` §8, dan **wadah tidak pernah diwarnai**:
+warisannya bocor ke pelat dan menghasilkan teks terang di atas terang.
 
-**2. Kuning adalah warna NILAI.**
-Kuning dipakai hampir eksklusif untuk **angka yang dihasilkan atau harus
-dihasilkan siswa**: pratinjau papan angka, isian jawaban yang sedang aktif,
-penghitung progres, dan tombol aksi utama. Label, judul, dan kerangka tidak
-pernah kuning. Aturan ini membuat Aksioma §2.1 terbaca dari paletnya sendiri.
+**2. ARAH = KOBALT, BESARAN = AMBER.**
+Vektor punya dua sifat, dan palet ini punya dua warna kerja:
+- **Kobalt** untuk **arah**: navigasi, aksi yang memajukan langkah, pilihan yang
+  sedang ditunjuk, yaitu ke mana siswa bergerak.
+- **Amber** untuk **besaran**: angka yang keluar dari kepala siswa, seperti
+  pratinjau papan angka, isian aktif, progres, dan skor.
 
-> Konsekuensi kontras: `#FFC800` di atas putih hanya mencapai 1,6:1. Ia hanya
-> boleh dipakai sebagai **latar** atau **di atas navy**. Untuk teks kuning di
-> atas putih, pakai `--accent-amber` (`#8A6200`, 6,4:1).
+Label, judul, dan kerangka tidak pernah amber. Aksioma §2.1 terbaca dari
+paletnya sendiri.
 
-**3. Navy di dalam kartu berarti "ini alat".**
-Satu-satunya objek gelap di dalam kartu putih adalah **bidang kartesius SVG**
-dan **papan angka**. Keduanya instrumen, bukan bacaan — dan latar gelapnya
-yang menyatakan itu tanpa satu kata pun.
+> Konsekuensi kontras (terukur): amber murni `#FFB000` di atas pelat hanya
+> **1,8:1**. Ia hanya boleh menjadi **latar**, **garis**, atau **teks di atas
+> layar instrumen** (10,4:1). Untuk teks amber di atas pelat, pakai
+> `--accent-amber` (`#8A5300`, **6,1:1**). Pena amber papan coret memakai
+> token yang sama.
+
+**3. Gelap di dalam pelat berarti "ini alat".**
+Satu-satunya permukaan gelap di dalam pelat terang adalah **layar instrumen**,
+yaitu bidang kartesius SVG dan papan angka. Keduanya instrumen, bukan bacaan,
+dan latar gelapnya menyatakan itu tanpa satu kata pun.
+
+**4. Tanda ukur adalah tanda tangan, bukan hiasan.**
+Skala mistar (`--ruler-x`, `--ruler-y`, `--ruler-bezel`), sudut bidik
+(`--reticle`), dan piringan busur derajat (cincin progres) hanya dipakai di
+bingkai yang memang *mengukur*: bezel header, panggung kerja, dan kartu pintu
+masuk. Jangan ditaburkan ke komponen lain.
+
+#### Kontras terukur
+
+| Pasangan | Rasio |
+|---|---|
+| Grafit di atas pelat | 17,9:1 |
+| Grafit di atas film | 14,8:1 |
+| Kobalt di atas pelat | 7,1:1 |
+| Putih di atas kobalt (tombol utama) | 7,3:1 |
+| Amber tinta `--accent-amber` di atas pelat | 6,1:1 |
+| Beri `--magenta` di atas pelat | 5,5:1 |
+| `--on-navy` di atas layar instrumen | 16,8:1 |
+| Amber `--yellow` di atas layar instrumen | 10,4:1 |
+| `--value-ink` di atas amber | 10,1:1 |
 
 #### Karakter visual
 
-Modern, **flat design** tanpa bevel: kanvas navy pekat sebagai bidang
-koordinat (kisi satuan + kisi mayor + dua batang vektor yang hanyut pelan),
-kartu putih opak dengan sudut membulat dan bayangan dalam yang mengangkatnya
-dari kanvas, kontras tinggi, whitespace lega, ikon SVG duotone bersudut
-membulat, dan aksen kuning yang muncul tepat di tempat siswa harus bertindak.
+**Presisi, bukan lunak.**
+- Sudut kecil dan konsisten, `--r-xs` 2px sampai `--r-xl` 8px; bulat penuh hanya
+  untuk titik dan cincin.
+- Bayangan presisi: satu garis kontak 1px ditambah penumbra encer, tanpa bevel
+  dan tanpa kilau.
+- Ritme spasi 4/8px mengikuti kisi milimeter.
+- Warna sukses/galat `--success` dan `--danger`; aksen koreksi beri (`--magenta`),
+  yang sengaja jauh dari merah galat.
+- Konfeti perayaan dan pena papan coret dibaca dari token yang hidup (kobalt,
+  amber, sian, beri, sukses), bukan hex salinan.
 
 #### Struktur eyebrow & ikonografi
 
-Penanda struktural aplikasi ini adalah **panah vektor**, bukan garis atau
-titik generik: eyebrow diawali batang berujung runcing (`clip-path`), swatch
-legenda berbentuk panah, dan lencana merek adalah panah bersudut membulat.
+Penanda struktural aplikasi ini adalah **panah vektor**, bukan garis atau titik
+generik:
+- eyebrow diawali ruas berkepala panah (`--arrow-shape`, `clip-path`);
+- swatch legenda berbentuk panah;
+- tanda merek adalah pelat amber dengan panah grafit.
+
 Penanda itu diambil dari kosakata subjeknya sendiri.
 
 ### 7.2 Arsitektur "Sidebar & Stage" — ini arsitektur, bukan gaya
@@ -622,6 +681,12 @@ Scroll **hanya** hidup di: `.scroll-area`, `.workspace__body`, `.ws-side__hint`,
 ### 7.4 Ukuran, sentuhan, orientasi
 
 - Ukuran isi panggung terikat viewport lewat `clamp()`, **44px** batas bawah sentuh.
+- **Area sentuh ≠ ukuran tampil.** Tombol boleh *tampil* 22–42px di lanskap
+  pendek (`--touch-min` menyusut ke 40px), tetapi area sentuhnya selalu
+  ≥ `--hit-min` (44px) lewat `::after` transparan berpusat:
+  `inset: min(0px, calc((100% - var(--hit-min)) / 2))`. Jarak pusat-ke-pusat
+  antar-kendali juga wajib ≥ 44px, dan wadah `overflow` tidak boleh memotongnya.
+  Diukur `tests/smoke.py` §6b dengan `elementFromPoint` di 26 keadaan.
 - Setiap wadah yang bisa meluap butuh `overflow-y:auto` **DAN** `min-height:0`.
 - Aplikasi hanya berjalan **lanskap**; potret memunculkan `.rotate-lock` dan
   menyembunyikan `#app` **beserta** `.fs-btn`.
