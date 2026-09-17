@@ -156,7 +156,9 @@ export function createScratchpad(host) {
 
   const ctx = canvas.getContext('2d');
 
-  const bar = el('div', 'pad__bar');
+  // `no-scrollbar`: bilah digulir horizontal di layar sempit tanpa batang
+  // gulir yang memakan tinggi (scrollbars.css).
+  const bar = el('div', 'pad__bar no-scrollbar');
   bar.setAttribute('role', 'toolbar');
   bar.setAttribute('aria-label', 'Alat papan coret');
   root.appendChild(bar);

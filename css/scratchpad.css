@@ -149,11 +149,21 @@
     display: flex;
     align-items: center;
     gap: var(--sp-2);
-    /* Baris yang membungkus berjarak 14px: tombol 30–34px tetap berpusat
-       ≥ 44px dari baris tetangganya. */
-    row-gap: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
+    /* SATU baris yang digulir horizontal, tidak pernah membungkus. Bilah yang
+       membungkus menumpuk 2–3 baris dan menutup 25–49% kanvas di 740×360
+       (terukur) — padahal kanvas itulah alasan papan ini ada. Scrollbar
+       disembunyikan lewat utilitas `.no-scrollbar` (dipasang scratchpad.js;
+       ia harus di lapisan utilities agar menang atas `* { scrollbar-width }`).
+       `flex-start`, bukan `center`: isi yang meluap dan dipusatkan akan
+       terpotong di kiri tanpa bisa digulir ke sana. */
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    /* Kanvas di bawahnya `touch-action: none`; bilah harus tetap bisa
+       digeser jari secara horizontal. */
+    touch-action: pan-x;
     /* Zona FAB disisihkan di KEDUA sisi (bilah tetap terpusat): tanpa ini
        tombol bilah yang lebar mendarat di bawah FAB dan tak bisa diketuk. */
     --pad-fab-zone: calc(var(--sp-5) + var(--sp-3) + 48px + var(--sp-2));
@@ -171,6 +181,7 @@
      ≥ 44px supaya area sentuh ::after tidak saling tumpuk. Ukuran tampil
      tombolnya tetap. */
   .pad__group {
+    flex: none;
     display: flex;
     align-items: center;
     gap: calc(var(--hit-min) - 34px);
@@ -306,14 +317,14 @@
   .pad__peek:active { background: var(--royal); color: var(--white); }
 
   /* ------------------------------------------------------------
-     Lanskap pendek: bilah alat dirapatkan agar tetap satu baris
+     Lanskap pendek: kendali lebih kecil, bilah tetap satu baris (digulir)
      ------------------------------------------------------------ */
   @media (orientation: landscape) and (max-height: 560px) {
     .pad__bar {
       --pad-fab-zone: calc(var(--sp-5) + var(--sp-3) + 42px + var(--sp-2));
       gap: 10px;
-      row-gap: 14px;
-      padding: 5px var(--sp-2);
+      /* 7px vertikal: wadah gulir memotong ::after tombol 30px → 44px. */
+      padding: 7px var(--sp-2);
       bottom: var(--sp-2);
     }
     .pad__group { gap: calc(var(--hit-min) - 30px); padding-right: 9px; }
@@ -325,8 +336,45 @@
     .pad-fab { width: 42px; height: 42px; bottom: var(--sp-3); }
   }
 
+  /* ------------------------------------------------------------
+     5. PETUNJUK GULIR — tepi bilah memudar di sisi yang masih punya isi
+
+     Scrollbar disembunyikan, jadi tanpa petunjuk siswa tidak tahu ada
+     Hapus/Intip/Kecilkan di luar tepi (terukur: di 1024×600 potongannya
+     jatuh tepat di celah antar-tombol). Pudarnya digerakkan posisi gulir
+     (scroll-driven animation): awal = pudar kanan, ujung = pudar kiri,
+     tengah = keduanya. Bilah yang tidak meluap tidak punya rentang gulir,
+     timeline-nya tidak aktif, dan tidak ada pudar sama sekali. Peramban
+     tanpa dukungan tetap berfungsi, hanya tanpa pudar.
+     ------------------------------------------------------------ */
+  @supports (animation-timeline: scroll()) {
+    .pad__bar {
+      --pad-fade-l: 0px;
+      --pad-fade-r: 0px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, black var(--pad-fade-l),
+                                          black calc(100% - var(--pad-fade-r)), transparent);
+              mask-image: linear-gradient(90deg, transparent, black var(--pad-fade-l),
+                                          black calc(100% - var(--pad-fade-r)), transparent);
+      animation: pad-bar-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+
+  @keyframes pad-bar-fade {
+    0%   { --pad-fade-l: 0px;  --pad-fade-r: 28px; }
+    8%   { --pad-fade-l: 28px; --pad-fade-r: 28px; }
+    92%  { --pad-fade-l: 28px; --pad-fade-r: 28px; }
+    100% { --pad-fade-l: 28px; --pad-fade-r: 0px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .pad-fab, .pad__canvas, .pad__bar, .pad__swatch { transition: none; }
   }
 
 }
+
+/* Didaftarkan agar --pad-fade-* bisa DIINTERPOLASI oleh animasi (tanpa
+   @property, properti kustom berpindah nilai secara diskret). Berada di luar
+   @layer karena @property berlaku global. */
+@property --pad-fade-l { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --pad-fade-r { syntax: '<length>'; inherits: false; initial-value: 0px; }

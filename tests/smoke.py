@@ -655,6 +655,49 @@ def section_scratchpad(page, errors):
            json.dumps(contrast, ensure_ascii=False))
     record("Tanpa galat konsol selama papan coret", not errors, "; ".join(errors[:2]))
 
+    # Lanskap pendek: bilah alat SATU baris yang digulir horizontal, bukan
+    # membungkus jadi dua baris yang menutup ±¼ kanvas.
+    page.set_viewport_size({"width": 740, "height": 360})
+    fresh_position(page)
+    open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=800)
+    page.click(".pad-fab")
+    page.wait_for_timeout(500)
+    bar = page.evaluate("""async () => {
+        const bar = document.querySelector('.pad__bar');
+        const pad = document.querySelector('.pad').getBoundingClientRect();
+        const cs = getComputedStyle(bar);
+        const controls = [...bar.querySelectorAll('button')];
+        const rows = new Set(controls.map((b) => { const r = b.getBoundingClientRect(); return Math.round(r.top + r.height / 2); }));
+        const reachable = [];
+        for (const b of controls) {
+            b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            await new Promise((r) => requestAnimationFrame(r));
+            const r = b.getBoundingClientRect(), q = bar.getBoundingClientRect();
+            reachable.push(r.left >= q.left - 1 && r.right <= q.right + 1);
+        }
+        const fade = async (left) => { bar.scrollLeft = left; await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+            const c = getComputedStyle(bar); return [c.getPropertyValue('--pad-fade-l').trim(), c.getPropertyValue('--pad-fade-r').trim()]; };
+        const fadeStart = await fade(0), fadeEnd = await fade(bar.scrollWidth);
+        bar.scrollLeft = 0;
+        return { fadeStart, fadeEnd,
+            rows: rows.size, controls: controls.length, wrap: cs.flexWrap, overflowX: cs.overflowX,
+            scrollbarWidth: cs.scrollbarWidth, scrollbarSpace: bar.offsetHeight - bar.clientHeight
+                - parseFloat(cs.borderTopWidth) - parseFloat(cs.borderBottomWidth),
+            scrolls: bar.scrollWidth > bar.clientWidth, height: Math.round(bar.getBoundingClientRect().height),
+            coverage: +(bar.getBoundingClientRect().height / pad.height * 100).toFixed(1),
+            unreachable: controls.filter((_, i) => !reachable[i]).map((b) => b.getAttribute('aria-label')),
+        };
+    }""")
+    record("740×360: bilah papan coret satu baris (nowrap)", bar["rows"] == 1 and bar["wrap"] == "nowrap", json.dumps(bar, ensure_ascii=False))
+    record(f"740×360: tinggi bilah {bar['height']}px ≤ 48px ({bar['coverage']}% kanvas)", bar["height"] <= 48, json.dumps(bar, ensure_ascii=False))
+    record("740×360: bilah digulir horizontal dengan scrollbar tersembunyi",
+           bar["overflowX"] == "auto" and bar["scrollbarWidth"] == "none" and bar["scrollbarSpace"] <= 0, json.dumps(bar, ensure_ascii=False))
+    record(f"740×360: {bar['controls']} kendali semuanya terjangkau lewat gulir", not bar["unreachable"], str(bar["unreachable"]))
+    record("740×360: petunjuk gulir — awal pudar kanan saja, ujung pudar kiri saja",
+           bar["fadeStart"] == ["0px", "28px"] and bar["fadeEnd"] == ["28px", "0px"],
+           json.dumps(bar, ensure_ascii=False))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
 
 def section_confetti(page, errors):
     print("\n11. Konfeti perayaan")
