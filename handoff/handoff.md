@@ -1,7 +1,7 @@
 # HANDOFF — Ruang Vektor
 
 > **Memori inti untuk sesi baru.** Baca dokumen ini SEBELUM menyentuh kode apa pun.
-> Ditulis 17 September 2026; diperbarui sesudah Final Polish & QA (commit `1a57e36`).
+> Ditulis 17 September 2026; diperbarui sesudah The Final Polish (commit `70159e7`).
 > Dokumen rujukan yang tetap berlaku: `PRD.md` (kontrak produk) dan
 > `docs/EDTECH_BLUEPRINT.md` (kerangka arsitektur + 40 jebakan yang sudah dibayar).
 
@@ -69,6 +69,7 @@ membuat peramban menjalankan modul JS basi).
 | **8 · Tahap 3** | **Bidang kartesius SVG**: `plane/planeGeometry.js` (murni, tanpa DOM: viewport skala seragam, y terbalik HANYA di toScreen/toMath, busur, siku, panah, label, snap), `arrow.js` (marker per panah DI DALAM grupnya + userSpaceOnUse, ketuk + Enter/Spasi, seret ujung + tombol panah), `arrowAnimation.js` (tween di ruang matematika, bisa dibatalkan, hormati reduced-motion), `vectorPlane.js` (lapisan grid·axis·pick·shape·interactive·label, ResizeObserver+rAF, destroy tuntas). Uji: Node 130/130 (19 geometri) + peramban `tests/plane.html` 31/31 (CTM, elementFromPoint, hitung piksel kepala panah, spy ResizeObserver & listener). Uji mutasi: 4 geometri + 8 kontrak SVG, semua tertangkap sesudah 2 celah ditutup. Terverifikasi di dalam aplikasi pada 740×360 / 1024×600 / 1440×900 | `ebde1a7` |
 | **9 · Tahap 4** | **25 engine simulasi** di `simBasics` (6) · `simOperations` (8) · `simProducts` (6) · `simModeling` (5), didaftarkan lewat `ENGINES` per bab di `index.js` (25 terdaftar = 25 engine JSON). Kerangka bersama `simKit.js` → `CaseSimulation`: kasus → langkah `fields·choice·multi·tap`; `check()` → `true` atau `{message|toast, values, wrong}`; **`solveStep()` satu-satunya jalan maju**, visual konfirmasi (`onSolved`) baru digambar SESUDAH siswa benar. Anggaran label (`essential`), sasaran titik 44px, slot tercadang. Mini Kuis: kunci & pembahasan tidak lagi tampil saat salah — baru sesudah salah ke-3 (`QuizEngine.REVEAL_AFTER`). Kalimat toast JSON yang membocorkan kunci ditulis ulang. Uji: Node 130/130 · `tests/plane.html` 32/32 · `tests/sims.html` 26/26 (260 jawaban salah ditolak berkalimat, tanpa gambar baru, tanpa `{{kunci}}`, tanpa bocor angka kunci, bidang tidak bergeser, destroy tuntas, resume sesi) | `6b630d7` |
 | **10 · QA** | **Final Polish & QA** (4 commit): (1) `tests/validate_data.py` — validator data Python murni: manifest ↔ bab, registry `ENGINES` ↔ JSON, analisis statis kunci toast & `{{placeholder}}` per titik pemakaian engine, karakter kendali, LaTeX seimbang, bentuk soal, 78 + 34 soal, `questionOrder`, `toastWrong` yang menyebut kunci; uji mutasi 14/14. Bug ditemukan & diperbaiki: `component_add` kasus beda dimensi (kalimat salah menyebut vonis "tidak terdefinisi", dan kalimat yang sama dipakai sebagai toast tuntas tanpa nilai → `{{dimA}}` bolong; dipecah jadi `dimensiBeda` + `dimensiBedaTuntas`), `b3_04_1`/`b4_05_2` (`toastWrong` menulis persamaan akhir = kunci). (2) `tests/smoke.py` ditulis ulang untuk Ruang Vektor (uji warisan Matriks dihapus); `archive_soal.py` diadaptasi + arsip Mini Kuis, keluaran di `content/*_ARCHIVE.md`. (3) Pena papan coret = token hidup: Grafit/Kobalt/Amber(`--accent-amber`)/Beri; kontras goresan terukur dari piksel 18,6/7,3/6,3/5,7 (sebelumnya merah 3,9 & kuning 1,55). (4) Konfeti = token hidup kobalt/amber/sian/beri/sukses. Uji: Node 130/130 · data 724 lolos/0 gagal · smoke 115/0 (termasuk plane 32/32 & sims 26/26) | `981d932` `b28956d` `5e3c82c` `1a57e36` |
+| **11 · Final Polish** | (1) **Area sentuh efektif ≥ 44×44** tanpa mengubah ukuran tampil: token `--hit-min: 44px` (tidak menyusut seperti `--touch-min`) + `::after` transparan `inset: min(0px, calc((100% - var(--hit-min)) / 2))` di berkas komponennya; jarak pusat-ke-pusat ≥ 44px (navrail, baris chip, kendali papan coret), skala swatch dibalik di `::after`, ellipsis label sidebar pindah ke `<span>`, `.ws-side__hint` padding 5px, bilah papan coret menyisihkan zona FAB. Terukur: ukuran tampil 164 tombol identik sebelum/sesudah; smoke §6b 26 keadaan, mutan `--hit-min:30px` tertangkap. (2) **29 kalimat toast mati** dari 19 sub-topik dibuang (±5,1 KB); kalimat tak terpakai kini GAGAL di validator. (3) **Bilah papan coret satu baris** digulir horizontal (`.no-scrollbar`, `touch-action: pan-x`, pudar tepi scroll-driven): 740×360 dari 130px/48,9% kanvas → 46px/17,3%. (4) **PRD §7.1** = "Meja Gambar Teknik · Instrumen Ukur" + kontras terukur; §7.4 kontrak `--hit-min`. Flake `smoke.py` terjelaskan: `net::ERR_NETWORK_CHANGED` (adaptor jaringan Windows) → `open_route` mengulang. Uji: Node 130/130 · data 749/0/0 · smoke 146/0 (plane 32/32, sims 26/26) | `abaa5c6` `cdeddfd` `327bf8a` `70159e7` |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -81,20 +82,12 @@ membuat peramban menjalankan modul JS basi).
 - "Ganti Akun" membuang identitas + posisi, **mempertahankan** progres.
 - Nol kebocoran state antar layar (papan angka, scrim, papan coret, tambatan toast).
 
-### Temuan terbuka (butuh keputusan pengguna — JANGAN diubah sepihak)
-- **Sasaran sentuh < 44px.** Kontrak §3.3 menulis ≥ 44px, tetapi terukur 9 jenis tombol di
-  bawahnya: `.navrail__item` 34px, `.btn--switch` 34px, `.brand__mark` 36px, `.btn--sm` 36px,
-  `.case-chip` 34px, `.fs-btn` 32–36px, `.exam-nav__item` 38px, `.pad-fab` 42px (740×360),
-  dan `--touch-min` sengaja turun ke 40px di lanskap pendek. `smoke.py` melaporkannya sebagai
-  CATATAN, bukan GAGAL. Pilihan: naikkan ukurannya, atau ubah kontraknya.
-- **19 sub-topik punya kalimat toast yang tidak pernah dipakai engine** (mis.
-  `sudahTerpilih`, `belumDigeser`, `tahapBelumSelesai`) — dilaporkan `validate_data.py` sebagai
-  PERINGATAN. Hapus dari JSON, atau sambungkan ke engine.
-- **Satu kali timeout tak terjelaskan** menunggu `data-app-ready` pada 1 dari 4 run `smoke.py`
-  (server 5173 saat itu dipakai bersama sesi lain). 3 run berikutnya bersih.
-- Lanskap 740×360: bilah papan coret membungkus jadi dua baris dan menutup ±¼ bawah kanvas;
-  toast "Jawabanmu tepat!" menutup tombol papan coret selama tampil.
-- Utang dokumen: PRD §7.1 masih menjelaskan tema lama "Deep Navy Canvas · White Cards · Vibrant Yellow".
+### Catatan kecil yang tersisa (terukur, di luar lingkup The Final Polish — tidak diubah)
+- Teks putih di atas `--success` (`#08875A`) — huruf/centang opsi benar di ujian dan Mini
+  Kuis — **4,38:1**, sedikit di bawah 4,5:1 untuk teks kecil. Pilihan: pakai `--success-hi`
+  (`#066B47`) sebagai latar penanda itu.
+- Di 740×360, toast sukses ("Jawabanmu tepat!") menutupi tombol papan coret selama toast tampil
+  (sementara, lalu hilang sendiri).
 
 ---
 
@@ -180,7 +173,11 @@ Aturan:
   berlebar TETAP. Kotak kosong ber-`visibility:hidden` memesan ruang NOL — isi dulu.
 - **Lanskap pendek (≤470px tinggi):** token tipografi & bilah menyusut di `tokens.css`;
   bilah aksi sidebar satu baris; `.ws-side__hint { min-height:58px }`.
-- Sasaran sentuh ≥ 44px (`--touch-min`). Tidak ada tautan teks telanjang.
+- **Area sentuh ≥ 44×44 (`--hit-min`), ukuran tampil boleh lebih kecil** (`--touch-min` menyusut ke
+  40px di lanskap pendek). Pola: `position: relative` + `::after { content:''; position:absolute;
+  inset: min(0px, calc((100% - var(--hit-min)) / 2)); }` di berkas komponennya. Jarak pusat-ke-pusat
+  ≥ 44px; jangan `overflow: hidden` pada tombol (pindahkan ke labelnya); skala visual (`transform:
+  scale`) harus dibalik di `::after`. Diukur `smoke.py` §6b. Tidak ada tautan teks telanjang.
 
 ### 3.4 Kontrak JS inti yang tidak boleh dirusak
 
@@ -216,20 +213,17 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### 🎯 MISI: TUNGGU KEPUTUSAN PENGGUNA
+> ### 🎯 STATUS: SIAP DILUNCURKAN
 >
-> Final Polish & QA **SELESAI** (baris 10 di §2). Tidak ada pekerjaan wajib yang tersisa.
-> Sesi berikutnya dimulai dengan menanyakan pengguna soal "Temuan terbuka" di §2, lalu
-> kerjakan yang disetujui saja. Jangan merombak ulang apa pun di baris 6–10.
+> Seluruh tahap (baris 1–11 di §2) selesai dan terukur. Tidak ada pekerjaan wajib. Sesi baru
+> hanya mengerjakan permintaan pengguna yang eksplisit; dua catatan kecil di §2 boleh ditawarkan.
+> Jangan merombak ulang apa pun di baris 6–11.
 
-### 4.1 Kandidat pekerjaan (hanya bila disetujui)
-1. Sasaran sentuh: selaraskan tombol ke `--touch-min` 44px, atau revisi kontrak §3.3.
-   Ukur ulang dengan `python tests/smoke.py` (CATATAN harus hilang) dan tangkapan layar
-   740×360 / 1024×600 — tombol yang lebih tinggi menekan tinggi lanskap pendek.
-2. Rapikan 19 kalimat toast yang tidak terpakai (`python tests/validate_data.py` → 0 PERINGATAN).
-3. Bilah papan coret satu baris di 740×360.
-4. PRD §7.1 diselaraskan ke identitas "Instrumen Teknik".
-5. Bila data soal diubah: `python tests/archive_soal.py` untuk membangkitkan ulang arsip guru.
+### 4.1 Pemeliharaan rutin
+1. Data soal/toast diubah → `python tests/validate_data.py` (0 GAGAL), lalu
+   `python tests/archive_soal.py` untuk membangkitkan ulang arsip guru.
+2. Kendali interaktif baru → beri area sentuh `--hit-min` (pola `::after` di §3.3) dan jalankan
+   `python tests/smoke.py`; §6b akan gagal bila lupa.
 
 ### 4.2 Kontrak yang tetap mengikat selama polish
 - **Aksioma** (§1): aplikasi tidak pernah menghitung untuk siswa; kalimat toast tidak
@@ -251,9 +245,9 @@ Aturan:
 
 ### 4.3 Uji wajib sebelum setiap commit
 - `node tests/engine.test.mjs` → **130/130**.
-- `python tests/validate_data.py` → **0 GAGAL** (saat ini 724 lolos, 19 PERINGATAN — lihat §2).
-- `python tests/serve.py`, lalu `python tests/smoke.py` → **0 GAGAL** (saat ini 115 lolos,
-  ±6 menit; sudah menjalankan `tests/plane.html` **32/32** dan `tests/sims.html` **26/26**).
+- `python tests/validate_data.py` → **0 GAGAL** (saat ini 749 lolos, 0 PERINGATAN).
+- `python tests/serve.py`, lalu `python tests/smoke.py` → **0 GAGAL** (saat ini 146 lolos,
+  ±8 menit; sudah menjalankan `tests/plane.html` **32/32** dan `tests/sims.html` **26/26**).
   Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
 - Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
   `/tests/sims.html` → `window.__simTest`. **Pane peramban yang tersembunyi menahan
@@ -269,6 +263,12 @@ Aturan:
     `sessionState.patchResume(lessonKey(bab, sub), { step: 2, simulationDone: true })`.
   - `PointerEvent` sintetis di papan coret harus `pointerId: 1`; id lain ditolak `setPointerCapture`.
   - Konsol Windows cp1252: skrip Python wajib `sys.stdout.reconfigure(encoding="utf-8")`.
+  - `net::ERR_NETWORK_CHANGED` (adaptor jaringan Windows berganti status) membatalkan pemuatan
+    modul bahkan ke localhost → aplikasi tak pernah `data-app-ready`. `open_route` di `smoke.py`
+    mengulang; skrip Playwright lain harus melakukan hal yang sama.
+  - Uji area sentuh: `scrollIntoView({block:'center'})`, bukan `nearest` (menempel di tepi wadah
+    gulir dan memotong `::after`); sampel hanya bagian yang terlihat; target di bawah overlay
+    `.pad`/`.mathpad`/`.modal-scrim` bukan kebocoran.
 
 ---
 
@@ -279,7 +279,7 @@ vektor-lab-interaktif/
 ├── index.html                 SPA tunggal: backdrop, rotate-lock, boot loader, header
 │                              (brand · navrail · progress-ring), #screen-host, footer, fs-btn;
 │                              vendor lokal + cadangan CDN "cek global"
-├── PRD.md                     kontrak produk (tema §7.1 & layer §7.7 sudah diselaraskan Langkah 4)
+├── PRD.md                     kontrak produk (tema §7.1 "Meja Gambar Teknik" & §7.4 --hit-min diselaraskan Final Polish)
 ├── README.md                  cara jalan & perintah harian
 ├── handoff/handoff.md         dokumen ini
 ├── docs/                      EDTECH_BLUEPRINT.md · Rancangan_Materi_Vektor_TKA.md · 4 gambar soal TKA
