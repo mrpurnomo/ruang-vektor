@@ -179,6 +179,20 @@
                 transform var(--dur-fast) var(--ease-out);
   }
 
+  /* Area sentuh ≥ --hit-min untuk kendali kecil di bezel (lihat tokens.css).
+     .fs-btn sudah `position: fixed`, jadi tidak perlu `relative`. */
+  .brand__mark,
+  .navrail__item,
+  .btn--switch { position: relative; }
+  .brand__mark::after,
+  .navrail__item::after,
+  .fs-btn::after,
+  .btn--switch::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .brand__mark:hover { background: var(--value-hi); }
   .brand__mark:active { transform: translateY(1px); }
   .brand__mark svg { width: 20px; height: 20px; stroke-width: 2.6; }
@@ -288,6 +302,9 @@
   @media (max-width: 860px), (orientation: landscape) and (max-height: 470px) {
     .navrail__item { padding: 0 10px; }
     .navrail__item span { display: none; }
+    /* Tombol ikon 36px: celah 8px membuat jarak pusat-ke-pusat 44px, jadi
+       area sentuh kedua tab bersebelahan tanpa saling tumpuk. */
+    .navrail { gap: 8px; }
   }
 
   /* ------------------------------------------------------------

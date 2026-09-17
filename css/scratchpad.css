@@ -38,6 +38,19 @@
                 color var(--dur-fast) var(--ease-out);
   }
 
+  /* Area sentuh ≥ --hit-min (lihat tokens.css). .pad-fab sudah absolut. */
+  .pad__btn,
+  .pad__swatch,
+  .pad__width { position: relative; }
+  .pad-fab::after,
+  .pad__btn::after,
+  .pad__swatch::after,
+  .pad__width::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .pad-fab:hover,
   .pad-fab:focus-visible {
     background: var(--royal);
@@ -136,9 +149,15 @@
     display: flex;
     align-items: center;
     gap: var(--sp-2);
+    /* Baris yang membungkus berjarak 14px: tombol 30–34px tetap berpusat
+       ≥ 44px dari baris tetangganya. */
+    row-gap: 14px;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: calc(100% - 2 * var(--sp-4));
+    /* Zona FAB disisihkan di KEDUA sisi (bilah tetap terpusat): tanpa ini
+       tombol bilah yang lebar mendarat di bawah FAB dan tak bisa diketuk. */
+    --pad-fab-zone: calc(var(--sp-5) + var(--sp-3) + 48px + var(--sp-2));
+    max-width: calc(100% - 2 * var(--pad-fab-zone));
     padding: var(--sp-2) var(--sp-3);
     border-radius: var(--r-lg);
     background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
@@ -148,10 +167,13 @@
             backdrop-filter: blur(8px);
   }
 
+  /* Jarak antar-kendali mengikuti --hit-min, bukan selera: pusat-ke-pusat
+     ≥ 44px supaya area sentuh ::after tidak saling tumpuk. Ukuran tampil
+     tombolnya tetap. */
   .pad__group {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: calc(var(--hit-min) - 34px);
     padding-right: var(--sp-2);
     border-right: 1px solid var(--border-soft);
   }
@@ -201,6 +223,11 @@
   }
 
   .pad__swatch:hover { transform: scale(1.08); }
+  .pad__group:has(.pad__swatch) { gap: calc(var(--hit-min) - 26px); }
+  .pad__group:has(.pad__width) { gap: calc(var(--hit-min) - 32px); }
+  /* Skala visual swatch ikut membesarkan area sentuhnya ke tetangga:
+     ::after dikecilkan balik supaya tetap tepat --hit-min. */
+  .pad__swatch:hover::after { transform: scale(calc(1 / 1.08)); }
 
   /* Warna terpilih ditandai CINCIN, bukan sekadar warna yang lebih
      pekat — kuning di atas putih nyaris tak terbaca kalau hanya
@@ -209,6 +236,7 @@
     border-color: var(--ink);
     transform: scale(1.12);
   }
+  .pad__swatch.is-on::after { transform: scale(calc(1 / 1.12)); }
 
   /* --- Ketebalan --- */
   .pad__width {
@@ -281,8 +309,16 @@
      Lanskap pendek: bilah alat dirapatkan agar tetap satu baris
      ------------------------------------------------------------ */
   @media (orientation: landscape) and (max-height: 560px) {
-    .pad__bar { gap: 6px; padding: 5px var(--sp-2); bottom: var(--sp-2); }
-    .pad__group { gap: 3px; padding-right: 6px; }
+    .pad__bar {
+      --pad-fab-zone: calc(var(--sp-5) + var(--sp-3) + 42px + var(--sp-2));
+      gap: 10px;
+      row-gap: 14px;
+      padding: 5px var(--sp-2);
+      bottom: var(--sp-2);
+    }
+    .pad__group { gap: calc(var(--hit-min) - 30px); padding-right: 9px; }
+    .pad__group:has(.pad__swatch) { gap: calc(var(--hit-min) - 22px); }
+    .pad__group:has(.pad__width) { gap: calc(var(--hit-min) - 26px); }
     .pad__btn { width: 30px; height: 30px; }
     .pad__swatch { width: 22px; height: 22px; }
     .pad__width { width: 26px; height: 30px; }

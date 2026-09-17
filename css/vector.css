@@ -223,6 +223,12 @@
       transform var(--dur-fast) var(--ease-out);
   }
 
+  .cell--tappable::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .cell--draggable {
     cursor: grab;
     background: var(--bg-surface);

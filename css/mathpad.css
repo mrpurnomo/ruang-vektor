@@ -212,6 +212,15 @@
                 background var(--dur-fast) var(--ease-out);
   }
 
+  .mathpad__mode button,
+  .mp-key { position: relative; }
+  .mathpad__mode button::after,
+  .mp-key::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .mathpad__mode button:hover { color: var(--on-navy); background: var(--navy-600); }
   .mathpad__mode[hidden],
   .mathpad__mode button[hidden] { display: none; }

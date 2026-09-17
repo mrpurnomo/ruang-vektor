@@ -110,7 +110,9 @@
     gap: var(--sp-3);
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 2px;
+    /* Padding vertikal 5px: wadah gulir MEMOTONG area sentuh ::after chip
+       kasus (34px → 44px) dan nomor ujian (38px) di baris pertama/terakhir. */
+    padding: 5px 2px 5px 0;
     scrollbar-width: thin;
     scrollbar-color: var(--border-strong) transparent;
   }
@@ -421,7 +423,7 @@
 
     /* Tiga kasus dalam satu baris, tidak membungkus — kalau ia membungkus,
        prompt terdorong keluar area petunjuk yang sudah sempit. */
-    .ws-side__hint .case-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+    .ws-side__hint .case-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 4px; }
     .ws-side__hint .case-chip { padding: 4px 2px; }
     .ws-side__hint .case-chip b { font-size: 9px; letter-spacing: .04em; }
     .ws-side__hint .sim__prompt {
@@ -611,6 +613,11 @@
       padding-inline: var(--sp-2);
       font-size: var(--fs-xs);
       min-height: 36px;
+    }
+    /* Ellipsis di LABEL, bukan di tombol: `overflow: hidden` pada tombol
+       memotong area sentuh ::after-nya (36px → 44px, lihat tokens.css). */
+    .ws-side__actions .actionbar .btn > span {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
     }

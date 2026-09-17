@@ -172,6 +172,13 @@
                 border-color var(--dur-fast) var(--ease-out);
   }
 
+  .exam-nav__item { position: relative; }
+  .exam-nav__item::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .exam-nav__item:hover { border-color: var(--royal); color: var(--royal); }
 
   /* Sudah diisi — belum tentu benar, dan memang belum dinilai. */

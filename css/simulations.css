@@ -371,7 +371,15 @@
   .case-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    /* Jarak baris 10px: chip 34px + 10px = 44px pusat-ke-pusat, area sentuh
+       baris atas dan bawah tidak saling tumpuk. */
+    gap: 10px 4px;
+  }
+  .case-chip { position: relative; }
+  .case-chip::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
   }
   .case-chip {
     flex: 1 1 auto;

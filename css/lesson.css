@@ -234,6 +234,14 @@
     transition: background var(--dur-base) var(--ease-out);
   }
 
+  /* Batang 6px ini tombol: area sentuhnya setinggi --hit-min. */
+  .quiz-nav__step { position: relative; }
+  .quiz-nav__step::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .quiz-nav__step[data-state="done"] { background: var(--success); }
   .quiz-nav__step[data-state="active"] { background: var(--value); }
   .quiz-nav__step[data-state="wrong"] { background: var(--danger); }

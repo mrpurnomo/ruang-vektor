@@ -22,9 +22,9 @@ Satu perintah untuk memeriksa aplikasi SEUTUHNYA di peramban sungguhan:
   11. Konfeti: warna = token palet, host dibersihkan.
   12. Suite peramban: tests/plane.html 32/32 dan tests/sims.html 26/26.
 
-Pemeriksaan sasaran sentuh (<44px) dilaporkan sebagai CATATAN, bukan GAGAL:
-desain saat ini sengaja memakai tombol 34–40px di lanskap pendek (lihat
-`--touch-min` di css/tokens.css). Keputusan mengubahnya ada di pengguna.
+Area sentuh (6b) diukur EFEKTIF: tombol boleh tampil lebih kecil dari 44px,
+tetapi kotak 44×44 di sekelilingnya harus seluruhnya mengenai tombol itu
+(lihat `--hit-min` di css/tokens.css). Ini GAGAL, bukan catatan.
 
 Jalankan:
     python tests/smoke.py            # server sudah hidup di :5173
@@ -121,10 +121,25 @@ def reset_storage(page, identity=True):
 
 
 def open_route(page, route, settle=900):
-    """Buka rute dari muat ulang penuh: navigasi hash tidak memuat ulang modul."""
-    page.goto(f"{BASE}/{route}")
-    page.reload()
-    wait_ready(page)
+    """
+    Buka rute dari muat ulang penuh: navigasi hash tidak memuat ulang modul.
+
+    `net::ERR_NETWORK_CHANGED` dicoba ulang: di Windows, adaptor jaringan yang
+    berganti status membuat Chromium membatalkan pemuatan — bahkan ke
+    localhost — dan modul yang batal dimuat membuat aplikasi tidak pernah
+    `data-app-ready`. Terukur sebagai satu-satunya penyebab timeout acak.
+    """
+    for attempt in range(3):
+        try:
+            page.goto(f"{BASE}/{route}")
+            page.reload()
+            wait_ready(page)
+            break
+        except Exception as err:
+            if attempt == 2:
+                raise
+            print(f"  [ULANG] {route}: {str(err).splitlines()[0][:90]}")
+            page.wait_for_timeout(1500)
     page.wait_for_timeout(settle)
 
 
@@ -179,12 +194,80 @@ LAYOUT_PROBE = """() => {
     };
 }"""
 
-SMALL_TARGETS = """() => [...document.querySelectorAll('#app button, #app [role=button], .fs-btn')]
-    .filter((e) => e.offsetParent || getComputedStyle(e).position === 'fixed')
-    .map((e) => { const r = e.getBoundingClientRect();
-                  return { c: String(e.className.baseVal ?? e.className).split(' ')[0],
-                           w: Math.round(r.width), h: Math.round(r.height) }; })
-    .filter((x) => x.w > 0 && (x.w < 44 || x.h < 44))"""
+# Area sentuh EFEKTIF, bukan ukuran kotak: jejak jari berdiameter minimal 44px
+# (elips seukuran max(44, lebar) × max(44, tinggi)) yang berpusat di elemen
+# disampel dengan elementFromPoint, dan SETIAP titik harus mengenai elemen itu
+# sendiri. Area yang terpotong wadah `overflow`, tertutup tetangga, atau saling
+# tumpuk dengan target lain ikut gagal. Titik di luar layar diabaikan: tepi
+# layar tidak bisa dilewati jari. `scope` membatasi penilaian ke lapisan yang
+# sedang aktif (papan angka, modal) — tombol di bawah scrim memang tidak bisa diketuk.
+HIT_TARGET_PROBE = """(scope) => {
+    const HIT = 44;
+    const SEL = 'button, a[href], input, select, textarea, [role="button"], [role="checkbox"], '
+              + '[role="radio"], [role="tab"], [role="switch"], [tabindex="0"]';
+    const name = (e) => String(e.className && (e.className.baseVal ?? e.className) || e.tagName)
+        .split(' ').filter(Boolean).slice(0, 2).join('.');
+    const owns = (e, node) => node && (node === e || e.contains(node));
+    const fails = [];
+    let checked = 0;
+    for (const e of document.querySelectorAll(SEL)) {
+        if (scope && !e.closest(scope)) continue;
+        if (e.closest('[hidden], [aria-hidden="true"], .hidden')) continue;
+        const cs = getComputedStyle(e);
+        if (cs.visibility === 'hidden' || cs.pointerEvents === 'none' || cs.display === 'none') continue;
+        if (!e.getBoundingClientRect().width || !e.getBoundingClientRect().height) continue;
+        // `center`, bukan `nearest`: `nearest` menempelkan elemen tepat di tepi
+        // wadah gulir, padahal siswa bisa menggulir lebih jauh.
+        e.scrollIntoView({ block: 'center', inline: 'center' });
+        const r = e.getBoundingClientRect();
+        // Bagian yang benar-benar terlihat: dipotong setiap leluhur ber-overflow.
+        let vis = { l: Math.max(0, r.left), t: Math.max(0, r.top), r: Math.min(innerWidth, r.right), b: Math.min(innerHeight, r.bottom) };
+        for (let p = e.parentElement; p; p = p.parentElement) {
+            if (getComputedStyle(p).overflow === 'visible') continue;
+            const q = p.getBoundingClientRect();
+            vis = { l: Math.max(vis.l, q.left), t: Math.max(vis.t, q.top), r: Math.min(vis.r, q.right), b: Math.min(vis.b, q.bottom) };
+        }
+        if (vis.r - vis.l < 4 || vis.b - vis.t < 4) continue;
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const top = document.elementFromPoint((vis.l + vis.r) / 2, (vis.t + vis.b) / 2);
+        const owner = top && top.closest(SEL);
+        // Tertutup lapisan non-interaktif (scrim, modal, papan coret): tidak bisa
+        // diketuk saat ini, dinilai di keadaan lain.
+        if (!owns(e, top) && !owner) continue;
+        // Setiap target — besar maupun kecil — tidak boleh DICURI area sentuh
+        // tetangganya: titik di bagian terlihatnya sendiri harus mengenai dirinya.
+        let stolen = null;
+        for (let i = 1; i < 4 && !stolen; i++) for (let j = 1; j < 4 && !stolen; j++) {
+            const hit = document.elementFromPoint(vis.l + (vis.r - vis.l) * i / 4, vis.t + (vis.b - vis.t) * j / 4);
+            const thief = hit && hit.closest(SEL);
+            if (thief && thief !== e && !e.contains(thief) && !thief.contains(e)) stolen = thief;
+        }
+        // Lapisan overlay yang SENGAJA menutupi panggung (papan coret, papan
+        // angka, modal): target di bawahnya memang tidak untuk diketuk saat itu.
+        const OVERLAY = '.pad, .mathpad, .modal-scrim';
+        if (stolen && stolen.closest(OVERLAY) && !e.closest(OVERLAY)) continue;
+        if (stolen) {
+            fails.push({ target: name(e), size: `${Math.round(r.width)}×${Math.round(r.height)}`, miss: 1, hits: ['dicuri ' + name(stolen)] });
+            continue;
+        }
+        if (r.width >= HIT && r.height >= HIT) continue;
+        checked++;
+        const w = Math.max(HIT, r.width), h = Math.max(HIT, r.height);
+        const misses = [];
+        for (let i = 0; i < 7; i++) for (let j = 0; j < 7; j++) {
+            const u = -1 + 2 * i / 6, v = -1 + 2 * j / 6;
+            if (u * u + v * v > 1) continue;
+            const x = cx + u * (w / 2 - 1), y = cy + v * (h / 2 - 1);
+            if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue;
+            const hit = document.elementFromPoint(x, y);
+            if (!owns(e, hit)) misses.push(hit ? name(hit.closest(SEL) || hit) : 'luar-layar');
+        }
+        if (misses.length) fails.push({ target: name(e), size: `${Math.round(r.width)}×${Math.round(r.height)}`,
+                                        miss: misses.length, hits: [...new Set(misses)].slice(0, 3) });
+    }
+    const seen = new Set();
+    return { checked, fails: fails.filter((f) => { const k = f.target + f.size; if (seen.has(k)) return false; seen.add(k); return true; }) };
+}"""
 
 
 # ============================================================
@@ -310,7 +393,6 @@ def section_visual(page):
 
 def section_landscape(page, errors):
     print("\n6. Lanskap, nol luapan, Sidebar & Stage")
-    small_seen = {}
     for w, h in VIEWPORTS:
         page.set_viewport_size({"width": w, "height": h})
         for route, sim in [("#/", False), ("#/belajar/02_operasi_bangun_datar/operasi_komponen", True),
@@ -330,13 +412,8 @@ def section_landscape(page, errors):
                 lo, hi = SIDEBAR_RATIO
                 record(f"{label}: rasio Sidebar {m['sideRatio']}%", m["sideRatio"] is not None and lo <= m["sideRatio"] <= hi,
                        f"di luar {lo}–{hi}%")
-            for t in page.evaluate(SMALL_TARGETS):
-                small_seen.setdefault(t["c"], set()).add(f"{t['w']}×{t['h']}@{w}×{h}")
             # Kunjungan ujian ditinggalkan: lepaskan penjaga keluar untuk rute berikutnya.
             page.evaluate("() => { const v = window.__vektorLab.state.activeView; if (v && v.hasUnsavedWork) v.hasUnsavedWork = () => false; }")
-    if small_seen:
-        detail = "; ".join(f"{c}: {', '.join(sorted(s)[:3])}" for c, s in sorted(small_seen.items()))
-        note(f"{len(small_seen)} jenis sasaran sentuh < 44px (kontrak §3.3)", detail)
 
     page.set_viewport_size({"width": 600, "height": 900})
     page.wait_for_timeout(400)
@@ -346,6 +423,74 @@ def section_landscape(page, errors):
         return { lock: !hidden('.rotate-lock'), app: hidden('#app'), fs: hidden('.fs-btn') };
     }""")
     record("Potret: pengunci rotasi tampil, #app & tombol layar penuh tersembunyi", all(portrait.values()), json.dumps(portrait))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
+def section_tap_targets(page, errors):
+    print("\n6b. Area sentuh efektif ≥ 44×44 (kontrak §3.3)")
+
+    def leave_exam():
+        page.evaluate("() => { const v = window.__vektorLab.state.activeView; if (v && v.hasUnsavedWork) v.hasUnsavedWork = () => false; }")
+
+    def measure(label, scope=None):
+        page.wait_for_timeout(350)
+        result = page.evaluate(HIT_TARGET_PROBE, scope)
+        detail = "; ".join(f"{f['target']} {f['size']} ({f['miss']} titik meleset → {', '.join(f['hits'])})" for f in result["fails"])
+        record(f"{label}: {result['checked']} target kecil, semua ≥ 44×44", not result["fails"], detail)
+
+    for w, h in [(740, 360), (1024, 600)]:
+        page.set_viewport_size({"width": w, "height": h})
+        v = f"{w}×{h}"
+        fresh_position(page)
+        open_route(page, "#/", settle=700)
+        measure(f"{v} menu")
+        click_text(page, "Reset Progres")
+        page.wait_for_selector(".modal-scrim[data-open='true']", timeout=3000)
+        measure(f"{v} modal konfirmasi", ".modal")
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(400)
+
+        open_route(page, "#/belajar", settle=700)
+        measure(f"{v} daftar bab")
+        open_route(page, "#/belajar/01_konsep_dasar", settle=700)
+        measure(f"{v} daftar sub-topik")
+
+        fresh_position(page)
+        open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
+        measure(f"{v} materi")
+        click_text(page, "Mulai Simulasi")
+        page.wait_for_timeout(900)
+        measure(f"{v} simulasi bidang (vector_anatomy)")
+        page.click(".pad-fab")
+        page.wait_for_timeout(500)
+        measure(f"{v} papan coret terbuka")
+
+        fresh_position(page)
+        open_route(page, "#/belajar/02_operasi_bangun_datar/operasi_komponen", settle=700)
+        click_text(page, "Mulai Simulasi")
+        page.wait_for_timeout(900)
+        measure(f"{v} simulasi sel (component_add)")
+
+        open_mini_quiz(page, "01_konsep_dasar", "panjang_vektor")
+        measure(f"{v} Mini Kuis")
+        page.locator(".quiz .numfield").first.click()
+        page.wait_for_timeout(500)
+        measure(f"{v} papan angka terbuka", ".mathpad")
+        page.keyboard.press("Escape")
+
+        fresh_position(page)
+        open_route(page, "#/kuis/latihan_bab/01_konsep_dasar", settle=900)
+        measure(f"{v} ujian per bab")
+        leave_exam()
+        fresh_position(page)
+        open_route(page, "#/tka", settle=900)
+        measure(f"{v} ujian TKA")
+        leave_exam()
+
+        page.evaluate("() => localStorage.removeItem('vektorLab.identity.v1')")
+        open_route(page, "#/login", settle=700)
+        measure(f"{v} layar masuk")
+        reset_storage(page)
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
@@ -609,6 +754,7 @@ def main():
             section_subtopics(page, errors, chapters)
             section_visual(page)
             section_landscape(page, errors)
+            section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)
             section_leave_guard(page, errors)

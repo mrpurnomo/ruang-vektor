@@ -342,6 +342,14 @@
     --z-rotate-lock: 9999;
 
     --touch-min: 44px;
+    /* AREA SENTUH — bukan ukuran tampil. `--touch-min` boleh menyusut di
+       lanskap pendek demi ruang; `--hit-min` TIDAK PERNAH. Tombol yang tampil
+       lebih kecil memperluas area sentuhnya lewat ::after transparan
+       berpusat: inset: min(0px, calc((100% - var(--hit-min)) / 2)) — hanya
+       sumbu yang kurang dari 44px yang melebar. Jarak antar-tombol juga wajib
+       ≥ 44px pusat-ke-pusat, atau area sentuhnya saling tumpuk (diukur
+       tests/smoke.py bagian 6b). */
+    --hit-min: 44px;
 
     /* Tinggi bilah: dipakai bersama oleh header, footer, dan #app grid. */
     --h-header: 58px;

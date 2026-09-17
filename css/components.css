@@ -41,6 +41,15 @@
 
   .btn svg { width: 17px; height: 17px; flex: 0 0 auto; }
 
+  /* Area sentuh ≥ --hit-min tanpa mengubah ukuran tampil (.btn--sm 36px,
+     tombol ikon 34–40px di lanskap pendek). Lihat tokens.css. */
+  .btn { position: relative; }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .btn:active:not([disabled]) { transform: translateY(1px); }
 
   .btn[disabled] {
