@@ -66,6 +66,7 @@ membuat peramban menjalankan modul JS basi).
 | **5 · Tahap 1** | **Inti JS tersambung & fungsional**: boot, router + penjaga identitas + penjaga keluar, `progressStore` reaktif, `sessionState`, mathpad (batas digit, mode Akar), toast/modal, navrail, vendor lokal | `73e746e` |
 | **6 · Visual** | **Perombakan visual "Instrumen Ukur"**: film abu dingin berpetak mm + pelat bersudut 2–8px + layar instrumen gelap; ARAH = kobalt `#2F3DE0`, BESARAN = amber `#FFB000`; tanda tangan = mistar (bezel header, panggung), sudut bidik (pelat pintu masuk), piringan busur derajat (cincin progres); font Barlow / Barlow Condensed / JetBrains Mono (vendor lokal, font lama dilepas). DOM & nama kelas tidak berubah; urutan `@layer` tetap. Terukur: kontras 0 pelanggaran di 6 rute, 0 luapan di 740×360 / 1024×600 / 1440×900, rasio sidebar 26,5 / 23,8 / 28%, 0 galat konsol | (commit ini) |
 | **7 · Tahap 2** | **Mesin matematika domain (TDD)**: `surd.js` (pecahan & akar eksak `(n/d)√r`, jumlah suku, rasionalisasi, `parseSurd` untuk keluaran papan angka, `isSimplestForm`), `vector.js` (R²/R³ dengan `dim` tersimpan; eksak masuk → eksak keluar; fungsi `*Exact` mengembalikan bentuk akar), `validator.js` (`can*` berkalimat + `checkExactAnswer` / `checkVectorAnswer` berkode `correct·empty·unreadable·not-simplest·decimal·sign·wrong`; kalimat TIDAK membocorkan kunci). `node tests/engine.test.mjs` → 111/111, termasuk 500 pasang vektor acak berbenih; uji mutasi 18 mutan, 17 tertangkap + 1 kode mati dibuang, 1 celah (minor y–z) ditutup | (commit ini) |
+| **8 · Tahap 3** | **Bidang kartesius SVG**: `plane/planeGeometry.js` (murni, tanpa DOM: viewport skala seragam, y terbalik HANYA di toScreen/toMath, busur, siku, panah, label, snap), `arrow.js` (marker per panah DI DALAM grupnya + userSpaceOnUse, ketuk + Enter/Spasi, seret ujung + tombol panah), `arrowAnimation.js` (tween di ruang matematika, bisa dibatalkan, hormati reduced-motion), `vectorPlane.js` (lapisan grid·axis·pick·shape·interactive·label, ResizeObserver+rAF, destroy tuntas). Uji: Node 130/130 (19 geometri) + peramban `tests/plane.html` 31/31 (CTM, elementFromPoint, hitung piksel kepala panah, spy ResizeObserver & listener). Uji mutasi: 4 geometri + 8 kontrak SVG, semua tertangkap sesudah 2 celah ditutup. Terverifikasi di dalam aplikasi pada 740×360 / 1024×600 / 1440×900 | (commit ini) |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -79,7 +80,7 @@ membuat peramban menjalankan modul JS basi).
 - Nol kebocoran state antar layar (papan angka, scrim, papan coret, tambatan toast).
 
 ### Yang BELUM ada
-- `js/domain/plane/*.js` → **berkas kosong** (Tahap 3). `vector.js`, `surd.js`, `validator.js` selesai di Tahap 2.
+- `js/domain/*` selesai (Tahap 2–3). Engine simulasi `js/lesson/simulations/sim*.js` masih kosong (Tahap 4).
 - `js/lesson/simulations/sim*.js` → kosong; **25 engine belum ada**, semua sub-topik
   menampilkan "Simulasi sedang disiapkan" dan tetap membuka Mini Kuis (Tahap 4).
 - `tests/validate_data.py` → kosong (`engine.test.mjs` terisi, 111 uji). `tests/smoke.py` &
@@ -209,7 +210,13 @@ Aturan:
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
 > ### ✅ Perombakan visual SELESAI (lihat baris "6 · Visual" di §2 dan komentar `css/tokens.css`).
-> ### Tahap 2 SELESAI (baris "7 · Tahap 2"). Langkah berikutnya: Tahap 3 — `plane/vectorPlane.js` + `arrow.js`, setelah pengguna menyetujui.
+> ### Tahap 3 SELESAI (baris "8 · Tahap 3"). Langkah berikutnya: Tahap 4 — engine simulasi, setelah pengguna menyetujui.
+>
+> Kontrak bidang untuk engine: `const plane = createVectorPlane(host, {xRange, yRange})` lalu **`this.track(() => plane.destroy())`**.
+> Wadah WAJIB `.plane-host` bertinggi tercadangkan (SVG absolut di dalamnya). Uji peramban:
+> `python tests/serve.py` → `http://localhost:5173/tests/plane.html` → `window.__planeTest`.
+> Catatan komposisi (terukur): di 740×360 wadah bawaan hanya 160px (±16 px/satuan) — label panah
+> berdesakan bila >3 label; engine perlu wadah lebih tinggi atau label lebih sedikit.
 >
 > Kontrak domain: tampilkan jawaban lewat `toLatexS(...Exact())`, nilai isian lewat
 > `checkExactAnswer(displayString, key)` — kirim TEKS tampilan papan angka ("2√5"),

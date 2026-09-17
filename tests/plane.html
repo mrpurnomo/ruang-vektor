@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uji Bidang Kartesius — Ruang Vektor</title>
+  <!--
+    Uji PENGUKURAN untuk js/domain/plane/*. Buka lewat server dev:
+      python tests/serve.py  →  http://localhost:5173/tests/plane.html
+
+    Kenapa di peramban, bukan Node: keenam kontrak bidang ini hanya bisa
+    dibuktikan pada SVG yang benar-benar dirender — CTM, elementFromPoint,
+    gaya terhitung, ResizeObserver. Geometri murninya sudah diuji di Node
+    (tests/engine.test.mjs, grup planeGeometry.js).
+
+    Hasil: tabel di halaman + window.__planeTest = { done, passed, failed, failures }.
+  -->
+  <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/plane.css">
+  <style>
+    body { position: static !important; overflow: auto !important; height: auto !important; padding: 16px; background: var(--bg-canvas); }
+    .rig { width: 640px; height: 360px; }
+    .rig .plane-host { height: 100%; min-height: 0; }
+    #log { font: 12px/1.5 var(--font-mono); white-space: pre-wrap; margin-top: 16px; }
+    .ok { color: var(--success-hi); } .no { color: var(--danger-hi); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="rig" id="rig"><div class="plane-host" id="host"></div></div>
+  <div id="log"></div>
+  <script src="../assets/vendor/katex/katex.min.js"></script>
+  <script type="module" src="./plane.browser.mjs"></script>
+</body>
+</html>

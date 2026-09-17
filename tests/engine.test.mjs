@@ -15,6 +15,7 @@ import assert from 'node:assert/strict';
 import * as S from '../js/domain/surd.js';
 import * as V from '../js/domain/vector.js';
 import * as Val from '../js/domain/validator.js';
+import * as G from '../js/domain/plane/planeGeometry.js';
 
 /* ------------------------------------------------------------
    Harness mini
@@ -790,9 +791,170 @@ test('validator membenarkan jawaban kanonik dan setiap bentuk tak-sederhana yang
   }
 });
 
+/* ============================================================
+   5. plane/planeGeometry.js — geometri layar bidang kartesius
+   ============================================================ */
+group('planeGeometry.js · pemetaan koordinat (kontrak 1 & 2)');
+
+const VP = () => G.createViewport({ xRange: [-6, 6], yRange: [-4, 4], width: 640, height: 400, padding: 20 });
+
+test('skala SERAGAM: satu satuan x = satu satuan y dalam piksel, memakai sisi yang lebih sempit', () => {
+  const vp = VP();
+  // lebar: (640 − 40) / 12 = 50 · tinggi: (400 − 40) / 8 = 45 → 45 px/satuan
+  assert.equal(vp.scale, 45);
+  const [x0] = vp.toScreen([0, 0]);
+  const [x1] = vp.toScreen([1, 0]);
+  const [, y0] = vp.toScreen([0, 0]);
+  const [, y1] = vp.toScreen([0, 1]);
+  assert.equal(x1 - x0, y0 - y1);
+});
+
+test('sumbu Y TERBALIK: (0, 3) di layar lebih ATAS (y lebih kecil) daripada (0, −3)', () => {
+  const vp = VP();
+  assert.ok(vp.toScreen([0, 3])[1] < vp.toScreen([0, -3])[1]);
+  assert.ok(vp.toScreen([3, 0])[0] > vp.toScreen([-3, 0])[0]);
+});
+
+test('pusat rentang yang diminta jatuh tepat di pusat layar', () => {
+  const vp = G.createViewport({ xRange: [-8, 10], yRange: [-5, 8], width: 500, height: 300, padding: 0 });
+  assert.deepEqual(vp.toScreen([1, 1.5]), [250, 150]);
+});
+
+test('toMath membalik toScreen tepat (pulang-pergi) untuk titik bulat dan pecahan', () => {
+  const vp = VP();
+  for (const p of [[0, 0], [3, -2], [-6, 4], [2.5, -0.75]]) {
+    const back = vp.toMath(vp.toScreen(p));
+    assertClose(back[0], p[0], 1e-12);
+    assertClose(back[1], p[1], 1e-12);
+  }
+});
+
+test('45° matematis tetap 45° di layar pada wadah yang sangat lebar maupun tinggi', () => {
+  for (const [width, height] of [[1200, 300], [300, 900], [737, 361]]) {
+    const vp = G.createViewport({ xRange: [-6, 6], yRange: [-4, 4], width, height, padding: 12 });
+    const [ax, ay] = vp.toScreen([0, 0]);
+    const [bx, by] = vp.toScreen([3, 3]);
+    assertClose((Math.atan2(ay - by, bx - ax) * 180) / Math.PI, 45, 1e-9);
+  }
+});
+
+test('rentang terlihat selalu MEMUAT rentang yang diminta, dan melebar mengisi sisa ruang', () => {
+  const vp = VP();
+  assert.ok(vp.xMin <= -6 && vp.xMax >= 6 && vp.yMin <= -4 && vp.yMax >= 4);
+  assertClose(vp.toScreen([vp.xMin, 0])[0], 0, 1e-9);
+  assertClose(vp.toScreen([vp.xMax, 0])[0], 640, 1e-9);
+  assertClose(vp.toScreen([0, vp.yMax])[1], 0, 1e-9);
+});
+
+test('ukuran wadah tidak valid ditolak dengan RangeError (bukan skala NaN/negatif)', () => {
+  assert.throws(() => G.createViewport({ xRange: [-6, 6], yRange: [-4, 4], width: 30, height: 400, padding: 20 }), RangeError);
+  assert.throws(() => G.createViewport({ xRange: [6, -6], yRange: [-4, 4], width: 600, height: 400 }), RangeError);
+});
+
+test('toPlanePoint menerima [x, y] dan vec(), menolak vektor ruang ber-z bukan nol', () => {
+  assert.deepEqual(G.toPlanePoint([2, -1]), [2, -1]);
+  assert.deepEqual(G.toPlanePoint(V.vec(2, -1)), [2, -1]);
+  assert.deepEqual(G.toPlanePoint(V.vec(2, -1, 0)), [2, -1]);
+  assert.throws(() => G.toPlanePoint(V.vec(1, 2, 3)), TypeError);
+  assert.throws(() => G.toPlanePoint([1, Number.NaN]), TypeError);
+});
+
+group('planeGeometry.js · kisi, panah, busur, label');
+
+test('tickStep memilih 1-2-5 terkecil yang tidak berdesakan', () => {
+  assert.equal(G.tickStep(45, 24), 1);
+  assert.equal(G.tickStep(15, 24), 2);
+  assert.equal(G.tickStep(6, 24), 5);
+  assert.equal(G.tickStep(2, 24), 20);
+});
+
+test('gridValues: kelipatan langkah di dalam rentang, tanpa −0', () => {
+  assert.deepEqual(G.gridValues(-2.5, 3.2, 1), [-2, -1, 0, 1, 2, 3]);
+  assert.deepEqual(G.gridValues(-7, 7, 5), [-5, 0, 5]);
+  assert.ok(G.gridValues(-1, 1, 1).every((v) => !Object.is(v, -0)));
+});
+
+test('arrowShaft memendekkan batang sepanjang kepala: ujung panah jatuh TEPAT di titik', () => {
+  const shaft = G.arrowShaft([0, 0], [100, 0], 12);
+  assert.deepEqual(shaft.end, [88, 0]);
+  assert.equal(shaft.degenerate, false);
+  const diag = G.arrowShaft([10, 10], [40, 50], 10);   // panjang 50
+  assertClose(diag.end[0], 34, 1e-9);
+  assertClose(diag.end[1], 42, 1e-9);
+});
+
+test('arrowShaft: panah lebih pendek dari kepalanya tetap berarah, vektor nol ditandai degenerate', () => {
+  const tiny = G.arrowShaft([0, 0], [5, 0], 12);
+  assert.equal(tiny.degenerate, false);
+  assert.ok(tiny.end[0] > 0 && tiny.end[0] < 5, 'arah batang hilang');
+  assert.equal(G.arrowShaft([7, 7], [7, 7], 12).degenerate, true);
+});
+
+test('arcPoints: semua titik berjari-jari sama dan menyapu sudut KECIL di antara dua vektor', () => {
+  const vp = VP();
+  const { points, labelAt } = G.arcPoints(vp, [0, 0], [1, 0], [0, 1], 30, 12);
+  const [ox, oy] = vp.toScreen([0, 0]);
+  for (const [px, py] of points) assertClose(Math.hypot(px - ox, py - oy), 30, 1e-9);
+  assertClose(points[0][1], oy, 1e-9);                 // mulai di arah u (kanan)
+  assertClose(points[points.length - 1][0], ox, 1e-9); // berakhir di arah v (atas)
+  assert.ok(points.every(([, py]) => py <= oy + 1e-9), 'busur menyapu ke bawah (sudut refleks)');
+  assert.ok(labelAt[0] > ox && labelAt[1] < oy, 'label tidak di garis bagi sudut');
+});
+
+test('arcPoints memilih sisi yang benar untuk 135°: dari (1, 0) ke (−1, 1) lewat atas', () => {
+  const vp = VP();
+  const [, oy] = vp.toScreen([0, 0]);
+  const { points } = G.arcPoints(vp, [0, 0], [1, 0], [-1, 1], 30, 16);
+  assert.ok(points.every(([, py]) => py <= oy + 1e-9));
+});
+
+test('arcPoints tidak pernah menyapu sudut refleks: (0, −1) ke (−1, 1) = 135° lewat KIRI', () => {
+  // Regresi dari uji mutasi: selisih atan2 mentah di sini 225°. Tanpa
+  // normalisasi, busurnya memutar lewat kanan dan menandai sudut yang salah.
+  const vp = VP();
+  const [ox, oy] = vp.toScreen([0, 0]);
+  const { points } = G.arcPoints(vp, [0, 0], [0, -1], [-1, 1], 30, 24);
+  assert.ok(points.every(([px]) => px <= ox + 1e-9), 'busur lewat sisi kanan');
+  const first = Math.atan2(oy - points[0][1], points[0][0] - ox);
+  const last = Math.atan2(oy - points[24][1], points[24][0] - ox);
+  let sweep = Math.abs(last - first);
+  if (sweep > Math.PI) sweep = 2 * Math.PI - sweep;
+  assertClose((sweep * 180) / Math.PI, 135, 1e-9);
+});
+
+test('rightAngleMarker membentuk persegi siku di pangkal untuk vektor tegak lurus', () => {
+  const vp = VP();
+  const [p1, corner, p2] = G.rightAngleMarker(vp, [0, 0], [3, 4], [-4, 3], 10);
+  const [ox, oy] = vp.toScreen([0, 0]);
+  assertClose(Math.hypot(p1[0] - ox, p1[1] - oy), 10, 1e-9);
+  assertClose(Math.hypot(p2[0] - ox, p2[1] - oy), 10, 1e-9);
+  assertClose(Math.hypot(corner[0] - ox, corner[1] - oy), 10 * Math.SQRT2, 1e-9);
+});
+
+test('labelAnchor: di tengah panah, bergeser tegak lurus ke kiri arah panah', () => {
+  assert.deepEqual(G.labelAnchor([0, 100], [100, 100], 14), [50, 86]);   // mendatar → di atas
+  assert.deepEqual(G.labelAnchor([50, 100], [50, 0], 14), [36, 50]);     // naik → di kiri
+  assert.deepEqual(G.labelAnchor([5, 5], [5, 5], 14), [5, -9]);          // nol → di atas
+});
+
+test('fmt menulis atribut SVG ringkas tanpa −0 dan tanpa NaN diam-diam', () => {
+  assert.equal(G.fmt(12.3456), '12.35');
+  assert.equal(G.fmt(-0.0001), '0');
+  assert.equal(G.fmt(40), '40');
+  assert.throws(() => G.fmt(Number.NaN), TypeError);
+});
+
+test('snapPoint membulatkan ke kisi dan menjepit ke dalam rentang terlihat', () => {
+  const vp = VP();
+  assert.deepEqual(G.snapPoint([2.4, -1.6], vp), [2, -2]);
+  const far = G.snapPoint([99, -99], vp);
+  assert.ok(far[0] <= vp.xMax && far[1] >= vp.yMin);
+  assert.ok(Number.isInteger(far[0]) && Number.isInteger(far[1]));
+});
+
 test('domain/*.js tidak menyebut document, window, atau DOM sama sekali', async () => {
   const { readFileSync } = await import('node:fs');
-  for (const file of ['surd.js', 'vector.js', 'validator.js']) {
+  for (const file of ['surd.js', 'vector.js', 'validator.js', 'plane/planeGeometry.js']) {
     const src = readFileSync(new URL(`../js/domain/${file}`, import.meta.url), 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .replace(/\/\/.*$/gm, '');

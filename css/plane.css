@@ -47,7 +47,13 @@
     place-items: stretch;
   }
 
+  /* SVG ABSOLUT memenuhi wadah, bukan ikut aliran grid. SVG ber-viewBox
+     punya rasio intrinsik; di aliran, rasio itu bisa ikut menentukan tinggi
+     wadah → ResizeObserver mengganti viewBox → tinggi berubah lagi: lingkaran
+     umpan balik. Absolut memutusnya: ukuran wadah murni milik CSS. */
   .plane {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
@@ -64,12 +70,23 @@
      2. LAPISAN KISI & SUMBU — di belakang, dan TULI terhadap pointer
      ============================================================ */
 
+  /* Urutan lapisan (bawah → atas): grid · axis · pick · shape · interactive ·
+     label. Hanya DUA yang menangkap pointer: `interactive` (panah, titik)
+     dan `pick` (bidang kosong, hanya saat pemilihan titik diaktifkan).
+     Bentuk bantu — jajargenjang, busur, garis proyeksi — ikut TULI: isian
+     jajargenjang yang menangkap ketukan menelan ketukan ke kisi di bawahnya. */
   .plane__layer--grid,
   .plane__layer--axis,
+  .plane__layer--shape,
   .plane__layer--label { pointer-events: none; }
 
-  .plane__layer--shape,
+  .plane__layer--pick,
   .plane__layer--interactive { pointer-events: auto; }
+
+  .plane__pick {
+    fill: transparent;
+    cursor: crosshair;
+  }
 
   .plane__grid-line {
     stroke: var(--scope-grid);
@@ -125,6 +142,7 @@
   }
 
   .plane__arrow-line {
+    fill: none;
     stroke: var(--tone);
     stroke-width: 3.2;
     stroke-linecap: round;
@@ -143,6 +161,39 @@
     fill: none;
     vector-effect: non-scaling-stroke;
   }
+
+  /* Vektor nol: tidak punya arah, jadi tidak punya panah. Ia digambar
+     sebagai titik bernada sama, dan garis + jalur ketuknya disembunyikan. */
+  .plane__arrow-zero {
+    display: none;
+    fill: var(--tone);
+    stroke: var(--navy-900);
+    stroke-width: 1.5;
+  }
+  .plane__arrow.is-zero .plane__arrow-line,
+  .plane__arrow.is-zero .plane__arrow-hit { display: none; }
+  .plane__arrow.is-zero .plane__arrow-zero { display: inline; }
+
+  /* Pegangan ujung untuk seret. Cincin kecil TERLIHAT, lingkaran 44px
+     TAK TERLIHAT yang menerima pointer — sasaran sentuh tanpa menutupi
+     kisi. Fokus keyboard digambar di cincinnya (box-shadow tidak berlaku
+     pada elemen SVG). */
+  .plane__tip-ring {
+    fill: color-mix(in srgb, var(--tone) 18%, transparent);
+    stroke: var(--tone);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 2;
+    pointer-events: none;
+  }
+  .plane__tip-hit {
+    fill: transparent;
+    pointer-events: all;
+    cursor: grab;
+    outline: none;
+  }
+  .plane__arrow.is-dragging .plane__tip-hit { cursor: grabbing; }
+  .plane__tip-hit:focus-visible { stroke: var(--value); stroke-width: 2; }
+  .plane__arrow.is-locked .plane__tip-hit { pointer-events: none; }
 
   /* --- Nada warna --- */
   .plane__arrow--blue   { --tone: var(--brand-on-navy); }
@@ -296,6 +347,16 @@
   .plane__label {
     overflow: visible;
     pointer-events: none;
+  }
+
+  /* Kotak berukuran tetap di dalam foreignObject: label DIPUSATKAN pada
+     titik jangkarnya, berapa pun lebar isi KaTeX-nya. */
+  .plane__label-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .plane__label-inner {
