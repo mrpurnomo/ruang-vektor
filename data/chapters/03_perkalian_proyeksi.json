@@ -54,9 +54,7 @@
           ]
         },
         "toasts": {
-          "pilihSumberDulu": "Ketuk dulu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
           "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Perkalian titik hanya memasangkan komponen yang **seletak**.",
-          "sukuNolDilewati": "Suku yang bernilai nol tetap harus dikerjakan. Ia tidak mengubah hasilnya, tetapi melewatinya berarti komponen ketiga tidak pernah kamu periksa.",
           "lupaTandaNegatif": "Belum tepat — hasil kali $({{a}}) \\times ({{b}})$ bertanda **negatif**. Bawa tandanya masuk ke penjumlahan; suku negatif **mengurangi**, bukan menambah.",
           "hasilSalah": "Belum tepat — jumlahkan **seluruh** hasil kalinya, termasuk suku yang bernilai nol dan suku yang bertanda negatif.",
           "menjumlahBukanMengali": "Belum tepat — komponen seletak dikalikan lebih dulu, baru hasil-hasil kalinya yang dijumlahkan. Bukan komponennya yang langsung dijumlahkan.",
@@ -162,7 +160,6 @@
           ]
         },
         "toasts": {
-          "belumDibuktikan": "Kamu sudah memutuskan, tetapi belum membuktikannya. Hitung kedua ruas pernyataan itu dengan angka yang tersedia — keputusan tanpa bukti hanyalah tebakan yang beruntung.",
           "asosiatifSalah": "Bentuk $(\\vec{a}\\cdot\\vec{b})\\cdot\\vec{c}$ bukan sekadar bernilai lain — ia **tidak terdefinisi**. Hasil $\\vec{a}\\cdot\\vec{b}$ adalah bilangan, dan bilangan tidak punya komponen untuk dipasangkan dengan $\\vec{c}$.",
           "pencoretanSalah": "Belum tepat — perkalian titik **tidak bisa dicoret** seperti perkalian bilangan. Perhatikan contoh penyangkalnya: $\\vec{b}$ dan $\\vec{c}$ jelas berbeda, tetapi keduanya memberi hasil kali titik yang sama dengan $\\vec{a}$.",
           "keduaRuasBeda": "Hitunganmu memberi ${{kiri}}$ di ruas kiri dan ${{kanan}}$ di ruas kanan. Kalau sifatnya memang berlaku, keduanya harus sama — periksa lagi aritmetikanya sebelum menyimpulkan.",
@@ -279,12 +276,9 @@
           "arcLabel": null
         },
         "toasts": {
-          "tahapBelumSelesai": "Tahap {{tahap}} belum selesai. Nilai dari tahap ini dipakai lagi di tahap berikutnya — mengisinya belakangan berarti menebak.",
           "panjangSalah": "Belum tepat — $|\\vec{{{nama}}}|$ belum sesuai. Kuadratkan setiap komponennya, jumlahkan, baru akarkan. Tuliskan dalam bentuk akar eksak.",
           "lupaKalikanPanjang": "Penyebutnya adalah **hasil kali** kedua panjangnya, bukan jumlahnya. $|\\vec{a}| \\times |\\vec{b}|$, bukan $|\\vec{a}| + |\\vec{b}|$.",
           "cosDiLuarRentang": "Nilai $\\cos\\theta$ yang kamu peroleh adalah ${{nilai}}$ — di luar rentang $[-1, 1]$. Kosinus tidak pernah keluar dari rentang itu, jadi pasti ada langkah aritmetika yang keliru. Periksa kembali penyebutnya.",
-          "belumDirasionalkan": "Nilainya sudah benar, tetapi penyebutnya masih memuat akar. Rasionalkan lebih dulu: kalikan pembilang dan penyebut dengan akar yang sama.",
-          "sudutTidakIstimewa": "Nilai $\\cos\\theta = {{nilai}}$ tidak ada di daftar sudut istimewa. Soal ini dirancang agar hasilnya salah satu dari mereka — periksa ulang pembilang dan penyebutnya.",
           "success": "Tepat! Dan perhatikan urutannya: hasil kali titik dulu, panjang kemudian, sudut paling akhir."
         }
       },
@@ -402,7 +396,6 @@
           "yRange": [-5, 5]
         },
         "toasts": {
-          "belumDihitung": "Kamu belum menghitung $\\vec{a}\\cdot\\vec{b}$. Tegak lurus atau tidak ditentukan oleh **angkanya**, bukan oleh kemiripan gambarnya — dan gambar yang tampak siku-siku sering kali tidak.",
           "bukanNol": "Hasil kali titiknya ${{nilai}}$, bukan nol. Kedua vektor ini **tidak** tegak lurus — kalau hasilnya positif sudutnya lancip, kalau negatif sudutnya tumpul.",
           "kSalah": "Belum tepat — susun dulu $\\vec{a}\\cdot\\vec{b}$ dengan $k$ di dalamnya, lalu samakan dengan nol. Persamaan yang kamu peroleh seharusnya berbentuk linear terhadap $k$, dan hanya punya satu penyelesaian.",
           "lupaSamakanNol": "Kamu sudah menyusun $\\vec{a}\\cdot\\vec{b}$, tetapi belum menyamakannya dengan **nol**. Syarat tegak lurus bukan sekadar menghitung, melainkan menuntut hasilnya bernilai nol.",
@@ -501,7 +494,6 @@
           "yRange": [-5, 5]
         },
         "toasts": {
-          "alasBelumDipilih": "Tentukan dulu vektor mana yang menjadi **alas**. Tanpa itu, garis tegak lurusnya tidak tahu harus jatuh ke mana.",
           "alasTerbalik": "Belum tepat — soal meminta proyeksi $\\vec{{{yang}}}$ **pada** $\\vec{{{alas}}}$. Kata \"pada\" selalu menunjuk alasnya, jadi yang masuk ke penyebut adalah $|\\vec{{{alas}}}|$.",
           "penyebutKuadrat": "Belum tepat — untuk proyeksi **skalar**, penyebutnya $|\\vec{b}|$ berpangkat **satu**. Pangkat dua dipakai pada vektor proyeksi, bukan di sini.",
           "tandaDibuang": "Hasil proyeksi skalar boleh bernilai negatif, dan di sini memang negatif. Tandanya membawa informasi: bayangannya jatuh ke arah **berlawanan** dengan alasnya.",
@@ -607,7 +599,6 @@
           "yRange": [-5, 5]
         },
         "toasts": {
-          "lupaKalikanVektor": "Belum tepat — hasilmu masih berupa **angka**, padahal yang diminta **vektor**. Kalikan kembali skalar itu dengan $\\vec{b}$; skalarnya mengurus panjang, $\\vec{b}$ mengurus arah.",
           "penyebutPangkatSatu": "Belum tepat — untuk **vektor** proyeksi, penyebutnya $|\\vec{b}|^2$ berpangkat **dua**. Pangkat satu dipakai pada proyeksi skalar.",
           "diakarkanDulu": "Tidak perlu diakarkan. $|\\vec{b}|^2$ cukup dihitung sebagai jumlah kuadrat komponennya. Mengakarkan lalu mengkuadratkan kembali hanya menambah peluang salah hitung.",
           "arahTidakSejajar": "Hasilmu tidak sejajar dengan $\\vec{b}$. Vektor proyeksi **selalu** terletak pada garis arah alasnya — periksa apakah kamu sudah mengalikan dengan $\\vec{b}$, bukan dengan $\\vec{a}$.",

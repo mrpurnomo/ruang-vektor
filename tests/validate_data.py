@@ -495,9 +495,10 @@ def check_engines_and_toasts(chapter_data, rep):
             missing = sorted(referenced - set(toasts))
             rep.check(not missing, f"{label}: setiap kunci toast yang dipakai engine ada di JSON",
                       f"hilang: {missing}")
+            # Kalimat yang tidak pernah dipakai engine = data mati: ikut terunduh
+            # setiap sub-topik dibuka, dan menyesatkan guru yang menyuntingnya.
             unused = sorted(set(toasts) - referenced - FRAMEWORK_TOAST_KEYS)
-            if unused:
-                rep.warn(f"{label}: kalimat toast tidak pernah dipakai engine", str(unused))
+            rep.check(not unused, f"{label}: tidak ada kalimat toast yang tak terpakai", str(unused))
 
             unfilled, unverifiable, extra = [], [], []
             for name, vals in uses:

@@ -46,7 +46,6 @@
           ]
         },
         "toasts": {
-          "belumDikuadratkan": "Akarnya masih ada di ruas kiri. Selama tanda akar belum hilang, tidak ada yang bisa difaktorkan — **kuadratkan kedua ruas** lebih dulu.",
           "koefisienTidakTerkuadrat": "Belum tepat — $({{suku}})^2$ berarti **seluruhnya** dikuadratkan, termasuk koefisiennya. $(2m)^2 = 4m^2$, bukan $2m^2$.",
           "sukuTengahHilang": "Belum tepat — $({{suku}})^2$ adalah bentuk kuadrat sempurna, bukan penjumlahan dua kuadrat. $(m+3)^2 = m^2 + 6m + 9$; suku tengahnya tidak boleh hilang.",
           "ruasKananLupa": "Kamu mengkuadratkan ruas kiri saja. Kalau satu ruas dikuadratkan, ruas yang lain **wajib** ikut dikuadratkan.",
@@ -167,11 +166,8 @@
           "yRange": [-2, 8]
         },
         "toasts": {
-          "sifatBelumDipakai": "Masih ada kata sifat di soal yang belum kamu terjemahkan: **{{sifat}}**. Setiap kata sifat adalah satu persamaan — melewatkannya berarti membuang data yang sudah diberikan gratis.",
           "salahTerjemahan": "Belum tepat — kata **{{sifat}}** tidak melahirkan persamaan itu. Periksa kamus sifat bangun: apakah yang disamakan panjangnya, komponennya, atau arahnya?",
-          "tandaAmbigu": "Kamu terjebak memilih antara ${{plus}}$ dan ${{minus}}$. Baca ulang **apa yang ditanyakan** — bentuk $a^2$ tidak peduli pada tanda, jadi kebingungan itu mungkin memang tidak perlu diselesaikan.",
           "jawabPertanyaanLain": "Nilai ${{diperoleh}}$ memang benar, tetapi soal menanyakan ${{diminta}}$. Kembali ke kalimat pertanyaannya sebelum menutup soal.",
-          "lupaKuadratRuas": "Persamaan panjang masih memuat akar di kedua ruas. Kuadratkan keduanya lebih dulu supaya menjadi persamaan biasa.",
           "success": "Tepat! Sifat bangunnya sudah habis diterjemahkan, dan yang dijawab memang yang ditanyakan."
         }
       },
@@ -275,7 +271,6 @@
           ]
         },
         "toasts": {
-          "lintasanBelumDihitung": "Tentukan dulu vektor lintasan totalnya, $\\vec{AE} = E - A$. Tanpa jarak total, proporsi waktunya tidak punya acuan.",
           "waktuTotalSalah": "Waktu totalnya adalah **jumlah seluruh ruas** yang tertulis di tabel. Kalau salah di sini, seluruh proporsi ikut bergeser.",
           "ruasGabunganTerlewat": "Ruas **{{ruas}}** bukan salah satu ruas yang tertulis di tabel — ia gabungan dua ruas. Jumlahkan dulu kedua waktunya sebelum memakainya dalam proporsi.",
           "dibulatkanTerlaluDini": "Hati-hati — kamu membulatkan $\\sqrt{99}$ terlalu awal. Ruas ini terletak dekat sekali dengan ambangnya, dan pembulatan dini bisa memindahkannya ke sisi yang salah.",
@@ -489,9 +484,7 @@
         "toasts": {
           "sukuSalahDipilih": "Suku itu tidak memuat parameternya. Cari suku yang di dalamnya ada huruf **{{parameter}}** — hanya suku itu yang perlu dijaga bentuknya.",
           "konstantaBelumDijumlah": "Masih ada suku konstanta yang berdiri sendiri. Jumlahkan **semuanya sekaligus** menjadi satu angka; membiarkannya terpisah justru memperbanyak peluang salah tanda.",
-          "sukuTerlewat": "Ada suku yang belum kamu sentuh sama sekali — yang bernilai {{nilai}}. Justru suku yang tidak diperhatikan itulah yang paling sering menjadi sumber kesalahan.",
           "sniperTidakBerlaku": "Taktik sniper **tidak berlaku** di sini. Operasinya modulus, dan di dalam modulus setiap komponen **dikuadratkan** — sehingga parameternya tidak lagi berdiri sebagai satu suku linear yang bisa dipisahkan. Pakai Taktik TKA 1.",
-          "persamaanTidakLinear": "Persamaan yang kamu susun masih memuat ${{parameter}}^2$. Periksa lagi: apakah operasinya memang linear terhadap parameternya?",
           "success": "Tepat! Satu suku diburu, sisanya diredupkan — dan persamaannya menjadi linear biasa."
         }
       },

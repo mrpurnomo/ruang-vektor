@@ -46,10 +46,8 @@
           "yRange": [-5, 5]
         },
         "toasts": {
-          "belumDigeser": "Resultan belum bisa ditarik — pangkal $\\vec{{{kedua}}}$ masih berada di tempat asalnya. Aturan segitiga menuntut ujung yang satu bertemu pangkal yang lain lebih dulu.",
           "geserKeUjungSalah": "Belum tepat — yang harus ditempelkan adalah **pangkal** $\\vec{{{kedua}}}$ ke **ujung** $\\vec{{{pertama}}}$, bukan sebaliknya. Kalau terbalik, yang terbentuk adalah $\\vec{{{kedua}}} + \\vec{{{pertama}}}$ — kebetulan hasilnya sama, tetapi gambarnya bukan yang diminta.",
           "resultanSalahPangkal": "Belum tepat — resultan selalu ditarik dari **pangkal yang paling awal** menuju **ujung yang paling akhir**. Titik yang kamu pilih adalah titik sambungan di tengah, bukan ujung rantainya.",
-          "vektorBergeserBentuk": "Menggeser vektor boleh, tetapi **panjang dan arahnya tidak boleh berubah**. Yang kamu pindahkan sekarang bukan lagi vektor yang sama.",
           "hasilNol": "Benar — kedua vektor ini saling meniadakan. Ujungnya kembali tepat ke titik pangkal, sehingga resultannya vektor nol.",
           "success": "Tepat! Resultan ditarik dari pangkal pertama ke ujung terakhir — itulah aturan segitiga."
         }
@@ -148,7 +146,6 @@
         },
         "toasts": {
           "pangkalTidakBerimpit": "Aturan jajar genjang menuntut **kedua pangkal berada di satu titik**. Salah satu vektormu masih berpangkal di tempat lain — itu aturan segitiga, bukan jajar genjang.",
-          "bangunBelumTertutup": "Jajar genjangnya belum lengkap. Sisi yang berhadapan harus **sejajar dan sama panjang** — tarik dulu kedua sisi penutupnya.",
           "diagonalSalah": "Belum tepat — diagonal yang kamu pilih menghubungkan kedua **ujung** vektor, dan itu mewakili **selisih**. Yang mewakili **jumlah** adalah diagonal yang berangkat dari titik pangkal bersama.",
           "arahSelisihTerbalik": "Hampir — diagonalmu sudah benar, tetapi arahnya terbalik. Menarik dari ujung $\\vec{{{dari}}}$ ke ujung $\\vec{{{ke}}}$ menghasilkan $\\vec{{{ke}}} - \\vec{{{dari}}}$, bukan sebaliknya.",
           "success": "Tepat! Satu jajar genjang memuat jumlah **dan** selisih sekaligus — tinggal memilih diagonal yang mana."
@@ -255,7 +252,6 @@
         },
         "toasts": {
           "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Operasi vektor hanya memasangkan komponen yang **seletak**.",
-          "pilihSumberDulu": "Ketuk dulu satu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
           "dimensiBeda": "Belum tepat — hitung dulu banyak komponennya. $\\vec{a}$ punya {{dimA}} komponen, $\\vec{b}$ punya {{dimB}}. Coba pasangkan komponen $z$ pada $\\vec{b}$: komponen seletak mana di $\\vec{a}$ yang menjadi pasangannya?",
           "dimensiBedaTuntas": "Tepat! Operasi ini **tidak terdefinisi**: komponen $z$ pada $\\vec{b}$ tidak punya pasangan di $\\vec{a}$. Penjumlahan vektor mensyaratkan dimensi yang sama persis.",
           "tandaKurangTerlewat": "Belum tepat — operasinya **pengurangan**, jadi komponen $\\vec{b}$ dikurangkan, bukan ditambahkan. Tanda kurang di depan komponen yang negatif mengubahnya menjadi penjumlahan.",
@@ -353,7 +349,6 @@
           "yRange": [-6, 6]
         },
         "toasts": {
-          "komponenTerlewat": "Masih ada komponen yang belum disentuh skalar. Perkalian skalar menyentuh **semua** komponen tanpa kecuali — melewati satu saja mengubah arah vektornya, bukan memperpanjangnya.",
           "tandaHilang": "Belum tepat — skalarnya bernilai {{k}}, dan tandanya ikut masuk ke hasil kali. $({{k}}) \\times ({{komponen}})$ bertanda **{{tandaHasil}}**.",
           "panjangSalah": "Belum tepat — ingat $|k\\vec{v}| = |k| \\cdot |\\vec{v}|$. Perhatikan tanda mutlak pada $k$: panjang tidak pernah bernilai negatif, sehingga skalar $-3$ tetap **memperpanjang** tiga kali.",
           "arahSalah": "Belum tepat — skalar bertanda negatif membalik **arah**, bukan hanya menggeser posisinya. Panah hasilnya harus menunjuk ke sisi berlawanan dari panah asal.",
@@ -451,7 +446,6 @@
           ]
         },
         "toasts": {
-          "tahapBelumSelesai": "Tahap perkalian skalar belum tuntas — masih ada komponen yang belum dikalikan. Tahap pengurangan baru terbuka setelah kedua vektor selesai diregangkan.",
           "skalarHanyaSatuKomponen": "Belum tepat — skalar menyentuh **semua** komponen. Setiap komponen vektornya harus dikalikan dengan skalar, tanpa ada satu pun yang tertinggal.",
           "urutanTerbalik": "Belum tepat — kerjakan perkalian skalar **lebih dulu**, baru pengurangan. Mengurangkan sebelum mengalikan mengubah soalnya menjadi $2(\\vec{u} - \\vec{v})$, yang nilainya berbeda.",
           "tandaKurangSalah": "Periksa tandanya sekali lagi. Bilangan negatif dikurangi bilangan positif menjadi lebih negatif — bukan berbalik menjadi positif.",
@@ -545,9 +539,7 @@
         },
         "toasts": {
           "tidakSeletak": "Belum tepat — kamu memilih komponen ke-{{kiri}} di ruas kiri, jadi pasangannya harus komponen ke-{{kiri}} juga di ruas kanan. Kesamaan vektor hanya memasangkan komponen yang **seletak**.",
-          "belumSemua": "Masih ada baris yang belum dipasangkan. Kesamaan vektor menuntut **semua** komponen cocok — satu baris yang belum diperiksa bisa menggugurkan seluruh kesimpulan.",
           "nilaiSalah": "Belum tepat — selesaikan persamaan barisnya seperti persamaan linear biasa. Dari ${{persamaan}}$, pindahkan konstantanya ke ruas kanan lebih dulu.",
-          "salahTafsirSejajar": "Hati-hati — yang diminta adalah dua vektor yang **sama**, bukan sekadar sejajar. Sama menuntut panjang dan arah identik; sejajar hanya menuntut arahnya segaris.",
           "success": "Tepat! Satu persamaan vektor memang menyimpan sebanyak komponennya persamaan biasa."
         }
       },
@@ -656,10 +648,7 @@
           "yRange": [-6, 6]
         },
         "toasts": {
-          "belumCariK": "Tentukan dulu nilai $k$ dari salah satu komponen. Tanpa $k$, belum ada yang bisa diujikan.",
           "kBeda": "Belum tepat — komponen $x$ memberi $k = {{kx}}$, tetapi komponen $y$ memberi $k = {{ky}}$. Nilai $k$ harus **sama untuk semua komponen**; kalau berbeda, ketiga titik itu tidak segaris.",
-          "lupaUji": "Kamu sudah mendapat $k$, tetapi belum mengujinya pada komponen yang lain. Satu komponen yang cocok belum membuktikan apa-apa — dua vektor bisa cocok di satu komponen dan meleset di komponen lain.",
-          "vektorSalahPasang": "Belum tepat — kedua vektor yang dibandingkan harus **berbagi satu titik**. $\\vec{AB}$ dan $\\vec{CD}$ yang tidak punya huruf bersama hanya membuktikan dua garis sejajar, bukan satu garis.",
           "tidakSegaris": "Benar — ketiga titik ini **tidak** segaris. Perhatikan bahwa cukup satu komponen yang memberi $k$ berbeda untuk menutup perkaranya.",
           "success": "Tepat! Nilai $k$ yang sama untuk seluruh komponen — ketiga titik itu memang terletak pada satu garis."
         }

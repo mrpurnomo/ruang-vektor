@@ -54,7 +54,6 @@
           "salahBagian": "Belum tepat — yang kamu ketuk adalah **{{terketuk}}**, sedangkan yang diminta **{{diminta}}**. Ingat: nama vektor $\\vec{AB}$ dibaca dari pangkal $A$ menuju ujung $B$, jadi huruf **pertama** selalu pangkalnya.",
           "arahSalah": "Belum tepat — perhatikan ke mana panahnya bergerak secara **{{sumbu}}**. Ke kanan dan ke atas bernilai positif; ke kiri dan ke bawah bernilai negatif.",
           "tandaSalah": "Belum tepat — $\\vec{BA}$ menempuh jalur yang sama persis tetapi ke arah sebaliknya, jadi **setiap komponennya berganti tanda**, bukan berganti besar.",
-          "sudahTerpilih": "Bagian itu sudah kamu tentukan. Lanjutkan ke bagian yang masih berwarna abu.",
           "success": "Tepat! Pangkal $A$, ujung $B$, perpindahan $5$ ke kanan dan $4$ ke atas — dan $\\vec{BA}$ adalah kebalikannya."
         }
       },
@@ -608,7 +607,6 @@
           "yRange": [-4, 4]
         },
         "toasts": {
-          "belumHitungPanjang": "Kamu belum menentukan $|\\vec{v}|$. Pembaginya harus ada lebih dulu — tanpa itu, tidak ada yang bisa dibagi.",
           "hanyaSatuKomponen": "Belum tepat — **setiap** komponen harus dibagi dengan panjang yang sama. Membagi hanya satu komponen mengubah arah vektornya, bukan memperpendeknya.",
           "dibagiKomponen": "Belum tepat — pembaginya adalah **panjang vektor** $|\\vec{v}|$, bukan salah satu komponennya.",
           "panjangBukanSatu": "Hasilmu belum berpanjang $1$. Periksa ulang: $\\left(\\tfrac{{{x}}}{{{n}}}\\right)^2 + \\left(\\tfrac{{{y}}}{{{n}}}\\right)^2$ seharusnya bernilai tepat $1$.",
