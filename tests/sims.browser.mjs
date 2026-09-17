@@ -38,6 +38,16 @@ window.addEventListener('error', (e) => consoleErrors.push(String(e.message)));
 window.addEventListener('unhandledrejection', (e) => consoleErrors.push(String(e.reason && e.reason.stack || e.reason)));
 const origError = console.error;
 console.error = (...args) => { consoleErrors.push(args.map(String).join(' ')); origError(...args); };
+// fillTemplate tidak melempar galat untuk placeholder tanpa nilai: ia
+// mengosongkannya dan hanya memperingatkan. Siswa lalu membaca kalimat
+// bolong ("punya  komponen"), jadi peringatan itu dihitung sebagai kegagalan.
+const templateWarnings = [];
+const origWarn = console.warn;
+console.warn = (...args) => {
+  const text = args.map(String).join(' ');
+  if (text.includes('placeholder')) templateWarnings.push(text);
+  origWarn(...args);
+};
 
 /* ------------------------------------------------------------
    Aksi generik atas DOM kit
@@ -151,8 +161,12 @@ async function runEngine(def, plan) {
           for (const leak of s.leak || []) {
             // Angka UTUH pada teks yang terlihat: "5" tidak boleh cocok dengan
             // "25", dan angka di atribut gaya HTML KaTeX bukan kebocoran.
+            // Kunci berupa KATA dibatasi huruf, bukan angka: "terdefinisi."
+            // tetap kebocoran walau diikuti titik.
             const escaped = leak.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const pattern = new RegExp(`(^|[^\\d/√,.])${escaped}($|[^\\d/√,.])`);
+            const pattern = /\d/.test(leak)
+              ? new RegExp(`(^|[^\\d/√,.])${escaped}($|[^\\d/√,.])`)
+              : new RegExp(`(^|[^\\p{L}])${escaped}($|[^\\p{L}])`, 'iu');
             assert(!pattern.test(last.text), `kasus ${ci + 1} langkah ${si + 1}: toast MEMBOCORKAN "${leak}": ${last.text}`);
           }
           if (s.expectToast) {
@@ -305,7 +319,9 @@ Object.assign(PLANS, {
   },
 
   component_add: (c) => {
-    if (c.invalid) return [{ wrong: { choice: 'padded' }, right: { choice: 'undefined' }, expectToast: 'dimensiBeda' }];
+    // Kunci langkah ini berupa KATA, bukan angka: kalimat salah tidak boleh
+    // langsung menyebut "tidak terdefinisi".
+    if (c.invalid) return [{ wrong: { choice: 'padded' }, right: { choice: 'undefined' }, expectToast: 'dimensiBeda', leak: ['tidak terdefinisi'] }];
     const sign = c.op === 'add' ? 1 : -1;
     const steps = [];
     c.a.forEach((n, i) => {
@@ -605,8 +621,10 @@ for (const chapter of CHAPTERS) {
     try {
       assert(plan, 'rencana uji belum ditulis');
       const errorsBefore = consoleErrors.length;
+      const warningsBefore = templateWarnings.length;
       const notes = await runEngine(def, plan);
       assert(consoleErrors.length === errorsBefore, `galat konsol: ${consoleErrors.slice(errorsBefore).join(' | ')}`);
+      assert(templateWarnings.length === warningsBefore, `kalimat bolong: ${templateWarnings.slice(warningsBefore).join(' | ')}`);
       results.push({ name: def.engine, ok: true, notes });
       log.insertAdjacentHTML('beforeend', `<div class="ok">✓ ${def.engine} (${notes.length} jawaban salah ditolak berkalimat)</div>`);
     } catch (err) {

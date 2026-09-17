@@ -256,7 +256,8 @@
         "toasts": {
           "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Operasi vektor hanya memasangkan komponen yang **seletak**.",
           "pilihSumberDulu": "Ketuk dulu satu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
-          "dimensiBeda": "Operasi ini **tidak terdefinisi**. $\\vec{a}$ punya {{dimA}} komponen sedangkan $\\vec{b}$ punya {{dimB}} — komponen $z$ pada $\\vec{b}$ tidak punya pasangan. Penjumlahan vektor mensyaratkan dimensi yang sama persis.",
+          "dimensiBeda": "Belum tepat — hitung dulu banyak komponennya. $\\vec{a}$ punya {{dimA}} komponen, $\\vec{b}$ punya {{dimB}}. Coba pasangkan komponen $z$ pada $\\vec{b}$: komponen seletak mana di $\\vec{a}$ yang menjadi pasangannya?",
+          "dimensiBedaTuntas": "Tepat! Operasi ini **tidak terdefinisi**: komponen $z$ pada $\\vec{b}$ tidak punya pasangan di $\\vec{a}$. Penjumlahan vektor mensyaratkan dimensi yang sama persis.",
           "tandaKurangTerlewat": "Belum tepat — operasinya **pengurangan**, jadi komponen $\\vec{b}$ dikurangkan, bukan ditambahkan. Tanda kurang di depan komponen yang negatif mengubahnya menjadi penjumlahan.",
           "hasilSalah": "Belum tepat — kerjakan satu pasangan saja dulu, dan bawa tandanya apa adanya. Bilangan negatif dikurangi bilangan positif menjadi **lebih** negatif.",
           "success": "Tepat! Komponen seletak bertemu komponen seletak — itu satu-satunya aturan di sini."

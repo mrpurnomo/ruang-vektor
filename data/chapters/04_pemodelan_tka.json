@@ -517,7 +517,7 @@
           "answer": 14,
           "tolerance": 1e-6,
           "explanation": "Syarat tegak lurus: $\\vec{a}\\cdot\\vec{b} = 0$. Suku konstantanya $1(2) + 3(4) = 2 + 12 = 14$; suku parameternya $-p$. Maka $14 - p = 0$, sehingga $p = 14$.",
-          "toastWrong": "Belum tepat — periksa tanda suku parameternya. Karena $p$ dikalikan $-1$, sukunya menjadi $-p$, sehingga persamaannya $14 - p = 0$. Kalau jawabanmu $-14$, kamu memindahkan ruas tanpa mengubah tanda."
+          "toastWrong": "Belum tepat — periksa tanda suku parameternya. Karena $p$ dikalikan $-1$, sukunya menjadi $-p$, bukan $+p$. Tulis $\\vec{a} \\cdot \\vec{b} = 0$ selengkapnya, lalu pastikan tandanya ikut berubah saat kamu memindahkan ruas."
         },
         {
           "id": "b4_05_3",

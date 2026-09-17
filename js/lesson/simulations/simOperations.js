@@ -259,7 +259,10 @@ export class ComponentAddSim extends CaseSimulation {
   }
 
   caseSuccessKey(c) {
-    return c.invalid ? 'dimensiBeda' : 'success';
+    // Kalimat tuntas TERPISAH dari kalimat salah `dimensiBeda`: yang salah
+    // tidak boleh menyebut vonisnya, dan caseDone() tidak mengirim nilai
+    // placeholder, sehingga {{dimA}} akan tampil bolong.
+    return c.invalid ? 'dimensiBedaTuntas' : 'success';
   }
 
   setupCase(c) {

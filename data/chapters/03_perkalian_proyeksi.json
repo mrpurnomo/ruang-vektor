@@ -421,7 +421,7 @@
           "answer": 10,
           "tolerance": 1e-6,
           "explanation": "Syarat tegak lurus: $\\vec{a}\\cdot\\vec{b} = 0$, yaitu $2(3) + k(-1) + 1(4) = 0$, sehingga $6 - k + 4 = 0$ dan $k = 10$.",
-          "toastWrong": "Belum tepat — periksa tanda suku yang memuat $k$. Karena $k$ dikalikan $-1$, sukunya menjadi $-k$, sehingga persamaannya $10 - k = 0$. Kalau jawabanmu $-10$, kamu memindahkan ruas tanpa mengubah tanda."
+          "toastWrong": "Belum tepat — periksa tanda suku yang memuat $k$. Karena $k$ dikalikan $-1$, sukunya menjadi $-k$, bukan $+k$. Tulis $\\vec{a} \\cdot \\vec{b} = 0$ selengkapnya, lalu pastikan tandanya ikut berubah saat kamu memindahkan ruas."
         },
         {
           "id": "b3_04_2",
