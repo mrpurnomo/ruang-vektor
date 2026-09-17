@@ -1,7 +1,7 @@
 # HANDOFF — Ruang Vektor
 
 > **Memori inti untuk sesi baru.** Baca dokumen ini SEBELUM menyentuh kode apa pun.
-> Ditulis 17 September 2026; diperbarui sesudah Tahap 4 (commit `6b630d7`).
+> Ditulis 17 September 2026; diperbarui sesudah Final Polish & QA (commit `1a57e36`).
 > Dokumen rujukan yang tetap berlaku: `PRD.md` (kontrak produk) dan
 > `docs/EDTECH_BLUEPRINT.md` (kerangka arsitektur + 40 jebakan yang sudah dibayar).
 
@@ -68,6 +68,7 @@ membuat peramban menjalankan modul JS basi).
 | **7 · Tahap 2** | **Mesin matematika domain (TDD)**: `surd.js` (pecahan & akar eksak `(n/d)√r`, jumlah suku, rasionalisasi, `parseSurd` untuk keluaran papan angka, `isSimplestForm`), `vector.js` (R²/R³ dengan `dim` tersimpan; eksak masuk → eksak keluar; fungsi `*Exact` mengembalikan bentuk akar), `validator.js` (`can*` berkalimat + `checkExactAnswer` / `checkVectorAnswer` berkode `correct·empty·unreadable·not-simplest·decimal·sign·wrong`; kalimat TIDAK membocorkan kunci). `node tests/engine.test.mjs` → 111/111, termasuk 500 pasang vektor acak berbenih; uji mutasi 18 mutan, 17 tertangkap + 1 kode mati dibuang, 1 celah (minor y–z) ditutup | `24f856e` |
 | **8 · Tahap 3** | **Bidang kartesius SVG**: `plane/planeGeometry.js` (murni, tanpa DOM: viewport skala seragam, y terbalik HANYA di toScreen/toMath, busur, siku, panah, label, snap), `arrow.js` (marker per panah DI DALAM grupnya + userSpaceOnUse, ketuk + Enter/Spasi, seret ujung + tombol panah), `arrowAnimation.js` (tween di ruang matematika, bisa dibatalkan, hormati reduced-motion), `vectorPlane.js` (lapisan grid·axis·pick·shape·interactive·label, ResizeObserver+rAF, destroy tuntas). Uji: Node 130/130 (19 geometri) + peramban `tests/plane.html` 31/31 (CTM, elementFromPoint, hitung piksel kepala panah, spy ResizeObserver & listener). Uji mutasi: 4 geometri + 8 kontrak SVG, semua tertangkap sesudah 2 celah ditutup. Terverifikasi di dalam aplikasi pada 740×360 / 1024×600 / 1440×900 | `ebde1a7` |
 | **9 · Tahap 4** | **25 engine simulasi** di `simBasics` (6) · `simOperations` (8) · `simProducts` (6) · `simModeling` (5), didaftarkan lewat `ENGINES` per bab di `index.js` (25 terdaftar = 25 engine JSON). Kerangka bersama `simKit.js` → `CaseSimulation`: kasus → langkah `fields·choice·multi·tap`; `check()` → `true` atau `{message|toast, values, wrong}`; **`solveStep()` satu-satunya jalan maju**, visual konfirmasi (`onSolved`) baru digambar SESUDAH siswa benar. Anggaran label (`essential`), sasaran titik 44px, slot tercadang. Mini Kuis: kunci & pembahasan tidak lagi tampil saat salah — baru sesudah salah ke-3 (`QuizEngine.REVEAL_AFTER`). Kalimat toast JSON yang membocorkan kunci ditulis ulang. Uji: Node 130/130 · `tests/plane.html` 32/32 · `tests/sims.html` 26/26 (260 jawaban salah ditolak berkalimat, tanpa gambar baru, tanpa `{{kunci}}`, tanpa bocor angka kunci, bidang tidak bergeser, destroy tuntas, resume sesi) | `6b630d7` |
+| **10 · QA** | **Final Polish & QA** (4 commit): (1) `tests/validate_data.py` — validator data Python murni: manifest ↔ bab, registry `ENGINES` ↔ JSON, analisis statis kunci toast & `{{placeholder}}` per titik pemakaian engine, karakter kendali, LaTeX seimbang, bentuk soal, 78 + 34 soal, `questionOrder`, `toastWrong` yang menyebut kunci; uji mutasi 14/14. Bug ditemukan & diperbaiki: `component_add` kasus beda dimensi (kalimat salah menyebut vonis "tidak terdefinisi", dan kalimat yang sama dipakai sebagai toast tuntas tanpa nilai → `{{dimA}}` bolong; dipecah jadi `dimensiBeda` + `dimensiBedaTuntas`), `b3_04_1`/`b4_05_2` (`toastWrong` menulis persamaan akhir = kunci). (2) `tests/smoke.py` ditulis ulang untuk Ruang Vektor (uji warisan Matriks dihapus); `archive_soal.py` diadaptasi + arsip Mini Kuis, keluaran di `content/*_ARCHIVE.md`. (3) Pena papan coret = token hidup: Grafit/Kobalt/Amber(`--accent-amber`)/Beri; kontras goresan terukur dari piksel 18,6/7,3/6,3/5,7 (sebelumnya merah 3,9 & kuning 1,55). (4) Konfeti = token hidup kobalt/amber/sian/beri/sukses. Uji: Node 130/130 · data 724 lolos/0 gagal · smoke 115/0 (termasuk plane 32/32 & sims 26/26) | `981d932` `b28956d` `5e3c82c` `1a57e36` |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -80,12 +81,20 @@ membuat peramban menjalankan modul JS basi).
 - "Ganti Akun" membuang identitas + posisi, **mempertahankan** progres.
 - Nol kebocoran state antar layar (papan angka, scrim, papan coret, tambatan toast).
 
-### Yang BELUM ada (lingkup misi Final Polish & QA, §4)
-- `tests/validate_data.py` → berkas kosong (0 bait).
-- `tests/smoke.py` (±6.000 baris) & `tests/archive_soal.py` → warisan Ruang Matriks,
-  belum diadaptasi (antara lain masih menguji font Montserrat/Roboto).
-- Warna pena papan coret (`js/core/ui/scratchpad.js`) & konfeti
-  (`js/core/interactions/flyToAnimation.js`) masih memakai palet lama.
+### Temuan terbuka (butuh keputusan pengguna — JANGAN diubah sepihak)
+- **Sasaran sentuh < 44px.** Kontrak §3.3 menulis ≥ 44px, tetapi terukur 9 jenis tombol di
+  bawahnya: `.navrail__item` 34px, `.btn--switch` 34px, `.brand__mark` 36px, `.btn--sm` 36px,
+  `.case-chip` 34px, `.fs-btn` 32–36px, `.exam-nav__item` 38px, `.pad-fab` 42px (740×360),
+  dan `--touch-min` sengaja turun ke 40px di lanskap pendek. `smoke.py` melaporkannya sebagai
+  CATATAN, bukan GAGAL. Pilihan: naikkan ukurannya, atau ubah kontraknya.
+- **19 sub-topik punya kalimat toast yang tidak pernah dipakai engine** (mis.
+  `sudahTerpilih`, `belumDigeser`, `tahapBelumSelesai`) — dilaporkan `validate_data.py` sebagai
+  PERINGATAN. Hapus dari JSON, atau sambungkan ke engine.
+- **Satu kali timeout tak terjelaskan** menunggu `data-app-ready` pada 1 dari 4 run `smoke.py`
+  (server 5173 saat itu dipakai bersama sesi lain). 3 run berikutnya bersih.
+- Lanskap 740×360: bilah papan coret membungkus jadi dua baris dan menutup ±¼ bawah kanvas;
+  toast "Jawabanmu tepat!" menutup tombol papan coret selama tampil.
+- Utang dokumen: PRD §7.1 masih menjelaskan tema lama "Deep Navy Canvas · White Cards · Vibrant Yellow".
 
 ---
 
@@ -207,46 +216,20 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### 🎯 MISI: FINAL POLISH & QUALITY ASSURANCE (QA)
+> ### 🎯 MISI: TUNGGU KEPUTUSAN PENGGUNA
 >
-> Arsitektur UI/UX, mesin matematika eksak, bidang kartesius SVG, dan 25 engine simulasi
-> **SELESAI** (baris 6–9 di §2). Jangan dirombak ulang. Sisa pekerjaan hanya empat butir
-> di bawah; kerjakan berurutan, verifikasi dengan MENGUKUR, commit per butir.
+> Final Polish & QA **SELESAI** (baris 10 di §2). Tidak ada pekerjaan wajib yang tersisa.
+> Sesi berikutnya dimulai dengan menanyakan pengguna soal "Temuan terbuka" di §2, lalu
+> kerjakan yang disetujui saja. Jangan merombak ulang apa pun di baris 6–10.
 
-### 4.1 Sisa pekerjaan
-
-1. **`tests/validate_data.py`** (sekarang kosong) — validator data statis, Python murni
-   tanpa dependensi. Minimal memeriksa:
-   - `data/lessons.json` ↔ `data/chapters/*.json`: setiap id di `subtopicOrder` punya
-     sub-topik, dan sebaliknya; 4 bab / 25 sub-topik.
-   - Setiap `simulation.engine` terdaftar di `js/lesson/simulations/sim*.js`
-     (objek `ENGINES`) — 25 = 25.
-   - Placeholder `{{kunci}}` di kalimat toast berpasangan dengan nilai yang dikirim engine;
-     tidak ada karakter kendali di JSON (jebakan nyata: `\v` di `\vec` pernah menjadi
-     tab vertikal).
-   - Soal: `answerIndex` di dalam rentang opsi, opsi hanya berkunci `label`/`tex`,
-     jumlah soal (78 Mini Kuis + 34 bank ujian), `tkaSimulation.questionOrder` valid.
-   - Kurung kurawal LaTeX seimbang.
-2. **`tests/smoke.py`** — adaptasi dari warisan Matriks ke Ruang Vektor: uji yang menyasar
-   Matriks (istilah, engine, font Montserrat/Roboto) diganti dengan kenyataan sekarang
-   (Barlow / Barlow Condensed / JetBrains Mono, kelas `.plane__*`, 25 engine, kebijakan
-   Mini Kuis `QuizEngine.REVEAL_AFTER = 3`). Uji yang tidak lagi relevan DIHAPUS, jangan
-   dipaksa lolos. `tests/archive_soal.py` diadaptasi, atau dihapus bila tidak berguna —
-   tanyakan pengguna dulu sebelum menghapus.
-3. **`js/core/ui/scratchpad.js` — warna pena** (sekarang `#0A1B45`, `#E5484D`,
-   `#1D4ED8`, `#FFC800`) diselaraskan ke palet **"Instrumen Teknik"** (di kode & commit
-   bernama "Instrumen Ukur") yang bersumber di `css/tokens.css`: grafit
-   `--graphite #0D1320`, kobalt `--royal #2F3DE0` (ARAH), amber `--yellow #FFB000`
-   (BESARAN), beri `--magenta #B8316F` (koreksi). Papan coret berada di atas film/pelat
-   terang → ukur kontras goresan. Label pena ("Hitam", "Merah", …) ikut disesuaikan.
-4. **`js/core/interactions/flyToAnimation.js` — `CONFETTI_COLORS`** (sekarang
-   `#4D8DFF #FF7A66 #FFC24D #3DD68C #7BABFF`) → palet yang sama (kobalt, amber,
-   sian `--cyan #3DD6F0`, beri, sukses `--success #08875A`). Baca token lewat
-   `getComputedStyle(document.documentElement)` dengan cadangan hex, atau salin hex dengan
-   komentar asal tokennya.
-
-Utang dokumen kecil (bila sempat): PRD §7.1 masih menjelaskan tema lama
-"Deep Navy Canvas · White Cards · Vibrant Yellow".
+### 4.1 Kandidat pekerjaan (hanya bila disetujui)
+1. Sasaran sentuh: selaraskan tombol ke `--touch-min` 44px, atau revisi kontrak §3.3.
+   Ukur ulang dengan `python tests/smoke.py` (CATATAN harus hilang) dan tangkapan layar
+   740×360 / 1024×600 — tombol yang lebih tinggi menekan tinggi lanskap pendek.
+2. Rapikan 19 kalimat toast yang tidak terpakai (`python tests/validate_data.py` → 0 PERINGATAN).
+3. Bilah papan coret satu baris di 740×360.
+4. PRD §7.1 diselaraskan ke identitas "Instrumen Teknik".
+5. Bila data soal diubah: `python tests/archive_soal.py` untuk membangkitkan ulang arsip guru.
 
 ### 4.2 Kontrak yang tetap mengikat selama polish
 - **Aksioma** (§1): aplikasi tidak pernah menghitung untuk siswa; kalimat toast tidak
@@ -268,14 +251,24 @@ Utang dokumen kecil (bila sempat): PRD §7.1 masih menjelaskan tema lama
 
 ### 4.3 Uji wajib sebelum setiap commit
 - `node tests/engine.test.mjs` → **130/130**.
-- `python tests/serve.py`, lalu buka
-  `http://localhost:5173/tests/plane.html` → `window.__planeTest` **32/32** dan
-  `http://localhost:5173/tests/sims.html` → `window.__simTest` **26/26** (±60 detik).
-- Perubahan warna diverifikasi di aplikasi (papan coret & konfeti sub-topik selesai) pada
-  740×360 dan 1024×600, dengan tangkapan layar.
-- Jebakan peramban: navigasi hash tidak memuat ulang modul → `location.reload()`. Di
-  Windows, berkas yang dipulihkan mempertahankan mtime lama sehingga server menjawab 304
-  → sentuh (touch) berkas sesudah memulihkan.
+- `python tests/validate_data.py` → **0 GAGAL** (saat ini 724 lolos, 19 PERINGATAN — lihat §2).
+- `python tests/serve.py`, lalu `python tests/smoke.py` → **0 GAGAL** (saat ini 115 lolos,
+  ±6 menit; sudah menjalankan `tests/plane.html` **32/32** dan `tests/sims.html` **26/26**).
+  Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
+- Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
+  `/tests/sims.html` → `window.__simTest`. **Pane peramban yang tersembunyi menahan
+  `requestAnimationFrame`** sehingga sims tidak pernah selesai — pakai Playwright/`smoke.py`.
+- Perubahan warna/tata letak diverifikasi di aplikasi pada 740×360 dan 1024×600, dengan tangkapan layar.
+- Jebakan uji yang sudah dibayar:
+  - Navigasi hash tidak memuat ulang modul → `location.reload()`. Di Windows, berkas yang
+    dipulihkan mempertahankan mtime lama sehingga server menjawab 304 → sentuh berkasnya.
+  - `page.wait_for_function` Playwright memasang listener global sendiri
+    (`__playwright_global_listeners_check__`) dan menggagalkan uji listener `plane.html` → tunggu
+    dengan jeda + `evaluate`.
+  - Tombol "Lewati Simulasi" baru muncul sesudah 30 detik → masuk Mini Kuis lewat
+    `sessionState.patchResume(lessonKey(bab, sub), { step: 2, simulationDone: true })`.
+  - `PointerEvent` sintetis di papan coret harus `pointerId: 1`; id lain ditolak `setPointerCapture`.
+  - Konsol Windows cp1252: skrip Python wajib `sys.stdout.reconfigure(encoding="utf-8")`.
 
 ---
 
@@ -353,16 +346,16 @@ vektor-lab-interaktif/
 │   ├── chapters/*.json        25 sub-topik: materi[] · simulation{engine, brief, config, toasts} · quiz[]
 │   └── quizzes.json           banks per bab (6 soal) + tka_2026 (10 soal) + tkaSimulation.questionOrder
 │
-├── content/*.md               materi bacaan 4 bab (sinkron dengan JSON)
+├── content/*.md               materi bacaan 4 bab (sinkron dengan JSON) + 3 arsip soal guru (DIBANGKITKAN)
 │
 └── tests/
     ├── serve.py               server dev no-cache  ← PAKAI INI
     ├── engine.test.mjs        Node murni, 130 uji (surd · vector · validator · geometri bidang)
     ├── plane.html · plane.browser.mjs   uji peramban bidang SVG, 32 uji → window.__planeTest
     ├── sims.html · sims.browser.mjs     uji peramban 25 engine + resume, 26 uji → window.__simTest
-    ├── validate_data.py       KOSONG — misi QA §4.1
-    ├── smoke.py               warisan Matriks — misi QA §4.1
-    └── archive_soal.py        warisan Matriks — misi QA §4.1
+    ├── validate_data.py       validator data statis (Python murni), uji mutasi 14/14
+    ├── smoke.py               uji asap Playwright end-to-end + menjalankan plane & sims
+    └── archive_soal.py        pembangkit arsip guru → content/{QUIZ,TKA,MINI_KUIS}_ARCHIVE.md
 ```
 
 **Ukuran saat ini:** ±21.600 baris JS + CSS, 4 berkas konten, 6 berkas data.
