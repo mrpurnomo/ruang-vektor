@@ -18,7 +18,7 @@ Satu perintah untuk memeriksa aplikasi SEUTUHNYA di peramban sungguhan:
    8. Mini Kuis: `QuizEngine.REVEAL_AFTER = 3` — kunci & pembahasan TIDAK tampil
       pada salah ke-1 dan ke-2, baru tampil pada salah ke-3.
    9. Penjaga keluar ujian: tombol rumah & hash manual ditahan modal kustom.
-  10. Papan coret: tombol, 4 warna, goresan menghasilkan tinta.
+  10. Papan coret: tombol, 4 pena = token palet, kontras goresan ≥ 4,5:1 (piksel).
   11. Suite peramban: tests/plane.html 32/32 dan tests/sims.html 26/26.
 
 Pemeriksaan sasaran sentuh (<44px) dilaporkan sebagai CATATAN, bukan GAGAL:
@@ -59,6 +59,7 @@ EXPECTED_PLANE_TESTS = 32
 EXPECTED_SIM_TESTS = 26
 VIEWPORTS = [(740, 360), (1024, 600), (1440, 900)]
 SIDEBAR_RATIO = (22.0, 31.0)
+PEN_TOKENS = [["Grafit", "--graphite"], ["Kobalt", "--royal"], ["Amber", "--accent-amber"], ["Beri", "--magenta"]]
 LAYER_ORDER = "@layer reset, tokens, layout, components, domain, workspace, utilities, overrides;"
 
 results = []
@@ -464,6 +465,47 @@ def section_scratchpad(page, errors):
         }, 200);
     })""")
     record("Goresan menghasilkan tinta di kanvas", ink > 50, f"{ink} piksel")
+
+    # Pena mengikuti palet "Instrumen Teknik" di css/tokens.css — dibaca dari
+    # token yang HIDUP, jadi mengganti nilai token ikut mengganti pena.
+    expected = page.evaluate("""() => { const cs = getComputedStyle(document.documentElement);
+        return PEN_TOKENS.map(([label, token]) => ({ label: 'Warna ' + label, color: cs.getPropertyValue(token).trim().toUpperCase() })); }"""
+                             .replace("PEN_TOKENS", json.dumps(PEN_TOKENS)))
+    actual = [{"label": s["label"], "color": s["color"].upper()} for s in swatches]
+    record("Warna & label pena = token palet (grafit, kobalt, amber tinta, beri)", actual == expected,
+           f"didapat {actual}, diharapkan {expected}")
+
+    # Kontras DIUKUR dari piksel goresan sungguhan terhadap latar kanvas.
+    contrast = page.evaluate("""async () => {
+        const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+                                     return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+        const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+        const cv = document.querySelector('.pad__canvas');
+        const bg = getComputedStyle(cv).backgroundColor.match(/\\d+/g).map(Number);
+        const ctx = cv.getContext('2d');
+        const out = [];
+        const swatches = [...document.querySelectorAll('.pad__swatch')];
+        document.querySelector('.pad__width[aria-label="Ketebalan Tebal"]').click();
+        for (let s = 0; s < swatches.length; s++) {
+            swatches[s].click();
+            const r = cv.getBoundingClientRect();
+            const y = r.top + 150 + s * 40, x0 = r.left + 40;
+            const pe = (x, t) => new PointerEvent(t, { bubbles: true, cancelable: true, clientX: x, clientY: y,
+                pointerId: 1, pointerType: 'pen', isPrimary: true, button: 0, buttons: 1 });
+            cv.dispatchEvent(pe(x0, 'pointerdown'));
+            for (let i = 1; i <= 12; i++) cv.dispatchEvent(pe(x0 + i * 10, 'pointermove'));
+            cv.dispatchEvent(pe(x0 + 120, 'pointerup'));
+            await new Promise((res) => setTimeout(res, 60));
+            const dpr = cv.width / r.width;
+            const px = ctx.getImageData(Math.round(60 * dpr), Math.round((150 + s * 40) * dpr), 1, 1).data;
+            out.push({ label: swatches[s].getAttribute('aria-label'), rgb: [px[0], px[1], px[2]], alpha: px[3],
+                       ratio: +ratio([px[0], px[1], px[2]], bg).toFixed(2) });
+        }
+        return out;
+    }""")
+    weak = [c for c in contrast if c["alpha"] < 250 or c["ratio"] < 4.5]
+    record("Kontras goresan tiap pena ≥ 4,5:1 di atas kanvas (diukur dari piksel)", not weak,
+           json.dumps(contrast, ensure_ascii=False))
     record("Tanpa galat konsol selama papan coret", not errors, "; ".join(errors[:2]))
 
 

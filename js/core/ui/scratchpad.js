@@ -2,9 +2,9 @@
  * ui/scratchpad.js — Papan Coret (Fase 15, dipoles di Fase 15.5)
  *
  * Kanvas coret-coret yang menempel di atas PANGGUNG, untuk siswa yang perlu
- * menghitung determinan/invers 3×3 di samping soalnya. Sebelum ini, satu-satunya
- * cara adalah mengambil kertas — dan begitu mata siswa turun ke kertas, konteks
- * matriksnya hilang.
+ * menghitung di samping soalnya (menjumlah komponen, mengkuadratkan, menyederhanakan
+ * akar). Tanpa papan ini satu-satunya cara adalah mengambil kertas — dan begitu
+ * mata siswa turun ke kertas, konteks soalnya hilang.
  *
  * ============================================================
  * KENAPA GORESAN DISIMPAN SEBAGAI VEKTOR, BUKAN toDataURL()
@@ -49,12 +49,38 @@ const HISTORY_LIMIT = 20;
  */
 const ERASER_REACH = 12;
 
+/**
+ * Warna pena = palet "Instrumen Teknik" di css/tokens.css, dibaca dari token
+ * yang HIDUP saat papan dipasang; hex di sini hanya cadangan kalau token tidak
+ * terbaca. Urutannya mengikuti makna palet: tinta, ARAH, BESARAN, koreksi.
+ *
+ * Goresan berada di atas kanvas PUTIH, jadi setiap pena harus ≥ 4,5:1 — siswa
+ * menulis ANGKA dengannya, bukan sekadar menandai. Terukur dari piksel goresan:
+ * grafit 18,6 · kobalt 7,3 · amber 6,3 · beri 5,7. Amber murni `--yellow`
+ * (#FFB000) sengaja TIDAK dipakai: hanya 1,8:1, goresannya nyaris hilang
+ * (pena kuning lama malah 1,55:1). `--accent-amber` adalah amber aman-teks yang
+ * juga dipakai angka besaran `.val`, jadi warna "besaran" tetap satu keluarga.
+ */
 const COLORS = [
-  { id: 'ink', label: 'Hitam', value: '#0A1B45' },
-  { id: 'red', label: 'Merah', value: '#E5484D' },
-  { id: 'blue', label: 'Biru', value: '#1D4ED8' },
-  { id: 'yellow', label: 'Kuning', value: '#FFC800' },
+  { id: 'graphite', label: 'Grafit', token: '--graphite', fallback: '#0D1320' },
+  { id: 'cobalt', label: 'Kobalt', token: '--royal', fallback: '#2F3DE0' },
+  { id: 'amber', label: 'Amber', token: '--accent-amber', fallback: '#8A5300' },
+  { id: 'berry', label: 'Beri', token: '--magenta', fallback: '#B8316F' },
 ];
+
+/** Petakan token → nilai hex yang dipakai kanvas (kanvas tidak mengerti var()). */
+function resolvePalette() {
+  let styles = null;
+  try {
+    styles = getComputedStyle(document.documentElement);
+  } catch (err) {
+    styles = null;
+  }
+  return COLORS.map((c) => ({
+    ...c,
+    value: (styles && styles.getPropertyValue(c.token).trim()) || c.fallback,
+  }));
+}
 
 const WIDTHS = [
   { id: 'thin', label: 'Tipis', value: 2 },
@@ -70,6 +96,8 @@ const WIDTHS = [
  */
 export function createScratchpad(host) {
   if (!host) return { destroy() {}, open() {}, close() {} };
+
+  const palette = resolvePalette();
 
   /* ---------------- State ---------------- */
   let strokes = [];          // goresan yang tampil, urut dari yang terlama
@@ -104,7 +132,7 @@ export function createScratchpad(host) {
    */
   let committed = 0;
   let tool = 'pen';
-  let color = COLORS[0].value;
+  let color = palette[0].value;
   let width = WIDTHS[1].value;
   let open = false;
   let peeking = false;
@@ -160,7 +188,7 @@ export function createScratchpad(host) {
 
   // --- Warna ---
   const gColor = group('Warna');
-  COLORS.forEach((c) => {
+  palette.forEach((c) => {
     const b = el('button', 'pad__swatch');
     b.type = 'button';
     b.style.setProperty('--swatch', c.value);
@@ -700,7 +728,7 @@ export function createScratchpad(host) {
   }
 
   setTool('pen');
-  setColor(COLORS[0].value);
+  setColor(palette[0].value);
   setWidth(WIDTHS[1].value);
   syncActions();
 
