@@ -489,7 +489,7 @@
         },
         "toasts": {
           "lupaKuadrat": "Belum tepat — komponennya harus **dikuadratkan** lebih dulu, bukan langsung dijumlahkan. $3 + 4$ bukan panjang; $3^2 + 4^2$ baru menuju ke sana.",
-          "tandaIkutMasuk": "Hasil kuadrat tidak pernah negatif. $({{nilai}})^2 = {{kuadrat}}$ — tanda minusnya ikut terkuadratkan, jadi hilang.",
+          "tandaIkutMasuk": "Hasil kuadrat tidak pernah negatif. $({{nilai}})^2$ berarti $({{nilai}}) \\times ({{nilai}})$ — negatif dikali negatif menjadi positif, jadi tanda minusnya hilang.",
           "belumDisederhanakan": "Hasilmu benar nilainya, tetapi belum paling sederhana. $\\sqrt{{{radikan}}}$ masih memuat faktor kuadrat; tarik keluar faktor kuadrat terbesarnya.",
           "terlanjurDesimal": "Jawaban dalam bentuk desimal tidak diterima di sini — dan tidak diterima juga di lembar jawaban TKA. Tuliskan dalam bentuk akar eksak, misalnya $2\\sqrt{5}$.",
           "jumlahSalah": "Belum tepat — jumlahkan **seluruh** kuadrat komponennya, termasuk yang bernilai nol.",

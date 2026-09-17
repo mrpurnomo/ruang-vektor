@@ -252,8 +252,14 @@
   }
 
   .plane__point--ghost { fill: var(--on-navy-3); }
-  .plane__point.is-tappable { cursor: pointer; }
-  .plane__point.is-tappable:hover { r: 7.5; }
+
+  /* Sasaran sentuh 44px di belakang titik: tuli sampai titiknya bisa diketuk. */
+  .plane__point-hit { fill: transparent; pointer-events: none; }
+  .plane__point-mark.is-tappable { cursor: pointer; outline: none; }
+  .plane__point-mark.is-tappable > .plane__point-hit { pointer-events: all; }
+  .plane__point-mark.is-tappable > .plane__point { stroke: var(--value); }
+  .plane__point-mark.is-tappable:hover > .plane__point,
+  .plane__point-mark.is-tappable:focus-visible > .plane__point { r: 7.5; }
 
   .plane__segment {
     stroke: var(--on-navy-2);

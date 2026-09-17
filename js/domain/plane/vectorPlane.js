@@ -183,7 +183,14 @@ export class VectorPlane {
   measure() {
     if (this.destroyed) return false;
     const rect = this.host.getBoundingClientRect();
-    const { width, height } = rect;
+    // viewBox = KOTAK KONTEN svg, bukan kotak luarnya. SVG memakai border 1px
+    // (plane.css); memakai ukuran luar membuat 1 satuan pengguna = 0,997px —
+    // terukur di Tahap 4 sebagai sasaran sentuh 43,8px alih-alih 44px.
+    const cs = getComputedStyle(this.svg);
+    const bx = (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0);
+    const by = (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
+    const width = rect.width - bx;
+    const height = rect.height - by;
     const pad = this.options.padding;
     if (!(width > 2 * pad + 1) || !(height > 2 * pad + 1)) return false;
     if (width === this.size[0] && height === this.size[1]) return false;
@@ -405,11 +412,20 @@ export class VectorPlane {
   /** Titik dengan label opsional (mis. A, B). `setPosition`, `setTappable`. */
   drawPoint(point, { label = null, ghost = false } = {}) {
     let position = toPlanePoint(point);
+    // Titik terlihat berjari-jari 5,5px — terukur 11×11px, jauh di bawah
+    // sasaran sentuh 44px. Lingkaran transparen r=22 di belakangnya menjadi
+    // sasaran ketuk, tetapi HANYA menangkap pointer saat titiknya bisa
+    // diketuk (plane.css) supaya tidak menghalangi panah di bawahnya.
+    const group = svgEl('g', {}, 'plane__point-mark');
+    const hit = svgEl('circle', { r: 22 }, 'plane__point-hit');
     const circle = svgEl('circle', { r: 5.5 }, ghost ? 'plane__point plane__point--ghost' : 'plane__point');
-    const mark = this.addMark('interactive', circle, (vp, m) => {
+    group.append(hit, circle);
+    const mark = this.addMark('interactive', group, (vp, m) => {
       const [x, y] = vp.toScreen(position);
-      circle.setAttribute('cx', fmt(x));
-      circle.setAttribute('cy', fmt(y));
+      for (const node of [hit, circle]) {
+        node.setAttribute('cx', fmt(x));
+        node.setAttribute('cy', fmt(y));
+      }
       if (m.labelEl) this.placeLabel(m.labelEl, [x + 14, y - 14]);
     });
     mark.setPosition = (p) => { position = toPlanePoint(p); mark.layout(); return mark; };
@@ -420,7 +436,7 @@ export class VectorPlane {
       return mark;
     };
     mark.setTappable = (handler, ariaLabel) => {
-      const release = makeSvgTappable(circle, (event) => handler(mark, event), ariaLabel);
+      const release = makeSvgTappable(group, (event) => handler(mark, event), ariaLabel);
       mark.cleanups.push(release);
       return release;
     };
@@ -472,14 +488,16 @@ export class VectorPlane {
    * ada sejak awal tetapi kosong; `setLabel('\\theta')` mengisinya.
    * Vektor tegak lurus diberi penanda persegi, bukan busur.
    */
-  drawAngleArc(u, v, { origin = [0, 0], radius = 28, label = null } = {}) {
+  drawAngleArc(u, v, { origin = [0, 0], radius = 28, label = null, rightMarker = true } = {}) {
     const du = asDirection(u);
     const dv = asDirection(v);
     if (Math.hypot(...du) === 0 || Math.hypot(...dv) === 0) {
       throw new RangeError('Busur sudut tidak bisa digambar untuk vektor nol');
     }
     const group = svgEl('g');
-    const perpendicular = V.isPerpendicular(V.vec(...du), V.vec(...dv));
+    // `rightMarker: false` untuk soal yang MENANYAKAN sudutnya: penanda persegi
+    // sudah berkata "90°" sebelum siswa menghitung apa pun (aksioma §1.1).
+    const perpendicular = rightMarker && V.isPerpendicular(V.vec(...du), V.vec(...dv));
     const path = svgEl('path', {}, perpendicular ? 'plane__arc plane__arc--right' : 'plane__arc');
     group.appendChild(path);
 

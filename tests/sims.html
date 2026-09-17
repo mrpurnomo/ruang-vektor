@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uji Engine Simulasi — Ruang Vektor</title>
+  <!--
+    Uji ALUR untuk js/lesson/simulations/*. Buka lewat server dev:
+      python tests/serve.py  →  http://localhost:5173/tests/sims.html
+      (opsional ?engine=vector_anatomy untuk satu engine saja)
+
+    Setiap engine dipasang dengan definisi JSON yang SESUNGGUHNYA, lalu
+    dikerjakan: jawaban salah dulu (harus ditolak berkalimat, tanpa
+    membocorkan kunci), lalu jawaban benar sampai tuntas. Bidang SVG diukur
+    tidak bergeser antar langkah, dan destroy() diukur bersih.
+
+    Hasil: tabel di halaman + window.__simTest = { done, passed, failed, failures }.
+  -->
+  <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/workspace.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/mathpad.css">
+  <link rel="stylesheet" href="../css/vector.css">
+  <link rel="stylesheet" href="../css/plane.css">
+  <link rel="stylesheet" href="../css/simulations.css">
+  <style>
+    body { position: static !important; overflow: auto !important; height: auto !important; padding: 16px; background: var(--bg-canvas); }
+    .rig { height: 620px; margin-bottom: 16px; }
+    #log { font: 12px/1.5 var(--font-mono); white-space: pre-wrap; }
+    .ok { color: var(--success-hi); } .no { color: var(--danger-hi); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="rig">
+    <div class="workspace--split">
+      <aside class="ws-side"><div class="ws-side__hint" id="hint"></div></aside>
+      <section class="ws-stage"><div class="workspace__body"><div class="content-card content-card--tight"><div class="sim-host" id="host"></div></div></div></section>
+    </div>
+  </div>
+  <div id="log"></div>
+  <script src="../assets/vendor/katex/katex.min.js"></script>
+  <script type="module" src="./sims.browser.mjs"></script>
+</body>
+</html>

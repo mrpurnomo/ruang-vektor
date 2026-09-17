@@ -121,10 +121,16 @@ test('viewBox = ukuran piksel wadah, CTM seragam (a = d, tanpa geser miring)', a
   try {
     const svg = plane.svg;
     const r = svg.getBoundingClientRect();
+    const cs = getComputedStyle(svg);
+    const contentW = r.width - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth);
+    const contentH = r.height - parseFloat(cs.borderTopWidth) - parseFloat(cs.borderBottomWidth);
     const [, , w, h] = svg.getAttribute('viewBox').split(/\s+/).map(Number);
-    near(w, r.width, 0.5, 'lebar viewBox');
-    near(h, r.height, 0.5, 'tinggi viewBox');
+    // Dibandingkan dengan KOTAK KONTEN: versi lama membandingkan kotak luar
+    // (termasuk border) dan meloloskan skala 0,997 yang meleset.
+    near(w, contentW, 0.5, 'lebar viewBox');
+    near(h, contentH, 0.5, 'tinggi viewBox');
     const m = svg.getScreenCTM();
+    near(m.a, 1, 1e-3, '1 satuan pengguna = 1 piksel CSS');
     near(m.a, m.d, 1e-6, 'skala x vs y');
     near(m.b, 0, 1e-9, 'b');
     near(m.c, 0, 1e-9, 'c');
@@ -351,6 +357,24 @@ test('setTappable: klik nyata di elementFromPoint dan Enter memanggil handler; r
   } finally { plane.destroy(); }
 });
 
+test('Titik yang bisa diketuk punya sasaran sentuh ≥ 44px; titik biasa tidak menghalangi panah', async () => {
+  // Regresi Tahap 4: titik 5,5px terukur 11×11px — hampir mustahil diketuk jempol.
+  const plane = fresh();
+  try {
+    const a = plane.drawVector({ from: [-4, 0], to: [4, 0], name: 'u' });
+    const idle = plane.drawPoint([0, 0]);
+    const near = toClient(plane.svg, plane.toScreen([0.3, 0]));
+    assert(document.elementFromPoint(near[0], near[1]).closest('.plane__arrow') === a.el, 'titik tak-ketuk menghalangi panah');
+    const taps = [];
+    idle.setTappable(() => taps.push(1), 'Titik asal');
+    const hit = idle.el.querySelector('.plane__point-hit').getBoundingClientRect();
+    assert(hit.width >= 44 && hit.height >= 44, `sasaran ${hit.width}×${hit.height}`);
+    const edge = toClient(plane.svg, plane.toScreen([0, 0]));
+    document.elementFromPoint(edge[0] + 18, edge[1] - 10).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    assert(taps.length === 1, 'ketukan 18px dari pusat titik tidak mengenai titik');
+  } finally { plane.destroy(); }
+});
+
 test('lock(): panah terkunci tidak lagi menerima ketukan (diukur lewat elementFromPoint)', async () => {
   const plane = fresh();
   try {
@@ -429,7 +453,7 @@ test('Resize: viewBox mengikuti, skala tetap seragam, panah digambar ulang di ko
     await frames(4);
     assert(layouts >= 1, 'tidak ada layout ulang');
     const [, , w] = plane.svg.getAttribute('viewBox').split(/\s+/).map(Number);
-    near(w, 420, 0.5, 'viewBox baru');
+    near(w, 418, 0.5, 'viewBox baru = 420 − border 2px');
     const m = plane.svg.getScreenCTM();
     near(m.a, m.d, 1e-6, 'skala seragam sesudah resize');
     const [[x0, y0], [x1, y1]] = pathEnds(plane.svg, a.el.querySelector('.plane__arrow-hit'));

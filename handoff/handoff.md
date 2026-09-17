@@ -67,6 +67,7 @@ membuat peramban menjalankan modul JS basi).
 | **6 · Visual** | **Perombakan visual "Instrumen Ukur"**: film abu dingin berpetak mm + pelat bersudut 2–8px + layar instrumen gelap; ARAH = kobalt `#2F3DE0`, BESARAN = amber `#FFB000`; tanda tangan = mistar (bezel header, panggung), sudut bidik (pelat pintu masuk), piringan busur derajat (cincin progres); font Barlow / Barlow Condensed / JetBrains Mono (vendor lokal, font lama dilepas). DOM & nama kelas tidak berubah; urutan `@layer` tetap. Terukur: kontras 0 pelanggaran di 6 rute, 0 luapan di 740×360 / 1024×600 / 1440×900, rasio sidebar 26,5 / 23,8 / 28%, 0 galat konsol | (commit ini) |
 | **7 · Tahap 2** | **Mesin matematika domain (TDD)**: `surd.js` (pecahan & akar eksak `(n/d)√r`, jumlah suku, rasionalisasi, `parseSurd` untuk keluaran papan angka, `isSimplestForm`), `vector.js` (R²/R³ dengan `dim` tersimpan; eksak masuk → eksak keluar; fungsi `*Exact` mengembalikan bentuk akar), `validator.js` (`can*` berkalimat + `checkExactAnswer` / `checkVectorAnswer` berkode `correct·empty·unreadable·not-simplest·decimal·sign·wrong`; kalimat TIDAK membocorkan kunci). `node tests/engine.test.mjs` → 111/111, termasuk 500 pasang vektor acak berbenih; uji mutasi 18 mutan, 17 tertangkap + 1 kode mati dibuang, 1 celah (minor y–z) ditutup | (commit ini) |
 | **8 · Tahap 3** | **Bidang kartesius SVG**: `plane/planeGeometry.js` (murni, tanpa DOM: viewport skala seragam, y terbalik HANYA di toScreen/toMath, busur, siku, panah, label, snap), `arrow.js` (marker per panah DI DALAM grupnya + userSpaceOnUse, ketuk + Enter/Spasi, seret ujung + tombol panah), `arrowAnimation.js` (tween di ruang matematika, bisa dibatalkan, hormati reduced-motion), `vectorPlane.js` (lapisan grid·axis·pick·shape·interactive·label, ResizeObserver+rAF, destroy tuntas). Uji: Node 130/130 (19 geometri) + peramban `tests/plane.html` 31/31 (CTM, elementFromPoint, hitung piksel kepala panah, spy ResizeObserver & listener). Uji mutasi: 4 geometri + 8 kontrak SVG, semua tertangkap sesudah 2 celah ditutup. Terverifikasi di dalam aplikasi pada 740×360 / 1024×600 / 1440×900 | (commit ini) |
+| **9 · Tahap 4** | **25 engine simulasi** di `simBasics` (6) · `simOperations` (8) · `simProducts` (6) · `simModeling` (5), didaftarkan lewat `ENGINES` per bab di `index.js` (25 terdaftar = 25 engine JSON). Kerangka bersama `simKit.js` → `CaseSimulation`: kasus → langkah `fields·choice·multi·tap`; `check()` → `true` atau `{message|toast, values, wrong}`; **`solveStep()` satu-satunya jalan maju**, visual konfirmasi (`onSolved`) baru digambar SESUDAH siswa benar. Anggaran label (`essential`), sasaran titik 44px, slot tercadang. Mini Kuis: kunci & pembahasan tidak lagi tampil saat salah — baru sesudah salah ke-3 (`QuizEngine.REVEAL_AFTER`). Kalimat toast JSON yang membocorkan kunci ditulis ulang. Uji: Node 130/130 · `tests/plane.html` 32/32 · `tests/sims.html` 26/26 (260 jawaban salah ditolak berkalimat, tanpa gambar baru, tanpa `{{kunci}}`, tanpa bocor angka kunci, bidang tidak bergeser, destroy tuntas, resume sesi) | (commit ini) |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -80,14 +81,10 @@ membuat peramban menjalankan modul JS basi).
 - Nol kebocoran state antar layar (papan angka, scrim, papan coret, tambatan toast).
 
 ### Yang BELUM ada
-- `js/domain/*` selesai (Tahap 2–3). Engine simulasi `js/lesson/simulations/sim*.js` masih kosong (Tahap 4).
-- `js/lesson/simulations/sim*.js` → kosong; **25 engine belum ada**, semua sub-topik
-  menampilkan "Simulasi sedang disiapkan" dan tetap membuka Mini Kuis (Tahap 4).
-- `tests/validate_data.py` → kosong (`engine.test.mjs` terisi, 111 uji). `tests/smoke.py` &
-  `archive_soal.py` masih warisan Matriks, belum diadaptasi.
-- Pertanyaan terbuka ke pengguna: Mini Kuis menampilkan kunci (hijau) langsung setelah
-  jawaban salah lalu mengizinkan "Coba Lagi" — perilaku warisan, dipertanyakan secara
-  pedagogis, belum diputuskan.
+- `tests/validate_data.py` → kosong. `tests/smoke.py` & `archive_soal.py` masih warisan
+  Matriks, belum diadaptasi.
+- Engine tervalidasi otomatis lewat `tests/sims.html`, tetapi baru `vector_anatomy` yang
+  dijalankan tangan-penuh di aplikasi (papan angka sungguhan, 1024×600 & 740×360).
 
 ---
 
@@ -210,7 +207,14 @@ Aturan:
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
 > ### ✅ Perombakan visual SELESAI (lihat baris "6 · Visual" di §2 dan komentar `css/tokens.css`).
-> ### Tahap 3 SELESAI (baris "8 · Tahap 3"). Langkah berikutnya: Tahap 4 — engine simulasi, setelah pengguna menyetujui.
+> ### Tahap 4 SELESAI (baris "9 · Tahap 4"). Langkah berikutnya menunggu keputusan pengguna.
+>
+> Kontrak engine (Tahap 4, mengikat): **aplikasi tidak pernah menghitung untuk siswa** —
+> hasil, proyeksi, sudut, titik akhir tidak digambar/ditulis sebelum siswa memasukkannya.
+> Kalimat toast tidak boleh memuat angka kunci (uji `sims.html` memeriksanya). Bidang
+> dibuat per kasus dan dihancurkan di `goToCase`; referensi panah wajib di-reset per kasus.
+> `vectorPlane.measure()` memakai kotak ISI (batas SVG dikurangi) → 1 unit = 1 px CSS.
+> Uji engine: `http://localhost:5173/tests/sims.html` → `window.__simTest`.
 >
 > Kontrak bidang untuk engine: `const plane = createVectorPlane(host, {xRange, yRange})` lalu **`this.track(() => plane.destroy())`**.
 > Wadah WAJIB `.plane-host` bertinggi tercadangkan (SVG absolut di dalamnya). Uji peramban:
@@ -288,8 +292,7 @@ Aturan:
 - **Tahap 4:** 25 engine simulasi Bab 1 → 4 (`simBasics/Operations/Products/Modeling.js`),
   didaftarkan lewat `registerSimulation(key, Class)`; kunci = `simulation.engine` di JSON.
   Konfigurasi & kalimat toast tiap engine sudah tertulis di `data/chapters/*.json`.
-- Utang: `tests/validate_data.py`, adaptasi `tests/smoke.py`, keputusan soal kunci
-  jawaban Mini Kuis setelah salah (§2).
+- Utang: `tests/validate_data.py`, adaptasi `tests/smoke.py`.
 
 ---
 

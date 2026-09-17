@@ -221,7 +221,242 @@
 
 
   /* ============================================================
-     6. LANSKAP PENDEK
+     6. KIT SIMULASI (simKit.js) — papan bidang + lembar kerja
+
+     Tata letak dua kolom saat panggung cukup lebar: BIDANG di kiri dengan
+     tinggi TERCADANGKAN, LEMBAR KERJA di kanan. Semua yang muncul-hilang
+     (isian, pilihan, jejak langkah) hanya tumbuh di kolom kerja, sehingga
+     bidang SVG tidak pernah bergeser (kontrak nol pergeseran).
+
+     Lebar diputuskan container query pada .sim-host, bukan media query:
+     yang menentukan adalah lebar PANGGUNG, bukan lebar jendela.
+     ============================================================ */
+
+  .sim-host { container-type: inline-size; }
+
+  .sim-kit { min-height: 0; }
+
+  .sim-board {
+    display: grid;
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  .sim-board__plane:empty { display: none; }
+
+  .sim-board__plane .plane-host {
+    min-height: clamp(220px, 42vh, 380px);
+  }
+
+  @container (min-width: 560px) {
+    .sim-board--plane {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    }
+    .sim-board--plane .sim-board__plane {
+      position: sticky;
+      top: 0;
+    }
+  }
+
+  .sim-board__work {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .sim-given {
+    padding: var(--sp-2) var(--sp-3);
+    border-left: 3px solid var(--royal);
+    background: var(--bg-sunken);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    color: var(--ink-900);
+    font-size: var(--fs-base);
+    line-height: 1.55;
+    overflow-x: auto;
+  }
+  .sim-given + .sim-given { margin-top: var(--sp-2); }
+  .sim-given--display { text-align: center; font-size: var(--fs-md); }
+  .sim-given--quote { border-left-color: var(--value-deep); background: var(--value-soft); }
+  .sim-given--muted { border-left-color: var(--border-strong); color: var(--ink-700); font-size: var(--fs-sm); }
+
+  /* Jejak langkah: nilai yang SUDAH dikonfirmasi, dalam kata-kata siswa. */
+  .sim-board__trail {
+    display: grid;
+    gap: 4px;
+    list-style: none;
+  }
+  .sim-board__trail:empty { display: none; }
+  .sim-board__trail-item {
+    position: relative;
+    padding: 4px var(--sp-3) 4px calc(var(--sp-3) + 14px);
+    border-radius: var(--r-sm);
+    background: var(--success-soft);
+    color: var(--ink-900);
+    font-size: var(--fs-sm);
+    overflow-x: auto;
+  }
+  .sim-board__trail-item::before {
+    content: '';
+    position: absolute;
+    left: var(--sp-2);
+    top: .95em;
+    width: 8px;
+    height: 5px;
+    border-left: 2px solid var(--success-hi);
+    border-bottom: 2px solid var(--success-hi);
+    transform: rotate(-45deg);
+  }
+
+  .sim-board__inputs {
+    display: grid;
+    gap: var(--sp-3);
+    min-height: 120px;
+    align-content: start;
+  }
+
+  .sim-note { font-size: var(--fs-sm); color: var(--ink-700); }
+
+  .sim-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    align-items: flex-end;
+  }
+  .sim-fields--column { flex-direction: column; align-items: flex-start; }
+
+  .sim-field {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-width: 0;
+  }
+  .sim-field__label,
+  .sim-field__suffix {
+    font-size: var(--fs-base);
+    color: var(--ink-900);
+    white-space: nowrap;
+  }
+  /* Lebar isian EKSPLISIT. Lebar bawaan <input> (±20 karakter) terukur
+     meluap melewati tepi kartu di kolom kerja 1024×600. Isian papan angka
+     paling panjang "-12√145/145" muat di 7.5rem mono. */
+  .sim-field .numfield {
+    width: 7.5rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sim-board__actions {
+    display: flex;
+    gap: var(--sp-2);
+    justify-content: flex-start;
+  }
+
+  .sim-choices { gap: 6px; }
+
+  .sim-column .cell {
+    cursor: pointer;
+    min-width: 58px;
+  }
+  .sim-column .cell.is-picked {
+    border-color: var(--royal);
+    background: var(--brand-primary-soft);
+  }
+  .sim-column .cell.is-done {
+    border-color: var(--success);
+    background: var(--success-soft);
+  }
+
+  /* ---- panel kendali: pemilih kasus, daftar langkah ---- */
+  .case-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .case-chip {
+    flex: 1 1 auto;
+    min-height: 34px;
+    padding: 4px var(--sp-2);
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--ink-700);
+    font-size: var(--fs-xs);
+    cursor: pointer;
+  }
+  .case-chip b { font-family: var(--font-ui); font-weight: 700; letter-spacing: .03em; }
+  .case-chip[data-state="current"] { background: var(--royal); border-color: var(--royal); color: var(--white); }
+  .case-chip[data-state="solved"] { background: var(--success-soft); border-color: transparent; color: var(--success-hi); }
+  .case-chip[data-state="locked"] { border-style: dashed; color: var(--ink-500); cursor: not-allowed; }
+
+  .sim-steps {
+    display: grid;
+    gap: 2px;
+    list-style: none;
+    counter-reset: simstep;
+  }
+  .sim-steps__item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-xs);
+    color: var(--ink-500);
+    counter-increment: simstep;
+  }
+  .sim-steps__mark {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-xs);
+    border: 1px solid var(--border-strong);
+    font-family: var(--font-value);
+    font-size: 10px;
+  }
+  .sim-steps__mark::before { content: counter(simstep); }
+  .sim-steps__item[data-state="active"] { color: var(--ink-900); font-weight: 600; }
+  .sim-steps__item[data-state="active"] .sim-steps__mark { border-color: var(--royal); color: var(--royal); }
+  .sim-steps__item[data-state="done"] .sim-steps__mark { background: var(--success); border-color: var(--success); color: var(--white); }
+
+  .case-next { align-self: stretch; }
+
+  /* ---- suku-suku hasil kali titik yang bisa diburu (sniper) ---- */
+  .sim-terms {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+  }
+  .sim-term {
+    min-height: var(--touch-min);
+    padding: 4px var(--sp-3);
+    border-radius: var(--r-md);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--ink-900);
+    transition: opacity var(--dur-base) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  }
+  .sim-term:hover { border-color: var(--royal); }
+  .sim-term.is-picked { border-color: var(--value-deep); background: var(--value-soft); }
+  .sim-term.is-muted { opacity: .3; }
+  .sim-term__plus { color: var(--ink-700); }
+
+  /* ---- kerangka balok ---- */
+  .sim-box {
+    display: block;
+    width: min(100%, 340px);
+    margin-inline: auto;
+    height: auto;
+  }
+  .sim-box__edge { stroke: var(--ink-700); stroke-width: 1.6; }
+  .sim-box__edge--hidden { stroke-dasharray: 5 4; stroke: var(--ink-300); }
+  .sim-box__label { font-family: var(--font-value); font-size: 12px; font-weight: 700; fill: var(--ink-900); }
+  .sim-box__diagonal { stroke: var(--value-deep); stroke-width: 3; stroke-linecap: round; }
+
+  /* ============================================================
+     7. LANSKAP PENDEK
      ============================================================ */
 
   @media (orientation: landscape) and (max-height: 460px) {

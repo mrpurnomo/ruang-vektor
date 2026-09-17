@@ -37,6 +37,10 @@ export class QuizEngine {
     this.finished = false;          // penjaga anti-spam tombol Selesai
     this.results = new Array(questions.length).fill(null);
 
+    // Banyak percobaan SALAH per soal — dasar keputusan kapan pembahasan
+    // boleh dibuka dalam mode mastery (lihat `shouldReveal`).
+    this.wrongAttempts = new Array(questions.length).fill(0);
+
     // Ingatan sesi: nomor soal DAN hasil per soal. Menyimpan nomornya saja
     // tidak cukup — siswa akan mendarat di soal 3 dengan skor nol, dan
     // navigasi titiknya ikut mati karena tidak ada riwayat jawaban.
@@ -307,10 +311,18 @@ export class QuizEngine {
       if (multi) {
         const expected = new Set(q.answerIndices);
         const ok = expected.size === selected.size && [...expected].every((i) => selected.has(i));
+        const reveal = this.shouldReveal(ok);
 
         buttons.forEach((btn, i) => {
           btn.classList.add('option--locked');
           const picked = btn.getAttribute('aria-checked') === 'true';
+          if (!reveal) {
+            // Mode mastery, jawaban salah: kunci TIDAK dibongkar. Menandai
+            // pilihan benar lalu menawarkan "Coba Lagi" berarti siswa cukup
+            // menyalin warna hijau — tidak ada yang dipelajari.
+            if (picked) btn.classList.add('option--wrong');
+            return;
+          }
           if (expected.has(i)) btn.classList.add('option--correct');
           else if (picked) btn.classList.add('option--wrong');
 
@@ -328,10 +340,11 @@ export class QuizEngine {
 
       const picked = [...selected][0];
       const ok = picked === q.answerIndex;
+      const reveal = this.shouldReveal(ok);
       buttons.forEach((btn, i) => {
         btn.classList.add('option--locked');
-        if (i === q.answerIndex) btn.classList.add('option--correct');
-        else if (i === picked) btn.classList.add('option--wrong');
+        if (reveal && i === q.answerIndex) btn.classList.add('option--correct');
+        else if (i === picked && !ok) btn.classList.add('option--wrong');
       });
       this.judge(ok, q);
     });
@@ -427,11 +440,31 @@ export class QuizEngine {
     });
   }
 
+  /**
+   * Boleh membuka kunci & pembahasan sekarang?
+   *
+   *   · Jawaban benar → ya, pembahasan tetap mengajar.
+   *   · Mode bebas (tanpa "Coba Lagi") → ya, ini tinjauan.
+   *   · Mode mastery, salah → TIDAK, kecuali sudah REVEAL_AFTER kali salah
+   *     pada soal yang sama. Siswa yang terus berusaha tidak boleh terkunci
+   *     selamanya; pada titik itu membaca penjelasan lebih mendidik daripada
+   *     menebak acak.
+   *
+   * Dipanggil SEBELUM `judge()` menaikkan hitungan, jadi percobaan salah yang
+   * sedang dinilai ikut dihitung di sini.
+   */
+  shouldReveal(ok) {
+    if (ok || !this.options.requireCorrect) return true;
+    return this.wrongAttempts[this.index] + 1 >= QuizEngine.REVEAL_AFTER;
+  }
+
   judge(ok, q) {
     if (this.answered) return;
+    const reveal = this.shouldReveal(ok);
     this.answered = true;
     this.submitBtn.disabled = true;
     this.lockInputs();
+    if (!ok) this.wrongAttempts[this.index] += 1;
 
     if (this.results[this.index] === null) {
       this.results[this.index] = ok;
@@ -449,9 +482,10 @@ export class QuizEngine {
       toast.error(q.toastWrong || 'Belum tepat — periksa kembali langkah pengerjaanmu.');
     }
 
-    if (this.options.showExplanation !== false && q.explanation) {
+    if (this.options.showExplanation !== false && q.explanation && reveal) {
       const box = el('div', 'explain anim-rise');
-      box.innerHTML = `<div class="explain__title">Pembahasan</div>${renderMixed(q.explanation)}`;
+      const early = !ok ? '<p class="quiz__hint">Kamu sudah mencoba beberapa kali. Pelajari pembahasannya, lalu kerjakan ulang dengan caramu sendiri.</p>' : '';
+      box.innerHTML = `<div class="explain__title">Pembahasan</div>${early}${renderMixed(q.explanation)}`;
       this.feedbackHost.appendChild(box);
     }
 
@@ -532,5 +566,8 @@ export class QuizEngine {
     }
   }
 }
+
+/** Percobaan salah ke berapa yang membuka pembahasan dalam mode mastery. */
+QuizEngine.REVEAL_AFTER = 3;
 
 export default QuizEngine;

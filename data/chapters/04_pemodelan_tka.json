@@ -49,7 +49,7 @@
           "belumDikuadratkan": "Akarnya masih ada di ruas kiri. Selama tanda akar belum hilang, tidak ada yang bisa difaktorkan — **kuadratkan kedua ruas** lebih dulu.",
           "koefisienTidakTerkuadrat": "Belum tepat — $({{suku}})^2$ berarti **seluruhnya** dikuadratkan, termasuk koefisiennya. $(2m)^2 = 4m^2$, bukan $2m^2$.",
           "sukuTengahHilang": "Belum tepat — $({{suku}})^2$ adalah bentuk kuadrat sempurna, bukan penjumlahan dua kuadrat. $(m+3)^2 = m^2 + 6m + 9$; suku tengahnya tidak boleh hilang.",
-          "ruasKananLupa": "Kamu mengkuadratkan ruas kiri saja. Kalau satu ruas dikuadratkan, ruas yang lain **wajib** ikut — ${{norma}}^2 = {{kuadrat}}$.",
+          "ruasKananLupa": "Kamu mengkuadratkan ruas kiri saja. Kalau satu ruas dikuadratkan, ruas yang lain **wajib** ikut dikuadratkan.",
           "akarKeduaBelumDicari": "Satu akar sudah benar, tetapi persamaan kuadrat punya **dua**. Soal menanyakan seluruh nilai yang memenuhi — jangan tutup sebelum keduanya kamu temukan.",
           "syaratTerlewat": "Kedua akarmu benar secara aljabar, tetapi soal memberi syarat **{{syarat}}**. Salah satu akar harus dibuang — periksa mana yang melanggar syaratnya.",
           "success": "Tepat! Kuadratkan, sederhanakan, faktorkan — dan pastikan kedua akarnya sudah kamu periksa."
@@ -276,7 +276,7 @@
         },
         "toasts": {
           "lintasanBelumDihitung": "Tentukan dulu vektor lintasan totalnya, $\\vec{AE} = E - A$. Tanpa jarak total, proporsi waktunya tidak punya acuan.",
-          "waktuTotalSalah": "Waktu totalnya adalah **jumlah seluruh ruas** yang tertulis: ${{rincian}} = {{total}}$ menit. Kalau salah di sini, seluruh proporsi ikut bergeser.",
+          "waktuTotalSalah": "Waktu totalnya adalah **jumlah seluruh ruas** yang tertulis di tabel. Kalau salah di sini, seluruh proporsi ikut bergeser.",
           "ruasGabunganTerlewat": "Ruas **{{ruas}}** bukan salah satu ruas yang tertulis di tabel — ia gabungan dua ruas. Jumlahkan dulu kedua waktunya sebelum memakainya dalam proporsi.",
           "dibulatkanTerlaluDini": "Hati-hati — kamu membulatkan $\\sqrt{99}$ terlalu awal. Ruas ini terletak dekat sekali dengan ambangnya, dan pembulatan dini bisa memindahkannya ke sisi yang salah.",
           "prosesTerbalik": "Belum tepat — yang berbanding lurus adalah **jarak dengan waktu**, jadi jarak bagian = $\\dfrac{\\text{waktu bagian}}{\\text{waktu total}} \\times$ jarak total. Kamu membaliknya menjadi waktu total dibagi waktu bagian.",

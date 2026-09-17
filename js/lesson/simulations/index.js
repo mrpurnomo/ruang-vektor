@@ -16,13 +16,20 @@
 import { el } from './simCore.js';
 import { icon } from '../../core/ui/icons.js';
 import { renderMixed } from '../../core/render/katexRenderer.js';
+import { ENGINES as BAB_1 } from './simBasics.js';
+import { ENGINES as BAB_2 } from './simOperations.js';
+import { ENGINES as BAB_3 } from './simProducts.js';
+import { ENGINES as BAB_4 } from './simModeling.js';
 
 /**
  * string engine → kelas turunan `Simulation`.
  *
- * Diisi bertahap di Tahap 4 Langkah 5:
  *   Bab 1 → simBasics.js   · Bab 2 → simOperations.js
  *   Bab 3 → simProducts.js · Bab 4 → simModeling.js
+ *
+ * Berkas bab MENGEKSPOR peta `ENGINES`; berkas inilah yang mendaftarkannya.
+ * Kebalikannya (berkas bab memanggil registerSimulation dari sini) membuat
+ * impor melingkar: registry belum terinisialisasi saat berkas bab dievaluasi.
  */
 export const SIMULATION_REGISTRY = {};
 
@@ -32,6 +39,10 @@ export function registerSimulation(key, EngineClass) {
     console.warn(`[sim] engine "${key}" didaftarkan ulang dengan kelas berbeda`);
   }
   SIMULATION_REGISTRY[key] = EngineClass;
+}
+
+for (const chapter of [BAB_1, BAB_2, BAB_3, BAB_4]) {
+  for (const [key, EngineClass] of Object.entries(chapter)) registerSimulation(key, EngineClass);
 }
 
 export function isRegistered(key) {
@@ -58,6 +69,8 @@ export function mountSimulation(container, definition, onComplete, options = {})
   if (!EngineClass) return mountUnavailable(container, def, onComplete, options);
 
   const sim = new EngineClass(container, def.config || {}, def.toasts || {}, onComplete);
+  // Definisi utuh (judul, brief) — engine kit menaruh brief di panel kendali.
+  sim.definition = def;
   sim.hintHost = options.hintHost || null;
   sim.onSlideChange = options.onSlideChange || null;
   sim.savedState = options.resumeState ?? null;

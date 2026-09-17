@@ -337,6 +337,10 @@
     display: block;
     overflow-y: auto;
     overflow-x: hidden;
+    /* Talang scrollbar DICADANGKAN. Terukur di Tahap 4: begitu lembar kerja
+       simulasi memanjang, scrollbar muncul, mencuri 11px lebar, dan bidang
+       SVG menyusut 500 → 489px di tengah langkah — pergeseran tata letak. */
+    scrollbar-gutter: stable;
     overscroll-behavior: contain;
     padding-right: var(--sp-5);
     scrollbar-width: thin;
@@ -457,7 +461,14 @@
     }
 
     .ws-side__actions .actionbar .btn--ghost span,
-    .ws-side__actions .actionbar .btn--quiet span { display: none; }
+    .ws-side__actions .actionbar .btn--quiet span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
 
     .ws-side__actions .actionbar .btn--primary,
     .ws-side__actions .actionbar .btn--success { flex: 1 1 auto; order: 0; }
@@ -586,7 +597,7 @@
     .ws-side__actions .actionbar {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: var(--sp-2);
       padding: 0;
     }
@@ -603,6 +614,38 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    /* Tiga tombol berbagi rata di kolom ±165px menyisakan 49px per tombol —
+       label "Lanjut ke Mini Kuis" terpotong jadi "KE MINI KU" (terukur di
+       740×360). Aksi sekunder cukup ikonnya; labelnya disembunyikan secara
+       VISUAL saja agar nama aksesibelnya tetap terbaca pembaca layar. */
+    .ws-side__actions .actionbar .btn--ghost,
+    .ws-side__actions .actionbar .btn--quiet {
+      flex: 0 0 36px;
+      padding: 0;
+    }
+    .ws-side__actions .actionbar .btn--ghost > span,
+    .ws-side__actions .actionbar .btn--quiet > span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .ws-side__actions .actionbar .btn--primary,
+    .ws-side__actions .actionbar .btn--success { flex: 1 1 auto; order: 0; }
+    /* Sisa ±76px masih kurang untuk satu baris label kapital (97px, terukur).
+       Label boleh dua baris DI DALAM tinggi tombol yang sama; panahnya
+       dilepas karena label sendiri sudah menyebut tujuannya. */
+    .ws-side__actions .actionbar .btn--primary > span,
+    .ws-side__actions .actionbar .btn--success > span {
+      white-space: normal;
+      line-height: 1.1;
+      letter-spacing: .02em;
+      text-align: center;
+    }
+    .ws-side__actions .actionbar .btn--primary > svg,
+    .ws-side__actions .actionbar .btn--success > svg { display: none; }
     /* Prompt adalah satu-satunya blok yang memberi tahu siswa apa yang harus
        dilakukan SEKARANG, jadi ruangnya dijamin lebih dulu — baru sisanya
        dibagi. Tanpa min-height, saudara kandungnya menjatah habis kolom ini

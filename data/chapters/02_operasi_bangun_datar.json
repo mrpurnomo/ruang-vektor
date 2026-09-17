@@ -257,7 +257,7 @@
           "komponenTidakSeletak": "Belum tepat — kamu memilih komponen ke-{{indeks}} pada $\\vec{a}$, jadi pasangannya harus komponen ke-{{indeks}} juga pada $\\vec{b}$. Operasi vektor hanya memasangkan komponen yang **seletak**.",
           "pilihSumberDulu": "Ketuk dulu satu komponen di $\\vec{a}$, baru pasangannya di $\\vec{b}$.",
           "dimensiBeda": "Operasi ini **tidak terdefinisi**. $\\vec{a}$ punya {{dimA}} komponen sedangkan $\\vec{b}$ punya {{dimB}} — komponen $z$ pada $\\vec{b}$ tidak punya pasangan. Penjumlahan vektor mensyaratkan dimensi yang sama persis.",
-          "tandaKurangTerlewat": "Belum tepat — operasinya **pengurangan**, jadi tanda komponen $\\vec{b}$ harus dibalik lebih dulu. Perhatikan: $-2 - 5$ bernilai $-7$, bukan $3$.",
+          "tandaKurangTerlewat": "Belum tepat — operasinya **pengurangan**, jadi komponen $\\vec{b}$ dikurangkan, bukan ditambahkan. Tanda kurang di depan komponen yang negatif mengubahnya menjadi penjumlahan.",
           "hasilSalah": "Belum tepat — kerjakan satu pasangan saja dulu, dan bawa tandanya apa adanya. Bilangan negatif dikurangi bilangan positif menjadi **lebih** negatif.",
           "success": "Tepat! Komponen seletak bertemu komponen seletak — itu satu-satunya aturan di sini."
         }
@@ -451,9 +451,9 @@
         },
         "toasts": {
           "tahapBelumSelesai": "Tahap perkalian skalar belum tuntas — masih ada komponen yang belum dikalikan. Tahap pengurangan baru terbuka setelah kedua vektor selesai diregangkan.",
-          "skalarHanyaSatuKomponen": "Belum tepat — skalar menyentuh **semua** komponen. $2\\vec{u}$ dengan $\\vec{u} = ({{ux}}, {{uy}})$ adalah $({{hx}}, {{hy}})$, bukan $({{hx}}, {{uy}})$.",
+          "skalarHanyaSatuKomponen": "Belum tepat — skalar menyentuh **semua** komponen. Setiap komponen vektornya harus dikalikan dengan skalar, tanpa ada satu pun yang tertinggal.",
           "urutanTerbalik": "Belum tepat — kerjakan perkalian skalar **lebih dulu**, baru pengurangan. Mengurangkan sebelum mengalikan mengubah soalnya menjadi $2(\\vec{u} - \\vec{v})$, yang nilainya berbeda.",
-          "tandaKurangSalah": "Periksa tandanya sekali lagi: ${{a}} - {{b}} = {{hasil}}$. Bilangan negatif dikurangi bilangan positif menjadi lebih negatif — bukan berbalik menjadi positif.",
+          "tandaKurangSalah": "Periksa tandanya sekali lagi. Bilangan negatif dikurangi bilangan positif menjadi lebih negatif — bukan berbalik menjadi positif.",
           "success": "Tepat! Perkalian dulu, pengurangan kemudian — dan setiap komponen dikerjakan sendiri-sendiri."
         }
       },
@@ -763,7 +763,7 @@
         },
         "toasts": {
           "mnTertukar": "Belum tepat — penempatan $m$ dan $n$ **bersilang**. Karena $AP : PB = {{m}} : {{n}}$, maka $\\vec{b}$ berpasangan dengan ${{m}}$ dan $\\vec{a}$ berpasangan dengan ${{n}}$, bukan sebaliknya.",
-          "penyebutSalah": "Belum tepat — penyebutnya adalah **jumlah** kedua bagian perbandingan, yaitu ${{m}} + {{n}} = {{jumlah}}$. Ia mewakili seluruh panjang ruas garisnya.",
+          "penyebutSalah": "Belum tepat — penyebutnya adalah **jumlah** kedua bagian perbandingan, $m + n$. Ia mewakili seluruh panjang ruas garisnya.",
           "ujiEkstremGagal": "Coba uji rumusmu dengan kasus ekstrem: kalau $n = 0$, titik $P$ seharusnya berimpit dengan $B$. Apakah rumus yang kamu susun memberikan $\\vec{b}$?",
           "titikDiLuarRuas": "Titik yang kamu tentukan jatuh **di luar** ruas $AB$, padahal perbandingan ${{m}} : {{n}}$ keduanya positif — itu berarti $P$ harus berada **di antara** $A$ dan $B$.",
           "success": "Tepat! Bobot terbesar memang jatuh ke titik yang paling dekat dengan $P$."

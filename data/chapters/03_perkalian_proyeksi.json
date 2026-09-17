@@ -60,7 +60,7 @@
           "lupaTandaNegatif": "Belum tepat — hasil kali $({{a}}) \\times ({{b}})$ bertanda **negatif**. Bawa tandanya masuk ke penjumlahan; suku negatif **mengurangi**, bukan menambah.",
           "hasilSalah": "Belum tepat — jumlahkan **seluruh** hasil kalinya, termasuk suku yang bernilai nol dan suku yang bertanda negatif.",
           "menjumlahBukanMengali": "Belum tepat — komponen seletak dikalikan lebih dulu, baru hasil-hasil kalinya yang dijumlahkan. Bukan komponennya yang langsung dijumlahkan.",
-          "success": "Tepat! $\\vec{a} \\cdot \\vec{b} = 3(1) + (-1)(4) + 2(0) = -1$ — sebuah bilangan, bukan vektor."
+          "success": "Tepat! Hasil kali titik adalah sebuah **bilangan**, bukan vektor: pasangkan komponen seletak, kalikan, lalu jumlahkan."
         }
       },
 
@@ -609,7 +609,7 @@
         "toasts": {
           "lupaKalikanVektor": "Belum tepat — hasilmu masih berupa **angka**, padahal yang diminta **vektor**. Kalikan kembali skalar itu dengan $\\vec{b}$; skalarnya mengurus panjang, $\\vec{b}$ mengurus arah.",
           "penyebutPangkatSatu": "Belum tepat — untuk **vektor** proyeksi, penyebutnya $|\\vec{b}|^2$ berpangkat **dua**. Pangkat satu dipakai pada proyeksi skalar.",
-          "diakarkanDulu": "Tidak perlu diakarkan. $|\\vec{b}|^2$ cukup dihitung sebagai jumlah kuadrat komponennya, yaitu ${{nilai}}$. Mengakarkan lalu mengkuadratkan kembali hanya menambah peluang salah hitung.",
+          "diakarkanDulu": "Tidak perlu diakarkan. $|\\vec{b}|^2$ cukup dihitung sebagai jumlah kuadrat komponennya. Mengakarkan lalu mengkuadratkan kembali hanya menambah peluang salah hitung.",
           "arahTidakSejajar": "Hasilmu tidak sejajar dengan $\\vec{b}$. Vektor proyeksi **selalu** terletak pada garis arah alasnya — periksa apakah kamu sudah mengalikan dengan $\\vec{b}$, bukan dengan $\\vec{a}$.",
           "alasNol": "Alasnya vektor nol, sehingga $|\\vec{b}|^2 = 0$ dan operasinya **tidak terdefinisi**. Bukan sekadar sulit dihitung — vektor nol tidak menentukan garis arah mana pun untuk menampung bayangannya.",
           "success": "Tepat! Panjang bayangan dikali arah alas — dan hasilnya memang sejajar dengan alasnya."
