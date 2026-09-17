@@ -19,7 +19,8 @@ Satu perintah untuk memeriksa aplikasi SEUTUHNYA di peramban sungguhan:
       pada salah ke-1 dan ke-2, baru tampil pada salah ke-3.
    9. Penjaga keluar ujian: tombol rumah & hash manual ditahan modal kustom.
   10. Papan coret: tombol, 4 pena = token palet, kontras goresan ≥ 4,5:1 (piksel).
-  11. Suite peramban: tests/plane.html 32/32 dan tests/sims.html 26/26.
+  11. Konfeti: warna = token palet, host dibersihkan.
+  12. Suite peramban: tests/plane.html 32/32 dan tests/sims.html 26/26.
 
 Pemeriksaan sasaran sentuh (<44px) dilaporkan sebagai CATATAN, bukan GAGAL:
 desain saat ini sengaja memakai tombol 34–40px di lanskap pendek (lihat
@@ -60,6 +61,7 @@ EXPECTED_SIM_TESTS = 26
 VIEWPORTS = [(740, 360), (1024, 600), (1440, 900)]
 SIDEBAR_RATIO = (22.0, 31.0)
 PEN_TOKENS = [["Grafit", "--graphite"], ["Kobalt", "--royal"], ["Amber", "--accent-amber"], ["Beri", "--magenta"]]
+CONFETTI_TOKENS = ["--royal", "--yellow", "--cyan", "--magenta", "--success"]
 LAYER_ORDER = "@layer reset, tokens, layout, components, domain, workspace, utilities, overrides;"
 
 results = []
@@ -509,6 +511,28 @@ def section_scratchpad(page, errors):
     record("Tanpa galat konsol selama papan coret", not errors, "; ".join(errors[:2]))
 
 
+def section_confetti(page, errors):
+    print("\n11. Konfeti perayaan")
+    fresh_position(page)
+    open_route(page, "#/", settle=600)
+    got = page.evaluate("""async (tokens) => {
+        const m = await import('/js/core/interactions/flyToAnimation.js');
+        const cs = getComputedStyle(document.documentElement);
+        m.celebrate({ pieces: 20, duration: 400 });
+        const bits = [...document.querySelectorAll('.confetti-host .confetti-piece > i')];
+        const used = [...new Set(bits.map((b) => b.style.getPropertyValue('--cf-color').trim().toUpperCase()))];
+        const expected = tokens.map((t) => cs.getPropertyValue(t).trim().toUpperCase());
+        await new Promise((r) => setTimeout(r, 400 + 900 + 200));   // celebrate() membuang host pada duration + 900 ms
+        return { used, expected, pieces: bits.length, cleaned: !document.querySelector('.confetti-host') };
+    }""", CONFETTI_TOKENS)
+    record("Konfeti tergambar", got["pieces"] == 20, json.dumps(got))
+    record("Warna konfeti = token palet (kobalt, amber, sian, beri, sukses)",
+           sorted(got["used"]) == sorted(got["expected"]) and len(got["expected"]) == 5 and all(got["expected"]),
+           json.dumps(got))
+    record("Konfeti dibersihkan sesudah durasinya", got["cleaned"], json.dumps(got))
+    record("Tanpa galat konsol selama konfeti", not errors, "; ".join(errors[:2]))
+
+
 def run_suite(browser, name, global_name, expected):
     page = browser.new_page(viewport={"width": 1280, "height": 900})
     page_errors = []
@@ -589,9 +613,10 @@ def main():
             section_reveal_policy(page, errors)
             section_leave_guard(page, errors)
             section_scratchpad(page, errors)
+            section_confetti(page, errors)
 
             if not args.skip_suites:
-                print("\n11. Suite peramban")
+                print("\n12. Suite peramban")
                 run_suite(browser, "plane", "__planeTest", EXPECTED_PLANE_TESTS)
                 run_suite(browser, "sims", "__simTest", EXPECTED_SIM_TESTS)
             browser.close()

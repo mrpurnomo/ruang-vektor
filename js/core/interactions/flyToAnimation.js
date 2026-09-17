@@ -377,7 +377,30 @@ export function rejectShake(el) {
  *  - hanya transform & opacity yang dianimasikan (composite di GPU);
  *  - satu instance saja pada satu waktu.
  */
-const CONFETTI_COLORS = ['#4D8DFF', '#FF7A66', '#FFC24D', '#3DD68C', '#7BABFF'];
+/**
+ * Warna konfeti = palet "Instrumen Teknik" (css/tokens.css), dibaca dari token
+ * yang HIDUP setiap kali perayaan dimulai; hex hanya cadangan. Konfeti murni
+ * hiasan dan tidak membawa informasi, jadi amber & sian murni boleh dipakai di
+ * sini meski kontrasnya rendah di atas film terang.
+ */
+const CONFETTI_TOKENS = [
+  ['--royal', '#2F3DE0'],     // kobalt — ARAH
+  ['--yellow', '#FFB000'],    // amber — BESARAN
+  ['--cyan', '#3DD6F0'],      // sian
+  ['--magenta', '#B8316F'],   // beri
+  ['--success', '#08875A'],   // sukses
+];
+
+function confettiColors() {
+  let styles = null;
+  try {
+    styles = getComputedStyle(document.documentElement);
+  } catch (err) {
+    styles = null;
+  }
+  return CONFETTI_TOKENS.map(([token, fallback]) => (styles && styles.getPropertyValue(token).trim()) || fallback);
+}
+
 let confettiHost = null;
 
 export function celebrate({ pieces = 40, duration = 2800 } = {}) {
@@ -395,6 +418,7 @@ export function celebrate({ pieces = 40, duration = 2800 } = {}) {
   confettiHost = host;
 
   const frag = document.createDocumentFragment();
+  const colors = confettiColors();
   const columnWidth = 100 / pieces;
 
   for (let i = 0; i < pieces; i++) {
@@ -403,7 +427,7 @@ export function celebrate({ pieces = 40, duration = 2800 } = {}) {
 
     // Sebar merata per kolom, lalu geser sedikit secara acak di dalam kolomnya.
     const left = i * columnWidth + Math.random() * columnWidth;
-    const color = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+    const color = colors[i % colors.length];
     const wide = i % 4 === 0;
 
     piece.style.left = `${left}%`;
