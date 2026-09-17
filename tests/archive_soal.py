@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Bangun arsip soal (hardcopy guru) dari `data/quizzes.json`.
+"""Bangun arsip soal (hardcopy guru) Ruang Vektor dari data JSON.
 
     python tests/archive_soal.py
 
-Menghasilkan dua berkas di `content/`:
+Menghasilkan tiga berkas di `content/`:
 
-  · QUIZ_ARCHIVE.md — seluruh bank soal per bab
-  · TKA_ARCHIVE.md  — set Latihan Soal TKA (10 soal, urutan tetap)
+  · QUIZ_ARCHIVE.md       — bank ujian "Latihan per Bab" (quizzes.json, 4 bab)
+  · TKA_ARCHIVE.md        — set Latihan Soal TKA (urutan tetap tkaSimulation)
+  · MINI_KUIS_ARCHIVE.md  — Mini Kuis setiap sub-topik (data/chapters/*.json)
 
-⚠️ Kedua berkas itu DIBANGKITKAN, bukan ditulis tangan. Menyuntingnya
-langsung akan hilang pada pembangkitan berikutnya — ubah `data/quizzes.json`,
-lalu jalankan ulang skrip ini. Dengan begitu arsip guru tidak akan pernah
-menyimpang dari soal yang benar-benar dilihat siswa.
+⚠️ Ketiganya DIBANGKITKAN, bukan ditulis tangan. Menyuntingnya langsung akan
+hilang pada pembangkitan berikutnya — ubah JSON-nya, lalu jalankan ulang skrip
+ini. Dengan begitu arsip guru tidak akan pernah menyimpang dari soal yang
+benar-benar dilihat siswa (PRD §2, persona Guru).
 """
 import io
 import json
@@ -31,18 +32,40 @@ TIPE = {
     "single_choice": "Pilihan ganda (satu jawaban benar)",
     "multi_select": "Pilih semua jawaban benar",
     "mathpad": "Isian angka (papan angka)",
-    "matrix_input": "Isian matriks",
+    "matrix_input": "Isian vektor kolom",
 }
 
+PERINGATAN = [
+    "> ⚠️ **Berkas ini DIBANGKITKAN dari data JSON.** Jangan disunting langsung —",
+    "> suntinganmu akan hilang saat dibangkitkan ulang. Ubah JSON-nya, lalu jalankan",
+    "> `python tests/archive_soal.py`.",
+]
 
-def matriks_tex(m):
+
+def vektor_kolom_tex(m):
+    """`matrix_input` di Ruang Vektor selalu vektor kolom n×1."""
     baris = " \\\\ ".join(" & ".join(str(v) for v in row) for row in m)
     return f"\\begin{{pmatrix}} {baris} \\end{{pmatrix}}"
 
 
-def tulis_soal(out, nomor, q):
+def opsi_teks(opt):
+    return f"${opt['tex']}$" if opt.get("tex") else opt.get("label", "")
+
+
+def kunci_ringkas(q):
+    t = q["input_type"]
+    if t == "single_choice":
+        return HURUF[q["answerIndex"]]
+    if t == "multi_select":
+        return ", ".join(HURUF[i] for i in q["answerIndices"])
+    if t == "matrix_input":
+        return "(" + ", ".join(str(r[0]) for r in q["answer"]) + ")"
+    return str(q["answer"])
+
+
+def tulis_soal(out, nomor, q, level="###"):
     """Satu soal lengkap dengan opsi dan kunci jawabannya."""
-    judul = f"### Soal {nomor}"
+    judul = f"{level} Soal {nomor}"
     if q.get("source"):
         judul += f" · {q['source']}"
     out.append(judul)
@@ -74,21 +97,18 @@ def tulis_soal(out, nomor, q):
     # --- Opsi ---
     if q["input_type"] in ("single_choice", "multi_select"):
         for i, opt in enumerate(q["options"]):
-            isi = f"${opt['tex']}$" if opt.get("tex") else opt.get("label", "")
-            out.append(f"{HURUF[i]}. {isi}")
+            out.append(f"{HURUF[i]}. {opsi_teks(opt)}")
         out.append("")
 
     # --- Kunci ---
-    if q["input_type"] == "single_choice":
+    t = q["input_type"]
+    if t == "single_choice":
         i = q["answerIndex"]
-        opt = q["options"][i]
-        isi = f"${opt['tex']}$" if opt.get("tex") else opt.get("label", "")
-        kunci = f"**{HURUF[i]}** — {isi}"
-    elif q["input_type"] == "multi_select":
-        huruf = ", ".join(HURUF[i] for i in q["answerIndices"])
-        kunci = f"**{huruf}**"
-    elif q["input_type"] == "matrix_input":
-        kunci = f"${matriks_tex(q['answer'])}$"
+        kunci = f"**{HURUF[i]}** — {opsi_teks(q['options'][i])}"
+    elif t == "multi_select":
+        kunci = f"**{kunci_ringkas(q)}**"
+    elif t == "matrix_input":
+        kunci = f"${vektor_kolom_tex(q['answer'])}$"
     else:
         kunci = f"**{q['answer']}**"
 
@@ -110,10 +130,17 @@ def tulis_soal(out, nomor, q):
     out.append("")
 
 
+def simpan(nama, baris):
+    path = os.path.join(OUT_DIR, nama)
+    io.open(path, "w", encoding="utf-8", newline="\r\n").write("\n".join(baris))
+
+
 def main():
     q = json.load(io.open(QUIZZES, encoding="utf-8"))
     lessons = json.load(io.open(LESSONS, encoding="utf-8"))
     judul_bab = {c["id"]: f"Bab {c['number']}: {c['title']}" for c in lessons["chapters"]}
+    cfg = q["tkaSimulation"]
+    bank_tka = cfg["bankId"]
 
     index = {}
     for bank in q["banks"].values():
@@ -121,28 +148,25 @@ def main():
             index[item["id"]] = item
 
     # ------------------------------------------------------------
-    # 1. QUIZ_ARCHIVE.md — seluruh bank per bab
+    # 1. QUIZ_ARCHIVE.md — bank "Latihan per Bab"
     # ------------------------------------------------------------
     out = [
-        "# Arsip Soal — Ruang Matriks",
+        "# Arsip Soal Latihan per Bab — Ruang Vektor",
         "",
-        "Salinan cetak seluruh bank soal beserta **kunci jawabannya**, untuk pegangan guru.",
+        "Salinan cetak bank soal mode *Latihan per Bab* beserta **kunci jawabannya**,",
+        "untuk pegangan guru.",
         "",
-        "> ⚠️ **Berkas ini DIBANGKITKAN dari `data/quizzes.json`.** Jangan disunting",
-        "> langsung — suntinganmu akan hilang saat dibangkitkan ulang. Ubah JSON-nya,",
-        "> lalu jalankan `python tests/archive_soal.py`.",
+        *PERINGATAN,
         "",
-        "Seluruh kunci di bawah sudah diverifikasi ulang secara matematis"
-        " (Fase 18, bagian QA).",
+        "Konsistensi datanya diperiksa `python tests/validate_data.py`.",
         "",
         "---",
         "",
     ]
-
     total = 0
-    for bank_id, items in q["banks"].items():
-        if bank_id == "tka_2025":
-            continue                      # punya berkasnya sendiri
+    bank_bab = [b for b in q["banks"] if b != bank_tka]
+    for bank_id in bank_bab:
+        items = q["banks"][bank_id]
         out.append(f"## {judul_bab.get(bank_id, bank_id)}")
         out.append("")
         out.append(f"*{len(items)} soal.*")
@@ -150,74 +174,82 @@ def main():
         for i, item in enumerate(items, 1):
             tulis_soal(out, i, item)
             total += 1
-
     out.append(f"*Total {total} soal latihan per bab.*")
     out.append("")
-
-    path1 = os.path.join(OUT_DIR, "QUIZ_ARCHIVE.md")
-    io.open(path1, "w", encoding="utf-8", newline="\r\n").write("\n".join(out))
-    print(f"QUIZ_ARCHIVE.md  : {total} soal dari {len(q['banks']) - 1} bank")
+    simpan("QUIZ_ARCHIVE.md", out)
+    print(f"QUIZ_ARCHIVE.md      : {total} soal dari {len(bank_bab)} bank")
 
     # ------------------------------------------------------------
     # 2. TKA_ARCHIVE.md — set Latihan Soal TKA
     # ------------------------------------------------------------
-    cfg = q["tkaSimulation"]
     urutan = cfg.get("questionOrder", [])
-
     out = [
-        "# Arsip Latihan Soal TKA — Ruang Matriks",
+        "# Arsip Latihan Soal TKA — Ruang Vektor",
         "",
-        f"Set **{len(urutan)} soal** yang dipakai mode *Latihan Soal TKA*, urut sesuai",
-        "yang dilihat siswa. Empat soal pertama adalah **soal asli TKA Matematika",
-        "Lanjut 2025**; enam sisanya dipilih tangan sebagai penutup bergaya HOTS.",
+        f"Set **{len(urutan)} soal** yang dipakai mode *{cfg.get('title', 'Latihan Soal TKA')}*,",
+        f"urut persis seperti yang dilihat siswa (bank `{bank_tka}`).",
         "",
-        "> ⚠️ **Berkas ini DIBANGKITKAN dari `data/quizzes.json`.** Jangan disunting",
-        "> langsung — jalankan `python tests/archive_soal.py` setelah mengubah JSON-nya.",
+        f"*{cfg['note']}*" if cfg.get("note") else "",
         "",
-        "**Sumber soal 1–4:** `docs/TKA Matriks 2025.pdf` (Soal Asli TKA Matematika",
-        "Lanjut Tahun 2025). Ditranskrip apa adanya; kuncinya dihitung ulang dan",
-        "diverifikasi dengan `js/engine/matrix.js`.",
+        *PERINGATAN,
+        "",
+        "Rujukan gaya soal: `docs/Contoh_Soal_TKA_Vektor_1–3.png` dan",
+        "`docs/Rincian_Vektor_TKA_Kemendikdasmen.png`.",
         "",
         "---",
         "",
     ]
-
     for i, qid in enumerate(urutan, 1):
         item = index.get(qid)
         if not item:
-            out.append(f"### Soal {i}")
-            out.append("")
-            out.append(f"> ⚠️ Soal `{qid}` tidak ditemukan di bank mana pun.")
-            out.append("")
-            out.append("---")
-            out.append("")
+            out += [f"### Soal {i}", "", f"> ⚠️ Soal `{qid}` tidak ditemukan di bank mana pun.", "", "---", ""]
             continue
         tulis_soal(out, i, item)
 
-    out.append("## Ringkasan Kunci Jawaban")
-    out.append("")
-    out.append("| No | ID | Tipe | Kunci |")
-    out.append("|---|---|---|---|")
+    out += ["## Ringkasan Kunci Jawaban", "", "| No | ID | Tipe | Kunci |", "|---|---|---|---|"]
     for i, qid in enumerate(urutan, 1):
         item = index.get(qid)
         if not item:
             out.append(f"| {i} | `{qid}` | — | tidak ditemukan |")
             continue
         t = item["input_type"]
-        if t == "single_choice":
-            k = HURUF[item["answerIndex"]]
-        elif t == "multi_select":
-            k = ", ".join(HURUF[x] for x in item["answerIndices"])
-        elif t == "matrix_input":
-            k = str(item["answer"])
-        else:
-            k = str(item["answer"])
-        out.append(f"| {i} | `{qid}` | {TIPE.get(t, t)} | **{k}** |")
+        out.append(f"| {i} | `{qid}` | {TIPE.get(t, t)} | **{kunci_ringkas(item)}** |")
     out.append("")
+    simpan("TKA_ARCHIVE.md", out)
+    print(f"TKA_ARCHIVE.md       : {len(urutan)} soal")
 
-    path2 = os.path.join(OUT_DIR, "TKA_ARCHIVE.md")
-    io.open(path2, "w", encoding="utf-8", newline="\r\n").write("\n".join(out))
-    print(f"TKA_ARCHIVE.md   : {len(urutan)} soal")
+    # ------------------------------------------------------------
+    # 3. MINI_KUIS_ARCHIVE.md — Mini Kuis per sub-topik
+    # ------------------------------------------------------------
+    out = [
+        "# Arsip Mini Kuis — Ruang Vektor",
+        "",
+        "Soal Mini Kuis di akhir setiap sub-topik beserta **kunci jawabannya**.",
+        "Di aplikasi, kunci & pembahasan baru tampil sesudah siswa menjawab benar",
+        "atau sesudah salah ke-3 pada soal yang sama.",
+        "",
+        *PERINGATAN,
+        "",
+        "---",
+        "",
+    ]
+    total = 0
+    for c in lessons["chapters"]:
+        data = json.load(io.open(os.path.join(ROOT, c["src"]), encoding="utf-8"))
+        subs = {s["id"]: s for s in data["subtopics"]}
+        out.append(f"## {judul_bab[c['id']]}")
+        out.append("")
+        for n, sid in enumerate(c["subtopicOrder"], 1):
+            s = subs[sid]
+            out.append(f"### {c['number']}.{n} {s['title']}")
+            out.append("")
+            for i, item in enumerate(s.get("quiz", []), 1):
+                tulis_soal(out, i, item, level="####")
+                total += 1
+    out.append(f"*Total {total} soal Mini Kuis.*")
+    out.append("")
+    simpan("MINI_KUIS_ARCHIVE.md", out)
+    print(f"MINI_KUIS_ARCHIVE.md : {total} soal dari {len(lessons['chapters'])} bab")
 
 
 if __name__ == "__main__":

@@ -43,8 +43,8 @@ diperbarui — hal yang terjadi dengan server bawaan Python.
 | `node tests/engine.test.mjs` | Uji matematika vektor murni (tanpa peramban) | instan |
 | `python tests/validate_data.py` | Validasi konsistensi `data/**.json` | instan |
 | `python tests/serve.py` | Server dev tanpa cache basi | — |
-| `python tests/smoke.py` | Uji perilaku & geometri (Playwright) | ±12 menit |
-| `python tests/archive_soal.py` | Bangkitkan arsip soal guru dari `quizzes.json` | instan |
+| `python tests/smoke.py` | Uji asap end-to-end + suite plane/sims (Playwright; `--skip-suites` untuk versi cepat) | ±6 menit |
+| `python tests/archive_soal.py` | Bangkitkan arsip soal guru (bank bab, TKA, Mini Kuis) ke `content/*_ARCHIVE.md` | instan |
 
 Pemeriksaan batas arsitektur:
 
