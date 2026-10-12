@@ -141,6 +141,10 @@ CONTROL_RE = re.compile(r"[\x00-\x09\x0b-\x1f\x7f]")
 # "\n" sah sebagai pemisah paragraf, tetapi "\neq", "\nabla", "\not", "\nu"
 # yang kehilangan garis miringnya juga menjadi "\n" + huruf kecil.
 EATEN_N_RE = re.compile(r"\n(eq|abla|ot|u\b|leq|geq|ewline|orm)")
+# `\"` dan `\'` bukan escape, baik di JSON maupun di Markdown: garis miringnya
+# ikut TAMPIL di layar siswa. Jebakan nyata saat teks disusun lewat raw-string
+# Python, yang justru mempertahankan garis miring di depan tanda kutip.
+STRAY_ESCAPE_RE = re.compile("\\\\[\"']")
 
 
 def strip_escaped(s):
@@ -188,6 +192,9 @@ def check_text_hygiene(name, tree, rep):
         m = EATEN_N_RE.search(s)
         if m:
             control_bad.append(f"{path}: \"\\n{m.group(1)}\" — garis miring LaTeX termakan?")
+        m = STRAY_ESCAPE_RE.search(s)
+        if m:
+            control_bad.append(f"{path}: garis miring di depan tanda kutip ({m.group()!r}) akan ikut tampil")
         leaf = path.rsplit(".", 1)[-1]
         for problem in latex_problems(s, leaf in PURE_TEX_KEYS):
             latex_bad.append(f"{path}: {problem}")

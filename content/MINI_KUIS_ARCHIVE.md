@@ -12,7 +12,7 @@ atau sesudah salah ke-3 pada soal yang sama.
 
 ## Bab 1: Konsep Dasar Vektor
 
-### 1.1 Pengertian & Anatomi Vektor
+### 1.1 Lahirnya Sebuah Vektor
 
 #### Soal 1
 
@@ -88,7 +88,7 @@ E. Waktu tempuh $2$ jam
 
 ---
 
-### 1.2 Empat Cara Menulis Vektor
+### 1.2 Tiga Cara Menulis Komponen
 
 #### Soal 1
 
@@ -146,7 +146,7 @@ Diketahui $\vec{u} = -2\hat{i} + 4\hat{k}$.
 
 ---
 
-### 1.3 Vektor Posisi
+### 1.3 Kalau Pangkalnya Bukan di Nol
 
 #### Soal 1
 
@@ -224,77 +224,7 @@ E. $Q(3,\, -2)$
 
 ---
 
-### 1.4 Komponen di Bidang & Ruang
-
-#### Soal 1
-
-- **ID:** `b1_04_1`
-- **Tipe:** Pilihan ganda (satu jawaban benar)
-- **Sub-topik:** `komponen_r2_r3`
-
-Seekor semut bergerak $7$ satuan ke kiri, lalu $2$ satuan ke atas.
-
-**Vektor perpindahan semut tersebut adalah ....**
-
-A. $(7,\, 2)$
-B. $(-7,\, 2)$
-C. $(7,\, -2)$
-D. $(-7,\, -2)$
-E. $(2,\, -7)$
-
-> **KUNCI JAWABAN:** **B** — $(-7,\, 2)$
-
-**Pembahasan.** Ke kiri berarti komponen $x$ **negatif**; ke atas berarti komponen $y$ **positif**. Maka perpindahannya $(-7,\, 2)$. **Opsi B**.
-
----
-
-#### Soal 2
-
-- **ID:** `b1_04_2`
-- **Tipe:** Isian angka (papan angka)
-- **Sub-topik:** `komponen_r2_r3`
-
-Sebuah drone bergerak $3$ meter ke timur, $4$ meter ke selatan, dan naik $12$ meter. Arah timur dijadikan sumbu $x$ positif, arah utara sumbu $y$ positif, dan ke atas sumbu $z$ positif.
-
-**Tentukan nilai komponen $y$ dari vektor perpindahan drone tersebut.**
-
-> **KUNCI JAWABAN:** **-4**
-
-**Pembahasan.** Arah utara ditetapkan sebagai $y$ positif, maka arah **selatan** adalah $y$ negatif. Perpindahan $4$ meter ke selatan berarti komponen $y = -4$.
-
----
-
-#### Soal 3
-
-- **ID:** `b1_04_3`
-- **Tipe:** Pilih semua jawaban benar
-- **Sub-topik:** `komponen_r2_r3`
-
-Perhatikan pernyataan-pernyataan tentang komponen vektor berikut.
-
-**Pilih semua pernyataan yang benar.**
-
-A. Vektor $(0,\, 5)$ tidak bergerak sama sekali pada arah mendatar.
-B. Vektor $(-3,\, 0)$ adalah vektor nol karena salah satu komponennya $0$.
-C. Semua rumus vektor di R² berlaku di R³ dengan menambahkan satu suku.
-D. Vektor di kurikulum TKA dapat memiliki lebih dari tiga komponen.
-E. Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif.
-
-> **KUNCI JAWABAN:** **A, C, E**
-
-**Pembahasan.** Kuncinya ada pada dua hal: vektor nol menuntut **semua** komponen nol, dan tanda negatif selalu berarti arah, bukan panjang negatif.
-
-**Penjelasan per opsi:**
-
-- **A.** **Benar** — komponen $x = 0$ berarti tidak ada perpindahan mendatar sama sekali.
-- **B.** Salah — vektor nol mensyaratkan **semua** komponennya $0$. Vektor $(-3,0)$ masih punya panjang $3$.
-- **C.** **Benar** — inilah sebabnya R³ tidak menuntut hafalan rumus baru.
-- **D.** Salah — rincian Kemendikdasmen membatasi komponen vektor **maksimum tiga**.
-- **E.** **Benar** — panjang tidak pernah negatif; tanda selalu bicara soal arah.
-
----
-
-### 1.5 Modulus (Panjang Vektor)
+### 1.4 Modulus — Berapa Jauh Sebenarnya?
 
 #### Soal 1
 
@@ -378,7 +308,7 @@ E. Tidak dapat dibandingkan tanpa menghitung akarnya.
 
 ---
 
-### 1.6 Vektor Satuan
+### 1.5 Vektor Satuan — Kunci Arahnya
 
 #### Soal 1
 
@@ -437,6 +367,76 @@ E. Karena vektor nol tidak boleh ditulis dalam bentuk kolom.
 > **KUNCI JAWABAN:** **B** — Karena $|\vec{0}| = 0$, sehingga rumus $\hat{e} = \tfrac{\vec{v}}{|\vec{v}|}$ membagi dengan nol — dan vektor nol memang tidak menunjuk ke arah mana pun.
 
 **Pembahasan.** Dua alasan yang saling menguatkan: secara aljabar, pembagian dengan nol tidak terdefinisi; secara makna, vektor nol tidak punya arah untuk diwakili. **Opsi B**.
+
+---
+
+### 1.6 Melangkah ke Ruang Tiga Dimensi
+
+#### Soal 1
+
+- **ID:** `b1_04_1`
+- **Tipe:** Pilihan ganda (satu jawaban benar)
+- **Sub-topik:** `komponen_r2_r3`
+
+Sebuah drone bergerak $5$ satuan ke depan, $3$ satuan ke kiri, lalu naik $2$ satuan. Dipakai konvensi $Z$-Up: sumbu $X$ depan–belakang, sumbu $Y$ kanan–kiri, sumbu $Z$ atas–bawah.
+
+**Vektor perpindahan drone tersebut adalah ....**
+
+A. $(5,\, 3,\, 2)$
+B. $(5,\, -3,\, 2)$
+C. $(-5,\, 3,\, 2)$
+D. $(5,\, 2,\, -3)$
+E. $(2,\, -3,\, 5)$
+
+> **KUNCI JAWABAN:** **B** — $(5,\, -3,\, 2)$
+
+**Pembahasan.** Maju berarti $x$ positif, sehingga $x = 5$. Ke kiri berlawanan dengan arah $y$ positif, sehingga $y = -3$. Naik searah $z$ positif, sehingga $z = 2$. Maka perpindahannya $(5,\, -3,\, 2)$. **Opsi B**.
+
+---
+
+#### Soal 2
+
+- **ID:** `b1_04_2`
+- **Tipe:** Isian angka (papan angka)
+- **Sub-topik:** `komponen_r2_r3`
+
+Sebuah drone bergerak $3$ meter ke timur, $4$ meter ke selatan, dan naik $12$ meter. Arah timur dijadikan sumbu $x$ positif, arah utara sumbu $y$ positif, dan ke atas sumbu $z$ positif.
+
+**Tentukan nilai komponen $y$ dari vektor perpindahan drone tersebut.**
+
+> **KUNCI JAWABAN:** **-4**
+
+**Pembahasan.** Arah utara ditetapkan sebagai $y$ positif, maka arah **selatan** adalah $y$ negatif. Perpindahan $4$ meter ke selatan berarti komponen $y = -4$.
+
+---
+
+#### Soal 3
+
+- **ID:** `b1_04_3`
+- **Tipe:** Pilih semua jawaban benar
+- **Sub-topik:** `komponen_r2_r3`
+
+Perhatikan pernyataan-pernyataan tentang komponen vektor berikut.
+
+**Pilih semua pernyataan yang benar.**
+
+A. Vektor $(0,\, 0,\, 7)$ bergerak pada arah tegak saja, tanpa perpindahan mendatar.
+B. Vektor $(-3,\, 0)$ adalah vektor nol karena salah satu komponennya $0$.
+C. Semua rumus vektor di $R^2$ berlaku di $R^3$ dengan menambahkan satu komponen.
+D. Vektor di kurikulum TKA dapat memiliki lebih dari tiga komponen.
+E. Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif.
+
+> **KUNCI JAWABAN:** **A, C, E**
+
+**Pembahasan.** Kuncinya ada pada dua hal: vektor nol menuntut **semua** komponen nol, dan tanda negatif selalu berarti arah, bukan panjang negatif.
+
+**Penjelasan per opsi:**
+
+- **A.** **Benar** — komponen $x$ dan $y$ keduanya $0$, jadi yang tersisa hanya gerak naik sepanjang sumbu $z$.
+- **B.** Salah — vektor nol mensyaratkan **semua** komponennya $0$. Vektor $(-3,0)$ masih punya panjang $3$.
+- **C.** **Benar** — inilah sebabnya R³ tidak menuntut hafalan rumus baru.
+- **D.** Salah — rincian Kemendikdasmen membatasi komponen vektor **maksimum tiga**.
+- **E.** **Benar** — panjang tidak pernah negatif; tanda selalu bicara soal arah.
 
 ---
 

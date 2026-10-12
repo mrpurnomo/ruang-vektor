@@ -17,241 +17,240 @@ Di situlah vektor lahir.
 
 ---
 
-## 1.1 Pengertian & Anatomi Vektor
+## 1.1 Lahirnya Sebuah Vektor
 
-### Dua besaran, dua dunia
+### Mulai dari bidang yang benar-benar kosong
 
-| | Besaran Skalar | Besaran Vektor |
-|---|---|---|
-| Yang dimiliki | Nilai saja | Nilai **dan** arah |
-| Contoh | Suhu $30^\circ$C, massa 5 kg, waktu 2 jam | Perpindahan 3 km ke utara, gaya 10 N ke kanan, kecepatan angin 20 km/jam ke timur laut |
+Ambil selembar kertas milimeter — atau bayangkan bidang kartesius yang masih kosong. Belum ada apa pun di sana: hanya sumbu $X$ yang mendatar dan sumbu $Y$ yang tegak, berpotongan di satu titik.
 
-> **Definisi.** **Vektor** adalah besaran yang memiliki **nilai (panjang)** dan **arah**.
+**Tiga langkah melahirkan sebuah vektor:**
 
-### Vektor bukan titik
+1. **Tandai titik berangkat.** Letakkan di pusat semesta kita, $O(0,\, 0)$.
+2. **Tandai titik tujuan.** Misalnya rumah temanmu di $A(7,\, 4)$.
+3. **Hubungkan keduanya** dengan ruas garis, lalu bubuhkan mata panah **di $A$**.
+
+Selamat — kamu baru saja melahirkan sebuah vektor.
+
+> **Definisi.** **Vektor** adalah besaran yang memiliki **nilai (panjang)** sekaligus **arah**. Bandingkan dengan **skalar**, yang hanya punya nilai: suhu $30^\circ$C, massa 5 kg, waktu 2 jam.
+
+Panah tadi bernama **vektor $\vec{OA}$**, dibaca *dari $O$ menuju $A$*. Kalau tidak ingin menyebut kedua titiknya, cukup beri satu huruf kecil berpanah:
+
+$$\vec{OA} = \vec{a}$$
+
+### Melacak langkahnya di atas kisi
+
+Pertanyaan yang menentukan segalanya: **bagaimana caranya berpindah** dari $O$ sampai ke $A$? Jangan melompat — telusuri kotak kisinya.
+
+- Melangkah **7 satuan ke kanan** sepanjang sumbu $X$ → perpindahan mendatar $+7$.
+- Melangkah **4 satuan ke atas** sepanjang sumbu $Y$ → perpindahan tegak $+4$.
+
+Dua angka itulah seluruh isi vektor $\vec{a}$: **7 dan 4**.
+
+### ⚠️ Titik bukan vektor
 
 Ini kekeliruan nomor satu siswa kelas 11, jadi mari kita tegaskan sejak awal.
 
-Titik koordinat $A(3, 2)$ menjawab pertanyaan **"di mana?"** — ia statis, ia sebuah lokasi.
+Titik $A(7,\, 4)$ menjawab pertanyaan **"di mana?"** — ia diam di satu tempat. Vektor $\vec{a}$ menjawab **"berpindah ke mana, sejauh apa?"** — ia prosesnya, bukan tempatnya. Karena itulah vektor yang sama boleh digambar di mana saja, asal panjang dan arahnya tidak berubah.
 
-Vektor menjawab pertanyaan **"bergerak ke mana, sejauh apa?"** — ia **perpindahan**. Vektor yang sama bisa digambar di mana saja di bidang koordinat, asalkan panjang dan arahnya tidak berubah.
+### Cara membaca nama vektor
 
-### Anatomi tanda panah
+Huruf **pertama** selalu pangkal (ekor), huruf **kedua** selalu ujung (mata panah). Jadi $\vec{AO}$ berangkat dari $A$ dan berakhir di $O$: panjangnya sama persis, arahnya berlawanan.
 
-Vektor digambarkan sebagai tanda panah. Setiap panah punya empat bagian yang wajib kamu kenali:
+$$\vec{AO} = -\vec{OA}$$
 
-1. **Titik pangkal** — tempat panah dimulai (ekornya).
-2. **Titik ujung** — tempat panah berakhir (mata panahnya).
-3. **Panjang** — jarak dari pangkal ke ujung. Inilah "nilai"-nya.
-4. **Arah** — ke mana mata panah menunjuk.
-
-**Cara membaca perpindahannya:**
-
-- Komponen $x$ → perpindahan **horizontal**. Ke kanan **positif**, ke kiri **negatif**.
-- Komponen $y$ → perpindahan **vertikal**. Ke atas **positif**, ke bawah **negatif**.
-
-### Arah itu menentukan segalanya
-
-Vektor $\vec{AB}$ berarti bergerak **dari** titik pangkal $A$ **menuju** titik ujung $B$.
-
-Sekarang balik urutannya. Vektor $\vec{BA}$ berarti bergerak dari $B$ menuju $A$ — panjangnya persis sama, tetapi arahnya berlawanan. Maka:
-
-$$\vec{BA} = -\vec{AB}$$
-
-> **Ingat ini baik-baik.** Tanda minus pada vektor **tidak** berarti "negatif" seperti pada bilangan. Ia berarti **arah berlawanan**. Panjangnya sama sekali tidak berubah.
+> Tanda minus pada vektor **tidak** berarti "negatif" seperti pada bilangan biasa. Ia berarti **arah berlawanan**. Panjangnya sama sekali tidak berubah.
 
 ---
 
-## 1.2 Empat Cara Menulis Vektor
+## 1.2 Tiga Cara Menulis Komponen
 
-Satu vektor, empat cara menuliskannya. Soal TKA suka berganti-ganti notasi dalam satu paket soal — kalau kamu hanya hafal satu bentuk, kamu akan berhenti di baris pertama.
+Langkah tadi — 7 ke kanan, 4 ke atas — punya tiga gaya penulisan resmi. Ketiganya membicarakan vektor yang **sama persis**; yang berbeda hanya bajunya.
 
-### a. Huruf kecil bergaris atau tebal
+### a. Bentuk baris (pasangan terurut)
 
-$$\vec{a} \quad \text{atau} \quad \mathbf{a}$$
+$$(7,\, 4)$$
 
-Kalau vektornya disebut dari dua titiknya, tulis kedua hurufnya: $\vec{AB}$, $\vec{PQ}$.
+Paling ringkas, dan paling sering muncul di kalimat soal.
 
-### b. Matriks kolom
+### b. Bentuk matriks kolom
 
-Bentuk yang paling sering dipakai saat menghitung, karena komponennya tersusun rapi ke bawah.
+$$\begin{pmatrix} 7 \\ 4 \end{pmatrix}$$
 
-$$\text{2D: } \begin{pmatrix} x \\ y \end{pmatrix} \qquad \text{3D: } \begin{pmatrix} x \\ y \\ z \end{pmatrix}$$
+Paling nyaman untuk **menghitung**: komponen $x$ di atas, $y$ di bawah, tidak mungkin tertukar.
 
-### c. Koordinat pasangan terurut
+### c. Bentuk basis vektor satuan
 
-Bentuk paling ringkas, paling sering muncul di teks soal.
+$$7\hat{i} + 4\hat{j}$$
 
-$$(x,\, y) \qquad \text{atau} \qquad (x,\, y,\, z)$$
+Menegaskan arah sumbunya: $\hat{i}$ berarti satu langkah searah sumbu $X$, $\hat{j}$ satu langkah searah sumbu $Y$.
 
-### d. Basis vektor satuan $\hat{i}$, $\hat{j}$, $\hat{k}$
+> Nama vektornya sendiri tetap ditulis $\vec{a}$ atau $\mathbf{a}$ — itu **namanya**, bukan komponennya.
 
-Bentuk yang paling sering muncul di soal fisika dan di soal TKA bergaya universitas.
+### Berkeliling empat kuadran
 
-- $\hat{i}$ = vektor satuan searah sumbu $X$
-- $\hat{j}$ = vektor satuan searah sumbu $Y$
-- $\hat{k}$ = vektor satuan searah sumbu $Z$
+Bagian yang paling menentukan nilai ujianmu adalah **tanda**. Semua berangkat dari $O$:
 
-$$\vec{v} = x\hat{i} + y\hat{j} + z\hat{k}$$
+| Kuadran | Tujuan | Langkahnya | Komponen | Bentuk basis |
+|---|---|---|---|---|
+| I | $A(7,\, 4)$ | 7 kanan, 4 atas | $(7,\, 4)$ | $7\hat{i} + 4\hat{j}$ |
+| II | $B(-5,\, 3)$ | 5 **kiri**, 3 atas | $(-5,\, 3)$ | $-5\hat{i} + 3\hat{j}$ |
+| III | $C(-4,\, -6)$ | 4 **kiri**, 6 **bawah** | $(-4,\, -6)$ | $-4\hat{i} - 6\hat{j}$ |
+| IV | $D(3,\, -5)$ | 3 kanan, 5 **bawah** | $(3,\, -5)$ | $3\hat{i} - 5\hat{j}$ |
 
-**Contoh satu vektor dalam empat baju:**
+### ⚠️ Minus tidak memperpendek apa pun
 
-$$\vec{v} = \begin{pmatrix} 3 \\ -1 \\ 2 \end{pmatrix} = (3,\, -1,\, 2) = 3\hat{i} - \hat{j} + 2\hat{k}$$
+Tanda minus pada komponen **bukan** pengurang panjang. Ia perintah arah: minus pada $x$ berarti **ke kiri**, minus pada $y$ berarti **ke bawah**. Vektor $(-4,\, -6)$ sama panjangnya dengan $(4,\, 6)$ — yang berbeda hanya ke mana ia menunjuk.
 
-> 💡 Perhatikan komponen $y$-nya. Di bentuk $\hat{i}\hat{j}\hat{k}$, angka $-1$ ditulis cukup sebagai $-\hat{j}$, bukan $-1\hat{j}$. Ini penyebab salah baca yang sangat sering: siswa membaca $-\hat{j}$ sebagai "tidak ada komponen $y$", padahal komponennya $-1$.
+### Dua kebiasaan penulisan baku
 
----
-
-## 1.3 Vektor Posisi
-
-### Vektor posisi dari titik pusat
-
-Vektor posisi adalah vektor yang **pangkalnya selalu di titik pusat** $O(0,0)$.
-
-Jika titik $A$ berkoordinat $(x, y)$, maka vektor posisi titik $A$ adalah:
-
-$$\vec{OA} = \vec{a} = \begin{pmatrix} x \\ y \end{pmatrix}$$
-
-Perhatikan betapa mudahnya: **koordinat titiknya langsung menjadi komponen vektornya.** Ini hanya berlaku untuk vektor posisi, karena pangkalnya di $O$.
-
-### Vektor dari dua titik sembarang — rumus paling sering dipakai
-
-Bagaimana kalau pangkalnya **bukan** di titik pusat? Misalnya kamu diminta mencari $\vec{AB}$ dengan $A$ dan $B$ dua titik sembarang.
-
-Jika $A(x_1, y_1, z_1)$ dan $B(x_2, y_2, z_2)$, maka:
-
-$$\vec{AB} = B - A = \begin{pmatrix} x_2 - x_1 \\ y_2 - y_1 \\ z_2 - z_1 \end{pmatrix}$$
-
-> ### ⚠️ Jebakan paling mahal di seluruh bab ini
->
-> **Ujung dikurangi pangkal.** Bukan sebaliknya.
->
-> $\vec{AB}$ dibaca "dari $A$ ke $B$", jadi $B$ (ujung) yang berdiri di depan. Kalau kamu tertukar, yang kamu dapat adalah $\vec{BA}$ — panjangnya benar, tetapi **seluruh tandanya terbalik**. Di soal pilihan ganda, jawaban terbalik itu hampir selalu disediakan sebagai pengecoh.
-
-**Cara mengingat:** huruf **belakang** dikurangi huruf **depan**. $\vec{AB} = B - A$. $\vec{PQ} = Q - P$.
+- Komponen bernilai 0 tidak perlu ditulis huruf basisnya: $(5,\, 0) = 5\hat{i}$.
+- Koefisien 1 tidak perlu ditulis angkanya: $(0,\, 1) = \hat{j}$, bukan $1\hat{j}$.
+- Tetapi di bentuk **kolom** dan **baris**, angka 0 itu **wajib** tetap ditulis.
 
 ---
 
-## 1.4 Komponen di Bidang & Ruang
+## 1.3 Kalau Pangkalnya Bukan di Nol
 
-### Membaca komponen sebagai instruksi jalan kaki
+Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\, 3)$ menuju $B(8,\, 7)$. Panah itu bernama $\vec{AB}$: pangkalnya di $A$, ujungnya di $B$.
 
-Anggap komponen vektor sebagai daftar instruksi:
+### Cara pertama — hitung langsung di grafik
 
-$$\vec{v} = \begin{pmatrix} 4 \\ -3 \end{pmatrix} \;\longrightarrow\; \text{"Jalan 4 langkah ke kanan, lalu 3 langkah ke bawah."}$$
+1. Mendatar: dari $x = 2$ sampai $x = 8$, berarti **6 satuan ke kanan**.
+2. Tegak: dari $y = 3$ sampai $y = 7$, berarti **4 satuan ke atas**.
 
-Tanda komponennya bukan hiasan — ia **arah**:
+$$\vec{AB} = \begin{pmatrix} 6 \\ 4 \end{pmatrix}$$
 
-| Komponen | Positif berarti | Negatif berarti |
-|---|---|---|
-| $x$ | ke kanan | ke kiri |
-| $y$ | ke atas | ke bawah |
-| $z$ | ke depan / keluar bidang | ke belakang / masuk bidang |
+### Cara itu aman — selama ada kertas berpetak
 
-### Dari bidang ke ruang
+Bagaimana kalau koordinatnya ratusan, atau grafiknya memang tidak digambar? Perhatikan dulu dari mana dua angka tadi muncul:
 
-Di bidang (R²) kamu punya dua komponen. Di ruang (R³) bertambah satu: komponen $z$.
+$$6 = 8 - 2 \qquad\text{dan}\qquad 4 = 7 - 3$$
 
-Kabar baiknya: **semua rumus yang kamu pelajari di R² berlaku apa adanya di R³** — kamu tinggal menambahkan satu suku lagi. Tidak ada rumus baru yang harus dihafal.
+Polanya sama di kedua baris: koordinat **ujung** dikurangi koordinat **pangkal**. Kamu baru saja menemukan rumusnya sendiri — tanpa menghafal.
 
-> 📌 **Batas kurikulum TKA.** Rincian materi Kemendikdasmen menyebut dengan tegas: **komponen vektor maksimum tiga**. Jadi kamu tidak akan pernah menemui vektor berdimensi 4 atau lebih di ujian. Tenang.
+$$\vec{AB} = \vec{b} - \vec{a} = \begin{pmatrix} x_B - x_A \\ y_B - y_A \end{pmatrix}$$
 
-### Vektor nol
+> **Definisi.** **Vektor posisi** adalah vektor yang pangkalnya dipatok di $O(0,\, 0)$, ditulis $\vec{a} = \vec{OA}$. Vektor sembarang $\vec{AB}$ selalu merupakan selisih dua vektor posisi: **ujung dikurangi pangkal**.
 
-$$\vec{0} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+### ⚠️ Jebakan paling mahal di ujian
 
-Vektor yang semua komponennya nol. Panjangnya nol, dan — ini yang penting — **ia tidak menunjuk ke arah mana pun**. Nanti di sub-bab 1.6 kamu akan melihat kenapa sifat ini membuat vektor nol jadi kasus istimewa yang harus diperlakukan khusus.
+Jangan terbalik menjadi $A - B$. Yang kamu hitung bukan lagi $\vec{AB}$, melainkan $\vec{BA}$ — arahnya berputar $180^\circ$ dan seluruh komponen jawabanmu berganti tanda, padahal angkanya terlihat *mirip* benar.
+
+### Rumusnya bisa dibalik
+
+Kalau yang ditanyakan justru titik ujungnya, pindahkan saja ruasnya:
+
+$$\vec{AB} = B - A \;\Longrightarrow\; B = A + \vec{AB}$$
 
 ---
 
-## 1.5 Modulus (Panjang Vektor)
+## 1.4 Modulus — Berapa Jauh Sebenarnya?
 
-### Pythagoras yang menyamar
+Vektor $\vec{v} = \begin{pmatrix} 3 \\ 4 \end{pmatrix}$ melangkah 3 ke kanan lalu 4 ke atas. Tetapi berapa **jarak lurus** dari pangkal langsung ke mata panahnya? Jelas bukan $3 + 4$ — itu panjang jalur memutarnya, bukan panjang panahnya.
 
-Modulus, atau panjang vektor, dinotasikan dengan tanda mutlak: $|\vec{v}|$.
+### Segitiga siku-siku yang selalu ada di bawah panah
 
-Dari mana rumusnya? Gambar saja vektornya di bidang koordinat, lalu tarik garis bantu ke sumbu-sumbunya. Yang terbentuk adalah **segitiga siku-siku**, dengan komponen $x$ dan $y$ sebagai kedua sisi tegaknya, dan vektor itu sendiri sebagai sisi miringnya.
+Tarik dua garis bantu: satu mendatar sepanjang 3, satu tegak sepanjang 4. Keduanya bertemu **siku-siku**, dan panah vektormu menjadi **sisi miring** segitiga itu. Alat lama dari SMP pun langsung berguna.
 
-Jadi rumus modulus **bukan rumus baru**. Ia Pythagoras yang kamu pelajari sejak SMP.
-
-**Modulus vektor 2D.** Jika $\vec{v} = \begin{pmatrix} x \\ y \end{pmatrix}$:
+> **Definisi.** Panjang vektor ditulis dengan tanda mutlak $|\vec{v}|$, dan dihitung dengan Teorema Pythagoras: akar dari jumlah kuadrat seluruh komponennya.
 
 $$|\vec{v}| = \sqrt{x^2 + y^2}$$
 
-**Modulus vektor 3D.** Jika $\vec{v} = \begin{pmatrix} x \\ y \\ z \end{pmatrix}$:
+**Contoh $\vec{v} = (3,\, 4)$:**
 
-$$|\vec{v}| = \sqrt{x^2 + y^2 + z^2}$$
+1. Kuadratkan setiap komponen: $3^2 = 9$ dan $4^2 = 16$.
+2. Jumlahkan: $9 + 16 = 25$.
+3. Akarkan: $|\vec{v}| = \sqrt{25} = 5$.
 
-### Kenapa tanda komponennya tidak berpengaruh
+### Wajib bentuk akar eksak
 
-Perhatikan bahwa setiap komponen **dikuadratkan** lebih dulu. Artinya:
+Tidak semua hasil sebulat itu. Coba $\vec{u} = (2,\, 4)$:
 
-$$\left|\begin{pmatrix} 3 \\ -4 \end{pmatrix}\right| = \sqrt{9 + 16} = 5 \qquad \text{dan} \qquad \left|\begin{pmatrix} -3 \\ 4 \end{pmatrix}\right| = \sqrt{9 + 16} = 5$$
+$$|\vec{u}| = \sqrt{2^2 + 4^2} = \sqrt{4 + 16} = \sqrt{20} = 2\sqrt{5}$$
 
-Masuk akal: panjang adalah jarak, dan jarak tidak pernah negatif. Vektor yang arahnya berlawanan tetap sama panjangnya.
+> **Jangan diubah menjadi desimal.** $\sqrt{20}$ ditulis $2\sqrt{5}$, bukan $4{,}47\ldots$ — desimal itu hasil pembulatan, dan jawaban bulat-bulatan dinilai salah. Caranya: tarik keluar faktor kuadrat terbesarnya, $20 = 4 \times 5$, sehingga $\sqrt{20} = \sqrt{4}\sqrt{5} = 2\sqrt{5}$.
 
-$$|\vec{v}| = |-\vec{v}|$$
+### ⚠️ Tanda minus ikut terkuadratkan
 
-### Jawaban ditulis dalam bentuk akar eksak
+$(-2)^2 = 4$, bukan $-4$. Setelah dikuadratkan, tanda minus selalu hilang — karena itu panjang vektor **tidak pernah** bernilai negatif.
 
-Ini bukan sekadar selera. Ini cara menulis jawaban yang benar di lembar jawaban TKA.
+### Taktik cepat membandingkan panjang
 
-$$|(2, 5)| = \sqrt{29} \qquad \textbf{bukan} \qquad 5{,}385164807\ldots$$
+Kalau soal hanya menanyakan vektor mana yang lebih panjang, jangan buang waktu mengakarkan. Bandingkan saja nilai $x^2 + y^2$ keduanya — akar kuadrat tidak pernah membalik urutan:
 
-$$|(2, 4)| = \sqrt{20} = 2\sqrt{5} \qquad \textbf{bukan} \qquad 4{,}472135955\ldots$$
-
-**Cara menyederhanakan akar:** tarik keluar faktor kuadrat terbesar.
-
-$$\sqrt{20} = \sqrt{4 \cdot 5} = \sqrt{4} \cdot \sqrt{5} = 2\sqrt{5}$$
-
-$$\sqrt{72} = \sqrt{36 \cdot 2} = 6\sqrt{2}$$
-
-$$\sqrt{29} = \sqrt{29} \quad \text{(29 bilangan prima — sudah paling sederhana)}$$
-
-> 💡 **Trik hemat waktu yang wajib kamu kuasai.** Kalau soal hanya menanyakan **mana yang lebih panjang**, jangan pernah repot mengakarkan.
->
-> $$|\vec{u}| > |\vec{v}| \iff |\vec{u}|^2 > |\vec{v}|^2$$
->
-> Cukup bandingkan $x^2 + y^2 + z^2$-nya. Angkanya selalu bilangan bulat, tidak ada akar, tidak ada pembulatan, tidak ada peluang salah hitung.
-
-> 🔗 **Kalau modulusnya diketahui tapi komponennya memuat huruf** — misalnya $\vec{AB} = (2m,\, m+3,\, m)$ dengan $|\vec{AB}| = 9$ — itu adalah **Taktik TKA 1**, dibahas tuntas di **Bab 4 · Parameter Tersembunyi pada Modulus**.
+$$|\vec{u}| > |\vec{v}| \iff |\vec{u}|^2 > |\vec{v}|^2$$
 
 ---
 
-## 1.6 Vektor Satuan
+## 1.5 Vektor Satuan — Kunci Arahnya
 
-### Membuang panjang, menyisakan arah
+Bayangkan kamu membuat kompas penunjuk jalan. Yang perlu ditunjukkan hanya **ke arah sana** — tidak peduli jalannya panjang atau pendek. Untuk itu kita butuh vektor yang arahnya tetap, tetapi panjangnya distandarkan.
 
-Kadang kamu hanya butuh **arah** sebuah vektor, tanpa peduli panjangnya. Untuk itulah vektor satuan ada.
+> **Definisi.** **Vektor satuan** adalah vektor yang panjangnya tepat **1 satuan**, searah dengan vektor asalnya. Vektor satuan dari $\vec{v}$ ditulis $\hat{e}$ (dibaca *e topi*) atau $\hat{v}$.
 
-> **Definisi.** **Vektor satuan** ($\hat{e}$) adalah vektor yang **searah** dengan vektor asalnya, tetapi panjangnya **tepat 1 satuan**.
+### Dari tongkat 5 meter menjadi 1 meter
 
-$$\hat{e} = \frac{\vec{v}}{|\vec{v}|}$$
+Pikirkan tongkat sepanjang 5 meter. Supaya menjadi 1 meter tanpa mengubah arahnya, tongkat itu **dibagi 5** — dibagi panjangnya sendiri. Vektor pun begitu:
 
-### Membacanya sebagai "membagi rata"
+$$\hat{e} = \frac{\vec{v}}{|\vec{v}|} = \frac{1}{|\vec{v}|}\,\vec{v}$$
 
-Rumus itu sebenarnya sederhana sekali: **bagi setiap komponen dengan panjang vektornya.**
+**Contoh $\vec{v} = (3,\, 4)$:**
 
-Contoh dengan $\vec{v} = \begin{pmatrix} 3 \\ 4 \end{pmatrix}$:
+1. Hitung panjangnya dulu: $|\vec{v}| = \sqrt{3^2 + 4^2} = 5$.
+2. Bagi **setiap** komponen dengan 5 — bukan hanya satu.
+3. Hasilnya $\hat{e} = \left(\tfrac{3}{5},\, \tfrac{4}{5}\right)$.
 
-1. Hitung panjangnya dulu: $|\vec{v}| = \sqrt{9 + 16} = \sqrt{25} = 5$.
-2. Bagi setiap komponen dengan 5:
+### Uji verifikasi mandiri
 
-$$\hat{e} = \frac{1}{5}\begin{pmatrix} 3 \\ 4 \end{pmatrix} = \begin{pmatrix} 3/5 \\ 4/5 \end{pmatrix}$$
-
-3. **Periksa hasilnya** — panjang vektor satuan harus tepat 1:
+Kamu tidak perlu bertanya kepada siapa pun apakah jawabanmu benar — hitung saja panjangnya, dan hasilnya wajib tepat 1:
 
 $$\left|\hat{e}\right| = \sqrt{\left(\tfrac{3}{5}\right)^2 + \left(\tfrac{4}{5}\right)^2} = \sqrt{\tfrac{9}{25} + \tfrac{16}{25}} = \sqrt{\tfrac{25}{25}} = 1 \;\checkmark$$
 
-> **Biasakan langkah ketiga itu.** Ia gratis, cepat, dan menangkap hampir semua kesalahan aritmetika sebelum kamu menyerahkan lembar jawaban.
+> **Biasakan langkah ini.** Ia gratis, cepat, dan menangkap hampir semua kesalahan aritmetika sebelum lembar jawabanmu dikumpulkan.
 
-### ⚠️ Kasus batas: vektor nol tidak punya vektor satuan
+### ⚠️ Satu-satunya vektor tanpa vektor satuan
 
 $$\vec{0} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \;\longrightarrow\; |\vec{0}| = 0 \;\longrightarrow\; \hat{e} = \frac{\vec{0}}{0} \;=\; \textbf{tidak terdefinisi}$$
 
-Rumus $\hat{e} = \frac{\vec{v}}{|\vec{v}|}$ akan membagi dengan nol, dan pembagian dengan nol tidak terdefinisi.
+Secara aljabar, rumusnya membagi dengan nol. Secara makna, alasannya lebih dalam: **vektor nol memang tidak menunjuk ke arah mana pun.** Meminta arahnya sama saja dengan bertanya "ke mana arah diam?"
 
-Tapi alasan sebenarnya lebih dalam daripada sekadar aturan aljabar: **vektor nol memang tidak menunjuk ke arah mana pun.** Meminta arahnya sama saja dengan bertanya "ke mana arah diam?" — pertanyaannya sendiri yang tidak bermakna.
+---
+
+## 1.6 Melangkah ke Ruang Tiga Dimensi
+
+Dunia nyata tidak datar. Drone yang lepas landas, pesawat yang menanjak, sampai karakter di dalam game bergerak di **ruang** tiga dimensi ($R^3$). Bidang kita kekurangan satu arah: naik dan turun.
+
+> **Definisi.** Di ruang ditambahkan sumbu $Z$ yang tegak lurus terhadap sumbu $X$ **dan** sumbu $Y$ sekaligus. Satu titik kini ditulis $(x,\, y,\, z)$, dan satu vektor punya tiga komponen.
+
+### Konvensi $Z$-Up — standar matematika, fisika, dan teknik
+
+| Sumbu | Arah | Positif | Negatif |
+|---|---|---|---|
+| $X$ | depan–belakang | maju | mundur |
+| $Y$ | kanan–kiri | ke kanan | ke kiri |
+| $Z$ | atas–bawah | naik | turun |
+
+> **Wawasan: $Z$-Up vs $Y$-Up.** Kurikulum matematika dan fisika Indonesia, juga perangkat lunak CAD dan teknik, memakai **$Z$-Up**: $Z$-lah yang mengukur ketinggian. Sebagian *game engine* dan perangkat grafika justru memakai **$Y$-Up**, yaitu $Y$ yang menjadi tinggi. Matematikanya sama persis — yang berbeda hanya kesepakatan penamaan sumbu. Di ruang pelajaran kita, tinggi selalu $Z$.
+
+### Tiga cara menulis vektor di $R^3$
+
+$$(x,\, y,\, z) \qquad \begin{pmatrix} x \\ y \\ z \end{pmatrix} \qquad x\hat{i} + y\hat{j} + z\hat{k}$$
+
+Basis baru $\hat{k}$ adalah satu langkah searah sumbu $Z$, yaitu ke atas. Contoh: $(4,\, -3,\, 2)$ berarti maju 4, ke kiri 3, naik 2.
+
+### Panjang vektor di ruang
+
+Pythagoras diperluas ke **diagonal ruang** sebuah balok — cukup selipkan satu suku lagi di dalam akar:
+
+$$|\vec{v}| = \sqrt{x^2 + y^2 + z^2}$$
+
+### ⚠️ Komponen nol tetap harus ditulis
+
+Kalau satu arah tidak dilalui, komponennya 0 dan **tetap menempati posisinya**. Vektor $(4,\, 0,\, 3)$ berbeda jauh dari $(4,\, 3)$ maupun $(4,\, 3,\, 0)$ — menggeser angka naik satu baris berarti mengganti sumbunya.
+
+### Tidak ada rumus baru di ruang
+
+Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\vec{AB} = B - A$, modulus, dan vektor satuan. Cukup tambahkan komponen ketiga — satu angka $z$, atau satu suku $\hat{k}$.
 
 ---
 
@@ -259,13 +258,15 @@ Tapi alasan sebenarnya lebih dalam daripada sekadar aturan aljabar: **vektor nol
 
 | Yang kamu kuasai sekarang | Rumus kuncinya |
 |---|---|
-| Vektor = nilai **dan** arah | $\vec{BA} = -\vec{AB}$ |
-| Empat notasi yang saling tukar | $\begin{pmatrix} 3 \\ -1 \end{pmatrix} = (3,-1) = 3\hat{i} - \hat{j}$ |
-| Vektor dari dua titik | $\vec{AB} = B - A$ (**ujung − pangkal**) |
-| Panjang vektor | $\lvert\vec{v}\rvert = \sqrt{x^2 + y^2 + z^2}$ |
+| Vektor lahir dari pangkal, ujung, dan langkah di antaranya | $\vec{OA} = \vec{a}$ |
+| Arah dibalik, tanda ikut terbalik | $\vec{AO} = -\vec{OA}$ |
+| Tiga notasi yang saling tukar | $\begin{pmatrix} 7 \\ 4 \end{pmatrix} = (7,\, 4) = 7\hat{i} + 4\hat{j}$ |
+| Vektor dari dua titik sembarang | $\vec{AB} = B - A$ (**ujung − pangkal**) |
+| Panjang vektor (Pythagoras) | $\lvert\vec{v}\rvert = \sqrt{x^2 + y^2 + z^2}$ |
 | Jawaban dalam akar eksak | $\sqrt{20} = 2\sqrt{5}$ |
 | Membandingkan panjang tanpa akar | $\lvert\vec{u}\rvert > \lvert\vec{v}\rvert \iff \lvert\vec{u}\rvert^2 > \lvert\vec{v}\rvert^2$ |
 | Vektor satuan | $\hat{e} = \dfrac{\vec{v}}{\lvert\vec{v}\rvert}$, dan $\lvert\hat{e}\rvert = 1$ |
 | Kasus batas | Vektor nol tidak punya vektor satuan |
+| Ruang tiga dimensi | Konvensi $Z$-Up; $\hat{k}$ searah sumbu $Z$ |
 
 **Selanjutnya — Bab 2:** sekarang kamu bisa membaca satu vektor. Waktunya membuat dua vektor saling berinteraksi.
