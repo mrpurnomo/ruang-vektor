@@ -15,11 +15,11 @@ UI berbahasa Indonesia).
 
 ## LANGKAH 0 — WAJIB SEBELUM MENYENTUH KODE
 Baca `handoff/handoff.md` dari awal sampai akhir. Itu memori inti proyek:
-kontrak arsitektur (§3), riwayat 13 tahap (§2), misi sesi ini (§4), pohon
+kontrak arsitektur (§3), riwayat 14 tahap (§2), misi sesi ini (§4), pohon
 berkas (§5). Bila dokumen bertentangan dengan kode, percayai yang TERUKUR di
 peramban, lalu perbarui dokumennya.
 
-Ringkasan keadaan terakhir (commit `54455b8`, 12 Oktober 2026):
+Ringkasan keadaan terakhir (commit `2debdf2`, 12 Oktober 2026):
 - Bab 1 sudah direvisi total mengikuti skenario guided discovery.
 - Judul sub-topik sudah lugas tanpa majas.
 - Sub-topik 1 sudah menjadi SIMULASI TERPANDU: bidang kosong → ketuk O(0,0)
@@ -29,6 +29,8 @@ Ringkasan keadaan terakhir (commit `54455b8`, 12 Oktober 2026):
   jadi dua tahap: Simulasi → Mini Kuis.
 - Instruksi langkah SUDAH pindah ke panggung (`.sim-guide`), sidebar jadi
   panel status.
+- QA purwarupa selesai: 5 bug terukur diperbaiki (handoff §2 baris 14),
+  `.sim-guide` kini menempel. "Temuan terbuka" di handoff §2 menunggu keputusan.
 
 ## MISI SESI INI
 1. Kerjakan REVISI YANG DIMINTA di bawah lebih dulu.
@@ -60,7 +62,7 @@ Ringkasan keadaan terakhir (commit `54455b8`, 12 Oktober 2026):
 - `node tests/engine.test.mjs` → 130/130
 - `py tests/validate_data.py` → 0 GAGAL (saat ini 749 lolos, 0 peringatan)
 - `py tests/serve.py` di port 5173, lalu `py tests/smoke.py` → 0 GAGAL
-  (saat ini 152 lolos; sudah menjalankan plane 32/32 dan sims 26/26)
+  (saat ini 161 lolos; sudah menjalankan plane 32/32 dan sims 26/26)
 - Perubahan tampilan diverifikasi di aplikasi pada 740×360 dan 1024×600,
   dengan tangkapan layar.
 
