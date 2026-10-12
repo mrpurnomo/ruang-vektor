@@ -36,7 +36,7 @@
 | **Bentuk** | Single Page Application (SPA), satu berkas `index.html` |
 | **Bahasa antarmuka** | Bahasa Indonesia, seluruhnya |
 | **Orientasi** | **Lanskap saja**. Potret memunculkan `.rotate-lock` |
-| **Tema** | **Meja Gambar Teknik · Instrumen Ukur** — film milimeter abu-abu, pelat terang, layar instrumen gelap; Kobalt = ARAH, Amber = BESARAN. Permanen, tidak ada pengalih tema (§7.1) |
+| **Tema** | **Meja Gambar Teknik · Instrumen Ukur** — film milimeter abu-abu, pelat terang, layar instrumen gelap, bidang kartesius kertas grafik terang; Kobalt = ARAH, Amber = BESARAN. Permanen, tidak ada pengalih tema (§7.1) |
 | **Distribusi** | Hosting statis · GitHub Pages · **flash disk di lab sekolah (offline)** |
 | **Footer wajib** | `© Penta Putra Purnomo, S.Pd., Gr. \| SMAS YPVDP Bontang.` |
 
@@ -492,9 +492,11 @@ Setiap soal **wajib** punya `id`, `input_type`, `subtopic`, `prompt`, `after`,
 
 Aplikasi ini adalah **meja gambar teknik**. Lantainya **film gambar abu-abu
 dingin berpetak milimeter**; bidang kerjanya **pelat** terang yang dipotong
-presisi (sudut 2–8px, tepi rambut 1px, bayangan tipis); dan setiap alat ukur,
-yaitu bidang kartesius, papan angka, dan figur rumus, adalah **layar instrumen
-gelap** yang ditanam di pelat itu. Header adalah bezel alatnya, lengkap dengan
+presisi (sudut 2–8px, tepi rambut 1px, bayangan tipis); papan angka dan figur
+rumus adalah **layar instrumen gelap** yang ditanam di pelat itu. **Bidang
+kartesius** (sejak 13 Okt 2026) adalah **kertas grafik terang** (`--plane-*`):
+kisi slate tipis, sumbu slate tegas bermata panah, panah kobalt, titik amber tua —
+kanvas hitam terasa suram di kelas. Header adalah bezel alatnya, lengkap dengan
 skala mistar.
 
 Satu tema, dipasang permanen. **Tidak ada pengalih tema dan tidak ada mode

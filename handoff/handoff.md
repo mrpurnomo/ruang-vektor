@@ -212,8 +212,14 @@ Aturan:
 - **Batas Core ↔ Domain:** `js/core/` dan `js/quiz/` tidak boleh tahu soal vektor.
   Helper generik ada di `core/numeric.js` (`numbersMatch`, `formatNumber`,
   `parseNumberInput`) dan `core/text.js` (`fillTemplate`, placeholder `{{kunci}}`).
-  Titik sambung ke domain hanya 3: registry `lesson/simulations/index.js`, string
-  `simulation.engine` di JSON, dan kelas dasar `Simulation` di `simCore.js`.
+  Titik sambung ke domain hanya 4: registry `lesson/simulations/index.js`, string
+  `simulation.engine` di JSON, kelas dasar `Simulation` di `simCore.js`, dan
+  **registri tipe soal** `QuizEngine.registerType` (diisi `lesson/quizTypes.js`, tipe
+  `plane_tap`). `QuizEngine.dispose()` WAJIB dipanggil pemilik layar: bidang SVG di soal
+  memegang ResizeObserver yang selamat dari `innerHTML = ''`.
+- **Notasi:** ruas berarah dua huruf = `\overrightarrow{AB}`; `\vec{a}` hanya satu huruf.
+  `katexRenderer.normalizeNotation()` menjaga teks yang dirakit saat berjalan; validator
+  menolak `\vec{XY}` di data.
 - **Router** (`core/router.js`): `setGuard` (masuk), `setLeaveGuard` (keluar; menolak
   tanpa merender ulang), `refresh()` (gambar ulang layar yang sama), `navigate(path,{replace})`.
   Pengalihan pakai `replaceState`.
@@ -288,9 +294,9 @@ Aturan:
 
 ### 4.3 Uji wajib sebelum setiap commit
 - `node tests/engine.test.mjs` → **130/130**.
-- `py tests/validate_data.py` → **0 GAGAL** (saat ini 749 lolos, 0 PERINGATAN).
-- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 161 lolos,
-  ±8 menit; sudah menjalankan `tests/plane.html` **32/32** dan `tests/sims.html` **26/26**).
+- `py tests/validate_data.py` → **0 GAGAL** (saat ini 755 lolos, 0 PERINGATAN).
+- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 219 lolos penuh (217 dengan `--skip-suites`),
+  ±8 menit; sudah menjalankan `tests/plane.html` **33/33** dan `tests/sims.html` **26/26**).
   Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
 - Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
   `/tests/sims.html` → `window.__simTest`. **Pane peramban yang tersembunyi menahan
@@ -424,21 +430,41 @@ yang benar — perbarui dokumen ini, jangan kodenya dipaksa mengikuti dokumen.*
 
 ---
 
-## 6. ADENDUM 13 Okt 2026 — Polish terpandu (BELUM SELESAI)
+## 6. ADENDUM 13 Okt 2026 — Finalisasi sub-topik 1 (gold standard)
 
-Selesai & ter-commit (masing-masing uji merah-dulu): `b8660da` temuan 3 & 4 ·
-`d27df4b` bidang kertas grafik terang (`--plane-*`) · `bc18e2d` mata panah `\vec`
-tak terlihat di SELURUH aplikasi (reset `svg{max-width:100%}`) · `202c9e8` animasi
-lompatan per satuan, panah kinestetik dua ketukan, `core/ui/sfx.js` (Web Audio) ·
-`604146b` CTA kasus berikutnya di panggung + chip berdenyut + tombol sidebar terjepit ·
-`90af8b7` bilah aksi Mini Kuis menempel. Uji terakhir: Node 130/130 · data 749/0/0 ·
-plane 32/32 · sims 26/26 · smoke --skip-suites 171/0.
+Sub-topik 1 kini patokan untuk mereplikasi lima sub-topik Bab 1 lainnya. Semua butir
+ter-commit dengan uji yang MERAH lebih dulu (atau uji mutasi), lalu gerbang penuh.
 
-**Sisa:** (H) modal selebrasi simulasi tuntas — `lessonRenderer.js` callback
-`mountSimulation`: tampilkan `showModal` hanya bila `!this.simulationDone` sebelumnya,
-tombol "Buka Rangkuman Konsep" (`openRangkuman()`) & "Mulai Mini Kuis" (`step = 1`);
-statistik HANYA yang bisa ditelusuri (jumlah kasus + nama kasus; Kontrak 11), `celebrate()`
-ada di `core/interactions/flyToAnimation.js`. Lalu: smoke penuh, perbarui §2/§4 & PRD §7.1
-(bidang kini terang). **Pertanyaan terbuka untuk pengguna:** (1) 148 `\vec{XY}` dua huruf
-di data → `\overrightarrow{XY}`? (2) tombol bisu suara di header? (3) toast 740×360
-menutupi ±90px bidang.
+| Commit | Isi |
+|---|---|
+| `b8660da` | Temuan 3 & 4: koordinat tertukar SEBAGIAN dikenali; tab tahap berlabel; chip kasus 2×2 |
+| `d27df4b` | Bidang = kertas grafik terang (`--plane-*`, `--scope-*` nilai baru), mata panah sumbu |
+| `bc18e2d` | **Bug global:** mata panah `\vec` selebar 0px (reset `svg{max-width:100%}`) |
+| `202c9e8` | Animasi lompatan per satuan (onSolved), panah kinestetik dua ketukan, `core/ui/sfx.js` |
+| `604146b` | CTA kasus berikutnya di panggung + chip berdenyut; tombol sidebar terjepit |
+| `90af8b7` | Bilah aksi Mini Kuis menempel (sticky) + zona FAB |
+| `252ddcd` | Tempo animasi KONSTAN (`HOP_MS` 110, `ARROW_MS` 520), denyut amber pangkal |
+| `23202b1` | Notasi baku: 410 `\vec{XY}` → `\overrightarrow{XY}` + `normalizeNotation()` |
+| `65441e6` | Tombol suara di header (bawaan aktif, bisu tersimpan `vektorLab.sfx.v1`) |
+| `8e4dd38` | Toast lanskap pendek: pelat ramping kanan bawah, ≤ 2,2 detik |
+| `6be88c5` | Selebrasi simulasi tuntas (segel, lencana, rekap, statistik tertelusur) + 2 jalan |
+| `1619a80` `7efc256` | "Coba Lagi Kuis" (rekor tidak turun). **Catatan jujur:** `1619a80` ter-commit dengan 3 GAGAL smoke §6b (gerbang hanya memeriksa ada keluaran); diperbaiki di `7efc256` (area sentuh tab mode review + isolasi uji). Gerbang commit kini mensyaratkan "GAGAL 0" eksplisit |
+| `2b11aaf` | Mini Kuis interaktif: tipe `plane_tap` (soal 2 gambar QP, soal 3 ketuk R) |
+| `f52bbc3` | UI premium: kartu bab (`.chapter-card`, aksen `--ch-1..4`), menu kuis, Beranda |
+
+**Kontrak baru yang mengikat:**
+- `.sim-guide` & bidang MENEMPEL; bilah aksi Mini Kuis menempel; zona FAB disisihkan.
+- Selama `enablePointPicking` aktif, svg berkelas `.is-picking` dan panah tak-ketuk tuli
+  pointer; titik tak-ketuk selalu tuli pointer.
+- Selebrasi hanya pada penuntasan PERTAMA; statistiknya hanya yang bisa ditelusuri
+  (jumlah kasus & langkah) — Kontrak 11. Lencana berbunyi "**Simulasi** Sub-topik n
+  Tuntas", karena sub-topik baru tuntas di `progressStore` sesudah Mini Kuis.
+- Latihan ulang Mini Kuis memakai `markSubtopicCompleted` (max rekor) — rekor tak turun.
+
+**Uji terakhir:** Node 130/130 · data **755**/0/0 (+6 cek notasi; skema `plane_tap`,
+4 mutan tertangkap) · plane **33**/33 · sims 26/26 · smoke penuh **219**/0 (217 dengan `--skip-suites`).
+
+**Antrean berikutnya (§4.1):** lima sub-topik Bab 1 lain ke pola terpandu sub-topik 1
+(+ Mini Kuis `plane_tap` bila cocok). **Catatan terbuka:** toast 740×360 (≤ 2,2 dtk)
+masih bisa menutupi tombol di kolom kerja kanan sesaat (tembus-ketuk); toast galat
+di layar besar tetap 5 detik.

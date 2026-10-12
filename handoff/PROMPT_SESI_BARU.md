@@ -15,7 +15,7 @@ UI berbahasa Indonesia).
 
 ## LANGKAH 0 — WAJIB SEBELUM MENYENTUH KODE
 Baca `handoff/handoff.md` dari awal sampai akhir. Itu memori inti proyek:
-kontrak arsitektur (§3), riwayat 14 tahap (§2), misi sesi ini (§4), pohon
+kontrak arsitektur (§3), riwayat 14 tahap (§2) + adendum §6, misi sesi ini (§4), pohon
 berkas (§5). Bila dokumen bertentangan dengan kode, percayai yang TERUKUR di
 peramban, lalu perbarui dokumennya.
 
@@ -60,9 +60,9 @@ Ringkasan keadaan terakhir (commit `2debdf2`, 12 Oktober 2026):
 
 ## UJI WAJIB SEBELUM SETIAP COMMIT (handoff §4.3)
 - `node tests/engine.test.mjs` → 130/130
-- `py tests/validate_data.py` → 0 GAGAL (saat ini 749 lolos, 0 peringatan)
+- `py tests/validate_data.py` → 0 GAGAL (saat ini 755 lolos, 0 peringatan)
 - `py tests/serve.py` di port 5173, lalu `py tests/smoke.py` → 0 GAGAL
-  (saat ini 161 lolos; sudah menjalankan plane 32/32 dan sims 26/26)
+  (saat ini 219 lolos penuh; plane 33/33 dan sims 26/26)
 - Perubahan tampilan diverifikasi di aplikasi pada 740×360 dan 1024×600,
   dengan tangkapan layar.
 
