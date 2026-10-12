@@ -421,3 +421,24 @@ vektor-lab-interaktif/
 
 *Dokumen transisi. Bila isinya bertentangan dengan kode, kode yang diukur di peramban
 yang benar — perbarui dokumen ini, jangan kodenya dipaksa mengikuti dokumen.*
+
+---
+
+## 6. ADENDUM 13 Okt 2026 — Polish terpandu (BELUM SELESAI)
+
+Selesai & ter-commit (masing-masing uji merah-dulu): `b8660da` temuan 3 & 4 ·
+`d27df4b` bidang kertas grafik terang (`--plane-*`) · `bc18e2d` mata panah `\vec`
+tak terlihat di SELURUH aplikasi (reset `svg{max-width:100%}`) · `202c9e8` animasi
+lompatan per satuan, panah kinestetik dua ketukan, `core/ui/sfx.js` (Web Audio) ·
+`604146b` CTA kasus berikutnya di panggung + chip berdenyut + tombol sidebar terjepit ·
+`90af8b7` bilah aksi Mini Kuis menempel. Uji terakhir: Node 130/130 · data 749/0/0 ·
+plane 32/32 · sims 26/26 · smoke --skip-suites 171/0.
+
+**Sisa:** (H) modal selebrasi simulasi tuntas — `lessonRenderer.js` callback
+`mountSimulation`: tampilkan `showModal` hanya bila `!this.simulationDone` sebelumnya,
+tombol "Buka Rangkuman Konsep" (`openRangkuman()`) & "Mulai Mini Kuis" (`step = 1`);
+statistik HANYA yang bisa ditelusuri (jumlah kasus + nama kasus; Kontrak 11), `celebrate()`
+ada di `core/interactions/flyToAnimation.js`. Lalu: smoke penuh, perbarui §2/§4 & PRD §7.1
+(bidang kini terang). **Pertanyaan terbuka untuk pengguna:** (1) 148 `\vec{XY}` dua huruf
+di data → `\overrightarrow{XY}`? (2) tombol bisu suara di header? (3) toast 740×360
+menutupi ±90px bidang.
