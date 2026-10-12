@@ -65,38 +65,59 @@
       ],
       "simulation": {
         "engine": "vector_anatomy",
-        "title": "Simulasi: Bedah Satu Tanda Panah",
-        "brief": "Panah dari $O$ ke $A$ sudah tergambar. Tentukan sendiri mana pangkal dan mana ujungnya, lalu hitung langkah mendatar dan tegaknya — aplikasi hanya memeriksa, tidak menghitungkan.",
+        "title": "Simulasi Terpandu: Membentuk Vektor Pertama",
+        "brief": "Bidangnya masih kosong. Semua yang muncul — titik, langkah, panah — adalah hasil ketukan dan hitunganmu sendiri.",
         "config": {
-          "vector": {
-            "from": [
-              0,
-              0
-            ],
-            "to": [
-              7,
-              4
-            ],
-            "name": "OA"
-          },
-          "xRange": [
-            -2,
-            9
-          ],
-          "yRange": [
-            -2,
-            7
-          ],
-          "reverseCase": {
-            "name": "AO",
-            "askSign": true
-          }
+          "cases": [
+            {
+              "to": [
+                7,
+                4
+              ],
+              "name": "OA",
+              "point": "A",
+              "guided": true
+            },
+            {
+              "to": [
+                -5,
+                3
+              ],
+              "name": "OB",
+              "point": "B",
+              "quadrant": "II"
+            },
+            {
+              "to": [
+                -4,
+                -6
+              ],
+              "name": "OC",
+              "point": "C",
+              "quadrant": "III"
+            },
+            {
+              "to": [
+                3,
+                -5
+              ],
+              "name": "OD",
+              "point": "D",
+              "quadrant": "IV"
+            }
+          ]
         },
         "toasts": {
-          "salahBagian": "Belum tepat — yang kamu ketuk adalah **{{terketuk}}**, sedangkan yang diminta **{{diminta}}**. Nama $\\vec{OA}$ dibaca berurutan: huruf pertama pangkalnya, huruf kedua ujungnya.",
-          "arahSalah": "Belum tepat — besar langkahnya sudah benar, **tandanya** yang belum. Pada arah {{sumbu}}, hitung dari pangkal: ke kanan dan ke atas bernilai positif, ke kiri dan ke bawah negatif.",
-          "tandaSalah": "Belum tepat — kamu menyalin komponennya apa adanya. Kalau arah perjalanan dibalik, **setiap** komponen berganti tanda sedangkan besarnya tetap.",
-          "success": "Tepat! Pangkal $O$, ujung $A$, perpindahannya $7$ ke kanan lalu $4$ ke atas — dan $\\vec{AO}$ menempuh jalur yang sama persis ke arah sebaliknya."
+          "pusatSalah": "Belum tepat — yang kamu ketuk {{titik}}. Titik pusat koordinat adalah tempat sumbu $X$ dan sumbu $Y$ berpotongan: kedua angkanya nol.",
+          "koordinatTertukar": "Belum tepat — {{titik}} adalah titik lain. Angka **pertama** selalu dihitung mendatar pada sumbu $X$ ($ {{x}} $), angka **kedua** tegak pada sumbu $Y$ ($ {{y}} $).",
+          "tandaKuadran": "Belum tepat — arahnya terbalik pada sumbu ${{sumbu}}$. Tanda pada komponen itu memerintahkan langkah ke **{{arah}}**, bukan ke seberangnya.",
+          "titikMeleset": "Belum tepat — kamu mendarat di {{titik}}. Hitung kotak kisinya dari $O$: mendatar dulu, baru tegak.",
+          "langkahSalahTanda": "Besarnya sudah benar, tandanya belum. Langkah {{sumbu}} itu menuju **{{arah}}**, dan arah itulah yang menentukan tanda positif atau negatifnya.",
+          "langkahSalahBesar": "Belum tepat — hitung ulang kotak kisi pada arah {{sumbu}}, satu per satu, mulai dari $O$ dan berhenti tepat di titik tujuan.",
+          "arahPanahTerbalik": "Belum tepat — itu panah dari {{titik}} kembali ke $O$. Pada nama $\\vec{{{nama}}}$, huruf pertama adalah pangkalnya dan huruf kedua ujungnya.",
+          "panahGanda": "Belum tepat — satu vektor hanya punya **satu** arah. Dua panah bolak-balik berarti dua vektor berbeda yang saling berlawanan.",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi langkah mendatar **dan** tegaknya lebih dulu.",
+          "success": "Tepat! Dari $O$ ke $A$: $7$ satuan ke kanan dan $4$ satuan ke atas, lalu satu panah menyatukannya. Itulah $\\vec{OA}$, yang boleh ditulis $\\vec{a}$."
         }
       },
       "quiz": [

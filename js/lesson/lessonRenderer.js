@@ -21,11 +21,22 @@ import toast, { anchorToasts } from '../core/ui/toast.js';
 import { createScratchpad } from '../core/ui/scratchpad.js';
 import { lessonKey, getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
+/**
+ * DUA tahap yang terlihat: siswa mendarat langsung di simulasi.
+ *
+ * Terukur di kelas: hampir semua siswa melewati tab teks dan langsung
+ * menekan "Mulai Simulasi" — materi pasif itu praktis tidak pernah dibaca.
+ * Karena itu materinya dilebur ke dalam simulasi terpandu, dan teksnya
+ * tetap tersedia sebagai RANGKUMAN (langkah `REVIEW_STEP`) untuk mengulang
+ * sebelum ujian; ia sengaja TIDAK punya tab sendiri.
+ */
 const STEPS = [
-  { id: 'materi', label: 'Materi' },
   { id: 'simulasi', label: 'Simulasi' },
   { id: 'kuis', label: 'Mini Kuis' },
 ];
+
+/** Rangkuman: di luar deret tab, dibuka lewat tombol. */
+const REVIEW_STEP = STEPS.length;
 
 function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -206,6 +217,7 @@ export class LessonView {
     this.host = host;
     this.ctx = ctx;
     this.step = 0;
+    this.returnStep = 0;      // tahap yang dituju saat Rangkuman ditutup
     this.simulation = null;
     this.simulationDone = false;
     this.quizDone = false;
@@ -226,11 +238,11 @@ export class LessonView {
     this.sessionKey = lessonKey(ctx.chapter.id, ctx.subtopic.id);
     const saved = getResume(this.sessionKey);
 
-    if (Number.isInteger(saved.step) && saved.step >= 0 && saved.step < STEPS.length) {
-      // Langkah Mini Kuis hanya boleh dipulihkan kalau simulasinya memang
-      // sudah tuntas — kalau tidak, siswa melewati kerja yang belum ia
-      // kerjakan hanya dengan keluar-masuk layar.
-      const allowed = saved.step < 2 || this.reviewMode || saved.simulationDone === true;
+    if (Number.isInteger(saved.step) && saved.step >= 0 && saved.step <= REVIEW_STEP) {
+      // Mini Kuis hanya boleh dipulihkan kalau simulasinya memang sudah
+      // tuntas — kalau tidak, siswa melewati kerja yang belum ia kerjakan
+      // hanya dengan keluar-masuk layar. Rangkuman selalu boleh dibuka.
+      const allowed = saved.step !== 1 || this.reviewMode || saved.simulationDone === true;
       if (allowed) this.step = saved.step;
     }
 
@@ -377,12 +389,18 @@ export class LessonView {
     this.renderStep();
   }
 
+  /** Tahap utama yang sedang diwakili tab (Rangkuman menumpang tahap asalnya). */
+  get mainStep() {
+    return this.step === REVIEW_STEP ? this.returnStep : this.step;
+  }
+
   syncSteps() {
+    const current = this.mainStep;
     [...this.stepsEl.children].forEach((item, i) => {
       // Di mode review semua bagian dianggap tuntas; yang aktif tetap ditandai.
-      const state = i === this.step ? 'active' : (this.reviewMode || i < this.step ? 'done' : 'pending');
+      const state = i === current ? 'active' : (this.reviewMode || i < current ? 'done' : 'pending');
       item.dataset.state = state;
-      if (this.reviewMode) item.setAttribute('aria-selected', String(i === this.step));
+      if (this.reviewMode) item.setAttribute('aria-selected', String(i === current));
     });
   }
 
@@ -400,13 +418,13 @@ export class LessonView {
     if (this.actionHost) this.actionHost.innerHTML = '';
     if (this.hintHost) this.hintHost.innerHTML = '';
 
-    if (this.step === 0) return this.renderMateri();
-    if (this.step === 1) return this.renderSimulation();
+    if (this.step === REVIEW_STEP) return this.renderRangkuman();
+    if (this.step === 0) return this.renderSimulation();
     return this.renderQuiz();
   }
 
-  /* ---------------- A. Materi ---------------- */
-  renderMateri() {
+  /* ---------------- A. Rangkuman (materi teks, opsional) ---------------- */
+  renderRangkuman() {
     const { subtopic } = this.ctx;
 
     // Teks TIDAK PERNAH langsung di atas latar grid — selalu di dalam kartu solid.
@@ -415,8 +433,8 @@ export class LessonView {
     // Teori panjang sekarang digulir dengan tenang DI DALAM kartunya sendiri
     // (lihat `.materi-card` di phase9.css), sementara halamannya tetap 100vh.
     this.setHint(
-      'Materi',
-      'Baca dulu penjelasannya. Kalau sudah paham, lanjutkan ke simulasi lewat tombol di bawah.'
+      'Rangkuman',
+      'Catatan lengkap sub-topik ini. Boleh dibuka kapan saja — simulasinya menunggu di tempat terakhirmu.'
     );
 
     const card = el('div', 'content-card materi-card anim-rise');
@@ -426,16 +444,24 @@ export class LessonView {
     this.body.appendChild(card);
 
     const actions = el('div', 'actionbar');
-    actions.appendChild(el('span', 'actionbar__note', 'Sudah paham? Lanjut ke simulasi.'));
+    actions.appendChild(el('span', 'actionbar__note', 'Sudah cukup? Kembali ke tempatmu tadi.'));
     actions.appendChild(el('div', 'actionbar__spacer'));
 
     const next = el('button', 'btn btn--primary');
     next.type = 'button';
-    next.innerHTML = `<span>Mulai Simulasi</span>${icon('arrow-right', { size: 17 })}`;
-    next.addEventListener('click', () => { this.step = 1; this.renderStep(); });
+    const backLabel = this.returnStep === 1 ? 'Kembali ke Mini Kuis' : 'Kembali ke Simulasi';
+    next.innerHTML = `${icon('arrow-left', { size: 17 })}<span>${backLabel}</span>`;
+    next.addEventListener('click', () => { this.step = this.returnStep; this.renderStep(); });
     actions.appendChild(next);
 
     this.actionHost.appendChild(actions);
+  }
+
+  /** Buka Rangkuman, dan ingat dari tahap mana ia dibuka. */
+  openRangkuman() {
+    this.returnStep = this.step;
+    this.step = REVIEW_STEP;
+    this.renderStep();
   }
 
   /* ---------------- B. Simulasi ---------------- */
@@ -454,8 +480,9 @@ export class LessonView {
 
     const back = el('button', 'btn btn--ghost');
     back.type = 'button';
-    back.innerHTML = `${icon('arrow-left', { size: 16 })}<span>Materi</span>`;
-    back.addEventListener('click', () => { this.step = 0; this.renderStep(); });
+    back.innerHTML = `${icon('book', { size: 16 })}<span>Rangkuman</span>`;
+    back.title = 'Buka catatan lengkap sub-topik ini';
+    back.addEventListener('click', () => this.openRangkuman());
     actions.appendChild(back);
 
     const retry = el('button', 'btn btn--ghost');
@@ -478,13 +505,13 @@ export class LessonView {
     const skip = el('button', 'btn btn--quiet');
     skip.type = 'button';
     skip.innerHTML = `${icon('chevron-right', { size: 15 })}<span>Lewati Simulasi</span>`;
-    skip.addEventListener('click', () => { this.step = 2; this.renderStep(); });
+    skip.addEventListener('click', () => { this.step = 1; this.renderStep(); });
 
     const next = el('button', 'btn btn--success');
     next.type = 'button';
     next.disabled = !this.simulationDone;
     next.innerHTML = `<span>Lanjut ke Mini Kuis</span>${icon('arrow-right', { size: 17 })}`;
-    next.addEventListener('click', () => { this.step = 2; this.renderStep(); });
+    next.addEventListener('click', () => { this.step = 1; this.renderStep(); });
     if (this.simulationDone) next.classList.add('btn--pulse');
     actions.appendChild(next);
 
@@ -554,7 +581,7 @@ export class LessonView {
       onFinish: (result) => this.onQuizFinish(result, host),
       backButton: {
         label: 'Simulasi',
-        onClick: () => { this.step = 1; this.renderStep(); },
+        onClick: () => { this.step = 0; this.renderStep(); },
       },
     });
 
@@ -599,7 +626,7 @@ export class LessonView {
     const back = el('button', 'btn btn--ghost');
     back.type = 'button';
     back.innerHTML = `${icon('arrow-left', { size: 16 })}<span>Simulasi</span>`;
-    back.addEventListener('click', () => { this.step = 1; this.renderStep(); });
+    back.addEventListener('click', () => { this.step = 0; this.renderStep(); });
     actions.appendChild(back);
 
     actions.appendChild(el('div', 'actionbar__spacer'));

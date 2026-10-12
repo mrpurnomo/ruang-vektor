@@ -12,7 +12,7 @@
  * mengenali JENIS kesalahan → gambar HASIL hanya di `onSolved`.
  */
 
-import { CaseSimulation, tex, texNum, texColumn, texTuple, same, givenBlock, AXES } from './simKit.js';
+import { CaseSimulation, tex, texNum, texColumn, texTuple, same, givenBlock, mixed, AXES } from './simKit.js';
 import * as S from '../../domain/surd.js';
 import * as V from '../../domain/vector.js';
 import * as Val from '../../domain/validator.js';
@@ -45,94 +45,165 @@ const DIRECTION = {
 const is2D = (arr) => Array.isArray(arr) && arr.length === 2;
 
 /* ============================================================
-   1. vector_anatomy — Bedah Satu Tanda Panah
+   1. vector_anatomy — Simulasi TERPANDU: dari bidang kosong ke vektor
+
+   Materinya TIDAK dibaca lebih dulu; ia terbentuk di tangan siswa:
+   ketuk titik asal → cari titik tujuan → lacak langkahnya → barulah
+   panahnya dibentuk dan diberi nama. Kasus berikutnya memindahkan
+   tujuan ke kuadran lain, supaya tanda minus punya makna arah, bukan
+   hafalan. Aplikasi tidak pernah menunjukkan letak titiknya lebih dulu.
    ============================================================ */
-export class VectorAnatomySim extends CaseSimulation {
-  get cases() {
-    return [this.config.vector];
+export class GuidedVectorIntroSim extends CaseSimulation {
+  usesPlane() {
+    return true;
+  }
+
+  /** Bidang dipotong per kasus: titik tujuan selalu punya ruang napas 2 satuan. */
+  planeOptions(c) {
+    const [x, y] = c.to;
+    const pad = 2;
+    return {
+      xRange: [Math.min(-pad, x - pad), Math.max(pad, x + pad)],
+      yRange: [Math.min(-pad, y - pad), Math.max(pad, y + pad)],
+    };
+  }
+
+  caseLabel(c) {
+    return c.guided ? 'Vektor pertama' : `Titik ${c.point}`;
   }
 
   setupCase(c) {
-    const { from, to, name } = c;
-    this.given = { from, to, name };
-    this.givenEl.appendChild(givenBlock(`Panah yang tergambar adalah ${tex(`\\overrightarrow{${name}}`)}.`));
-    this.arrow = this.drawVector({ from, to, name }, { essential: true });
-    // Kedua ujung TIDAK diberi huruf lebih dulu: menentukan mana pangkal
-    // adalah pekerjaan langkah ini.
-    this.tailMark = this.plane.drawPoint(from, { ghost: true });
-    this.tipMark = this.plane.drawPoint(to, { ghost: true });
+    this.marks = {};
+    this.traced = [];
+    // Kasus terpandu TIDAK diberi catatan pembuka: perintahnya sudah berdiri
+    // di panggung, dan catatan "bidang masih kosong" akan basi begitu titik
+    // pertama muncul.
+    if (!c.guided) {
+      this.givenEl.appendChild(givenBlock(mixed(`Tujuan berikutnya: $${c.point}${texTuple(c.to)}$ — kuadran ${c.quadrant}.`)));
+    }
+  }
+
+  /** Titik yang diketuk, apa adanya — dipakai kalimat umpan balik. */
+  tapped(point) {
+    return texTuple(point);
   }
 
   buildSteps(c) {
-    const [p, q] = [c.name[0], c.name[1]];
-    const d = [c.to[0] - c.from[0], c.to[1] - c.from[1]];
-    const reverse = (this.config.reverseCase && this.config.reverseCase.name) || `${q}${p}`;
-    const endTargets = () => [
-      { key: 'pangkal', mark: this.tailMark, label: 'Salah satu ujung panah' },
-      { key: 'ujung', mark: this.tipMark, label: 'Salah satu ujung panah' },
-    ];
+    const target = c.to;
+    const [tx, ty] = target;
+    const name = c.name;
+    const label = c.point;
 
-    return [
-      {
-        kind: 'tap',
-        label: 'Pangkal',
-        prompt: `Ketuk titik **pangkal** dari $\\overrightarrow{${c.name}}$.`,
-        targets: endTargets,
-        check: (key) => key === 'pangkal' || { toast: 'salahBagian', values: { terketuk: 'ujung', diminta: 'pangkal' } },
-        onSolved: () => this.tailMark.setLabel(p),
+    const originStep = {
+      kind: 'pick',
+      label: 'Titik asal $O$',
+      prompt: 'Perhatikan bidang kartesius ini. **Ketuk titik pusat koordinat $O(0,\\, 0)$** — tempat sumbu $X$ dan sumbu $Y$ berpotongan.',
+      intro: 'Ketuk langsung pada **bidang koordinat** di sebelah kiri.',
+      check: (p) => (p[0] === 0 && p[1] === 0)
+        || { toast: 'pusatSalah', values: { titik: this.tapped(p) } },
+      summary: () => '$O(0,\\, 0)$ ditandai.',
+      onSolved: () => {
+        this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
       },
-      {
-        kind: 'tap',
-        label: 'Ujung',
-        prompt: `Sekarang ketuk titik **ujung** dari $\\overrightarrow{${c.name}}$.`,
-        targets: endTargets,
-        check: (key) => key === 'ujung' || { toast: 'salahBagian', values: { terketuk: 'pangkal', diminta: 'ujung' } },
-        onSolved: () => this.tipMark.setLabel(q),
+    };
+
+    const findStep = {
+      kind: 'pick',
+      label: `Titik ${label}`,
+      prompt: c.guided
+        ? `Sekarang ada titik tujuan $${label}(${tx},\\, ${ty})$. **Cari letaknya, lalu ketuk titiknya** — hitung kotak kisinya dari $O$.`
+        : `Ketuk letak titik $${label}(${tx},\\, ${ty})$. Perhatikan tandanya sebelum menghitung kotak.`,
+      intro: 'Ketuk langsung pada **bidang koordinat** di sebelah kiri.',
+      check: (p) => {
+        if (p[0] === tx && p[1] === ty) return true;
+        if (p[0] === ty && p[1] === tx) return { toast: 'koordinatTertukar', values: { titik: this.tapped(p), x: tx, y: ty } };
+        if (p[0] === -tx && p[1] === ty) return { toast: 'tandaKuadran', values: { sumbu: 'x', arah: tx < 0 ? 'kiri' : 'kanan' } };
+        if (p[0] === tx && p[1] === -ty) return { toast: 'tandaKuadran', values: { sumbu: 'y', arah: ty < 0 ? 'bawah' : 'atas' } };
+        return { toast: 'titikMeleset', values: { titik: this.tapped(p) } };
       },
-      {
-        kind: 'fields',
-        label: 'Arah mendatar & tegak',
-        prompt: `Hitung kotak kisi dari pangkal ke ujung. Berapa satuan **mendatar** (kanan positif) dan **tegak** (atas positif)?`,
-        fields: [
-          { key: 'dx', label: 'Mendatar', mode: 'integer' },
-          { key: 'dy', label: 'Tegak', mode: 'integer' },
-        ],
-        check: (v) => {
-          const s = [v.dx.value, v.dy.value];
-          const i = firstWrong(s, d);
-          if (i < 0) return true;
-          const flipped = same(s[i], -d[i]);
-          return flipped
-            ? { toast: 'arahSalah', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong: [i === 0 ? 'dx' : 'dy'] }
-            : { message: 'Belum tepat — hitung ulang kotak kisinya satu per satu, mulai dari **pangkal**, bukan dari titik asal $O$.', wrong: [i === 0 ? 'dx' : 'dy'] };
-        },
-        summary: () => `$\\overrightarrow{${c.name}} = ${texTuple(d)}$`,
-        onSolved: () => this.plane.drawGuides(this.arrow),
+      summary: () => `$${label}${texTuple(target)}$ ditandai.`,
+      onSolved: () => {
+        this.marks[label] = this.drawPoint(target, { label, essential: true });
+        // Garis proyeksi putus-putus: menautkan titik ke kedua sumbunya,
+        // supaya "7 ke kanan, 4 ke atas" terbaca dari gambar.
+        if (tx !== 0) this.plane.drawSegment([tx, 0], target, { dashed: true });
+        if (ty !== 0) this.plane.drawSegment([0, ty], target, { dashed: true });
       },
-      {
-        kind: 'fields',
-        label: `Vektor $\\overrightarrow{${reverse}}$`,
-        prompt: `Bagaimana dengan $\\overrightarrow{${reverse}}$ — dari ${q} kembali ke ${p}? Tulis kedua komponennya.`,
-        fields: componentFields(2, { mode: 'integer' }),
-        check: (v) => {
-          const s = componentValues(v, 2);
-          const key = d.map((n) => -n);
-          if (firstWrong(s, key) < 0) return true;
-          const wrong = AXES.slice(0, 2).filter((a, i) => !same(s[i], key[i])).map((a) => `c${a}`);
-          // Menyalin AB apa adanya = lupa membalik tanda. Selain itu: salah hitung biasa.
-          if (firstWrong(s, d) < 0) return { toast: 'tandaSalah', wrong };
-          return { message: `Belum tepat — $\\overrightarrow{${reverse}}$ menempuh kotak kisi yang sama dengan $\\overrightarrow{${c.name}}$, hanya arahnya yang berlawanan. Hitung ulang dari ${q} ke ${p}.`, wrong };
-        },
-        summary: () => `$\\overrightarrow{${reverse}} = ${texTuple(d.map((n) => -n))}$`,
-        onSolved: async () => {
-          this.arrow.mute(true);
-          const back = this.drawVector({ from: c.to, to: c.from, name: reverse, tone: 'amber' }, { essential: true });
-          back.pulse(true);
-          await this.wait(900);
-          back.pulse(false);
-        },
+    };
+
+    const traceStep = {
+      kind: 'fields',
+      label: 'Lacak langkahnya',
+      prompt: c.guided
+        ? `Kamu berada di $O$ dan ingin sampai ke $${label}$. **Berapa satuan mendatar, lalu berapa satuan tegak?** Ke kanan dan ke atas bernilai positif.`
+        : `Tulis langkah dari $O$ ke $${label}$: berapa satuan mendatar, berapa satuan tegak — **lengkap dengan tandanya**.`,
+      fields: [
+        { key: 'dx', label: 'Mendatar', mode: 'integer', aria: 'Langkah mendatar' },
+        { key: 'dy', label: 'Tegak', mode: 'integer', aria: 'Langkah tegak' },
+      ],
+      check: (v) => {
+        const s = [v.dx.value, v.dy.value];
+        const i = firstWrong(s, target);
+        if (i < 0) return true;
+        const key = ['dx', 'dy'][i];
+        const wrong = [key];
+        if (same(s[i], -target[i])) {
+          return {
+            toast: 'langkahSalahTanda',
+            values: { sumbu: i === 0 ? 'mendatar' : 'tegak', arah: DIRECTION[AXES[i]](target[i]) },
+            wrong,
+          };
+        }
+        return { toast: 'langkahSalahBesar', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong };
       },
-    ];
+      summary: () => `Langkah: $${tx}$ ${DIRECTION.x(tx)}, $${ty}$ ${DIRECTION.y(ty)}.`,
+      onSolved: async () => {
+        // Jejak langkah digambar SESUDAH siswa menghitungnya sendiri.
+        this.traced.push(this.plane.drawSegment([0, 0], [tx, 0]));
+        await this.wait(260);
+        this.traced.push(this.plane.drawSegment([tx, 0], target));
+      },
+    };
+
+    const arrowStep = {
+      kind: 'choice',
+      label: 'Bentuk panahnya',
+      prompt: `Terakhir, hubungkan $O$ langsung ke $${label}$ dengan **satu panah**. Panah untuk $\\vec{${name}}$ berpangkal dan berujung di mana?`,
+      options: [
+        { key: 'benar', label: `Pangkal di $O$, mata panah di $${label}$` },
+        { key: 'terbalik', label: `Pangkal di $${label}$, mata panah di $O$` },
+        { key: 'ganda', label: 'Dua panah bolak-balik, $O$ ke $' + label + '$ dan sebaliknya' },
+      ],
+      check: (key) => {
+        if (key === 'benar') return true;
+        if (key === 'terbalik') return { toast: 'arahPanahTerbalik', values: { nama: name, titik: label } };
+        return { toast: 'panahGanda' };
+      },
+      summary: () => `$\\vec{${name}} = \\vec{a} = ${texTuple(target)}$`,
+      onSolved: async () => {
+        const arrow = this.drawVector({ to: [0, 0], name, tone: 'amber' }, { essential: true });
+        await arrow.setVector({ to: target }, { animate: true, duration: 520 });
+        // `givenBlock` menerima HTML apa adanya, jadi teks bermarkdown WAJIB
+        // lewat `mixed()` dulu — kalau tidak, siswa membaca tanda bintangnya.
+        this.givenEl.appendChild(givenBlock(mixed(
+          `**Inilah vektor.** Ia punya **nilai** — panjang perpindahannya — dan **arah**, yaitu dari $O$ menuju $${label}$. Karena berangkat dari $O$ dan berakhir di $${label}$, namanya $\\vec{${name}}$, atau cukup ditulis $\\vec{a}$.`,
+        )));
+      },
+    };
+
+    const practiceArrow = {
+      ...traceStep,
+      onSolved: async () => {
+        this.traced.push(this.plane.drawSegment([0, 0], [tx, 0]));
+        this.traced.push(this.plane.drawSegment([tx, 0], target));
+        const arrow = this.drawVector({ to: [0, 0], name, tone: 'amber' }, { essential: true });
+        await arrow.setVector({ to: target }, { animate: true, duration: 460 });
+      },
+    };
+
+    return c.guided
+      ? [originStep, findStep, traceStep, arrowStep]
+      : [findStep, practiceArrow];
   }
 }
 
@@ -490,7 +561,7 @@ export class UnitVectorSim extends CaseSimulation {
 }
 
 export const ENGINES = {
-  vector_anatomy: VectorAnatomySim,
+  vector_anatomy: GuidedVectorIntroSim,
   notation_morph: NotationMorphSim,
   position_vector: PositionVectorSim,
   component_builder: ComponentBuilderSim,

@@ -242,13 +242,77 @@
     align-items: start;
   }
 
+  /* ------------------------------------------------------------
+     PANDUAN DI PANGGUNG
+
+     Instruksi langkah duduk di ATAS kanvas, bukan di sidebar: di kelas,
+     mata siswa terkunci pada bidang koordinat dan kolom kiri terlewat
+     sama sekali. Ia membentang penuh di atas kedua kolom papan, dengan
+     tinggi TERCADANGKAN supaya kanvas tidak bergeser tiap langkah.
+     ------------------------------------------------------------ */
+  .sim-guide {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 4px;
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+    border: 1px solid var(--brand-primary-line);
+    border-left: 4px solid var(--royal);
+    background: var(--blue-50);
+    color: var(--ink-900);
+    font-size: var(--fs-base);
+    line-height: 1.5;
+    /* TINGGI TETAP, bukan min-height: perintah tiap langkah berbeda panjang,
+       dan panel yang tumbuh satu baris akan MENDORONG kanvas di bawahnya
+       (terukur: bidang bergeser 22px antar langkah — melanggar kontrak nol
+       pergeseran). Terukur pula perintah terpanjang: 82px di 740×360 dan
+       102px di 1024×600, jadi tingginya dipatok sedikit di atas itu dan
+       sisanya digulir di dalam panelnya sendiri. */
+    height: 104px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    align-content: start;
+  }
+
+  .sim-guide__step {
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--brand-primary-dark);
+  }
+
+  .sim-guide__text strong,
+  .sim-guide__text b { color: var(--brand-primary-dark); }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-guide {
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--fs-sm);
+      height: 84px;
+    }
+  }
+
   .sim-board__plane:empty { display: none; }
 
   .sim-board__plane .plane-host {
     min-height: clamp(220px, 42vh, 380px);
   }
 
-  @container (min-width: 560px) {
+  /* Lanskap pendek: panduan di panggung memakai tinggi, jadi bidang mengalah
+     sedikit — keduanya harus muat tanpa menggulir panggung di layar 360px.
+     Aturan ini WAJIB berdiri sesudah aturan umum di atas: specificity-nya
+     sama, jadi yang menang adalah yang terakhir. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-board__plane .plane-host { min-height: clamp(150px, 36vh, 200px); }
+  }
+
+  /* Ambang dua kolom diturunkan ke 440px: di 740×360 panggung hanya ±490px,
+     dan tata letak bertumpuk mendorong BIDANG keluar layar begitu jejak
+     langkah bertambah — siswa kehilangan kanvas yang sedang ia kerjakan
+     (terukur pada simulasi terpandu). */
+  @container (min-width: 420px) {
     .sim-board--plane {
       grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     }
@@ -287,6 +351,11 @@
     list-style: none;
   }
   .sim-board__trail:empty { display: none; }
+  /* Jejak langkah tumbuh terus; ia digulir DI DALAM kolom kerja supaya
+     isian langkah berikutnya tidak terdorong keluar layar. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-board__trail { max-height: 92px; overflow-y: auto; overscroll-behavior: contain; }
+  }
   .sim-board__trail-item {
     position: relative;
     padding: 4px var(--sp-3) 4px calc(var(--sp-3) + 14px);

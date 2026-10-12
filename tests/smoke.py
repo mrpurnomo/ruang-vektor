@@ -158,7 +158,8 @@ def open_mini_quiz(page, chapter_id, subtopic_id):
     page.evaluate(
         """async ([c, s]) => {
             const m = await import('/js/core/state/sessionState.js');
-            m.patchResume(m.lessonKey(c, s), { step: 2, simulationDone: true });
+            // Tahap 0 = Simulasi, tahap 1 = Mini Kuis (Materi kini Rangkuman).
+            m.patchResume(m.lessonKey(c, s), { step: 1, simulationDone: true });
         }""",
         [chapter_id, subtopic_id],
     )
@@ -326,7 +327,7 @@ def section_routes(page, errors, chapters):
 
 
 def section_subtopics(page, errors, chapters):
-    print("\n4. 25 sub-topik: Materi → Simulasi")
+    print("\n4. 25 sub-topik: mendarat langsung di Simulasi")
     count = 0
     for cid, order in chapters:
         for sid in order:
@@ -334,19 +335,51 @@ def section_subtopics(page, errors, chapters):
             errors.clear()
             fresh_position(page)
             open_route(page, f"#/belajar/{cid}/{sid}", settle=700)
-            materi = page.query_selector(".materi") is not None
+            # Tidak ada lagi tahap Materi: simulasi terpasang begitu sub-topik dibuka.
             try:
-                click_text(page, "Mulai Simulasi")
                 page.wait_for_selector(".sim-host .sim-board, .sim-host .sim", timeout=5000)
                 mounted = True
             except Exception:
                 mounted = False
             page.wait_for_timeout(300)
             katex_err = page.evaluate("() => document.querySelectorAll('.katex-error').length")
-            ok = materi and mounted and not errors and katex_err == 0
+            guide = page.evaluate("() => { const g = document.querySelector('.sim-guide__text'); return g ? g.textContent.trim().length : 0; }")
+            # Teks bermarkdown/LaTeX yang lupa lewat renderMixed() tampil mentah
+            # ke siswa ("**Inilah vektor.**", "\vec{a}") — terukur pernah terjadi.
+            mentah = page.evaluate("""() => {
+                const host = document.querySelector('#screen-host');
+                if (!host) return ['layar kosong'];
+                // KaTeX menyimpan sumber LaTeX-nya di <annotation> MathML — itu
+                // tidak terlihat siswa, jadi ia dibuang dulu sebelum diperiksa.
+                const copy = host.cloneNode(true);
+                copy.querySelectorAll('.katex-mathml, annotation').forEach((n) => n.remove());
+                const t = copy.textContent || '';
+                const bad = [];
+                if (t.includes('**')) bad.push('markdown **');
+                // Dua kali 92: di dalam string RegExp, garis miring literal ditulis ganda.
+                const latex = new RegExp(String.fromCharCode(92, 92) + '(vec|begin|frac|sqrt|hat|overrightarrow)');
+                if (latex.test(t)) bad.push('LaTeX mentah');
+                return bad;
+            }""")
+            ok = mounted and not errors and katex_err == 0 and guide > 0 and not mentah
             record(f"{cid}/{sid}", ok,
-                   f"materi={materi} simulasi={mounted} katex-error={katex_err} galat={'; '.join(errors[:2])}")
+                   f"simulasi={mounted} panduan={guide} katex-error={katex_err} mentah={mentah} galat={'; '.join(errors[:2])}")
     record(f"{EXPECTED_SUBTOPICS} sub-topik terjelajahi", count == EXPECTED_SUBTOPICS, f"ada {count}")
+
+    # Materi teks tetap ada sebagai Rangkuman opsional, bukan layar pertama.
+    errors.clear()
+    fresh_position(page)
+    open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
+    record("Sub-topik dibuka langsung di Simulasi, bukan Materi",
+           page.query_selector(".sim-host") is not None and page.query_selector(".materi") is None)
+    click_text(page, "Rangkuman")
+    page.wait_for_timeout(500)
+    record("Tombol Rangkuman membuka materi teks", page.query_selector(".materi") is not None)
+    click_text(page, "Kembali ke Simulasi")
+    page.wait_for_timeout(600)
+    record("Kembali dari Rangkuman mendarat di Simulasi lagi",
+           page.query_selector(".sim-host") is not None and page.query_selector(".materi") is None)
+    record("Tanpa galat konsol selama Rangkuman", not errors, "; ".join(errors[:2]))
 
 
 def section_visual(page):
@@ -401,7 +434,6 @@ def section_landscape(page, errors):
             fresh_position(page)
             open_route(page, route, settle=700)
             if sim:
-                click_text(page, "Mulai Simulasi")
                 page.wait_for_timeout(900)
             m = page.evaluate(LAYOUT_PROBE)
             label = f"{w}×{h} {route}"
@@ -456,19 +488,19 @@ def section_tap_targets(page, errors):
         measure(f"{v} daftar sub-topik")
 
         fresh_position(page)
-        open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
-        measure(f"{v} materi")
-        click_text(page, "Mulai Simulasi")
-        page.wait_for_timeout(900)
-        measure(f"{v} simulasi bidang (vector_anatomy)")
+        open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=900)
+        measure(f"{v} simulasi terpandu (vector_anatomy)")
+        click_text(page, "Rangkuman")
+        page.wait_for_timeout(600)
+        measure(f"{v} rangkuman")
+        click_text(page, "Kembali ke Simulasi")
+        page.wait_for_timeout(600)
         page.click(".pad-fab")
         page.wait_for_timeout(500)
         measure(f"{v} papan coret terbuka")
 
         fresh_position(page)
-        open_route(page, "#/belajar/02_operasi_bangun_datar/operasi_komponen", settle=700)
-        click_text(page, "Mulai Simulasi")
-        page.wait_for_timeout(900)
+        open_route(page, "#/belajar/02_operasi_bangun_datar/operasi_komponen", settle=900)
         measure(f"{v} simulasi sel (component_add)")
 
         open_mini_quiz(page, "01_konsep_dasar", "panjang_vektor")

@@ -407,7 +407,9 @@ export class ScalarProjectionSim extends CaseSimulation {
   setupCase(c) {
     const other = c.onto === 'a' ? 'b' : 'a';
     this.givenEl.appendChild(givenBlock(tex(`\\vec{a} = ${texColumn(c.a)},\\quad \\vec{b} = ${texColumn(c.b)}`), 'sim-given--display'));
-    this.givenEl.appendChild(givenBlock(`Tentukan proyeksi skalar ${tex(`\\vec{${other}}`)} **pada** ${tex(`\\vec{${c.onto}}`)}.`));
+    // `givenBlock` menerima HTML apa adanya: penekanan ditulis <strong>,
+    // bukan markdown — tanda bintangnya akan terbaca mentah oleh siswa.
+    this.givenEl.appendChild(givenBlock(`Tentukan proyeksi skalar ${tex(`\\vec{${other}}`)} <strong>pada</strong> ${tex(`\\vec{${c.onto}}`)}.`));
     this.arrows = {};
     if (this.plane) {
       this.arrows.a = this.drawVector({ to: c.a, name: 'a' }, { essential: true });

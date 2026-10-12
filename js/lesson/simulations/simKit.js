@@ -151,14 +151,16 @@ export class CaseSimulation extends Simulation {
     this.root = el('div', 'sim sim-kit');
     this.container.appendChild(this.root);
 
-    // URUTAN PANEL KENDALI — terukur di 1024×600: panel petunjuk hanya
-    // menampilkan 83px dari 364px isinya. Yang WAJIB terlihat tanpa menggulir
-    // adalah instruksi langkah yang sedang berjalan, jadi ia paling atas;
-    // brief (konteks sekali baca) turun ke paling bawah.
-    this.promptEl = this.addHint(el('div', 'sim__prompt'));
-    this.promptStep = el('span', 'sim__prompt-step');
-    this.promptText = el('span', 'sim__prompt-text');
-    this.promptEl.append(this.promptStep, this.promptText);
+    // INSTRUKSI HIDUP DI PANGGUNG, BUKAN DI SIDEBAR.
+    // Terukur di kelas: mata siswa terkunci pada kanvas, dan kolom kiri
+    // praktis tidak pernah dibaca — mereka mengerjakan simulasi sambil
+    // menebak apa yang diminta. Panel kiri kini berisi STATUS (daftar
+    // langkah, pemilih kasus), sedangkan perintah yang sedang berjalan
+    // menempel di atas kanvas tempat tangannya bekerja.
+    this.guideEl = el('div', 'sim-guide');
+    this.promptStep = el('span', 'sim-guide__step');
+    this.promptText = el('span', 'sim-guide__text');
+    this.guideEl.append(this.promptStep, this.promptText);
 
     if (this.cases.length > 1) this.caseBar = this.addHint(this.buildCaseBar());
 
@@ -190,7 +192,7 @@ export class CaseSimulation extends Simulation {
     this.trailEl = el('ol', 'sim-board__trail');
     this.inputsEl = el('div', 'sim-board__inputs');
     this.workCol.append(this.givenEl, this.trailEl, this.inputsEl);
-    this.board.append(this.planeCol, this.workCol);
+    this.board.append(this.guideEl, this.planeCol, this.workCol);
     this.root.appendChild(this.board);
 
     // Kasus sebagai "langkah" simulasi: pemulihan sesi & laporan posisi.
@@ -232,7 +234,9 @@ export class CaseSimulation extends Simulation {
       const chip = el('button', 'case-chip');
       chip.type = 'button';
       chip.setAttribute('role', 'tab');
-      chip.innerHTML = `<b>${this.caseLabel(c, i)}</b>`;
+      // `caseLabel` boleh memuat rumus ($\vec{a} + \vec{b}$); tanpa mixed()
+      // siswa membaca sumber LaTeX-nya mentah-mentah di pemilih kasus.
+      chip.innerHTML = `<b>${mixed(this.caseLabel(c, i))}</b>`;
       const onClick = () => {
         if (!this.isReachable(i) || i === this.caseIndex) return;
         this.goToCase(i);
@@ -252,7 +256,9 @@ export class CaseSimulation extends Simulation {
       chip.dataset.state = state;
       chip.disabled = state === 'locked';
       chip.setAttribute('aria-selected', String(i === this.caseIndex));
-      chip.setAttribute('aria-label', `${this.caseLabel(this.cases[i], i)}${this.solved.has(i) ? ' (selesai)' : state === 'locked' ? ' (terkunci)' : ''}`);
+      // Pembaca layar tidak perlu mendengar tanda dolar pembatas rumus.
+      const spoken = String(this.caseLabel(this.cases[i], i)).replace(/\$/g, '');
+      chip.setAttribute('aria-label', `${spoken}${this.solved.has(i) ? ' (selesai)' : state === 'locked' ? ' (terkunci)' : ''}`);
     });
   }
 
@@ -328,7 +334,9 @@ export class CaseSimulation extends Simulation {
   }
 
   setPromptText(text, chip) {
-    this.promptStep.textContent = chip;
+    // Chip langkah memuat `caseLabel`, yang boleh berisi rumus — ia pun wajib
+    // lewat mixed(), kalau tidak sumber LaTeX-nya terbaca mentah oleh siswa.
+    this.promptStep.innerHTML = chip ? mixed(chip) : '';
     this.promptText.innerHTML = mixed(text);
   }
 
@@ -345,7 +353,7 @@ export class CaseSimulation extends Simulation {
       : `Langkah ${this.stepIndex + 1}/${total}`;
     this.setPromptText(step.prompt || '', chip);
 
-    const renderers = { fields: 'renderFields', choice: 'renderChoice', multi: 'renderMulti', tap: 'renderTap' };
+    const renderers = { fields: 'renderFields', choice: 'renderChoice', multi: 'renderMulti', tap: 'renderTap', pick: 'renderPick' };
     const method = renderers[step.kind];
     if (!method) throw new Error(`Jenis langkah "${step.kind}" tidak dikenal`);
     // Kait penanda: onEnter menyiapkan sorotan langkah (mis. komponen sumber
@@ -613,6 +621,30 @@ export class CaseSimulation extends Simulation {
    * Ketuk target. `targets`: [{ key, arrow } | { key, mark } | { key, node, label }].
    * Target bisa panah/titik di bidang atau elemen DOM di lembar kerja.
    */
+  /**
+   * Ketuk KOORDINAT di bidang kosong — bukan objek yang sudah digambar.
+   *
+   * `step.check([x, y])` menerima titik kisi terdekat (hasil snap), sehingga
+   * siswa benar-benar MENCARI letak koordinatnya sendiri; aplikasi tidak
+   * pernah menunjukkan lebih dulu. Lapisan pilih ada DI BAWAH lapisan
+   * interaktif, jadi panah dan titik yang sudah ada tetap menerima ketukannya.
+   */
+  renderPick(step) {
+    if (!this.plane) throw new Error('Langkah "pick" membutuhkan bidang kartesius');
+    const intro = step.intro || 'Ketuk langsung pada **bidang koordinat**.';
+    this.inputsEl.appendChild(el('div', 'sim-note', mixed(intro)));
+    const release = this.plane.enablePointPicking((point) => {
+      if (this.busy) return;
+      const result = step.check(point);
+      if (result === true) {
+        this.solveStep(step, point);
+        return;
+      }
+      this.fail(result, null);
+    }, { step: step.snap || 1 });
+    this.stepCleanups.push(release);
+  }
+
   renderTap(step) {
     const targets = typeof step.targets === 'function' ? step.targets() : step.targets;
     // Kolom kerja tidak boleh kosong: di tata letak bertumpuk, siswa yang

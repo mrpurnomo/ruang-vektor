@@ -101,6 +101,16 @@ async function act(sim, action) {
       const btn = host.querySelector(`[data-sim-choice="${key}"]`);
       if (btn && btn.getAttribute('aria-checked') === 'true') btn.click();
     }
+  } else if (action.pick) {
+    // Ketukan pada bidang KOSONG: koordinat matematika diubah ke piksel
+    // klien lewat CTM yang benar-benar dirender, sama seperti jari siswa.
+    const plane = sim.plane;
+    assert(plane, 'aksi pick butuh bidang kartesius');
+    const rect = host.querySelector('.plane__pick');
+    assert(rect, 'lapisan pilih tidak aktif di langkah ini');
+    const [sx, sy] = plane.toScreen(action.pick);
+    const pt = new DOMPoint(sx, sy).matrixTransform(plane.svg.getScreenCTM());
+    rect.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: pt.x, clientY: pt.y }));
   } else if (action.tap) {
     const node = host.querySelector(`[data-sim-tap="${action.tap}"]`);
     assert(node, `target ketuk "${action.tap}" tidak ditemukan`);
@@ -221,12 +231,28 @@ const comps = (arr, prefix = 'c') => Object.fromEntries(arr.map((v, i) => [`${pr
 
 const PLANS = {
   vector_anatomy: (c) => {
-    const d = [c.to[0] - c.from[0], c.to[1] - c.from[1]];
+    const [x, y] = c.to;
+    // Rentang bidang dihitung ULANG dari konfigurasi (engine memotongnya per
+    // kasus), supaya titik salah yang diketuk uji tetap berada di dalam bidang.
+    const pad = 2;
+    const inside = (p) => p[0] >= Math.min(-pad, x - pad) && p[0] <= Math.max(pad, x + pad)
+      && p[1] >= Math.min(-pad, y - pad) && p[1] <= Math.max(pad, y + pad);
+    const swapped = [y, x];
+    const findStep = inside(swapped)
+      ? { wrong: { pick: swapped }, right: { pick: c.to }, expectToast: 'koordinatTertukar' }
+      : { wrong: { pick: [x - Math.sign(x || 1), y] }, right: { pick: c.to }, expectToast: 'titikMeleset' };
+    const traceStep = {
+      wrong: { fields: { dx: txt(-x), dy: txt(y) } },
+      right: { fields: { dx: txt(x), dy: txt(y) } },
+      expectToast: 'langkahSalahTanda',
+      leak: [`${x}, ${y}`],
+    };
+    if (!c.guided) return [findStep, traceStep];
     return [
-      { wrong: { tap: 'ujung' }, right: { tap: 'pangkal' }, expectToast: 'salahBagian' },
-      { wrong: { tap: 'pangkal' }, right: { tap: 'ujung' }, expectToast: 'salahBagian' },
-      { wrong: { fields: { dx: txt(-d[0]), dy: txt(d[1]) } }, right: { fields: { dx: txt(d[0]), dy: txt(d[1]) } }, expectToast: 'arahSalah' },
-      { wrong: { fields: comps(d) }, right: { fields: comps(d.map((n) => -n)) }, expectToast: 'tandaSalah' },
+      { wrong: { pick: [1, 1] }, right: { pick: [0, 0] }, expectToast: 'pusatSalah' },
+      findStep,
+      traceStep,
+      { wrong: { choice: 'terbalik' }, right: { choice: 'benar' }, expectToast: 'arahPanahTerbalik' },
     ];
   },
 
