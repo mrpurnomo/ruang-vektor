@@ -390,7 +390,27 @@
 
   .ws-stage .quiz-slider { height: auto; min-height: 100%; }
   .ws-stage .quiz-slider > .slider__viewport { overflow: visible; flex: 0 0 auto; }
-  .ws-stage .quiz-slider .quiz .actionbar { position: static; }
+  /* Bilah aksi Mini Kuis MENEMPEL di dasar panggung. Terukur: di 740×360
+     tombol "Periksa Jawaban" berada di bawah lipatan pada 3 dari 3 soal
+     yang diuji (bahkan di 1024×600 pada 1 dari 3) — siswa menjawab lalu
+     tidak menemukan tombolnya. Soal tetap bebas digulir di atasnya. */
+  .ws-stage .quiz-slider .quiz .actionbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    background: var(--bg-elevated);
+    box-shadow: 0 -12px 18px -14px rgba(13, 19, 32, .35);
+    /* Zona FAB papan coret (48px + celah) yang melayang di pojok kanan
+       bawah panggung — tanpa ini ia menimpa "Periksa Jawaban" (terukur). */
+    padding-right: calc(48px + var(--sp-4));
+  }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .ws-stage .quiz-slider .quiz .actionbar {
+      margin-top: var(--sp-2);
+      padding: var(--sp-2) calc(42px + var(--sp-4)) var(--sp-2) var(--sp-3);
+    }
+  }
 
   /* ------------------------------------------------------------
      6. PANGGUNG: KANVAS YANG LAPANG

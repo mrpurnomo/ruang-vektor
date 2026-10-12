@@ -560,6 +560,42 @@ def section_guided_stage(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+QUIZ_BAR = """() => {
+    const body = document.querySelector('.ws-stage > .workspace__body');
+    const bar = document.querySelector('.quiz .actionbar');
+    const b = body.getBoundingClientRect(), r = bar.getBoundingClientRect();
+    return { scrolls: body.scrollHeight > body.clientHeight + 1, view: [Math.round(b.top), Math.round(b.bottom)],
+             bar: [Math.round(r.top), Math.round(r.bottom)], bg: getComputedStyle(bar).backgroundColor };
+}"""
+
+
+def section_quiz_sticky(page, errors):
+    print("\n6d. Mini Kuis: bilah aksi selalu terlihat tanpa menggulir")
+    for w, h in [(740, 360), (1024, 600)]:
+        page.set_viewport_size({"width": w, "height": h})
+        open_mini_quiz(page, "01_konsep_dasar", "pengertian_notasi")
+        page.wait_for_timeout(500)
+        m = page.evaluate(QUIZ_BAR)
+        inside = lambda m: m["bar"][0] >= m["view"][0] - 1 and m["bar"][1] <= m["view"][1] + 1
+        record(f"{w}×{h}: kartu soal memang lebih tinggi dari panggung (uji bermakna)", m["scrolls"], json.dumps(m))
+        record(f"{w}×{h}: tombol Periksa terlihat tanpa menggulir", inside(m), json.dumps(m))
+        page.evaluate("() => { const b = document.querySelector('.ws-stage > .workspace__body'); b.scrollTop = b.scrollHeight / 2; }")
+        page.wait_for_timeout(150)
+        m2 = page.evaluate(QUIZ_BAR)
+        record(f"{w}×{h}: tetap terlihat saat soal digulir, berlatar pejal", inside(m2) and not m2["bg"].endswith(", 0)"), json.dumps(m2))
+        # Tombol papan coret (FAB) melayang di pojok kanan bawah panggung —
+        # tepat di atas bilah yang kini menempel di dasar.
+        hit = page.evaluate("""() => {
+            const fab = document.querySelector('.pad-fab'), btn = document.querySelector('.quiz .actionbar .btn--primary');
+            if (!fab || !btn) return null;
+            const a = fab.getBoundingClientRect(), b = btn.getBoundingClientRect();
+            return { fab: [Math.round(a.left), Math.round(a.right)], btn: [Math.round(b.left), Math.round(b.right)],
+                     overlap: !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top) };
+        }""")
+        record(f"{w}×{h}: tombol papan coret tidak menimpa tombol Periksa", hit is not None and not hit["overlap"], json.dumps(hit))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
 def section_tap_targets(page, errors):
     print("\n6b. Area sentuh efektif ≥ 44×44 (kontrak §3.3)")
 
@@ -947,6 +983,7 @@ def main():
             section_visual(page)
             section_landscape(page, errors)
             section_guided_stage(page, errors)
+            section_quiz_sticky(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)
