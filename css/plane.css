@@ -263,6 +263,50 @@
   .plane__point-mark.is-tappable:hover > .plane__point,
   .plane__point-mark.is-tappable:focus-visible > .plane__point { r: 7.5; }
 
+  /* Titik yang TIDAK bisa diketuk tuli terhadap pointer: lingkaran 11px-nya
+     duduk di lapisan interaktif, di ATAS lapisan pilih, dan menelan ketukan
+     yang mendarat tepat di atasnya — siswa yang mengetuk titik O untuk
+     memulai panah tidak mendapat jawaban apa pun (terukur). */
+  .plane__point-mark:not(.is-tappable) { pointer-events: none; }
+
+  /* Titik pangkal yang sudah diketuk: berdenyut menunggu ujungnya. Ukuran
+     DAN tebal bingkai berubah — terbaca tanpa membedakan warna. */
+  .plane__point-mark.is-armed > .plane__point {
+    stroke: var(--plane-vector);
+    animation: planeArm 900ms var(--ease) infinite;
+  }
+  @keyframes planeArm {
+    0%, 100% { r: 5.5; stroke-width: 2; }
+    50%      { r: 8.5; stroke-width: 3.5; }
+  }
+
+  /* Lompatan per satuan (animasi langkah): busur tipis kobalt. */
+  .plane__hop {
+    fill: none;
+    stroke: var(--plane-vector);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: .7;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Lencana langkah "+1 … +7": pelat kobalt kecil di atas kertas. */
+  .plane__tag .plane__label-inner {
+    min-width: 0;
+    padding: 1px 6px;
+    border-color: var(--brand-primary-line);
+    color: var(--plane-vector);
+    font-size: 12px;
+  }
+
+  /* Gema ketukan yang ditolak (flashMiss) — hilang sendiri dalam 650ms. */
+  .plane__miss {
+    fill: none;
+    stroke: var(--danger);
+    stroke-width: 2;
+    pointer-events: none;
+  }
+
   .plane__segment {
     stroke: var(--graphite-3);
     stroke-width: 2;

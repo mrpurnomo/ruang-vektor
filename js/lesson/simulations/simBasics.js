@@ -16,6 +16,7 @@ import { CaseSimulation, tex, texNum, texColumn, texTuple, same, givenBlock, mix
 import * as S from '../../domain/surd.js';
 import * as V from '../../domain/vector.js';
 import * as Val from '../../domain/validator.js';
+import sfx from '../../core/ui/sfx.js';
 
 /* ------------------------------------------------------------
    Pembantu bersama
@@ -44,14 +45,44 @@ const DIRECTION = {
 
 const is2D = (arr) => Array.isArray(arr) && arr.length === 2;
 
+/** Pengguna meminta gerak dikurangi: animasi diganti keadaan akhirnya. */
+function stillMotion() {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Goresan yang "ditulis" dari pangkal ke ujung (WAAPI pada stroke-dashoffset). */
+function drawStroke(path, ms) {
+  if (stillMotion() || !path.animate || !path.getTotalLength) return;
+  const len = path.getTotalLength();
+  if (!(len > 0)) return;
+  path.style.strokeDasharray = `${len}`;
+  const anim = path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: ms, easing: 'ease-out' });
+  anim.onfinish = () => { path.style.strokeDasharray = ''; };
+}
+
+/** Muncul memantul (spring): label & lencana yang baru lahir. */
+function springPop(node) {
+  if (!node || stillMotion() || !node.animate) return;
+  node.animate([
+    { transform: 'scale(.35)', opacity: 0 },
+    { transform: 'scale(1.18)', opacity: 1, offset: 0.6 },
+    { transform: 'scale(1)', opacity: 1 },
+  ], { duration: 300, easing: 'cubic-bezier(.3, 1.3, .5, 1)' });
+}
+
+/** "+7" / "−5": langkah bertanda, sebagaimana siswa menuliskannya. */
+const signedStep = (n, sign) => (sign < 0 ? `-${n}` : `+${n}`);
+
 /* ============================================================
    1. vector_anatomy — Simulasi TERPANDU: dari bidang kosong ke vektor
 
    Materinya TIDAK dibaca lebih dulu; ia terbentuk di tangan siswa:
    ketuk titik asal → cari titik tujuan → lacak langkahnya → barulah
-   panahnya dibentuk dan diberi nama. Kasus berikutnya memindahkan
-   tujuan ke kuadran lain, supaya tanda minus punya makna arah, bukan
-   hafalan. Aplikasi tidak pernah menunjukkan letak titiknya lebih dulu.
+   panahnya DIGAMBAR siswa sendiri (ketuk pangkal, lalu ujung). Kasus
+   berikutnya memindahkan tujuan ke kuadran lain, supaya tanda minus punya
+   makna arah, bukan hafalan. Aplikasi tidak pernah menunjukkan letak
+   titiknya lebih dulu; animasi lompatan per satuan baru diputar SESUDAH
+   siswa menuliskan jumlah langkahnya dengan benar.
    ============================================================ */
 export class GuidedVectorIntroSim extends CaseSimulation {
   usesPlane() {
@@ -84,15 +115,106 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return c.guided ? 'success' : 'successLatihan';
   }
 
+  /**
+   * Kesimpulan kasus terpandu hidup di PANDUAN yang menempel, bukan di kolom
+   * kerja: di 740×360 kolom kerja sudah tergulir ke bawah saat panah selesai,
+   * dan blok "Inilah vektor…" di puncaknya tertutup panduan (terukur).
+   */
+  caseDonePrompt(c, allDone) {
+    if (c.guided) {
+      return `**Inilah vektor $\\vec{${c.name}}$**, boleh ditulis $\\vec{a}$: ia punya **nilai** — panjang perpindahannya — dan **arah**, dari $O$ menuju $${c.point}$.`;
+    }
+    return super.caseDonePrompt(c, allDone);
+  }
+
   setupCase(c) {
     this.marks = {};
-    this.traced = [];
+    this.drawFrom = null;
     // Kasus terpandu TIDAK diberi catatan pembuka: perintahnya sudah berdiri
     // di panggung, dan catatan "bidang masih kosong" akan basi begitu titik
     // pertama muncul.
     if (!c.guided) {
       this.givenEl.appendChild(givenBlock(mixed(`Tujuan berikutnya: $${c.point}${texTuple(c.to)}$ — kuadran ${c.quadrant}.`)));
+      // Titik asal sudah dikenal sejak kasus pertama. Di latihan ia langsung
+      // hadir, karena panahnya nanti digambar siswa DARI titik ini.
+      this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
     }
+  }
+
+  /** Titik pangkal yang sudah diketuk berdenyut menunggu ujungnya. */
+  arm(key) {
+    this.drawFrom = key;
+    if (this.marks[key]) this.marks[key].el.classList.add('is-armed');
+  }
+
+  disarm() {
+    if (this.drawFrom && this.marks && this.marks[this.drawFrom]) this.marks[this.drawFrom].el.classList.remove('is-armed');
+    this.drawFrom = null;
+  }
+
+  /**
+   * Pemeriksa DUA ketukan untuk menggambar panah. Ketukan pertama pada titik
+   * yang sah hanya "dipersenjatai" (`pending`) — belum benar, belum salah,
+   * karena urutannya baru diketahui di ketukan kedua.
+   */
+  checkDraw(p, c) {
+    const at = (q) => p[0] === q[0] && p[1] === q[1];
+    const hit = at([0, 0]) ? 'O' : at(c.to) ? c.point : null;
+    if (!this.drawFrom) {
+      if (!hit) return { toast: 'pangkalBukanTitik', values: { titik: this.tapped(p) } };
+      this.arm(hit);
+      return { pending: true };
+    }
+    // Mengetuk ulang pangkal yang sama: tetap menunggu ujungnya.
+    if (hit === this.drawFrom) return { pending: true };
+    const from = this.drawFrom;
+    this.disarm();
+    if (from === 'O' && hit === c.point) return true;
+    if (from === c.point && hit === 'O') return { toast: 'arahPanahTerbalik', values: { nama: c.name, balik: `${c.point}O` } };
+    return { toast: 'ujungBukanTitik', values: { titik: this.tapped(p) } };
+  }
+
+  /**
+   * Animasi langkah ala Manim — diputar di `onSolved`, SESUDAH siswa sendiri
+   * menuliskan jumlah langkahnya. Lompat satu satuan demi satuan sepanjang
+   * sumbu X, lalu sepanjang sumbu Y; lencana hitungan ikut berjalan dan
+   * nadanya naik. Hasil akhirnya menetap: "+7" di bawah, "+4" di samping.
+   */
+  async animateSteps(target, { hopMs }) {
+    const [tx, ty] = target;
+    const plane = this.plane;
+    const sx = Math.sign(tx) || 1;
+    const sy = Math.sign(ty) || 1;
+    // Busur mendatar menonjol KE ARAH tujuan; busur tegak menonjol KE LUAR.
+    const arcY = ty >= 0 ? 1 : -1;
+    const arcX = tx >= 0 ? 1 : -1;
+    const delay = stillMotion() ? 0 : hopMs;
+    let count = 0;
+
+    const phase = async (n, from, step, side, badgeOffset, sign) => {
+      if (!n) return;
+      const badge = plane.drawTag(from, '', { offset: badgeOffset });
+      for (let k = 1; k <= n; k += 1) {
+        const a = [from[0] + step[0] * (k - 1), from[1] + step[1] * (k - 1)];
+        const b = [from[0] + step[0] * k, from[1] + step[1] * k];
+        const hop = plane.drawHop(a, b, { side });
+        count += 1;
+        sfx.step(count);
+        drawStroke(hop.path, Math.max(60, delay - 20));
+        badge.setPosition(b).setText(signedStep(k, sign));
+        springPop(badge.inner);
+        await this.wait(delay);
+      }
+      badge.remove();
+    };
+
+    await phase(Math.abs(tx), [0, 0], [sx, 0], [0, arcY], [0, -20 * arcY], sx);
+    if (tx && ty) await this.wait(delay);
+    await phase(Math.abs(ty), [tx, 0], [0, sy], [arcX, 0], [22 * arcX, 0], sy);
+
+    // Lencana akhir di sisi SEBERANG busurnya, supaya tidak saling tindih.
+    if (tx) springPop(plane.drawTag([tx / 2, 0], signedStep(Math.abs(tx), sx), { offset: [0, 15 * arcY] }).inner);
+    if (ty) springPop(plane.drawTag([tx, ty / 2], signedStep(Math.abs(ty), sy), { offset: [-24 * arcX, 0] }).inner);
   }
 
   /** Titik yang diketuk, apa adanya — dipakai kalimat umpan balik. */
@@ -177,53 +299,41 @@ export class GuidedVectorIntroSim extends CaseSimulation {
         return { toast: 'langkahSalahBesar', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong };
       },
       summary: () => `Langkah: $${tx}$ ${DIRECTION.x(tx)}, $${ty}$ ${DIRECTION.y(ty)}.`,
-      onSolved: async () => {
-        // Jejak langkah digambar SESUDAH siswa menghitungnya sendiri.
-        this.traced.push(this.plane.drawSegment([0, 0], [tx, 0]));
-        await this.wait(260);
-        this.traced.push(this.plane.drawSegment([tx, 0], target));
-      },
+      // Jejak langkah digambar SESUDAH siswa menghitungnya sendiri.
+      onSolved: () => this.animateSteps(target, { hopMs: c.guided ? 150 : 90 }),
     };
 
-    const arrowStep = {
-      kind: 'choice',
-      label: 'Bentuk panahnya',
-      prompt: `Terakhir, hubungkan $O$ langsung ke $${label}$ dengan **satu panah**. Panah untuk $\\vec{${name}}$ berpangkal dan berujung di mana?`,
-      options: [
-        { key: 'benar', label: `Pangkal di $O$, mata panah di $${label}$` },
-        { key: 'terbalik', label: `Pangkal di $${label}$, mata panah di $O$` },
-        { key: 'ganda', label: 'Dua panah bolak-balik, $O$ ke $' + label + '$ dan sebaliknya' },
-      ],
-      check: (key) => {
-        if (key === 'benar') return true;
-        if (key === 'terbalik') return { toast: 'arahPanahTerbalik', values: { nama: name, titik: label } };
-        return { toast: 'panahGanda' };
-      },
-      summary: () => `$\\vec{${name}} = \\vec{a} = ${texTuple(target)}$`,
+    // Vektor adalah TINDAKAN, bukan tebakan: panahnya digambar dengan dua
+    // ketukan — pangkal, lalu ujung. Urutan terbalik ditolak dengan nama
+    // vektor yang sebenarnya digambar siswa (AO, bukan OA).
+    const drawStep = {
+      kind: 'pick',
+      label: 'Gambar panahnya',
+      prompt: c.guided
+        ? `Sekarang **gambar vektor $\\vec{${name}}$**! Ketuk titik **pangkalnya**, lalu ketuk titik **ujungnya**.`
+        : `Gambar $\\vec{${name}}$: ketuk **pangkalnya**, lalu **ujungnya**.`,
+      intro: 'Ketuk dua titik di bidang: **pangkal** dulu, baru **ujung**.',
+      onEnter: () => this.disarm(),
+      onLeave: () => this.disarm(),
+      check: (p) => this.checkDraw(p, c),
+      summary: () => (c.guided
+        ? `$\\vec{${name}} = \\vec{a} = ${texTuple(target)}$`
+        : `$\\vec{${name}} = ${texTuple(target)}$`),
       onSolved: async () => {
-        const arrow = this.drawVector({ to: [0, 0], name, tone: 'amber' }, { essential: true });
-        await arrow.setVector({ to: target }, { animate: true, duration: 520 });
-        // `givenBlock` menerima HTML apa adanya, jadi teks bermarkdown WAJIB
-        // lewat `mixed()` dulu — kalau tidak, siswa membaca tanda bintangnya.
-        this.givenEl.appendChild(givenBlock(mixed(
-          `**Inilah vektor.** Ia punya **nilai** — panjang perpindahannya — dan **arah**, yaitu dari $O$ menuju $${label}$. Karena berangkat dari $O$ dan berakhir di $${label}$, namanya $\\vec{${name}}$, atau cukup ditulis $\\vec{a}$.`,
-        )));
-      },
-    };
-
-    const practiceArrow = {
-      ...traceStep,
-      onSolved: async () => {
-        this.traced.push(this.plane.drawSegment([0, 0], [tx, 0]));
-        this.traced.push(this.plane.drawSegment([tx, 0], target));
-        const arrow = this.drawVector({ to: [0, 0], name, tone: 'amber' }, { essential: true });
-        await arrow.setVector({ to: target }, { animate: true, duration: 460 });
+        const arrow = this.drawVector({
+          to: [0, 0],
+          name,
+          tone: 'blue',
+          label: c.guided ? `\\vec{${name}} = \\vec{a}` : undefined,
+        }, { essential: true });
+        await arrow.setVector({ to: target }, { animate: !stillMotion(), duration: c.guided ? 560 : 460 });
+        if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);
       },
     };
 
     return c.guided
-      ? [originStep, findStep, traceStep, arrowStep]
-      : [findStep, practiceArrow];
+      ? [originStep, findStep, traceStep, drawStep]
+      : [findStep, traceStep, drawStep];
   }
 }
 

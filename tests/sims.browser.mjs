@@ -71,6 +71,14 @@ async function waitFor(predicate, timeout = 3000, label = 'kondisi') {
 }
 
 async function act(sim, action) {
+  // Deret aksi = beberapa ketukan untuk SATU jawaban (mis. pangkal lalu ujung panah).
+  if (Array.isArray(action)) {
+    for (const part of action) {
+      await act(sim, part);
+      await frames(1);
+    }
+    return;
+  }
   if (action.fields) {
     for (const [key, text] of Object.entries(action.fields)) {
       const input = host.querySelector(`[data-sim-field="${key}"]`);
@@ -271,12 +279,19 @@ const PLANS = {
       expectToast: 'langkahSalahTanda',
       leak: [`${x}, ${y}`],
     };
-    if (!c.guided) return [findStep, traceStep];
+    // Panah digambar dengan DUA ketukan. Urutan terbalik (ujung → pangkal)
+    // harus ditolak berkalimat, tanpa menggambar panah apa pun.
+    const drawStep = {
+      wrong: [{ pick: c.to }, { pick: [0, 0] }],
+      right: [{ pick: [0, 0] }, { pick: c.to }],
+      expectToast: 'arahPanahTerbalik',
+    };
+    if (!c.guided) return [findStep, traceStep, drawStep];
     return [
       { wrong: { pick: [1, 1] }, right: { pick: [0, 0] }, expectToast: 'pusatSalah' },
       findStep,
       traceStep,
-      { wrong: { choice: 'terbalik' }, right: { choice: 'benar' }, expectToast: 'arahPanahTerbalik' },
+      drawStep,
     ];
   },
 

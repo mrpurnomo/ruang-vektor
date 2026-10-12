@@ -34,6 +34,7 @@ import { fillTemplate } from '../../core/text.js';
 import { icon } from '../../core/ui/icons.js';
 import toast from '../../core/ui/toast.js';
 import { rejectShake } from '../../core/interactions/flyToAnimation.js';
+import sfx from '../../core/ui/sfx.js';
 import * as S from '../../domain/surd.js';
 import * as V from '../../domain/vector.js';
 
@@ -138,6 +139,17 @@ export class CaseSimulation extends Simulation {
   /** @returns {Array<object>} deskriptor langkah — lihat komentar di atas berkas. */
   buildSteps() {
     return [];
+  }
+
+  /**
+   * Isi panduan di panggung saat kasus tuntas. Panduan itu MENEMPEL dan
+   * selalu terlihat, jadi engine boleh menaruh kesimpulan kasusnya di sini
+   * (mis. "Inilah vektor…") alih-alih di kolom kerja yang bisa tergulir.
+   */
+  caseDonePrompt(c, allDone) {
+    return allDone
+      ? 'Semua kasus selesai. Lanjutkan ke Mini Kuis, atau buka kasus mana pun untuk mengulang.'
+      : 'Kasus ini selesai. Lanjut ke kasus berikutnya.';
   }
 
   /** Kunci toast sukses per kasus (bawaan 'success'). */
@@ -380,6 +392,7 @@ export class CaseSimulation extends Simulation {
 
   fail(result, element) {
     if (element) rejectShake(element);
+    sfx.wrong();
     toast.error(this.message(result, DEFAULTS.wrong));
   }
 
@@ -389,6 +402,7 @@ export class CaseSimulation extends Simulation {
    */
   async solveStep(step, payload) {
     if (!this.claim('solve')) return;
+    sfx.tap();
     try {
       if (step.summary) {
         const line = el('li', 'sim-board__trail-item', mixed(step.summary(payload)));
@@ -429,7 +443,8 @@ export class CaseSimulation extends Simulation {
 
     const c = this.cases[this.caseIndex];
     const allDone = this.solved.size === this.cases.length;
-    this.setPromptText(allDone ? 'Semua kasus selesai. Lanjutkan ke Mini Kuis, atau buka kasus mana pun untuk mengulang.' : 'Kasus ini selesai. Lanjut ke kasus berikutnya.', 'Selesai');
+    this.setPromptText(this.caseDonePrompt(c, allDone), 'Selesai');
+    if (!wasSolved) sfx.success();
     this.inputsEl.innerHTML = '';
     this.inputsEl.appendChild(el('div', 'slide-solved', `${icon('check-circle', { size: 18 })}<span>${mixed(this.caseLabel(c, this.caseIndex))} selesai.</span>`));
 
@@ -650,6 +665,13 @@ export class CaseSimulation extends Simulation {
         this.solveStep(step, point);
         return;
       }
+      // Ketukan SAH yang belum menuntaskan langkah (mis. pangkal panah,
+      // sebelum ujungnya diketuk): diakui dengan bunyi, tanpa umpan balik salah.
+      if (result && result.pending) {
+        sfx.tap();
+        return;
+      }
+      this.plane.flashMiss(point);
       this.fail(result, null);
     }, { step: step.snap || 1 });
     this.stepCleanups.push(release);

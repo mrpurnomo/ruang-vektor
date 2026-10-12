@@ -461,6 +461,71 @@ export class VectorPlane {
   }
 
   /**
+   * Busur LOMPATAN dari a ke b — jejak "satu satuan, satu lompatan" ala Manim.
+   * `side` = arah tonjolan dalam satuan matematika ([0, 1] = ke atas), sehingga
+   * busur ikut berskala saat bidang berubah ukuran. Node `path`-nya terbuka
+   * di `mark.path` supaya pemanggil bisa menganimasikan goresannya.
+   */
+  drawHop(a, b, { side = [0, 1], bulge = 0.42 } = {}) {
+    const p = toPlanePoint(a);
+    const q = toPlanePoint(b);
+    const path = svgEl('path', {}, 'plane__hop');
+    const mark = this.addMark('shape', path, (vp) => {
+      const span = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      const ctrl = [(p[0] + q[0]) / 2 + side[0] * bulge * span * 2, (p[1] + q[1]) / 2 + side[1] * bulge * span * 2];
+      const [sx, sy] = vp.toScreen(p);
+      const [cx, cy] = vp.toScreen(ctrl);
+      const [ex, ey] = vp.toScreen(q);
+      path.setAttribute('d', `M${fmt(sx)} ${fmt(sy)} Q${fmt(cx)} ${fmt(cy)} ${fmt(ex)} ${fmt(ey)}`);
+    });
+    mark.path = path;
+    return mark;
+  }
+
+  /**
+   * Label KaTeX bebas yang berjangkar pada KOORDINAT MATEMATIKA (bukan piksel),
+   * mis. lencana langkah "+7". `offset` dalam piksel layar.
+   */
+  drawTag(point, tex, { offset = [0, 0], tone = '' } = {}) {
+    let position = toPlanePoint(point);
+    const fo = this.createLabel(`plane__tag${tone ? ` plane__label--${tone}` : ''}`);
+    const mark = this.addMark('label', fo, (vp) => {
+      const [x, y] = vp.toScreen(position);
+      this.placeLabel(fo, [x + offset[0], y + offset[1]]);
+    });
+    mark.inner = fo.firstChild.firstChild;
+    mark.setText = (t) => { this.setLabelContent(fo, t); return mark; };
+    mark.setPosition = (pt) => { position = toPlanePoint(pt); mark.layout(); return mark; };
+    mark.setText(tex);
+    return mark;
+  }
+
+  /**
+   * Umpan balik ketukan yang DITOLAK: cincin sesaat di titik yang diketuk,
+   * bergetar lalu memudar. Hidup di lapisan `pick` — bukan gambar jawaban,
+   * hanya gema dari tempat jari siswa mendarat — dan membuang dirinya sendiri.
+   */
+  flashMiss(point) {
+    if (this.destroyed || !this.viewport) return;
+    const [x, y] = this.viewport.toScreen(toPlanePoint(point));
+    const ring = svgEl('circle', { cx: fmt(x), cy: fmt(y), r: 9 }, 'plane__miss');
+    this.layers.pick.appendChild(ring);
+    const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const frames = still
+      ? [{ opacity: 1 }, { opacity: 0 }]
+      : [
+        { transform: 'translateX(0)', opacity: 1 },
+        { transform: 'translateX(-4px)', opacity: 1, offset: 0.2 },
+        { transform: 'translateX(4px)', opacity: 1, offset: 0.4 },
+        { transform: 'translateX(-2px)', opacity: 0.9, offset: 0.6 },
+        { transform: 'translateX(0)', opacity: 0 },
+      ];
+    const anim = ring.animate ? ring.animate(frames, { duration: 650, easing: 'ease-out' }) : null;
+    const done = () => ring.remove();
+    if (anim) anim.onfinish = done; else setTimeout(done, 650);
+  }
+
+  /**
    * Garis bantu komponen: dari ujung ke garis mendatar & tegak yang melewati
    * pangkal. Menerima Arrow (mengikuti posisinya yang sekarang) atau titik.
    * Aksioma: gambarkan SETELAH siswa membaca komponennya, bukan sebelum.

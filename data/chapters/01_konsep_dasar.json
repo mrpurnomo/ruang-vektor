@@ -114,8 +114,9 @@
           "titikMeleset": "Belum tepat — kamu mendarat di {{titik}}. Hitung kotak kisinya dari $O$: mendatar dulu, baru tegak.",
           "langkahSalahTanda": "Besarnya sudah benar, tandanya belum. Langkah {{sumbu}} itu menuju **{{arah}}**, dan arah itulah yang menentukan tanda positif atau negatifnya.",
           "langkahSalahBesar": "Belum tepat — hitung ulang kotak kisi pada arah {{sumbu}}, satu per satu, mulai dari $O$ dan berhenti tepat di titik tujuan.",
-          "arahPanahTerbalik": "Belum tepat — itu panah dari {{titik}} kembali ke $O$. Pada nama $\\vec{{{nama}}}$, huruf pertama adalah pangkalnya dan huruf kedua ujungnya.",
-          "panahGanda": "Belum tepat — satu vektor hanya punya **satu** arah. Dua panah bolak-balik berarti dua vektor berbeda yang saling berlawanan.",
+          "arahPanahTerbalik": "Belum tepat — yang kamu gambar adalah $\\vec{{{balik}}}$, bukan $\\vec{{{nama}}}$. Nama $\\vec{{{nama}}}$ berarti **berangkat** dari huruf pertama **menuju** huruf kedua. Ketuk lagi pangkalnya.",
+          "pangkalBukanTitik": "Belum tepat — {{titik}} belum ditandai di bidang. Panah ini berpangkal pada salah satu titik yang sudah kamu tandai.",
+          "ujungBukanTitik": "Belum tepat — ujung panah harus jatuh tepat pada titik tujuan yang sudah kamu tandai, bukan di {{titik}}. Mulai lagi dari pangkalnya.",
           "belumLengkap": "Masih ada kotak yang kosong. Isi langkah mendatar **dan** tegaknya lebih dulu.",
           "success": "Tepat! Dari $O$ ke $A$: $7$ satuan ke kanan dan $4$ satuan ke atas, lalu satu panah menyatukannya. Itulah $\\vec{OA}$, yang boleh ditulis $\\vec{a}$.",
           "successLatihan": "Tepat! Panahnya berangkat dari $O$ dan berujung tepat di titik tujuan. Tanda pada tiap komponen sudah kamu baca sebagai arah langkah, bukan sekadar hiasan."
