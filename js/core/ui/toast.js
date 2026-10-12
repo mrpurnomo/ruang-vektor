@@ -178,10 +178,10 @@ export function showToast(message, options = {}) {
   const duration = options.duration ?? DURATIONS[type] ?? 3500;
   const timer = setTimeout(() => dismiss(el), duration);
 
-  el.addEventListener('click', () => {
-    clearTimeout(timer);
-    dismiss(el);
-  });
+  // SENGAJA tidak ada "tutup dengan mengetuk": toast melayang di atas bilah
+  // aksi, dan selama ia bisa menerima ketukan, ketukan siswa pada tombol di
+  // bawahnya (mis. "Coba Lagi") hanya menutup toast dan hilang begitu saja.
+  // Toast menutup dirinya sendiri setelah `duration`; lihat components.css.
 
   el._timer = timer;
   parent.appendChild(el);

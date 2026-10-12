@@ -548,6 +548,19 @@ def section_reveal_policy(page, errors):
             record(f"Salah ke-{attempt}: kunci & pembahasan TIDAK tampil", s["correct"] == 0 and s["explain"] == 0, json.dumps(s, ensure_ascii=False))
             record(f"Salah ke-{attempt}: toast penjelas tanpa menyebut opsi benar",
                    bool(s["toast"]) and "timur" not in s["toast"], s["toast"][:120])
+            # Toast melayang tepat di atas bilah aksi. Selama ia tampil, ketukan
+            # pada "Coba Lagi" HARUS tetap sampai ke tombolnya.
+            reach = page.evaluate("""() => {
+                const toast = document.querySelector('.toast');
+                const btn = [...document.querySelectorAll('button')].find((b) => b.textContent.includes('Coba Lagi'));
+                if (!toast || !btn) return { toast: !!toast, btn: !!btn };
+                const r = btn.getBoundingClientRect();
+                const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+                return { toast: true, btn: true, sampai: !!hit && btn.contains(hit),
+                         tertutup: hit ? String(hit.className) : null };
+            }""")
+            record(f"Salah ke-{attempt}: ketukan tembus toast sampai ke tombol Coba Lagi",
+                   reach.get("sampai") is True, json.dumps(reach, ensure_ascii=False))
             click_text(page, "Coba Lagi")
             page.wait_for_timeout(400)
         else:
@@ -786,7 +799,9 @@ def main():
             context.add_init_script(NATIVE_DIALOG_SPY)
             page = context.new_page()
             errors, requests = [], []
-            page.on("console", lambda m: m.type == "error" and errors.append(m.text))
+            # `net::ERR_NETWORK_CHANGED` adalah kejadian adaptor jaringan Windows
+            # (lihat open_route), bukan galat aplikasi — navigasinya diulang.
+            page.on("console", lambda m: m.type == "error" and "ERR_NETWORK_CHANGED" not in m.text and errors.append(m.text))
             page.on("pageerror", lambda e: errors.append(str(e)))
             page.on("request", lambda r: requests.append(r.url))
 

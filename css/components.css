@@ -561,14 +561,13 @@
     pointer-events: none;
   }
 
-  /* Papan angka terbuka: toast menyingkir ke tepi SEBERANG papan, dan
-     ketukan menembusnya (tepi papan ditulis mathpad.js ke <html>). */
+  /* Papan angka terbuka: toast menyingkir ke tepi SEBERANG papan
+     (tepi papan ditulis mathpad.js ke <html>). */
   [data-mathpad="bottom"] .toast-host {
     top: calc(var(--h-header) + var(--sp-3));
     bottom: auto;
     flex-direction: column;
   }
-  [data-mathpad] .toast { pointer-events: none; }
 
   /* Toast = pita cetak alat: pelat putih, pita warna di kiri, tanpa
      sudut membulat besar. */
@@ -582,8 +581,12 @@
     border: 1px solid var(--border-strong);
     border-left: 4px solid var(--t-accent, var(--royal));
     box-shadow: var(--shadow-4);
-    pointer-events: auto;
-    cursor: pointer;
+    /* TOAST TIDAK PERNAH MENELAN KETUKAN. Ia melayang tepat di atas bilah
+       aksi, jadi `pointer-events: auto` (dulu dipakai untuk tutup-dengan-
+       ketuk) membuat ketukan siswa pada "Coba Lagi" hanya menutup toast —
+       terukur di Mini Kuis 1024×600. Toast menutup sendiri setelah
+       durasinya; yang tidak boleh adalah ia menghalangi langkah berikutnya. */
+    pointer-events: none;
     animation: toastIn var(--dur-base) var(--ease-out) both;
   }
 
