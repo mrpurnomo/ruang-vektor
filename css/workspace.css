@@ -674,6 +674,12 @@
     }
     .ws-side__actions .actionbar .btn--primary > svg,
     .ws-side__actions .actionbar .btn--success > svg { display: none; }
+    /* Tombol "Lewati Simulasi" muncul sesudah 30 detik. Empat tombol satu
+       baris menjepit aksi utama jadi 32×59px ("L… KE M… K…", terukur di
+       740×360). Saat ia hadir, aksi utama turun ke baris sendiri, penuh. */
+    .ws-side__actions .actionbar:has(.btn--quiet) { flex-wrap: wrap; }
+    .ws-side__actions .actionbar:has(.btn--quiet) .btn--primary,
+    .ws-side__actions .actionbar:has(.btn--quiet) .btn--success { flex: 1 1 100%; }
     /* Prompt adalah satu-satunya blok yang memberi tahu siswa apa yang harus
        dilakukan SEKARANG, jadi ruangnya dijamin lebih dulu — baru sisanya
        dibagi. Tanpa min-height, saudara kandungnya menjatah habis kolom ini

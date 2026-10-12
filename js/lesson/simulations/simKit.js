@@ -152,6 +152,11 @@ export class CaseSimulation extends Simulation {
       : 'Kasus ini selesai. Lanjut ke kasus berikutnya.';
   }
 
+  /** Kalimat ajakan di banner panggung menuju kasus berikutnya (bermarkdown). */
+  nextCaseInvite(next, index) {
+    return `Berikutnya: **${this.caseLabel(next, index)}**.`;
+  }
+
   /** Kunci toast sukses per kasus (bawaan 'success'). */
   caseSuccessKey() {
     return 'success';
@@ -273,6 +278,9 @@ export class CaseSimulation extends Simulation {
       // Pembaca layar tidak perlu mendengar tanda dolar pembatas rumus.
       const spoken = String(this.caseLabel(this.cases[i], i)).replace(/\$/g, '');
       chip.setAttribute('aria-label', `${spoken}${this.solved.has(i) ? ' (selesai)' : state === 'locked' ? ' (terkunci)' : ''}`);
+      // Chip yang DITUJU berikutnya berdenyut selama kasus ini sudah tuntas.
+      const isNext = this.solved.has(this.caseIndex) && i === this.firstUnsolved() && !this.solved.has(i);
+      if (isNext) chip.dataset.next = 'true'; else delete chip.dataset.next;
     });
   }
 
@@ -455,6 +463,31 @@ export class CaseSimulation extends Simulation {
     }
     if (text && !wasSolved) toast.success(text);
     this.nextCaseBtn.style.visibility = allDone ? 'hidden' : 'visible';
+    if (!allDone) this.showNextCaseInvite();
+  }
+
+  /**
+   * Ajakan ke kasus berikutnya DI PANGGUNG. Tombol di sidebar terukur berada
+   * di bawah lipatan panel kiri di 740×360: panduan berkata "lanjut", tetapi
+   * tombolnya tidak terlihat. Banner ini duduk di kolom kerja dan digulir
+   * masuk ke pandangan; tombol sidebar tetap ada untuk konsistensi.
+   */
+  showNextCaseInvite() {
+    const index = this.firstUnsolved();
+    const next = this.cases[index];
+    const invite = el('div', 'case-invite');
+    invite.appendChild(el('p', 'case-invite__text', mixed(this.nextCaseInvite(next, index))));
+    const go = el('button', 'btn btn--primary case-invite__go');
+    go.type = 'button';
+    go.dataset.simAction = 'next-case-stage';
+    go.innerHTML = `<span>Lanjut ke ${mixed(this.caseLabel(next, index))}</span>${icon('arrow-right', { size: 16 })}`;
+    const onGo = () => this.goToCase(index);
+    go.addEventListener('click', onGo);
+    this.caseCleanups.push(() => go.removeEventListener('click', onGo));
+    invite.appendChild(go);
+    this.inputsEl.appendChild(invite);
+    this.syncCaseBar();
+    go.scrollIntoView({ block: 'nearest' });
   }
 
   markAllDone(text) {

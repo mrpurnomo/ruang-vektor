@@ -127,6 +127,11 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return super.caseDonePrompt(c, allDone);
   }
 
+  nextCaseInvite(next) {
+    const lead = this.cases[this.caseIndex].guided ? 'Hebat! Sekarang coba kuasai' : 'Sekarang';
+    return `${lead} **kuadran ${next.quadrant}** dengan **titik ${next.point}**.`;
+  }
+
   setupCase(c) {
     this.marks = {};
     this.drawFrom = null;
@@ -324,7 +329,8 @@ export class GuidedVectorIntroSim extends CaseSimulation {
           to: [0, 0],
           name,
           tone: 'blue',
-          label: c.guided ? `\\vec{${name}} = \\vec{a}` : undefined,
+          // Nama dua huruf = \overrightarrow, sama dengan label bawaan bidang.
+          label: c.guided ? `\\overrightarrow{${name}} = \\vec{a}` : undefined,
         }, { essential: true });
         await arrow.setVector({ to: target }, { animate: !stillMotion(), duration: c.guided ? 560 : 460 });
         if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);

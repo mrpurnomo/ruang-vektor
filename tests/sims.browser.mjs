@@ -147,8 +147,13 @@ const CASE_SUCCESS = {
 function planeRect() {
   const p = host.querySelector('.plane-host');
   if (!p) return null;
+  // Banner "lanjut ke kasus berikutnya" menggulir panggung ke pandangan —
+  // itu GULIRAN, bukan pergeseran tata letak. Panggung dikembalikan ke atas
+  // dulu (bidangnya sticky), lalu posisinya diukur dalam koordinat dokumen.
+  const body = host.closest('.workspace__body');
+  if (body) body.scrollTop = 0;
   const r = p.getBoundingClientRect();
-  return [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join(',');
+  return [Math.round(r.left + scrollX), Math.round(r.top + scrollY), Math.round(r.width), Math.round(r.height)].join(',');
 }
 
 /* ------------------------------------------------------------

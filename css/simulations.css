@@ -490,6 +490,32 @@
   .case-chip[data-state="solved"] { background: var(--success-soft); border-color: transparent; color: var(--success-hi); }
   .case-chip[data-state="locked"] { border-style: dashed; color: var(--ink-500); cursor: not-allowed; }
 
+  /* Chip kasus berikutnya MEMANGGIL: cincin amber berdenyut. Ketebalan
+     cincin ikut berubah — terbaca tanpa membedakan warna. */
+  .case-chip[data-next="true"] {
+    border-color: var(--plane-amber);
+    color: var(--accent-amber);
+    animation: chipCall 1.4s var(--ease) infinite;
+  }
+  @keyframes chipCall {
+    0%, 100% { box-shadow: 0 0 0 0 var(--value-line); }
+    50%      { box-shadow: 0 0 0 4px var(--value-line); }
+  }
+
+  /* Banner ajakan ke kasus berikutnya, di kolom kerja panggung. */
+  .case-invite {
+    display: grid;
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+    border-radius: var(--r-md);
+    border: 1px solid var(--brand-primary-line);
+    background: var(--blue-50);
+    animation: rise var(--dur-base) var(--ease-out) both;
+  }
+  .case-invite__text { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--ink-900); }
+  .case-invite__text strong { color: var(--brand-primary-dark); }
+  .case-invite__go { justify-self: start; }
+
   .sim-steps {
     display: grid;
     gap: 2px;

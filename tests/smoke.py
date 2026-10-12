@@ -498,6 +498,36 @@ def section_guided_stage(page, errors):
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",
            bool(toasts) and all(l >= 0 and r <= page.viewport_size["width"] for l, r in toasts), str(toasts))
+    # Kasus berikutnya harus bisa dicapai DARI PANGGUNG: tombol di sidebar
+    # terukur berada di bawah lipatan panel kiri di 740×360.
+    cta = page.evaluate("""() => {
+        const body = document.querySelector('.ws-stage > .workspace__body').getBoundingClientRect();
+        const go = document.querySelector('.sim-board__work [data-sim-action="next-case-stage"]');
+        const chip = document.querySelector('.case-chip[data-next="true"]');
+        if (!go) return { go: null };
+        const r = go.getBoundingClientRect();
+        return { go: [Math.round(r.top), Math.round(r.bottom)], view: [Math.round(body.top), Math.round(body.bottom)],
+                 text: go.innerText, chip: chip ? chip.innerText : null };
+    }""")
+    record("Tombol 'Lanjut ke kasus berikutnya' ada di panggung dan terlihat",
+           bool(cta.get("go")) and cta["go"][0] >= cta["view"][0] and cta["go"][1] <= cta["view"][1], json.dumps(cta, ensure_ascii=False))
+    record("Chip kasus berikutnya ditandai berdenyut (data-next)", cta.get("chip") == "Titik B", json.dumps(cta, ensure_ascii=False))
+    # Tombol "Lewati Simulasi" muncul sesudah 30 detik; di lanskap pendek ia
+    # pernah menjepit tombol utama jadi "L… KE M… K…".
+    squeeze = page.evaluate("""() => {
+        const bar = document.querySelector('.ws-side__actions .actionbar');
+        const skip = document.createElement('button');
+        skip.type = 'button'; skip.className = 'btn btn--quiet'; skip.innerHTML = '<span>Lewati Simulasi</span>';
+        bar.insertBefore(skip, bar.querySelector('.actionbar__spacer'));
+        const main = bar.querySelector('.btn--success');
+        const r = main.getBoundingClientRect();
+        const lines = Math.round(main.querySelector('span').getBoundingClientRect().height / parseFloat(getComputedStyle(main).lineHeight || 16));
+        const out = { w: Math.round(r.width), h: Math.round(r.height), clipped: main.scrollWidth > main.clientWidth + 1 };
+        skip.remove();
+        return out;
+    }""")
+    record("Tombol utama sidebar tetap utuh saat 'Lewati Simulasi' muncul", squeeze["w"] >= 120 and not squeeze["clipped"] and squeeze["h"] <= 44,
+           json.dumps(squeeze))
     # Perintah hidup di panggung justru karena mata siswa terkunci di sana:
     # menggulir lembar kerja ke bawah tidak boleh membuang perintahnya.
     stuck = page.evaluate("""() => {
