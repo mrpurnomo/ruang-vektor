@@ -347,6 +347,12 @@
   /* Jejak langkah: nilai yang SUDAH dikonfirmasi, dalam kata-kata siswa. */
   .sim-board__trail {
     display: grid;
+    /* Baris setinggi ISINYA. Item jejak memakai overflow-x:auto sehingga
+       tinggi minimum otomatisnya nol; begitu jejak dibatasi max-height di
+       lanskap pendek, baris grid menyusut ke 20px dan memotong teks
+       ("4 ke atas" hilang) serta mata panah \vec di atas OA (terukur di
+       740×360: tinggi isi 29–49px, tinggi tampil 20px). */
+    grid-auto-rows: max-content;
     gap: 4px;
     list-style: none;
   }

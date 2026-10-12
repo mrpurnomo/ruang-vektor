@@ -458,6 +458,34 @@ def section_landscape(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+GUIDED_ROUTE = "#/belajar/01_konsep_dasar/pengertian_notasi"
+
+# Kasus terpandu dimajukan lewat solveStep() — jalan maju resmi engine —
+# supaya jejak, gambar konfirmasi, dan toast sukses benar-benar terbentuk.
+SOLVE_GUIDED = """async () => {
+    const sim = window.__vektorLab.state.activeView.simulation;
+    const payloads = [[0, 0], [7, 4], {}, 'benar'];
+    for (const p of payloads) await sim.solveStep(sim.currentStep, p);
+    await new Promise((r) => setTimeout(r, 400));
+    return sim.solved.has(0);
+}"""
+
+
+def section_guided_stage(page, errors):
+    print("\n6c. Panggung simulasi terpandu di lanskap pendek 740×360")
+    page.set_viewport_size({"width": 740, "height": 360})
+    fresh_position(page)
+    open_route(page, GUIDED_ROUTE, settle=900)
+    record("Kasus terpandu tuntas lewat solveStep()", page.evaluate(SOLVE_GUIDED))
+    trail = page.evaluate("""() => [...document.querySelectorAll('.sim-board__trail-item')]
+        .map((li) => ({ t: li.innerText.slice(0, 30), sh: li.scrollHeight, ch: li.clientHeight }))""")
+    squashed = [f"{i['t']!r} {i['ch']}<{i['sh']}" for i in trail if i["sh"] > i["ch"] + 1]
+    record(f"Jejak langkah ({len(trail)} item) tidak tergencet: teks & mata panah \\vec utuh",
+           len(trail) == 4 and not squashed, "; ".join(squashed) or f"{len(trail)} item")
+    record("Tanpa galat konsol di panggung terpandu", not errors, "; ".join(errors[:2]))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
 def section_tap_targets(page, errors):
     print("\n6b. Area sentuh efektif ≥ 44×44 (kontrak §3.3)")
 
@@ -844,6 +872,7 @@ def main():
             section_subtopics(page, errors, chapters)
             section_visual(page)
             section_landscape(page, errors)
+            section_guided_stage(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)
