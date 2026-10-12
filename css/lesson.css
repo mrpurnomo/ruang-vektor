@@ -317,6 +317,24 @@
     color: var(--accent-amber);
   }
 
+  /* Tiga aksi (Daftar · Coba Lagi Kuis · Berikutnya) tidak muat satu baris
+     di samping zona FAB: aksi utama sengaja turun selebar penuh di bawah,
+     bukan terbungkus acak ke kiri. */
+  .lesson-done .actionbar .btn--primary,
+  .lesson-done .actionbar .btn--success { flex: 1 1 100%; justify-content: center; }
+
+  /* Rekor terbaik yang TIDAK turun oleh latihan ulang. */
+  .lesson-done__best {
+    margin-top: var(--sp-1);
+    font-size: var(--fs-sm);
+    color: var(--ink-700);
+  }
+  .lesson-done__best strong {
+    font-family: var(--font-value);
+    font-weight: 700;
+    color: var(--accent-amber);
+  }
+
   .lesson-done__title {
     font-size: var(--fs-xl);
     font-weight: 700;

@@ -412,6 +412,13 @@
     }
   }
 
+  /* Layar hasil Mini Kuis juga duduk di bawah FAB papan coret: zona yang
+     sama, kalau tidak FAB menimpa "Sub-topik Berikutnya" (terukur 740×360). */
+  .ws-stage .lesson-done .actionbar { padding-right: calc(48px + var(--sp-4)); }
+  @media (orientation: landscape) and (max-height: 470px) {
+    .ws-stage .lesson-done .actionbar { padding-right: calc(42px + var(--sp-4)); }
+  }
+
   /* ------------------------------------------------------------
      6. PANGGUNG: KANVAS YANG LAPANG
      ------------------------------------------------------------ */

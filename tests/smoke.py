@@ -635,6 +635,47 @@ def section_celebration(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+def section_quiz_retry(page, errors):
+    print("\n6g. Coba Lagi Kuis tanpa menurunkan rekor")
+    page.set_viewport_size({"width": 1024, "height": 600})
+    fresh_position(page)
+    # Rekor 100 sudah tercatat: sub-topik tuntas.
+    page.evaluate("""async () => { const p = await import('/js/core/state/progressStore.js');
+        p.markSubtopicCompleted('01_konsep_dasar', 'pengertian_notasi', 100); }""")
+    page.evaluate("""async () => { const m = await import('/js/core/state/sessionState.js');
+        m.patchResume(m.lessonKey('01_konsep_dasar', 'pengertian_notasi'), { step: 1, simulationDone: true }); }""")
+    open_route(page, GUIDED_ROUTE, settle=800)
+    btn = page.locator("button", has_text="Coba Lagi Kuis")
+    record("Mode review Mini Kuis menyediakan tombol 'Coba Lagi Kuis'", btn.count() > 0)
+    if not btn.count():
+        return
+    btn.first.click()
+    page.wait_for_timeout(600)
+    live = page.evaluate("() => !!document.querySelector('.quiz .actionbar .btn--primary') && !document.querySelector('.answer-key')")
+    record("'Coba Lagi Kuis' membuka kuis yang bisa dijawab (bukan kunci jawaban)", live)
+    # Percobaan latihan berakhir dengan skor lebih rendah.
+    page.evaluate("""() => { const v = window.__vektorLab.state.activeView;
+        const host = document.querySelector('.ws-stage .workspace__body > div') || v.body; v.onQuizFinish({ score: 60 }, host); }""")
+    page.wait_for_timeout(500)
+    after = page.evaluate("""async () => { const p = await import('/js/core/state/progressStore.js');
+        const s = p.getSubtopicProgress('01_konsep_dasar', 'pengertian_notasi');
+        return { best: s.bestQuizScore, status: s.status, text: (document.querySelector('.lesson-done') || {}).innerText || '',
+                 again: !!document.querySelector('.lesson-done button') && [...document.querySelectorAll('.lesson-done button')].some((b) => /coba lagi/i.test(b.innerText)) }; }""")
+    record("Skor latihan 60 TIDAK menurunkan rekor 100; status tetap tuntas",
+           after["best"] == 100 and after["status"] == "completed", json.dumps(after, ensure_ascii=False))
+    record("Layar hasil menyebut rekor terbaik yang tetap", "100" in after["text"] and "60" in after["text"], after["text"][:160])
+    record("Layar hasil menyediakan 'Coba Lagi Kuis' lagi", after["again"], json.dumps(after, ensure_ascii=False))
+    for w, h in [(740, 360), (1024, 600)]:
+        page.set_viewport_size({"width": w, "height": h})
+        page.wait_for_timeout(300)
+        hit = page.evaluate("""() => { const fab = document.querySelector('.pad-fab').getBoundingClientRect();
+            return [...document.querySelectorAll('.lesson-done .actionbar .btn')].filter((x) => { const b = x.getBoundingClientRect();
+                return !(fab.right <= b.left || b.right <= fab.left || fab.bottom <= b.top || b.bottom <= fab.top); }).map((x) => x.innerText); }""")
+        record(f"{w}×{h}: tombol papan coret tidak menimpa tombol layar hasil", not hit, str(hit))
+    page.set_viewport_size({"width": 1024, "height": 600})
+    record("Tanpa galat konsol selama coba lagi kuis", not errors, "; ".join(errors[:2]))
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1094,6 +1135,7 @@ def main():
             section_quiz_sticky(page, errors)
             section_sound_toggle(page, errors)
             section_celebration(page, errors)
+            section_quiz_retry(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

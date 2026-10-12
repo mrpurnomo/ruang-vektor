@@ -624,19 +624,22 @@ export class LessonView {
   renderQuiz() {
     const { chapter, subtopic } = this.ctx;
 
+    const retry = this.reviewMode && this.quizRetry;
     this.setHint(
-      'Mini Kuis',
-      this.reviewMode
-        ? 'Sub-topik ini sudah selesai. Baca ulang soal beserta kunci dan pembahasannya.'
-        : 'Jawab soalnya untuk membuka sub-topik berikutnya. Salah tidak apa-apa — kamu boleh mencoba lagi.'
+      retry ? 'Latihan Ulang' : 'Mini Kuis',
+      retry
+        ? 'Kerjakan lagi sebagai latihan. Rekor terbaikmu **tidak akan turun**, berapa pun skor percobaan ini.'
+        : this.reviewMode
+          ? 'Sub-topik ini sudah selesai. Baca ulang soal beserta kunci dan pembahasannya.'
+          : 'Jawab soalnya untuk membuka sub-topik berikutnya. Salah tidak apa-apa — kamu boleh mencoba lagi.'
     );
 
     const host = el('div');
     this.body.appendChild(host);
 
-    // Mode review: TIDAK menjalankan logika kuis sama sekali. Siswa hanya
-    // membaca kembali soal beserta kunci dan pembahasannya.
-    if (this.reviewMode) return this.renderQuizReview(host);
+    // Mode review: TIDAK menjalankan logika kuis sama sekali — kecuali siswa
+    // meminta "Coba Lagi Kuis" sebagai latihan.
+    if (this.reviewMode && !retry) return this.renderQuizReview(host);
 
     recordAttempt(chapter.id, subtopic.id);
 
@@ -697,6 +700,8 @@ export class LessonView {
 
     actions.appendChild(el('div', 'actionbar__spacer'));
 
+    actions.appendChild(this.retryQuizButton('btn--ghost'));
+
     const toList = el('button', 'btn btn--primary');
     toList.type = 'button';
     toList.innerHTML = `${icon('layers', { size: 17 })}<span>Daftar Sub-topik</span>`;
@@ -704,6 +709,27 @@ export class LessonView {
     actions.appendChild(toList);
 
     this.actionHost.appendChild(actions);
+  }
+
+  /**
+   * "Coba Lagi Kuis": latihan ulang Mini Kuis yang sudah tuntas. Aman bagi
+   * rekor — markSubtopicCompleted() menyimpan max(rekor, skor baru) dan
+   * status tetap "completed"; percobaan 60 tidak menghapus rekor 100.
+   */
+  retryQuizButton(style = 'btn--ghost') {
+    const btn = el('button', `btn ${style}`);
+    btn.type = 'button';
+    btn.innerHTML = `${icon('rotate', { size: 16 })}<span>Coba Lagi Kuis</span>`;
+    btn.addEventListener('click', () => this.retryQuiz());
+    return btn;
+  }
+
+  retryQuiz() {
+    // Kuis latihan dimulai dari soal pertama, bukan dari posisi tersimpan.
+    clearResume(`${this.sessionKey}#kuis`);
+    this.quizRetry = true;
+    this.step = 1;
+    this.renderStep();
   }
 
   /** Kunci jawaban yang dirender sesuai tipe soalnya. */
@@ -765,7 +791,10 @@ export class LessonView {
     clearResume(this.sessionKey);
     clearResume(`${this.sessionKey}#kuis`);
 
-    if (!this.reviewMode) {
+    const practice = this.reviewMode && this.quizRetry;
+    this.quizRetry = false;
+    if (!this.reviewMode || practice) {
+      // max(rekor, skor) — latihan ulang tidak pernah menurunkan rekor.
       markSubtopicCompleted(chapter.id, subtopic.id, result.score);
       const chapterDone = setChapterCompleteIfDone(chapter.id, subtopicOrder);
 
@@ -798,9 +827,15 @@ export class LessonView {
     const inner = el('div', 'lesson-done__inner');
     inner.appendChild(el('span', 'lesson-done__icon', icon('trophy', { size: 46 })));
     inner.appendChild(el('h3', 'lesson-done__title',
-      this.reviewMode ? 'Review selesai!' : 'Sub-topik selesai!'));
+      practice ? 'Latihan ulang selesai!' : this.reviewMode ? 'Review selesai!' : 'Sub-topik selesai!'));
     inner.appendChild(el('p', 'lesson-done__score text-muted',
       `Skor Mini Kuis kamu: <strong>${result.score}</strong> dari 100.`));
+    const best = getSubtopicProgress(chapter.id, subtopic.id).bestQuizScore || 0;
+    this.setHint('Mini Kuis', `Rekor terbaikmu **${best}** dari 100. Kamu boleh berlatih ulang kapan saja — rekornya tidak akan turun.`);
+    if (practice || best > result.score) {
+      inner.appendChild(el('p', 'lesson-done__best',
+        `Rekor terbaikmu tetap <strong>${best}</strong> — latihan ulang tidak pernah menurunkannya.`));
+    }
     card.appendChild(inner);
     panel.appendChild(card);
 
@@ -813,6 +848,8 @@ export class LessonView {
     actions.appendChild(toList);
 
     actions.appendChild(el('div', 'actionbar__spacer'));
+
+    actions.appendChild(this.retryQuizButton('btn--ghost'));
 
     if (nextId) {
       const next = el('button', 'btn btn--primary btn--pulse');
