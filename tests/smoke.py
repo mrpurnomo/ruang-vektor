@@ -452,7 +452,7 @@ def section_landscape(page, errors):
     portrait = page.evaluate("""() => {
         const hidden = (sel) => { const e = document.querySelector(sel); if (!e) return true;
             const cs = getComputedStyle(e); return cs.display === 'none' || cs.visibility === 'hidden'; };
-        return { lock: !hidden('.rotate-lock'), app: hidden('#app'), fs: hidden('.fs-btn') };
+        return { lock: !hidden('.rotate-lock'), app: hidden('#app'), fs: hidden('.fs-btn'), sound: hidden('[data-role="sound"]') };
     }""")
     record("Potret: pengunci rotasi tampil, #app & tombol layar penuh tersembunyi", all(portrait.values()), json.dumps(portrait))
     page.set_viewport_size({"width": 1024, "height": 600})
@@ -564,6 +564,39 @@ def section_guided_stage(page, errors):
            fresh["scrollTop"] == 0 and fresh["given"][0] >= fresh["guideBottom"], json.dumps(fresh, ensure_ascii=False))
     record("Tanpa galat konsol di panggung terpandu", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
+
+
+def section_sound_toggle(page, errors):
+    print("\n6e. Tombol suara di header")
+    for w, h in [(740, 360), (1024, 600), (1440, 900)]:
+        page.set_viewport_size({"width": w, "height": h})
+        open_route(page, GUIDED_ROUTE, settle=500)
+        m = page.evaluate("""() => {
+            const s = document.querySelector('[data-role="sound"]');
+            if (!s) return null;
+            const r = (e) => { const b = e.getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; };
+            const hit = (a, b) => !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]);
+            const others = ['.header-center', '.brand', '[data-role="fullscreen"]'].map((q) => document.querySelector(q)).filter(Boolean);
+            return { box: r(s).map(Math.round), overlap: others.filter((o) => hit(r(s), r(o))).map((o) => o.className),
+                     visible: getComputedStyle(s).visibility !== 'hidden', pressed: s.getAttribute('aria-pressed') };
+        }""")
+        record(f"{w}×{h}: tombol suara ada, terlihat, tidak menimpa header", bool(m) and m["visible"] and not m["overlap"], json.dumps(m))
+    page.set_viewport_size({"width": 1024, "height": 600})
+    state = """async () => { const m = await import('/js/core/ui/sfx.js');
+        const b = document.querySelector('[data-role="sound"]');
+        return { on: m.isEnabled(), pressed: b.getAttribute('aria-pressed'), stored: localStorage.getItem('vektorLab.sfx.v1') }; }"""
+    first = page.evaluate(state)
+    record("Suara AKTIF secara bawaan", first["on"] is True and first["pressed"] == "true", json.dumps(first))
+    page.click('[data-role="sound"]')
+    off = page.evaluate(state)
+    record("Ketuk tombol = BISU (sfx.setEnabled(false), tersimpan)", off["on"] is False and off["pressed"] == "false" and off["stored"] == "off", json.dumps(off))
+    open_route(page, GUIDED_ROUTE, settle=400)
+    kept = page.evaluate(state)
+    record("Pilihan bisu bertahan sesudah muat ulang", kept["on"] is False and kept["pressed"] == "false", json.dumps(kept))
+    page.click('[data-role="sound"]')
+    on = page.evaluate(state)
+    record("Ketuk lagi = suara AKTIF kembali", on["on"] is True and on["pressed"] == "true" and on["stored"] == "on", json.dumps(on))
+    record("Tanpa galat konsol saat menyalakan/membisukan suara", not errors, "; ".join(errors[:2]))
 
 
 QUIZ_BAR = """() => {
@@ -990,6 +1023,7 @@ def main():
             section_landscape(page, errors)
             section_guided_stage(page, errors)
             section_quiz_sticky(page, errors)
+            section_sound_toggle(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

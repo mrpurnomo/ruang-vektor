@@ -26,6 +26,7 @@ import {
 import { quizKey, clearAllResume } from './core/state/sessionState.js';
 import { attachMathpad, closeMathpad } from './core/ui/mathpad.js';
 import { killAllMotion } from './core/interactions/motion.js';
+import sfx from './core/ui/sfx.js';
 
 /* ------------------------------------------------------------
    State aplikasi
@@ -1229,6 +1230,33 @@ function syncFullscreenButton() {
   btn.setAttribute('aria-label', active ? 'Keluar dari mode layar penuh' : 'Masuk mode layar penuh');
 }
 
+/* ------------------------------------------------------------
+   Suara — sakelar global di samping layar penuh. Bawaan AKTIF; pilihan
+   bisu disimpan per perangkat oleh sfx.js (satu lab, banyak komputer:
+   guru bisa membisukan yang perlu tanpa mematikan speaker).
+   ------------------------------------------------------------ */
+function syncSoundButton() {
+  const btn = document.querySelector('[data-role="sound"]');
+  if (!btn) return;
+  const on = sfx.isEnabled();
+  btn.setAttribute('aria-pressed', String(on));
+  btn.setAttribute('aria-label', on ? 'Suara aktif. Ketuk untuk membisukan' : 'Suara bisu. Ketuk untuk menyalakan');
+  btn.title = on ? 'Suara aktif' : 'Suara bisu';
+  btn.innerHTML = icon(on ? 'volume' : 'volume-x', { size: 16 });
+}
+
+function initSound() {
+  const btn = document.querySelector('[data-role="sound"]');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    sfx.setEnabled(!sfx.isEnabled());
+    syncSoundButton();
+    // Bukti dengar bahwa suara kini menyala.
+    if (sfx.isEnabled()) sfx.tap();
+  });
+  syncSoundButton();
+}
+
 function initFullscreen() {
   const btn = document.querySelector('[data-role="fullscreen"]');
   if (!btn) return;
@@ -1276,6 +1304,7 @@ async function init() {
 
   touchSession();
   initFullscreen();
+  initSound();
   initNavrail();
   registerRoutes();
 

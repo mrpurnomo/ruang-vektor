@@ -218,6 +218,15 @@
   <!-- Layar penuh: aksi global, jadi ia hidup DI LUAR #app supaya tidak
        ikut dibongkar setiap kali layar berganti. Karena itu pula ia harus
        disebut terpisah di aturan pengunci orientasi. -->
+  <!-- Suara: aksi global seperti layar penuh, jadi ia juga hidup di luar
+       #app. Bawaan AKTIF; pilihan bisu disimpan per perangkat (sfx.js). -->
+  <button class="fs-btn fs-btn--sound" type="button" data-role="sound" aria-pressed="true"
+          aria-label="Suara aktif. Ketuk untuk membisukan" title="Suara aktif">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.8 5.2a9.5 9.5 0 0 1 0 13.6"/>
+    </svg>
+  </button>
   <button class="fs-btn" type="button" data-role="fullscreen" aria-label="Masuk mode layar penuh">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

@@ -241,7 +241,8 @@
   .header-slot {
     grid-column: 3;
     justify-self: end;
-    width: clamp(2.6rem, 14vw, 11rem);
+    /* Selebar DUA tombol yang mengambang di atasnya: suara + layar penuh. */
+    width: calc(var(--fs-w) + var(--fs-gap) + var(--sound-w));
     height: 1px;
   }
 
@@ -435,6 +436,35 @@
 
   @media (orientation: landscape) and (max-height: 470px) {
     .fs-btn { width: 32px; height: 32px; top: calc((var(--h-header) - 4px - 32px) / 2); }
+  }
+
+  /* ------------------------------------------------------------
+     TOMBOL SUARA — ikon saja, di KIRI tombol layar penuh.
+     Lebar tombol layar penuh DIPATOK (label terpanjang "Keluar Penuh"
+     terukur 137px) supaya posisi tombol suara pasti. Celahnya menjaga
+     jarak pusat-ke-pusat ≥ --hit-min: 36 + 8 dan 32 + 12.
+     ------------------------------------------------------------ */
+  :root {
+    --fs-right: clamp(var(--sp-3), 1.6vw, var(--sp-5));
+    --fs-w: 140px;
+    --fs-gap: var(--sp-2);
+    --sound-w: 36px;
+  }
+  .fs-btn { right: var(--fs-right); }
+  .fs-btn[data-role="fullscreen"] { width: var(--fs-w); justify-content: center; }
+  .fs-btn--sound {
+    right: calc(var(--fs-right) + var(--fs-w) + var(--fs-gap));
+    width: var(--sound-w);
+    padding: 0;
+    justify-content: center;
+  }
+  .fs-btn--sound[aria-pressed="false"] { color: var(--on-navy-3); }
+
+  @media (max-width: 900px), (orientation: landscape) and (max-height: 520px) {
+    :root { --fs-w: 36px; }
+  }
+  @media (orientation: landscape) and (max-height: 470px) {
+    :root { --fs-w: 32px; --sound-w: 32px; --fs-gap: 12px; }
   }
 
 
