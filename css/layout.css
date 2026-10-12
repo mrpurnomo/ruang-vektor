@@ -149,8 +149,50 @@
      wadahnya — pertahanan kedua terhadap tinta yang bocor. */
   .hero__panel,
   .mode-card,
-  .chapter-item,
+  .chapter-card,
   .subtopic-item { color: var(--ink-900); }
+
+  /* Sketsa bab di pojok pelat hero: aksen bab yang sedang dilanjutkan. */
+  .hero__art {
+    position: absolute;
+    top: var(--sp-4);
+    right: var(--sp-4);
+    width: 96px;
+    height: 70px;
+    fill: none;
+    stroke: var(--ch, var(--royal));
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: .55;
+    pointer-events: none;
+  }
+
+  /* Skor kosong adalah KALIMAT, bukan nilai: fon teks, bukan angka mono
+     besar (dulu terbaca renggang "Belum   ada"). */
+  .hero-stat__value.hero-stat__value--empty {
+    font-family: var(--font-ui);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-500);
+  }
+
+  /* Lencana status kartu mode (kontras tinggi): "2/25 sub-topik". */
+  .mode-card__status {
+    display: inline-block;
+    margin-left: var(--sp-2);
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    background: var(--card-accent, var(--royal));
+    color: var(--white);
+    font-family: var(--font-value);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
 
   .hero__title {
     font-family: var(--font-ui);
@@ -513,97 +555,204 @@
   /* ------------------------------------------------------------
      Daftar bab & sub-topik — baris pelat
      ------------------------------------------------------------ */
-  .chapter-list {
+  /* Kisi kartu bab: dua kolom bila muat, satu kolom di panggung sempit. */
+  .chapter-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     gap: var(--sp-3);
     padding: 2px;
   }
 
-  .chapter-item {
+  /* ------------------------------------------------------------
+     KARTU BAB PREMIUM (app.js chapterCard)
+     Lencana teknik beraksen bab · judul tegas · sketsa konsep ·
+     bilah capaian. Aksen = --ch (tokens.css --ch-1..4), semuanya
+     ≥ 4,5:1 di atas pelat.
+     ------------------------------------------------------------ */
+  .chapter-card {
+    --ch: var(--royal);
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "badge body art"
+      "foot  foot foot";
     align-items: center;
-    gap: var(--sp-4);
-    padding: var(--sp-4);
+    gap: var(--sp-3) var(--sp-4);
+    width: 100%;
+    padding: var(--sp-4) var(--sp-4) var(--sp-3);
     border-radius: var(--r-lg);
     background: var(--bg-surface);
     border: 1px solid var(--border-soft);
-    box-shadow: var(--shadow-1);
+    box-shadow: var(--sh-1);
+    color: var(--ink-900);
     text-align: left;
-    width: 100%;
+    overflow: hidden;
     transition:
+      transform var(--dur-base) var(--ease-out),
       border-color var(--dur-base) var(--ease-out),
       box-shadow var(--dur-base) var(--ease-out);
   }
 
-  .chapter-item:hover:not([disabled]) {
-    border-color: var(--royal);
-    box-shadow: var(--shadow-2), inset 3px 0 0 var(--royal);
+  /* Garis aksen di tepi atas: menebal saat ditunjuk. */
+  .chapter-card::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 3px;
+    background: var(--ch);
+    transition: height var(--dur-base) var(--ease-out);
   }
 
-  .chapter-item:active:not([disabled]) { transform: translateY(1px); }
+  .chapter-card:hover:not([disabled]) {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--ch) 45%, transparent);
+    box-shadow: var(--sh-2);
+  }
+  .chapter-card:hover:not([disabled])::before { height: 5px; }
+  .chapter-card:active:not([disabled]) { transform: translateY(0); box-shadow: var(--sh-1); }
+  .chapter-card:focus-visible { outline: none; box-shadow: var(--ring-focus), var(--sh-2); }
+  .chapter-card[disabled] { opacity: .55; cursor: not-allowed; }
 
-  /* Nomor bab: sel mono berbingkai — koordinat, bukan lencana. */
-  .chapter-item__num {
-    width: 46px; height: 46px;
-    flex: 0 0 46px;
-    border-radius: var(--r-md);
+  /* Lencana teknik: label kecil + nomor besar beraksen, mistar mini di kaki. */
+  .chapter-card__badge {
+    grid-area: badge;
     display: grid;
     place-items: center;
-    font-family: var(--font-value);
-    font-weight: 700;
-    font-size: var(--fs-lg);
-    background: var(--bg-sunken);
-    border: 1px solid var(--border-strong);
-    color: var(--royal);
+    align-content: center;
+    gap: 2px;
+    width: 56px;
+    height: 60px;
+    border-radius: var(--r-md);
+    border: 1px solid color-mix(in srgb, var(--ch) 40%, transparent);
+    background:
+      repeating-linear-gradient(90deg, color-mix(in srgb, var(--ch) 55%, transparent) 0 1px, transparent 1px 6px) bottom 6px left 8px / calc(100% - 16px) 5px no-repeat,
+      color-mix(in srgb, var(--ch) 8%, var(--white));
+    color: var(--ch);
   }
+  .chapter-card__badge-label {
+    font-family: var(--font-value);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .chapter-card__badge-value {
+    font-family: var(--font-ui);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .chapter-card__badge-value svg { width: 22px; height: 22px; }
 
-  .chapter-item__body { flex: 1; min-width: 0; }
-
-  .chapter-item__title {
-    display: block;
+  .chapter-card__body { grid-area: body; min-width: 0; display: grid; gap: 3px; }
+  .chapter-card__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
     font-family: var(--font-ui);
     font-size: var(--fs-lg);
     font-weight: 700;
-    line-height: 1.1;
-    color: var(--ink-900);
+    line-height: 1.08;
+    letter-spacing: -.005em;
   }
-
-  .chapter-item__tag {
-    display: block;
-    margin-top: 2px;
+  .chapter-card__tag {
     font-size: var(--fs-sm);
+    line-height: 1.4;
     color: var(--ink-500);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .chapter-item__progress {
+  /* Sketsa konsep bab — dekoratif, tanpa angka. */
+  .chapter-card__art {
+    grid-area: art;
+    width: 72px;
+    height: 52px;
+    fill: none;
+    stroke: var(--ch);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: .9;
+  }
+  .chapter-card__art .art-head,
+  .chapter-card__art .art-dot,
+  .hero__art .art-head,
+  .hero__art .art-dot { fill: var(--ch); stroke: none; }
+  .chapter-card__art .art-grid,
+  .hero__art .art-grid { stroke: var(--ink-300); stroke-width: 1.4; }
+  .chapter-card__art .art-dash,
+  .hero__art .art-dash { stroke-dasharray: 4 3.5; stroke-width: 1.6; }
+  .chapter-card__art .art-thin,
+  .hero__art .art-thin { stroke-width: 1.4; opacity: .7; }
+  .chapter-card__art rect { fill: color-mix(in srgb, var(--ch) 14%, transparent); }
+
+  /* Kaki kartu: hitungan · bilah capaian · panah. */
+  .chapter-card__foot {
+    grid-area: foot;
     display: flex;
     align-items: center;
-    gap: var(--sp-2);
+    gap: var(--sp-3);
+    min-width: 0;
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--border-soft);
+  }
+  .chapter-card__count {
+    flex: 0 0 auto;
     font-family: var(--font-value);
-    font-size: var(--fs-sm);
-    font-weight: 700;
+    font-size: var(--fs-xs);
     color: var(--ink-700);
     font-variant-numeric: tabular-nums;
   }
+  .chapter-card__count b { color: var(--ch); font-size: 1.15em; }
+  .chapter-card__bar {
+    flex: 1 1 auto;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--plate-deep);
+    overflow: hidden;
+  }
+  .chapter-card__bar i { display: block; height: 100%; border-radius: inherit; background: var(--ch); }
+  .chapter-card__foot .quiz-attempts { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+  .chapter-card__go {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: var(--ch);
+    background: color-mix(in srgb, var(--ch) 10%, transparent);
+    transition: transform var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+  }
+  .chapter-card:hover:not([disabled]) .chapter-card__go { transform: translateX(3px); background: var(--ch); color: var(--white); }
 
-  /* --- Bab TUNTAS: bingkai amber, nomor jadi pelat amber penuh --- */
-  .chapter-item--completed {
-    border-color: var(--value-line);
+  /* Bab TUNTAS: lencana pejal beraksen + cap "Tuntas" amber kontras tinggi. */
+  .chapter-card--done .chapter-card__badge { background: var(--ch); border-color: var(--ch); color: var(--white); }
+  .chapter-card__done {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--value-line);
+    background: var(--value-soft);
+    color: var(--accent-amber-dark);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
   }
 
-  .chapter-item--completed:hover:not([disabled]) {
-    border-color: var(--value-deep);
-    box-shadow: var(--shadow-2), inset 3px 0 0 var(--value-deep);
-  }
-
-  .chapter-item--completed .chapter-item__num {
-    background: var(--value);
-    border-color: var(--value-deep);
-    color: var(--value-ink);
-  }
-
-  .chapter-item--completed .chapter-item__progress { color: var(--accent-amber); }
+  /* Kartu unggulan (Latihan Soal TKA) membentang penuh. */
+  .chapter-card--feature { grid-column: 1 / -1; }
 
   .subtopic-list { display: grid; gap: 6px; padding: 2px; }
 
@@ -734,8 +883,13 @@
 
   @media (orientation: landscape) and (max-height: 470px) {
     .screen { padding: var(--sp-3); }
-    .chapter-item { padding: var(--sp-3); gap: var(--sp-3); }
-    .chapter-item__num { width: 38px; height: 38px; flex-basis: 38px; font-size: var(--fs-md); }
+    .chapter-card { padding: var(--sp-3) var(--sp-3) var(--sp-2); gap: var(--sp-2) var(--sp-3); }
+    .chapter-card__badge { width: 46px; height: 50px; }
+    .chapter-card__badge-value { font-size: 1.4rem; }
+    .chapter-card__art { width: 56px; height: 40px; }
+    .chapter-card__title { font-size: var(--fs-md); }
+    .chapter-card__tag { font-size: var(--fs-xs); }
+    .hero__art { width: 72px; height: 52px; }
   }
 
   @media (max-width: 480px) {

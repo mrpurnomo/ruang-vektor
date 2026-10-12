@@ -239,6 +239,14 @@
     --plane-cyan: var(--cyan-700);
     --plane-label-bg: rgba(255, 255, 255, .92);
 
+    /* --- AKSEN BAB (kartu bab premium) ---
+       Satu warna semantik per bab untuk lencana, sketsa, dan bilah capaian.
+       Semua ≥ 4,5:1 di atas pelat, jadi aman juga sebagai warna TEKS. */
+    --ch-1: var(--royal);       /* Konsep Dasar — arah            */
+    --ch-2: var(--amber-700);   /* Operasi & Bangun Datar          */
+    --ch-3: var(--cyan-700);    /* Perkalian & Proyeksi            */
+    --ch-4: var(--magenta);     /* Pemodelan TKA & Geometri Ruang  */
+
     /* --- Kedalaman --- */
     --shadow-1: var(--sh-1);
     --shadow-2: var(--sh-2);
