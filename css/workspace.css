@@ -370,6 +370,20 @@
     margin-inline: auto;
   }
 
+  /* Lanskap pendek + papan bidang: panduan dan bidang sama-sama MENEMPEL
+     (simulations.css §6), dan elemen tempel tidak bisa keluar dari area
+     gridnya. Bantalan bawah kartu (16 + border 1 + margin 16 = 33px) berada
+     DI LUAR baris bidang, jadi di dasar gulir bidang terdorong 21px ke bawah
+     panduan (terukur di 740×360). Bantalannya dipindah ke DALAM kolom kerja
+     — jarak tampak sama, tetapi kini milik baris grid bidang. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .ws-stage > .workspace__body > .content-card--tight:has(.sim-board--plane) {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .ws-stage .sim-board--plane .sim-board__work { padding-bottom: var(--sp-4); }
+  }
+
   .ws-stage .quiz-slider { height: auto; min-height: 100%; }
   .ws-stage .quiz-slider > .slider__viewport { overflow: visible; flex: 0 0 auto; }
   .ws-stage .quiz-slider .quiz .actionbar { position: static; }

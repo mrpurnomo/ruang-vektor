@@ -486,6 +486,22 @@ def section_guided_stage(page, errors):
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",
            bool(toasts) and all(l >= 0 and r <= page.viewport_size["width"] for l, r in toasts), str(toasts))
+    # Perintah hidup di panggung justru karena mata siswa terkunci di sana:
+    # menggulir lembar kerja ke bawah tidak boleh membuang perintahnya.
+    stuck = page.evaluate("""() => {
+        const body = document.querySelector('.ws-stage > .workspace__body');
+        body.scrollTop = body.scrollHeight;
+        const b = body.getBoundingClientRect();
+        const g = document.querySelector('.sim-guide').getBoundingClientRect();
+        const p = document.querySelector('.plane-host').getBoundingClientRect();
+        return { scrolls: body.scrollHeight > body.clientHeight + 1, scrollTop: body.scrollTop,
+                 guide: [Math.round(g.top), Math.round(g.bottom)], view: [Math.round(b.top), Math.round(b.bottom)],
+                 plane: [Math.round(p.top), Math.round(p.bottom)] };
+    }""")
+    record("Panggung memang bergulir di 740×360 (uji berikut bermakna)", stuck["scrolls"], json.dumps(stuck))
+    record("Perintah .sim-guide tetap terlihat utuh saat lembar kerja digulir ke dasar",
+           stuck["guide"][0] >= stuck["view"][0] - 1 and stuck["guide"][1] <= stuck["view"][1] + 1, json.dumps(stuck))
+    record("Bidang tidak tertutup perintah yang menempel", stuck["plane"][0] >= stuck["guide"][1], json.dumps(stuck))
     record("Tanpa galat konsol di panggung terpandu", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
 

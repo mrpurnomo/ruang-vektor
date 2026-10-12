@@ -237,9 +237,19 @@
   .sim-kit { min-height: 0; }
 
   .sim-board {
+    /* Tinggi panduan & celah papan dipakai dua kali: oleh panduan itu
+       sendiri dan oleh offset tempel bidang di bawahnya. */
+    --guide-h: 104px;
+    --board-gap: var(--sp-4);
     display: grid;
-    gap: var(--sp-4);
+    gap: var(--board-gap);
     align-items: start;
+  }
+
+  /* Lanskap pendek: 84 + 12 + 150 = 246px = tinggi jendela gulir panggung
+     di 740×360, sehingga panduan DAN bidang sama-sama muat saat menempel. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-board { --guide-h: 84px; --board-gap: var(--sp-3); }
   }
 
   /* ------------------------------------------------------------
@@ -268,10 +278,18 @@
        pergeseran). Terukur pula perintah terpanjang: 82px di 740×360 dan
        102px di 1024×600, jadi tingginya dipatok sedikit di atas itu dan
        sisanya digulir di dalam panelnya sendiri. */
-    height: 104px;
+    height: var(--guide-h);
     overflow-y: auto;
     overscroll-behavior: contain;
     align-content: start;
+    /* MENEMPEL di atas panggung. Di 740×360 lembar kerja lebih tinggi dari
+       panggung; tanpa ini panggung menggulir dan perintahnya ikut hilang
+       ke atas (terukur: top −272px) — siswa melihat pilihan jawaban tanpa
+       pertanyaannya. Latarnya pejal, jadi isi yang lewat di bawahnya
+       tidak tembus. */
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
 
   .sim-guide__step {
@@ -290,7 +308,6 @@
     .sim-guide {
       padding: var(--sp-2) var(--sp-3);
       font-size: var(--fs-sm);
-      height: 84px;
     }
   }
 
@@ -316,9 +333,10 @@
     .sim-board--plane {
       grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     }
+    /* Bidang menempel TEPAT di bawah panduan yang juga menempel. */
     .sim-board--plane .sim-board__plane {
       position: sticky;
-      top: 0;
+      top: calc(var(--guide-h) + var(--board-gap));
     }
   }
 
