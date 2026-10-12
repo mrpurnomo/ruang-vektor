@@ -5,11 +5,11 @@
    <canvas> bitmap, karena setiap panah harus menjadi node DOM yang
    bisa diketuk, diukur, ditema, dan diberi aria-label.
 
-   ARAH DESAIN: bidang ini adalah satu-satunya objek NAVY yang duduk di
-   dalam kartu putih. Ia terbaca sebagai ALAT — sebuah layar instrumen
-   di tengah halaman — dan justru di situlah kuning bekerja paling
-   keras: panah aktif dan nilai yang sedang dikerjakan menyala di atas
-   bidang gelap.
+   ARAH DESAIN (13 Okt 2026): KERTAS GRAFIK TERANG, bukan lagi layar
+   instrumen gelap — di kelas, kanvas hitam terasa suram. Bidang tetap
+   terbaca sebagai benda tersendiri lewat permukaan yang sedikit lebih
+   dalam dari pelat + bingkai tegas + bayangan dalam. Panah = KOBALT
+   (arah), titik & besaran = AMBER TUA (kontras ≥ 4,5:1 di kertas).
 
    ------------------------------------------------------------
    ENAM ATURAN YANG TIDAK BOLEH DILANGGAR
@@ -58,9 +58,9 @@
     width: 100%;
     height: 100%;
     border-radius: var(--r-md);
-    background: var(--navy-800);
-    border: 1px solid var(--navy-500);
-    box-shadow: var(--shadow-1);
+    background: var(--plane-bg);
+    border: 1px solid var(--plane-edge);
+    box-shadow: var(--plane-inset);
     touch-action: none;   /* seret panah tidak boleh menggulir halaman */
     overflow: visible;
   }
@@ -111,8 +111,10 @@
     vector-effect: non-scaling-stroke;
   }
 
+  .plane__axis-head { fill: var(--scope-axis); }
+
   .plane__origin {
-    fill: var(--on-navy-3);
+    fill: var(--plane-ink);
   }
 
   /* Label sumbu & angka satuan: kecil, mono, dan tidak pernah bersaing
@@ -121,12 +123,12 @@
   .plane__tick-label {
     font-family: var(--font-value);
     font-size: 11px;
-    font-weight: 500;
-    fill: var(--on-navy-3);
+    font-weight: 600;
+    fill: var(--plane-ink-2);
     user-select: none;
   }
 
-  .plane__axis-label { font-style: italic; font-weight: 700; fill: var(--on-navy-2); }
+  .plane__axis-label { font-style: italic; font-weight: 700; fill: var(--plane-ink); }
 
 
   /* ============================================================
@@ -137,7 +139,7 @@
      ============================================================ */
 
   .plane__arrow {
-    --tone: var(--brand-on-navy);
+    --tone: var(--plane-vector);
     transition: opacity var(--dur-base) var(--ease-out);
   }
 
@@ -167,7 +169,7 @@
   .plane__arrow-zero {
     display: none;
     fill: var(--tone);
-    stroke: var(--navy-900);
+    stroke: var(--white);
     stroke-width: 1.5;
   }
   .plane__arrow.is-zero .plane__arrow-line,
@@ -192,17 +194,17 @@
     outline: none;
   }
   .plane__arrow.is-dragging .plane__tip-hit { cursor: grabbing; }
-  .plane__tip-hit:focus-visible { stroke: var(--value); stroke-width: 2; }
+  .plane__tip-hit:focus-visible { stroke: var(--plane-amber); stroke-width: 2; }
   .plane__arrow.is-locked .plane__tip-hit { pointer-events: none; }
 
   /* --- Nada warna --- */
-  .plane__arrow--blue   { --tone: var(--brand-on-navy); }
-  .plane__arrow--amber  { --tone: var(--value); }
-  .plane__arrow--cyan   { --tone: var(--cyan); }
-  .plane__arrow--coral  { --tone: color-mix(in srgb, var(--magenta) 45%, var(--white)); }
-  .plane__arrow--success{ --tone: var(--success-on-navy); }
-  .plane__arrow--muted  { --tone: var(--on-navy-3); }
-  .plane__arrow--ghost  { --tone: var(--on-navy-3); opacity: .35; }
+  .plane__arrow--blue   { --tone: var(--plane-vector); }
+  .plane__arrow--amber  { --tone: var(--plane-amber); }
+  .plane__arrow--cyan   { --tone: var(--plane-cyan); }
+  .plane__arrow--coral  { --tone: var(--magenta); }
+  .plane__arrow--success{ --tone: var(--success); }
+  .plane__arrow--muted  { --tone: var(--graphite-4); }
+  .plane__arrow--ghost  { --tone: var(--graphite-4); opacity: .45; }
 
   /* --- Status --- */
   .plane__arrow.is-tappable { cursor: pointer; }
@@ -245,24 +247,24 @@
      ============================================================ */
 
   .plane__point {
-    fill: var(--value);
-    stroke: var(--navy-900);
+    fill: var(--plane-point);
+    stroke: var(--plane-point-rim);
     stroke-width: 2;
     transition: r var(--dur-fast) var(--ease-spring);
   }
 
-  .plane__point--ghost { fill: var(--on-navy-3); }
+  .plane__point--ghost { fill: var(--graphite-4); stroke: var(--white); }
 
   /* Sasaran sentuh 44px di belakang titik: tuli sampai titiknya bisa diketuk. */
   .plane__point-hit { fill: transparent; pointer-events: none; }
   .plane__point-mark.is-tappable { cursor: pointer; outline: none; }
   .plane__point-mark.is-tappable > .plane__point-hit { pointer-events: all; }
-  .plane__point-mark.is-tappable > .plane__point { stroke: var(--value); }
+  .plane__point-mark.is-tappable > .plane__point { stroke: var(--plane-vector); }
   .plane__point-mark.is-tappable:hover > .plane__point,
   .plane__point-mark.is-tappable:focus-visible > .plane__point { r: 7.5; }
 
   .plane__segment {
-    stroke: var(--on-navy-2);
+    stroke: var(--graphite-3);
     stroke-width: 2;
     fill: none;
     vector-effect: non-scaling-stroke;
@@ -273,7 +275,7 @@
      pembacaan siswa, bukan menuntunnya — karena itu ia hanya digambar
      setelah siswa memilih komponennya. */
   .plane__guide {
-    stroke: var(--value-line);
+    stroke: var(--plane-amber-line);
     stroke-width: 1.6;
     stroke-dasharray: 4 4;
     fill: none;
@@ -281,8 +283,8 @@
   }
 
   .plane__parallelogram {
-    fill: color-mix(in srgb, var(--brand-on-navy) 12%, transparent);
-    stroke: var(--brand-on-navy);
+    fill: color-mix(in srgb, var(--plane-vector) 9%, transparent);
+    stroke: var(--plane-vector);
     stroke-width: 1.4;
     stroke-dasharray: 5 4;
     vector-effect: non-scaling-stroke;
@@ -300,7 +302,7 @@
 
   .plane__arc {
     fill: none;
-    stroke: var(--value);
+    stroke: var(--plane-amber);
     stroke-width: 2;
     vector-effect: non-scaling-stroke;
     opacity: .9;
@@ -309,7 +311,7 @@
   .plane__arc--right {
     /* Penanda siku-siku: kotak kecil, bukan busur. */
     fill: none;
-    stroke: var(--success-on-navy);
+    stroke: var(--success);
     stroke-width: 2;
   }
 
@@ -323,7 +325,7 @@
     font-family: var(--font-value);
     font-size: 12px;
     font-weight: 700;
-    color: var(--value);
+    color: var(--accent-amber);
   }
 
 
@@ -332,7 +334,7 @@
      ============================================================ */
 
   .plane__proj-drop {
-    stroke: var(--value);
+    stroke: var(--plane-amber);
     stroke-width: 1.8;
     stroke-dasharray: 5 4;
     fill: none;
@@ -341,7 +343,7 @@
 
   .plane__proj-foot {
     fill: none;
-    stroke: var(--value);
+    stroke: var(--plane-amber);
     stroke-width: 2;
   }
 
@@ -370,13 +372,13 @@
     align-items: center;
     padding: 2px 7px;
     border-radius: var(--r-xs);
-    background: color-mix(in srgb, var(--navy-900) 82%, transparent);
-    border: 1px solid var(--border-navy);
+    background: var(--plane-label-bg);
+    border: 1px solid var(--border-strong);
     font-family: var(--font-value);
     font-size: 13px;
     font-weight: 700;
     line-height: 1.2;
-    color: var(--on-navy);
+    color: var(--ink-900);
     white-space: nowrap;
     /* Lebar TETAP untuk label yang berganti nama: "u" → "proj_v u"
        menggeser gambar 15px terukur kalau dibiarkan mengikuti isi. */
@@ -384,9 +386,9 @@
     justify-content: center;
   }
 
-  .plane__label--blue  .plane__label-inner { color: var(--brand-on-navy); }
-  .plane__label--amber .plane__label-inner { color: var(--value); }
-  .plane__label--muted .plane__label-inner { color: var(--on-navy-3); }
+  .plane__label--blue  .plane__label-inner { color: var(--plane-vector); }
+  .plane__label--amber .plane__label-inner { color: var(--accent-amber); }
+  .plane__label--muted .plane__label-inner { color: var(--ink-500); }
 
   .plane__label .katex { color: inherit; }
 
@@ -423,7 +425,7 @@
   }
 
   .plane-legend__item--blue .plane-legend__swatch  { color: var(--brand-primary); }
-  .plane-legend__item--amber .plane-legend__swatch { color: var(--value-deep); }
+  .plane-legend__item--amber .plane-legend__swatch { color: var(--plane-amber); }
   .plane-legend__item--muted .plane-legend__swatch { color: var(--ink-300); }
 
 

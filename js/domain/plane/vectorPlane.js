@@ -306,6 +306,10 @@ export class VectorPlane {
         layer.appendChild(svgEl('line', { x1: fmt(px), x2: fmt(px), y1: fmt(oy - 4), y2: fmt(oy + 4) }, 'plane__axis-tick'));
         if (this.options.tickLabels) this.axisText(String(x).replace('-', '−'), px, oy + 16, 'middle', 'plane__tick-label');
       }
+      // Mata panah sumbu di ujung POSITIF: arah sumbu terbaca tanpa angka.
+      layer.appendChild(svgEl('path', {
+        d: `M${fmt(vp.width - 1)} ${fmt(oy)} l-8 -4.5 v9 z`,
+      }, 'plane__axis-head'));
       if (this.options.axisLabels) this.axisText(this.options.axisLabels[0], vp.width - 10, oy - 8, 'end', 'plane__axis-label');
     }
     if (yAxisVisible) {
@@ -316,6 +320,9 @@ export class VectorPlane {
         layer.appendChild(svgEl('line', { x1: fmt(ox - 4), x2: fmt(ox + 4), y1: fmt(py), y2: fmt(py) }, 'plane__axis-tick'));
         if (this.options.tickLabels) this.axisText(String(y).replace('-', '−'), ox - 8, py + 4, 'end', 'plane__tick-label');
       }
+      layer.appendChild(svgEl('path', {
+        d: `M${fmt(ox)} 1 l-4.5 8 h9 z`,
+      }, 'plane__axis-head'));
       if (this.options.axisLabels) this.axisText(this.options.axisLabels[1], ox + 10, 16, 'start', 'plane__axis-label');
     }
     if (this.options.showOrigin && xAxisVisible && yAxisVisible) {

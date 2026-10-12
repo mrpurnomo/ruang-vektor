@@ -224,7 +224,8 @@ test('Marker per panah: userSpaceOnUse, di DALAM grup panah, warnanya mewarisi n
     assert(marker.getAttribute('markerUnits') === 'userSpaceOnUse', 'markerUnits bukan userSpaceOnUse');
     const head = marker.querySelector('.plane__arrow-head');
     assert(getComputedStyle(head).fill === getComputedStyle(line).stroke, `kepala ${getComputedStyle(head).fill} ≠ garis ${getComputedStyle(line).stroke}`);
-    assert(getComputedStyle(head).fill === 'rgb(255, 176, 0)', `nada amber: ${getComputedStyle(head).fill}`);
+    // Amber di kertas grafik terang = --plane-amber (#B45309), bukan amber murni.
+    assert(getComputedStyle(head).fill === 'rgb(180, 83, 9)', `nada amber: ${getComputedStyle(head).fill}`);
   } finally { plane.destroy(); }
 });
 

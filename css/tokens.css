@@ -89,6 +89,17 @@
     --yellow-deep: #E09A00;
     --yellow-100: #FFF0C7;
 
+    /* KERTAS GRAFIK — permukaan bidang kartesius. Sejak 13 Okt 2026 bidang
+       BUKAN lagi layar gelap: di kelas, kanvas hitam terasa suram dan
+       "papan tulis usang". Kertas grafik dingin yang sedikit lebih dalam
+       dari pelat, supaya bidang tetap terbaca sebagai benda tersendiri. */
+    --graph-paper: #F4F7FB;
+    --slate-900: #0F172A;
+    --slate-800: #1E293B;
+    --amber-600: #D97706;
+    --amber-700: #B45309;
+    --cyan-700: #0E7490;
+
     --cyan: #3DD6F0;
     --cyan-100: #D3F5FB;
     --magenta: #B8316F;      /* beri — aksen peringatan, jauh dari merah galat */
@@ -207,10 +218,26 @@
     --border-strong: rgba(13, 19, 32, .24);
     --border-navy: rgba(170, 185, 215, .16);   /* tepi DI layar instrumen */
 
-    /* Kisi & sumbu DI DALAM layar instrumen (bidang kartesius). */
-    --scope-grid: rgba(150, 170, 210, .09);
-    --scope-grid-major: rgba(150, 170, 210, .18);
-    --scope-axis: rgba(200, 212, 235, .42);
+    /* Kisi & sumbu DI DALAM bidang kartesius (kini kertas grafik terang). */
+    --scope-grid: rgba(30, 41, 59, .08);
+    --scope-grid-major: rgba(30, 41, 59, .16);
+    --scope-axis: var(--slate-800);
+
+    /* --- BIDANG KARTESIUS (kertas grafik) ---
+       Kontras terhadap --plane-bg: kobalt 6,4:1 · amber-700 4,8:1 ·
+       titik amber-600 berbingkai amber-700 · tinta sumbu 13:1. */
+    --plane-bg: var(--graph-paper);
+    --plane-edge: rgba(15, 23, 42, .22);
+    --plane-inset: inset 0 1px 4px rgba(15, 23, 42, .08);
+    --plane-ink: var(--slate-800);         /* huruf sumbu, titik asal     */
+    --plane-ink-2: var(--graphite-3);      /* angka skala                 */
+    --plane-vector: var(--royal);          /* panah = ARAH = kobalt       */
+    --plane-amber: var(--amber-700);       /* besaran, busur, proyeksi    */
+    --plane-amber-line: rgba(180, 83, 9, .55);
+    --plane-point: var(--amber-600);
+    --plane-point-rim: var(--amber-700);
+    --plane-cyan: var(--cyan-700);
+    --plane-label-bg: rgba(255, 255, 255, .92);
 
     /* --- Kedalaman --- */
     --shadow-1: var(--sh-1);
