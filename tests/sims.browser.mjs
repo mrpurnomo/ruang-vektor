@@ -256,9 +256,15 @@ const PLANS = {
     const inside = (p) => p[0] >= Math.min(-pad, x - pad) && p[0] <= Math.max(pad, x + pad)
       && p[1] >= Math.min(-pad, y - pad) && p[1] <= Math.max(pad, y + pad);
     const swapped = [y, x];
+    // Tertukar SEBAGIAN: titik tertukar utuh sering di luar bidang yang
+    // dipotong rapat; siswa yang menukar urutan berhenti di tepi bidang.
+    const yMax = Math.max(pad, y + pad);
+    const partial = [y, Math.min(x, yMax)];
     const findStep = inside(swapped)
       ? { wrong: { pick: swapped }, right: { pick: c.to }, expectToast: 'koordinatTertukar' }
-      : { wrong: { pick: [x - Math.sign(x || 1), y] }, right: { pick: c.to }, expectToast: 'titikMeleset' };
+      : (x !== y && inside(partial) && partial[1] !== y)
+        ? { wrong: { pick: partial }, right: { pick: c.to }, expectToast: 'koordinatTertukar' }
+        : { wrong: { pick: [x - Math.sign(x || 1), y] }, right: { pick: c.to }, expectToast: 'titikMeleset' };
     const traceStep = {
       wrong: { fields: { dx: txt(-x), dy: txt(y) } },
       right: { fields: { dx: txt(x), dy: txt(y) } },

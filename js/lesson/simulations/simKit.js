@@ -230,6 +230,8 @@ export class CaseSimulation extends Simulation {
   buildCaseBar() {
     const bar = el('div', 'case-bar');
     bar.setAttribute('role', 'tablist');
+    // Jumlah kasus untuk CSS: kisi chip di lanskap pendek mengikuti jumlahnya.
+    bar.dataset.count = String(this.cases.length);
     this.caseChips = this.cases.map((c, i) => {
       const chip = el('button', 'case-chip');
       chip.type = 'button';

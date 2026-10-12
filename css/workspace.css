@@ -75,7 +75,11 @@
   .ws-side .steps {
     flex: 0 0 auto;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Kolom sebanyak TAHAPNYA (kini dua: Simulasi · Mini Kuis). Pola tiga
+       kolom lama menyisakan sepertiga lebar kosong dan memaksa label
+       disembunyikan di 740×360 — siswa hanya membaca "1" dan "2". */
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     gap: 2px;
     padding: 2px;
     border-radius: var(--r-md);
@@ -438,6 +442,10 @@
     /* Tiga kasus dalam satu baris, tidak membungkus — kalau ia membungkus,
        prompt terdorong keluar area petunjuk yang sudah sempit. */
     .ws-side__hint .case-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 4px; }
+    /* Empat kasus = kisi 2×2: pola 3 + 1 meninggalkan chip terakhir sendirian
+       dan memotong teksnya; empat kolom terukur hanya 38px per chip — teks
+       meluap dan jarak pusat-ke-pusat 42px < 44px. */
+    .ws-side__hint .case-bar[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .ws-side__hint .case-chip { padding: 4px 2px; }
     .ws-side__hint .case-chip b { font-size: 9px; letter-spacing: .04em; }
     .ws-side__hint .sim__prompt {
@@ -500,8 +508,7 @@
   @media (max-width: 860px) {
     .workspace--split { grid-template-columns: minmax(190px, 26%) minmax(0, 1fr); gap: var(--sp-3); }
     .ws-side { padding: var(--sp-3); gap: var(--sp-2); }
-    .ws-side .steps__item span:not(.steps__num) { display: none; }
-    .ws-side .steps__item { padding: 6px; }
+    .ws-side .steps__item { padding: 6px 3px; }
   }
 
   /* ------------------------------------------------------------

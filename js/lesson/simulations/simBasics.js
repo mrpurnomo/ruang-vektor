@@ -69,7 +69,10 @@ export class GuidedVectorIntroSim extends CaseSimulation {
   }
 
   caseLabel(c) {
-    return c.guided ? 'Vektor pertama' : `Titik ${c.point}`;
+    // "Titik A", bukan "Vektor pertama": empat chip harus muat satu baris di
+    // sidebar 190px (740×360); label dua kata membungkus dan mendorong chip
+    // keempat ke baris kedua (terukur).
+    return `Titik ${c.point}`;
   }
 
   /**
@@ -128,6 +131,14 @@ export class GuidedVectorIntroSim extends CaseSimulation {
         if (p[0] === ty && p[1] === tx) return { toast: 'koordinatTertukar', values: { titik: this.tapped(p), x: tx, y: ty } };
         if (p[0] === -tx && p[1] === ty) return { toast: 'tandaKuadran', values: { sumbu: 'x', arah: tx < 0 ? 'kiri' : 'kanan' } };
         if (p[0] === tx && p[1] === -ty) return { toast: 'tandaKuadran', values: { sumbu: 'y', arah: ty < 0 ? 'bawah' : 'atas' } };
+        // Tertukar SEBAGIAN: angka kedua dipakai mendatar, atau angka pertama
+        // dipakai tegak. Bidang dipotong rapat di sekitar tujuan, jadi titik
+        // tertukar utuhnya sering di LUAR bidang — siswa yang menuju (4, 7)
+        // berhenti di tepi, mis. (4, 6). Tanpa cabang ini ia hanya mendengar
+        // "meleset" dan tidak pernah tahu urutan angkanya yang terbalik.
+        if ((p[0] === ty && ty !== tx) || (p[1] === tx && tx !== ty)) {
+          return { toast: 'koordinatTertukar', values: { titik: this.tapped(p), x: tx, y: ty } };
+        }
         return { toast: 'titikMeleset', values: { titik: this.tapped(p) } };
       },
       summary: () => `$${label}${texTuple(target)}$ ditandai.`,
