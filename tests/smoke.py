@@ -482,6 +482,11 @@ def section_guided_stage(page, errors):
     squashed = [f"{i['t']!r} {i['ch']}<{i['sh']}" for i in trail if i["sh"] > i["ch"] + 1]
     record(f"Jejak langkah ({len(trail)} item) tidak tergencet: teks & mata panah \\vec utuh",
            len(trail) == 4 and not squashed, "; ".join(squashed) or f"{len(trail)} item")
+    newest = page.evaluate("""() => { const t = document.querySelector('.sim-board__trail');
+        const a = t.getBoundingClientRect(), b = t.lastElementChild.getBoundingClientRect();
+        return { box: [Math.round(a.top), Math.round(a.bottom)], item: [Math.round(b.top), Math.round(b.bottom)] }; }""")
+    record("Jejak yang bergulir menampilkan item TERBARU (hasil OA = a)",
+           newest["item"][0] >= newest["box"][0] - 1 and newest["item"][1] <= newest["box"][1] + 1, json.dumps(newest))
     toasts = page.evaluate("""() => [...document.querySelectorAll('.toast')].map((t) => {
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",
@@ -502,6 +507,18 @@ def section_guided_stage(page, errors):
     record("Perintah .sim-guide tetap terlihat utuh saat lembar kerja digulir ke dasar",
            stuck["guide"][0] >= stuck["view"][0] - 1 and stuck["guide"][1] <= stuck["view"][1] + 1, json.dumps(stuck))
     record("Bidang tidak tertutup perintah yang menempel", stuck["plane"][0] >= stuck["guide"][1], json.dumps(stuck))
+    # Kasus berikutnya dibuka dari panggung yang masih tergulir ke dasar.
+    page.evaluate("() => document.querySelector('[data-sim-action=\"next-case\"]').click()")
+    page.wait_for_timeout(700)
+    fresh = page.evaluate("""() => {
+        const body = document.querySelector('.ws-stage > .workspace__body');
+        const g = document.querySelector('.sim-guide').getBoundingClientRect();
+        const d = document.querySelector('.sim-board__given').getBoundingClientRect();
+        return { scrollTop: body.scrollTop, guideBottom: Math.round(g.bottom), given: [Math.round(d.top), Math.round(d.bottom)],
+                 text: document.querySelector('.sim-board__given').innerText.slice(0, 40) };
+    }""")
+    record("Kasus baru dibuka dari atas panggung: data kasusnya tidak tertutup panduan",
+           fresh["scrollTop"] == 0 and fresh["given"][0] >= fresh["guideBottom"], json.dumps(fresh, ensure_ascii=False))
     record("Tanpa galat konsol di panggung terpandu", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
 

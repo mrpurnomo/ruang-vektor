@@ -295,6 +295,11 @@ export class CaseSimulation extends Simulation {
     this.inputsEl.innerHTML = '';
     this.planeCol.innerHTML = '';
     this.nextCaseBtn.style.visibility = 'hidden';
+    // Kasus baru dibaca dari ATAS: posisi gulir kasus lama membuat data kasus
+    // baru tersembunyi di bawah panduan yang menempel (terukur di 740×360).
+    for (let n = this.root.parentElement; n; n = n.parentElement) {
+      if (n.scrollTop) n.scrollTop = 0;
+    }
 
     const withPlane = this.usesPlane(c, index);
     this.board.classList.toggle('sim-board--plane', withPlane);
@@ -386,6 +391,9 @@ export class CaseSimulation extends Simulation {
       if (step.summary) {
         const line = el('li', 'sim-board__trail-item', mixed(step.summary(payload)));
         this.trailEl.appendChild(line);
+        // Di lanskap pendek jejak menggulir di dalam tingginya sendiri; tanpa
+        // ini baris TERBARU — mis. hasil OA = a — tersembunyi di bawah.
+        this.trailEl.scrollTop = this.trailEl.scrollHeight;
       }
       if (typeof step.onSolved === 'function') {
         // Gambar konfirmasi yang gagal TIDAK boleh menahan siswa di langkah
