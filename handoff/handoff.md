@@ -1,7 +1,8 @@
 # HANDOFF — Ruang Vektor
 
 > **Memori inti untuk sesi baru.** Baca dokumen ini SEBELUM menyentuh kode apa pun.
-> Ditulis 17 September 2026; diperbarui sesudah The Final Polish (commit `70159e7`).
+> Ditulis 17 September 2026; diperbarui 12 Oktober 2026 sesudah revisi Bab 1 dan
+> purwarupa simulasi terpandu (commit `54455b8`).
 > Dokumen rujukan yang tetap berlaku: `PRD.md` (kontrak produk) dan
 > `docs/EDTECH_BLUEPRINT.md` (kerangka arsitektur + 40 jebakan yang sudah dibayar).
 
@@ -68,8 +69,12 @@ membuat peramban menjalankan modul JS basi).
 | **7 · Tahap 2** | **Mesin matematika domain (TDD)**: `surd.js` (pecahan & akar eksak `(n/d)√r`, jumlah suku, rasionalisasi, `parseSurd` untuk keluaran papan angka, `isSimplestForm`), `vector.js` (R²/R³ dengan `dim` tersimpan; eksak masuk → eksak keluar; fungsi `*Exact` mengembalikan bentuk akar), `validator.js` (`can*` berkalimat + `checkExactAnswer` / `checkVectorAnswer` berkode `correct·empty·unreadable·not-simplest·decimal·sign·wrong`; kalimat TIDAK membocorkan kunci). `node tests/engine.test.mjs` → 111/111, termasuk 500 pasang vektor acak berbenih; uji mutasi 18 mutan, 17 tertangkap + 1 kode mati dibuang, 1 celah (minor y–z) ditutup | `24f856e` |
 | **8 · Tahap 3** | **Bidang kartesius SVG**: `plane/planeGeometry.js` (murni, tanpa DOM: viewport skala seragam, y terbalik HANYA di toScreen/toMath, busur, siku, panah, label, snap), `arrow.js` (marker per panah DI DALAM grupnya + userSpaceOnUse, ketuk + Enter/Spasi, seret ujung + tombol panah), `arrowAnimation.js` (tween di ruang matematika, bisa dibatalkan, hormati reduced-motion), `vectorPlane.js` (lapisan grid·axis·pick·shape·interactive·label, ResizeObserver+rAF, destroy tuntas). Uji: Node 130/130 (19 geometri) + peramban `tests/plane.html` 31/31 (CTM, elementFromPoint, hitung piksel kepala panah, spy ResizeObserver & listener). Uji mutasi: 4 geometri + 8 kontrak SVG, semua tertangkap sesudah 2 celah ditutup. Terverifikasi di dalam aplikasi pada 740×360 / 1024×600 / 1440×900 | `ebde1a7` |
 | **9 · Tahap 4** | **25 engine simulasi** di `simBasics` (6) · `simOperations` (8) · `simProducts` (6) · `simModeling` (5), didaftarkan lewat `ENGINES` per bab di `index.js` (25 terdaftar = 25 engine JSON). Kerangka bersama `simKit.js` → `CaseSimulation`: kasus → langkah `fields·choice·multi·tap`; `check()` → `true` atau `{message|toast, values, wrong}`; **`solveStep()` satu-satunya jalan maju**, visual konfirmasi (`onSolved`) baru digambar SESUDAH siswa benar. Anggaran label (`essential`), sasaran titik 44px, slot tercadang. Mini Kuis: kunci & pembahasan tidak lagi tampil saat salah — baru sesudah salah ke-3 (`QuizEngine.REVEAL_AFTER`). Kalimat toast JSON yang membocorkan kunci ditulis ulang. Uji: Node 130/130 · `tests/plane.html` 32/32 · `tests/sims.html` 26/26 (260 jawaban salah ditolak berkalimat, tanpa gambar baru, tanpa `{{kunci}}`, tanpa bocor angka kunci, bidang tidak bergeser, destroy tuntas, resume sesi) | `6b630d7` |
+│       │   │                  panggung (.sim-guide), anggaran label
 | **10 · QA** | **Final Polish & QA** (4 commit): (1) `tests/validate_data.py` — validator data Python murni: manifest ↔ bab, registry `ENGINES` ↔ JSON, analisis statis kunci toast & `{{placeholder}}` per titik pemakaian engine, karakter kendali, LaTeX seimbang, bentuk soal, 78 + 34 soal, `questionOrder`, `toastWrong` yang menyebut kunci; uji mutasi 14/14. Bug ditemukan & diperbaiki: `component_add` kasus beda dimensi (kalimat salah menyebut vonis "tidak terdefinisi", dan kalimat yang sama dipakai sebagai toast tuntas tanpa nilai → `{{dimA}}` bolong; dipecah jadi `dimensiBeda` + `dimensiBedaTuntas`), `b3_04_1`/`b4_05_2` (`toastWrong` menulis persamaan akhir = kunci). (2) `tests/smoke.py` ditulis ulang untuk Ruang Vektor (uji warisan Matriks dihapus); `archive_soal.py` diadaptasi + arsip Mini Kuis, keluaran di `content/*_ARCHIVE.md`. (3) Pena papan coret = token hidup: Grafit/Kobalt/Amber(`--accent-amber`)/Beri; kontras goresan terukur dari piksel 18,6/7,3/6,3/5,7 (sebelumnya merah 3,9 & kuning 1,55). (4) Konfeti = token hidup kobalt/amber/sian/beri/sukses. Uji: Node 130/130 · data 724 lolos/0 gagal · smoke 115/0 (termasuk plane 32/32 & sims 26/26) | `981d932` `b28956d` `5e3c82c` `1a57e36` |
 | **11 · Final Polish** | (1) **Area sentuh efektif ≥ 44×44** tanpa mengubah ukuran tampil: token `--hit-min: 44px` (tidak menyusut seperti `--touch-min`) + `::after` transparan `inset: min(0px, calc((100% - var(--hit-min)) / 2))` di berkas komponennya; jarak pusat-ke-pusat ≥ 44px (navrail, baris chip, kendali papan coret), skala swatch dibalik di `::after`, ellipsis label sidebar pindah ke `<span>`, `.ws-side__hint` padding 5px, bilah papan coret menyisihkan zona FAB. Terukur: ukuran tampil 164 tombol identik sebelum/sesudah; smoke §6b 26 keadaan, mutan `--hit-min:30px` tertangkap. (2) **29 kalimat toast mati** dari 19 sub-topik dibuang (±5,1 KB); kalimat tak terpakai kini GAGAL di validator. (3) **Bilah papan coret satu baris** digulir horizontal (`.no-scrollbar`, `touch-action: pan-x`, pudar tepi scroll-driven): 740×360 dari 130px/48,9% kanvas → 46px/17,3%. (4) **PRD §7.1** = "Meja Gambar Teknik · Instrumen Ukur" + kontras terukur; §7.4 kontrak `--hit-min`. Flake `smoke.py` terjelaskan: `net::ERR_NETWORK_CHANGED` (adaptor jaringan Windows) → `open_route` mengulang. Uji: Node 130/130 · data 749/0/0 · smoke 146/0 (plane 32/32, sims 26/26) | `abaa5c6` `cdeddfd` `327bf8a` `70159e7` |
+
+| **12 · Bab 1** | **Revisi total isi Bab 1** mengikuti skenario guru: sub-topik 1 berangkat dari bidang kosong (O → A(7,4) → panah), sub-topik 2 tiga bentuk komponen + keliling empat kuadran, sub-topik 3 inkuiri sampai menemukan sendiri `AB = B − A`, sub-topik 4 modulus dari segitiga Pythagoras (akar eksak), sub-topik 5 vektor satuan lewat analogi tongkat dibagi panjangnya, sub-topik 6 **pindah ke akhir bab**: ruang 3D, konvensi Z-Up (matematika/CAD) vs Y-Up (game engine), basis k̂. `subtopicOrder` di `lessons.json` ikut berubah. Judul sub-topik dibuat lugas tanpa majas (Konsep Dasar Vektor, Bentuk Komponen Vektor, Vektor Posisi & Selisih Titik, Panjang Vektor (Modulus), Vektor Satuan, Vektor di Ruang Tiga Dimensi). Konfigurasi simulasi & kalimat toast ditulis ulang; `content/01_konsep_dasar.md` disinkronkan. Bug diperbaiki: toast `pointer-events: auto` **menelan ketukan** tombol "Coba Lagi"; validator menolak `\"` yang ikut tampil | `e62f5e2` `a1b47a7` `d8f3834` |
+| **13 · Terpandu** | **Materi dilebur ke simulasi** (purwarupa sub-topik 1). Alur pelajaran kini **dua tahap** — Simulasi → Mini Kuis — dan sub-topik dibuka langsung di simulasi; materi teks tetap hidup sebagai **Rangkuman** opsional (`REVIEW_STEP`, di luar deret tab). **Instruksi pindah ke panggung** (`.sim-guide`, tinggi TETAP), sidebar jadi panel status. Jenis langkah baru **`pick`** = ketuk koordinat di bidang kosong. Engine `vector_anatomy` ditulis ulang jadi `GuidedVectorIntroSim`: ketuk O → cari & ketuk A → hitung langkah → bentuk panah → latihan kuadran II/III/IV. Bug ditemukan: chip kasus & chip langkah menampilkan **sumber LaTeX mentah** di 8 sub-topik, `**pada**` mentah di `scalar_projection`, panduan menggeser kanvas 22px, dan kanvas terdorong keluar layar di 740×360 (papan kini dua kolom mulai 420px). Uji: Node 130/130 · data 749/0/0 · smoke **152/0** (plane 32/32, sims 26/26) | `54455b8` |
 
 ### Yang terverifikasi di peramban (diukur, bukan dibaca dari kode)
 - Boot bersih, **nol galat konsol**, 0 import rusak (32 berkas).
@@ -161,15 +166,22 @@ Aturan:
   `#app` grid `var(--h-header) / 1fr / var(--h-footer)` dengan
   `grid-template-columns: minmax(0,1fr)` **eksplisit**. Scroll hanya di wadah
   bertanda: `.workspace__body`, `.ws-side__hint`, `.menu`, `.login`.
-- **Sidebar & Stage:** `.ws-side` 25–30% (kendali: judul, tab langkah, petunjuk, bilah
-  aksi) · `.ws-stage` sisanya (**HANYA kanvas**). Terukur 27,3% / 25,4% / 28,4% di
-  740×360 / 1024×600 / 1440×900. Petunjuk simulasi lewat `Simulation.addHint()`,
-  tidak pernah ditempel ke panggung.
+- **Sidebar & Stage (DIUBAH 12 Okt 2026).** `.ws-side` 25–30% kini **panel STATUS**:
+  judul, tab tahap, pemilih kasus, daftar langkah, bilah aksi (Rangkuman · Ulangi ·
+  Lanjut). **INSTRUKSI LANGKAH HIDUP DI PANGGUNG**, bukan di sidebar: `.sim-guide`
+  membentang di atas kanvas (`simKit.build()`), karena terukur di kelas mata siswa
+  terkunci pada kanvas dan kolom kiri praktis tidak dibaca. Rasio kolom tetap
+  27,3% / 25,4% / 28,4% di 740×360 / 1024×600 / 1440×900.
+  · `.sim-guide` **bertinggi TETAP** (104px; 84px di lanskap pendek) + `overflow-y: auto`.
+    Jangan diganti `min-height`: panel yang tumbuh satu baris menggeser bidang 22px.
+  · Papan simulasi dua kolom mulai **420px** (container query `.sim-host`), karena
+    panggung di 740×360 hanya 430px dan tata letak bertumpuk mendorong kanvas keluar layar.
+  · Panel kiri masih memakai `Simulation.addHint()` untuk STATUS, bukan untuk perintah.
 - **Navigasi utama di HEADER** (`[data-nav="belajar|tka"]`), bukan rail kiri — kolom
   kiri sudah milik `.ws-side`. Status aktif (`aria-current="page"`) DIHITUNG dari rute.
 - **Nol layout shift:** overlay `position:absolute`; tombol yang selesai dipakai
   `visibility:hidden` bukan `remove()`; tinggi dicadangkan lewat `.reserved-slot`,
-  `.sim { min-height: clamp(...) }`, `.sim__prompt { min-height }`; label yang berganti
+  `.sim { min-height: clamp(...) }`, `.sim-guide { height }`; label yang berganti
   berlebar TETAP. Kotak kosong ber-`visibility:hidden` memesan ruang NOL — isi dulu.
 - **Lanskap pendek (≤470px tinggi):** token tipografi & bilah menyusut di `tokens.css`;
   bilah aksi sidebar satu baris; `.ws-side__hint { min-height:58px }`.
@@ -213,17 +225,30 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### 🎯 STATUS: SIAP DILUNCURKAN
+> ### 🎯 MISI: REVISI PURWARUPA TERPANDU, LALU LANJUTKAN
 >
-> Seluruh tahap (baris 1–11 di §2) selesai dan terukur. Tidak ada pekerjaan wajib. Sesi baru
-> hanya mengerjakan permintaan pengguna yang eksplisit; dua catatan kecil di §2 boleh ditawarkan.
-> Jangan merombak ulang apa pun di baris 6–11.
+> Pengguna sudah melihat purwarupa sub-topik 1 (baris 13 di §2) dan **punya revisi**.
+> Sesi baru dimulai dengan MENANYAKAN/MEMBACA revisi itu, mengerjakannya, lalu baru
+> melanjutkan daftar di §4.1. Jangan merombak ulang baris 1–13 tanpa diminta.
 
-### 4.1 Pemeliharaan rutin
-1. Data soal/toast diubah → `python tests/validate_data.py` (0 GAGAL), lalu
-   `python tests/archive_soal.py` untuk membangkitkan ulang arsip guru.
-2. Kendali interaktif baru → beri area sentuh `--hit-min` (pola `::after` di §3.3) dan jalankan
-   `python tests/smoke.py`; §6b akan gagal bila lupa.
+### 4.1 Antrean pekerjaan yang sudah disetujui pengguna
+
+1. **Revisi purwarupa sub-topik 1** (menunggu arahan pengguna di sesi baru).
+2. **Lima sub-topik Bab 1 sisanya** diubah ke pola terpandu yang sama:
+   `notasi_penyajian` · `vektor_posisi` · `panjang_vektor` · `vektor_satuan` ·
+   `komponen_r2_r3`. Pola: perintah di panggung, langkah `pick`/`fields`/`choice`,
+   visual konfirmasi hanya di `onSolved`, latihan mandiri sebagai kasus tambahan.
+3. **UI premium** (belum disentuh sama sekali):
+   - Beranda: tipografi & kerning rusak pada skor TKA ("Belum   ada"), tata letak Hero
+     + panel pencapaian dibuat lebih lega, aksen kobalt untuk Belajar dan amber untuk capaian.
+   - Menu bab & menu kuis: ganti daftar putih polos dengan **kartu bab premium**
+     (lencana nomor, bilah progres elegan, sketsa ikonik konsep bab, hover/active).
+4. Mini Kuis dibuat lebih kontekstual dengan simulasi yang baru dipelajari.
+
+### 4.1b Keputusan pengguna yang sudah mengikat (jangan ditawar ulang)
+- Materi teks **tidak dihapus**: ia jadi **Rangkuman opsional**, bukan layar pertama.
+- Pengerjaan **bertahap**: purwarupa dulu, dinilai, baru sisanya.
+- Simulasi terpandu didahulukan daripada UI premium.
 
 ### 4.2 Kontrak yang tetap mengikat selama polish
 - **Aksioma** (§1): aplikasi tidak pernah menghitung untuk siswa; kalimat toast tidak
@@ -263,6 +288,16 @@ Aturan:
     `sessionState.patchResume(lessonKey(bab, sub), { step: 2, simulationDone: true })`.
   - `PointerEvent` sintetis di papan coret harus `pointerId: 1`; id lain ditolak `setPointerCapture`.
   - Konsol Windows cp1252: skrip Python wajib `sys.stdout.reconfigure(encoding="utf-8")`.
+  - **Pemanggil Python di mesin ini `py`, bukan `python`** (alias Microsoft Store
+    membajak `python` di shell Bash).
+  - **Teks bermarkdown/LaTeX WAJIB lewat `mixed()`/`renderMixed()`.** `givenBlock()`,
+    `chip.innerHTML`, dan `setPromptText()` menerima HTML apa adanya; yang lupa akan
+    menampilkan `**tebal**` atau `$\vec{a}$` mentah ke siswa. Dijaga `smoke.py` §4
+    (anotasi MathML KaTeX dikecualikan karena memang memuat sumber LaTeX).
+  - Heredoc Bash sering merusak regex/kutip pada skrip Python sekali pakai — tulis
+    skripnya ke berkas lebih dulu, jangan lewat `<<EOF`.
+  - Raw-string Python mempertahankan `\"`: pakai raw-string **berkutip tunggal** untuk
+    teks yang memuat tanda kutip (validator sekarang menangkapnya).
   - `net::ERR_NETWORK_CHANGED` (adaptor jaringan Windows berganti status) membatalkan pemuatan
     modul bahkan ke localhost → aplikasi tak pernah `data-app-ready`. `open_route` di `smoke.py`
     mengulang; skrip Playwright lain harus melakukan hal yang sama.
@@ -282,6 +317,7 @@ vektor-lab-interaktif/
 ├── PRD.md                     kontrak produk (tema §7.1 "Meja Gambar Teknik" & §7.4 --hit-min diselaraskan Final Polish)
 ├── README.md                  cara jalan & perintah harian
 ├── handoff/handoff.md         dokumen ini
+├── handoff/PROMPT_SESI_BARU.md  prompt pembuka siap-tempel untuk sesi berikutnya
 ├── docs/                      EDTECH_BLUEPRINT.md · Rancangan_Materi_Vektor_TKA.md · 4 gambar soal TKA
 ├── .claude/
 │   ├── launch.json            server pratinjau → python tests/serve.py 5173
@@ -327,7 +363,7 @@ vektor-lab-interaktif/
 │   │   ├── examEngine.js      Ujian CBT — umpan balik tertunda, hasUnsavedWork()
 │   │   └── quizResult.js      layar hasil (judul sub-topik dari ctx.subtopicTitles)
 │   ├── lesson/
-│   │   ├── lessonRenderer.js  LessonView: Materi → Simulasi → Mini Kuis → selesai
+│   │   ├── lessonRenderer.js  LessonView: Simulasi → Mini Kuis (+ Rangkuman opsional)
 │   │   └── simulations/
 │   │       ├── index.js       SIMULATION_REGISTRY · registerSimulation · mountSimulation
 │   │       ├── simCore.js     kelas dasar Simulation + helper (renderColumnVector, dll.)
