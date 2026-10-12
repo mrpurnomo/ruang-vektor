@@ -770,7 +770,10 @@
   .theme-toggle svg { width: 19px; height: 19px; }
 
   @media (max-width: 768px) {
-    .toast-host { bottom: var(--sp-3); width: calc(100vw - 24px); }
+    /* Lebar mengikuti KOLOM tambatan, bukan jendela: titik tengahnya tetap
+       sumbu panggung, jadi toast selebar 100vw meluap 82px keluar tepi kanan
+       di 740×360 dan kalimatnya terpotong (terukur). */
+    .toast-host { bottom: var(--sp-3); width: calc(var(--toast-anchor-w, 100vw) - 24px); }
     .quiz__card { padding: var(--sp-4); }
     .actionbar { padding: var(--sp-3); }
   }

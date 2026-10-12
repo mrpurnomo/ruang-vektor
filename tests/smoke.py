@@ -482,6 +482,10 @@ def section_guided_stage(page, errors):
     squashed = [f"{i['t']!r} {i['ch']}<{i['sh']}" for i in trail if i["sh"] > i["ch"] + 1]
     record(f"Jejak langkah ({len(trail)} item) tidak tergencet: teks & mata panah \\vec utuh",
            len(trail) == 4 and not squashed, "; ".join(squashed) or f"{len(trail)} item")
+    toasts = page.evaluate("""() => [...document.querySelectorAll('.toast')].map((t) => {
+        const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
+    record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",
+           bool(toasts) and all(l >= 0 and r <= page.viewport_size["width"] for l, r in toasts), str(toasts))
     record("Tanpa galat konsol di panggung terpandu", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
 
