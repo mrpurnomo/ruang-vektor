@@ -120,6 +120,22 @@ async function act(sim, action) {
   }
 }
 
+/** Potongan kalimat BIASA terpanjang dari templat: rumus KaTeX dan
+    placeholder dipotong keluar, karena teks rendernya berbeda. */
+function probeOf(template) {
+  return template
+    .replace(/\$[^$]*\$|\{\{[^}]*\}\}/g, '|')
+    .replace(/\*\*/g, '')
+    .split(/[|—.,:;()]/)
+    .map((p) => p.trim())
+    .sort((a, b) => b.length - a.length)[0];
+}
+
+/** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
+const CASE_SUCCESS = {
+  vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
+};
+
 function planeRect() {
   const p = host.querySelector('.plane-host');
   if (!p) return null;
@@ -182,14 +198,7 @@ async function runEngine(def, plan) {
           if (s.expectToast) {
             const expected = def.toasts[s.expectToast];
             assert(expected, `toast "${s.expectToast}" tidak ada di JSON`);
-            // Potongan kalimat BIASA terpanjang dari templat: rumus KaTeX dan
-            // placeholder dipotong keluar, karena teks rendernya berbeda.
-            const probe = expected
-              .replace(/\$[^$]*\$|\{\{[^}]*\}\}/g, '|')
-              .replace(/\*\*/g, '')
-              .split(/[|—.,:;()]/)
-              .map((p) => p.trim())
-              .sort((a, b) => b.length - a.length)[0];
+            const probe = probeOf(expected);
             assert(!probe || probe.length < 8 || last.text.includes(probe), `kasus ${ci + 1} langkah ${si + 1}: diharapkan toast "${s.expectToast}" ("${probe}"), didapat: ${last.text}`);
           }
           notes.push(`K${ci + 1}L${si + 1} salah → "${last.text.slice(0, 70)}…"`);
@@ -204,6 +213,15 @@ async function runEngine(def, plan) {
       }
 
       await waitFor(() => sim.solved.has(ci), 3000, `kasus ${ci + 1} selesai`);
+      // Toast sukses harus milik kasus INI. Terukur di purwarupa terpandu:
+      // kasus latihan B, C, D membunyikan "Dari O ke A: 7 ke kanan…".
+      const wantKey = CASE_SUCCESS[def.engine] && CASE_SUCCESS[def.engine](sim.cases[ci]);
+      if (wantKey) {
+        const probe = probeOf(def.toasts[wantKey] || '');
+        const done = toasts.filter((t) => t.type === 'success');
+        const last = done[done.length - 1];
+        assert(probe && last && last.text.includes(probe), `kasus ${ci + 1}: diharapkan toast sukses "${wantKey}" ("${probe}"), didapat: ${last ? last.text : '(tidak ada)'}`);
+      }
       if (ci < sim.cases.length - 1) {
         const next = hint.querySelector('[data-sim-action="next-case"]');
         assert(next && next.style.visibility === 'visible', `kasus ${ci + 1}: tombol kasus berikutnya tidak tampil`);

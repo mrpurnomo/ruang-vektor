@@ -72,6 +72,15 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return c.guided ? 'Vektor pertama' : `Titik ${c.point}`;
   }
 
+  /**
+   * Kalimat `success` menceritakan $\vec{OA}$ lengkap dengan angkanya. Kasus
+   * latihan memakai kalimat sendiri — tanpa itu siswa yang baru menuntaskan
+   * $\vec{OD}$ di kuadran IV membaca "7 ke kanan, 4 ke atas" (terukur).
+   */
+  caseSuccessKey(c) {
+    return c.guided ? 'success' : 'successLatihan';
+  }
+
   setupCase(c) {
     this.marks = {};
     this.traced = [];
