@@ -207,6 +207,12 @@
   .plane__arrow--ghost  { --tone: var(--graphite-4); opacity: .45; }
 
   /* --- Status --- */
+  /* SELAMA mode pilih-titik, panah yang TIDAK bisa diketuk tuli terhadap
+     pointer: jalur ketuk 22px-nya menelan ketukan di titik pangkal/ujungnya —
+     siswa yang mengetuk titik P pada panah PQ tidak pernah sampai ke lapisan
+     pilih (terukur di soal ketuk-bidang). Di luar mode itu kontrak lama
+     berlaku: panah tetap terkena elementFromPoint. */
+  .plane.is-picking .plane__arrow:not(.is-tappable) { pointer-events: none; }
   .plane__arrow.is-tappable { cursor: pointer; }
   .plane__arrow.is-tappable .plane__arrow-hit { cursor: pointer; }
 

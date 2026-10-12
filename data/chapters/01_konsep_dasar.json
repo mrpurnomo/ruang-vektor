@@ -152,67 +152,129 @@
         },
         {
           "id": "b1_01_2",
-          "input_type": "single_choice",
+          "input_type": "plane_tap",
           "subtopic": "pengertian_notasi",
-          "prompt": "Vektor $\\overrightarrow{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.",
-          "after": "**Pernyataan yang benar tentang $\\overrightarrow{QP}$ adalah ....**",
-          "options": [
+          "prompt": "Panah biru pada bidang adalah $\\overrightarrow{PQ}$: perpindahan dari titik $P$ ke titik $Q$.",
+          "after": "**Tunjukkan vektor lawannya, $\\overrightarrow{QP}$! Ketuk titik pangkalnya, lalu ketuk titik ujungnya.**",
+          "plane": {
+            "xRange": [
+              -4,
+              5
+            ],
+            "yRange": [
+              -2,
+              5
+            ]
+          },
+          "points": {
+            "P": [
+              -2,
+              1
+            ],
+            "Q": [
+              3,
+              3
+            ]
+          },
+          "arrows": [
             {
-              "tex": "\\overrightarrow{QP} = \\overrightarrow{PQ}"
-            },
-            {
-              "tex": "\\overrightarrow{QP} = -\\overrightarrow{PQ}"
-            },
-            {
-              "tex": "|\\overrightarrow{QP}| = -|\\overrightarrow{PQ}|"
-            },
-            {
-              "tex": "\\overrightarrow{QP} = \\vec{0}"
-            },
-            {
-              "tex": "\\overrightarrow{QP} \\perp \\overrightarrow{PQ}"
+              "from": "P",
+              "to": "Q",
+              "name": "PQ"
             }
           ],
-          "answerIndex": 1,
-          "explanation": "$\\overrightarrow{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\\overrightarrow{QP} = -\\overrightarrow{PQ}$. **Opsi B**.",
-          "toastWrong": "Belum tepat — perhatikan bahwa panjangnya **tidak berubah**, yang berubah hanya arahnya. Dan ingat: panjang vektor tidak pernah bernilai negatif, jadi opsi yang memberi tanda minus pada modulus pasti keliru."
+          "answer": {
+            "taps": [
+              [
+                3,
+                3
+              ],
+              [
+                -2,
+                1
+              ]
+            ]
+          },
+          "feedback": [
+            {
+              "taps": [
+                [
+                  -2,
+                  1
+                ],
+                [
+                  3,
+                  3
+                ]
+              ],
+              "message": "Belum tepat — yang kamu gambar adalah $\\overrightarrow{PQ}$ lagi, panah yang sudah ada. Vektor lawan menempuh ruas garis yang sama ke arah **sebaliknya**: huruf pertama pada namanya adalah pangkal."
+            }
+          ],
+          "explanation": "$\\overrightarrow{QP}$ berangkat dari $Q$ dan berakhir di $P$: ruas garisnya sama persis dengan $\\overrightarrow{PQ}$, panjangnya sama, arahnya berlawanan. Karena itu $\\overrightarrow{QP} = -\\overrightarrow{PQ}$. Ketukan yang benar: pangkal $Q(3,\\, 3)$, lalu ujung $P(-2,\\, 1)$.",
+          "toastWrong": "Belum tepat — panah $\\overrightarrow{QP}$ berpangkal dan berujung pada titik yang sudah ada di bidang. Baca namanya: huruf **pertama** pangkal, huruf **kedua** ujung."
         },
         {
           "id": "b1_01_3",
-          "input_type": "multi_select",
+          "input_type": "plane_tap",
           "subtopic": "pengertian_notasi",
-          "prompt": "Perhatikan lima besaran berikut.",
-          "after": "**Pilih semua besaran yang termasuk besaran vektor.**",
-          "options": [
+          "prompt": "Vektor $\\overrightarrow{OR}$ berpangkal di titik asal $O$ dan dapat ditulis $\\overrightarrow{OR} = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$.",
+          "after": "**Ketuk letak titik ujungnya, $R$, pada bidang.**",
+          "plane": {
+            "xRange": [
+              -5,
+              4
+            ],
+            "yRange": [
+              -4,
+              4
+            ]
+          },
+          "points": {
+            "O": [
+              0,
+              0
+            ]
+          },
+          "arrows": [],
+          "answer": {
+            "taps": [
+              [
+                -3,
+                2
+              ]
+            ]
+          },
+          "feedback": [
             {
-              "label": "Suhu ruangan $24^\\circ$C"
+              "taps": [
+                [
+                  2,
+                  -3
+                ]
+              ],
+              "message": "Belum tepat — urutan komponennya tertukar. Komponen **atas** adalah langkah **mendatar** (sumbu $X$), komponen **bawah** langkah **tegak** (sumbu $Y$)."
             },
             {
-              "label": "Gaya dorong $20$ N ke kanan"
+              "taps": [
+                [
+                  3,
+                  2
+                ]
+              ],
+              "message": "Belum tepat — arah mendatarnya terbalik. Tanda pada komponen atas menentukan ke **kanan** atau ke **kiri**."
             },
             {
-              "label": "Massa balok $5$ kg"
-            },
-            {
-              "label": "Kecepatan angin $15$ km/jam ke utara"
-            },
-            {
-              "label": "Waktu tempuh $2$ jam"
+              "taps": [
+                [
+                  -3,
+                  -2
+                ]
+              ],
+              "message": "Belum tepat — arah tegaknya terbalik. Tanda pada komponen bawah menentukan ke **atas** atau ke **bawah**."
             }
           ],
-          "answerIndices": [
-            1,
-            3
-          ],
-          "perOptionFeedback": [
-            "Skalar — suhu punya nilai, tetapi tidak punya arah. Tidak ada \"$24^\\circ$C ke barat\".",
-            "**Vektor** — ada nilai ($20$ N) dan ada arah (ke kanan).",
-            "Skalar — massa hanya menyatakan banyaknya materi, tidak menunjuk ke mana pun.",
-            "**Vektor** — ada nilai ($15$ km/jam) dan ada arah (ke utara).",
-            "Skalar — waktu mengalir satu arah untuk semua orang; itu bukan \"arah\" dalam pengertian ruang."
-          ],
-          "explanation": "Yang menjadikan sebuah besaran vektor bukan satuannya, melainkan adanya **keterangan arah**. Hanya gaya dorong dan kecepatan angin yang menyebutkan arah.",
-          "toastWrong": "Ada pilihan yang belum tepat — uji satu per satu dengan satu pertanyaan: masuk akalkah besaran itu ditanyai **\"ke mana?\"**. Kalau suhu, massa, atau waktu ikut kamu pilih, kamu masih menilai dari angkanya, bukan dari arahnya."
+          "explanation": "Dari $O$, komponen atas $-3$ berarti $3$ satuan ke **kiri**, komponen bawah $2$ berarti $2$ satuan ke **atas**. Ujungnya $R(-3,\\, 2)$, di kuadran II.",
+          "toastWrong": "Belum tepat — mulai dari $O$: komponen atas adalah langkah mendatar, komponen bawah langkah tegak, dan tanda masing-masing adalah arahnya."
         }
       ]
     },

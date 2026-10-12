@@ -643,9 +643,13 @@ export class VectorPlane {
       handler(snapPoint(point, this.viewport, step));
     };
     rect.addEventListener('click', onClick);
+    // Selama memilih titik, panah tak-ketuk tidak boleh menelan ketukan
+    // (plane.css: .plane.is-picking).
+    this.svg.classList.add('is-picking');
     this.pickCleanup = () => {
       rect.removeEventListener('click', onClick);
       rect.remove();
+      this.svg.classList.remove('is-picking');
       this.pickCleanup = null;
     };
     return this.pickCleanup;

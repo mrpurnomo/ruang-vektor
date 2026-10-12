@@ -376,6 +376,27 @@ test('Titik yang bisa diketuk punya sasaran sentuh ≥ 44px; titik biasa tidak m
   } finally { plane.destroy(); }
 });
 
+test('Mode pilih-titik: ketukan di pangkal panah & di titik tak-ketuk sampai ke lapisan pilih', async () => {
+  // Regresi soal ketuk-bidang: titik P pada panah PQ tertelan jalur ketuk
+  // panah (22px) dan titik 11px — siswa mengetuk P, tidak terjadi apa-apa.
+  const plane = fresh();
+  try {
+    const a = plane.drawVector({ from: [-2, 1], to: [3, 2], name: 'PQ' });
+    plane.drawPoint([-2, 1], { label: 'P' });
+    const atP = toClient(plane.svg, plane.toScreen([-2, 1]));
+    assert(document.elementFromPoint(atP[0], atP[1]).closest('.plane__arrow') === a.el, 'di luar mode pilih, panah harus tetap terkena');
+    const picks = [];
+    const release = plane.enablePointPicking((p) => picks.push(p));
+    const target = document.elementFromPoint(atP[0], atP[1]);
+    assert(target && target.classList.contains('plane__pick'), `yang terkena: ${target && (target.getAttribute('class') || target.tagName)}`);
+    target.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: atP[0], clientY: atP[1] }));
+    assert(picks.length === 1 && picks[0][0] === -2 && picks[0][1] === 1, `pilihan ${JSON.stringify(picks)}`);
+    release();
+    assert(!plane.svg.classList.contains('is-picking'), 'kelas is-picking tertinggal sesudah dilepas');
+    assert(document.elementFromPoint(atP[0], atP[1]).closest('.plane__arrow') === a.el, 'panah tidak kembali terkena sesudah mode pilih');
+  } finally { plane.destroy(); }
+});
+
 test('lock(): panah terkunci tidak lagi menerima ketukan (diukur lewat elementFromPoint)', async () => {
   const plane = fresh();
   try {

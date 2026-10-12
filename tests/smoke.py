@@ -56,7 +56,7 @@ BASE = f"http://localhost:{PORT}"
 IDENTITY = {"nama": "Uji Asap", "sekolah": "SMAS YPVDP Bontang"}
 
 EXPECTED_SUBTOPICS = 25
-EXPECTED_PLANE_TESTS = 32
+EXPECTED_PLANE_TESTS = 33
 EXPECTED_SIM_TESTS = 26
 VIEWPORTS = [(740, 360), (1024, 600), (1440, 900)]
 SIDEBAR_RATIO = (22.0, 31.0)
@@ -635,6 +635,71 @@ def section_celebration(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+def tap_quiz_plane(page, x, y):
+    """Klik mouse SUNGGUHAN pada titik kisi (x, y) bidang soal — lewat garis kisinya."""
+    xy = page.evaluate("""([x, y]) => {
+        const svg = document.querySelector('.quiz-plane svg.plane');
+        const lx = svg.querySelector(`line[data-axis="x"][data-value="${x}"]`);
+        const ly = svg.querySelector(`line[data-axis="y"][data-value="${y}"]`);
+        const pt = new DOMPoint(+lx.getAttribute('x1'), +ly.getAttribute('y1')).matrixTransform(svg.getScreenCTM());
+        return [pt.x, pt.y];
+    }""", [x, y])
+    page.mouse.click(xy[0], xy[1])
+    page.wait_for_timeout(200)
+
+
+def last_toast(page):
+    return page.evaluate("() => { const t = [...document.querySelectorAll('.toast')].pop(); return t ? t.innerText : ''; }")
+
+
+def section_quiz_plane(page, errors):
+    print("\n6h. Mini Kuis sub-topik 1: soal ketuk-bidang (plane_tap)")
+    page.set_viewport_size({"width": 1024, "height": 600})
+    open_mini_quiz(page, "01_konsep_dasar", "pengertian_notasi")
+    page.wait_for_timeout(400)
+    # Soal 1: pilihan tunggal (frasa "ke arah timur" = opsi ke-3).
+    page.locator(".quiz .option").nth(2).click()
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(400)
+    page.locator(".quiz .actionbar .btn--primary", has_text="Berikutnya").click()
+    page.wait_for_timeout(500)
+    record("Soal 2 menampilkan bidang kartesius dengan panah PQ",
+           page.evaluate("() => !!document.querySelector('.quiz-plane svg.plane .plane__arrow')"))
+    # Salah KHAS: urutan terbalik (P lalu Q) = menggambar PQ lagi.
+    tap_quiz_plane(page, -2, 1); tap_quiz_plane(page, 3, 3)
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(300)
+    t = last_toast(page)
+    record("Urutan terbalik ditolak dengan kalimat khasnya (PQ lagi)", "lagi" in t and "sebaliknya" in t, t[:120])
+    record("Kalimat salah tidak menyebut koordinat kunci", "(3, 3)" not in t and "(−2, 1)" not in t, t[:120])
+    page.locator(".quiz .actionbar button", has_text="Coba Lagi").click()
+    page.wait_for_timeout(400)
+    tap_quiz_plane(page, 3, 3); tap_quiz_plane(page, -2, 1)
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(300)
+    record("Ketukan Q lalu P diterima sebagai QP", "tepat" in last_toast(page).lower(), last_toast(page)[:80])
+    page.locator(".quiz .actionbar .btn--primary", has_text="Berikutnya").click()
+    page.wait_for_timeout(500)
+    # Soal 3: komponen tertukar → kalimat khas, lalu jawaban benar.
+    tap_quiz_plane(page, 2, -3)
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(300)
+    t = last_toast(page)
+    record("Soal 3: komponen tertukar ditolak dengan kalimat khasnya", "tertukar" in t, t[:120])
+    page.locator(".quiz .actionbar button", has_text="Coba Lagi").click()
+    page.wait_for_timeout(400)
+    tap_quiz_plane(page, -3, 2)
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(300)
+    record("Soal 3: ketukan R(−3, 2) diterima", "tepat" in last_toast(page).lower(), last_toast(page)[:80])
+    page.locator(".quiz .actionbar .btn--success").click()
+    page.wait_for_timeout(800)
+    done = page.evaluate("() => ({ done: !!document.querySelector('.lesson-done'), planes: document.querySelectorAll('svg.plane').length })")
+    record("Kuis selesai; bidang soal dibongkar tuntas", done["done"] and done["planes"] == 0, json.dumps(done))
+    record("Tanpa galat konsol selama soal ketuk-bidang", not errors, "; ".join(errors[:2]))
+    reset_storage(page)
+
+
 def section_quiz_retry(page, errors):
     print("\n6g. Coba Lagi Kuis tanpa menurunkan rekor")
     page.set_viewport_size({"width": 1024, "height": 600})
@@ -1138,6 +1203,7 @@ def main():
             section_sound_toggle(page, errors)
             section_celebration(page, errors)
             section_quiz_retry(page, errors)
+            section_quiz_plane(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

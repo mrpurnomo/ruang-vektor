@@ -33,7 +33,18 @@ TIPE = {
     "multi_select": "Pilih semua jawaban benar",
     "mathpad": "Isian angka (papan angka)",
     "matrix_input": "Isian vektor kolom",
+    "plane_tap": "Ketuk titik di bidang kartesius",
 }
+
+
+def ketukan(q):
+    """Kunci soal ketuk-bidang: urutan titik, bernama bila titiknya bernama."""
+    names = {tuple(p): n for n, p in (q.get("points") or {}).items()}
+    parts = []
+    for x, y in q["answer"]["taps"]:
+        n = names.get((x, y), "")
+        parts.append(f"{n}({x}, {y})")
+    return " → ".join(parts)
 
 PERINGATAN = [
     "> ⚠️ **Berkas ini DIBANGKITKAN dari data JSON.** Jangan disunting langsung —",
@@ -60,6 +71,8 @@ def kunci_ringkas(q):
         return ", ".join(HURUF[i] for i in q["answerIndices"])
     if t == "matrix_input":
         return "(" + ", ".join(str(r[0]) for r in q["answer"]) + ")"
+    if t == "plane_tap":
+        return ketukan(q)
     return str(q["answer"])
 
 
@@ -94,6 +107,13 @@ def tulis_soal(out, nomor, q, level="###"):
         out.append(q["after"])
         out.append("")
 
+    if q["input_type"] == "plane_tap":
+        pts = ", ".join(f"{n}({p[0]}, {p[1]})" for n, p in (q.get("points") or {}).items())
+        arr = ", ".join(f"{a['from']}→{a['to']}" for a in q.get("arrows") or [])
+        out.append(f"*Bidang:* x ∈ {q['plane']['xRange']}, y ∈ {q['plane']['yRange']}"
+                   + (f" · titik {pts}" if pts else "") + (f" · panah {arr}" if arr else ""))
+        out.append("")
+
     # --- Opsi ---
     if q["input_type"] in ("single_choice", "multi_select"):
         for i, opt in enumerate(q["options"]):
@@ -109,6 +129,8 @@ def tulis_soal(out, nomor, q, level="###"):
         kunci = f"**{kunci_ringkas(q)}**"
     elif t == "matrix_input":
         kunci = f"${vektor_kolom_tex(q['answer'])}$"
+    elif t == "plane_tap":
+        kunci = f"**{ketukan(q)}**"
     else:
         kunci = f"**{q['answer']}**"
 

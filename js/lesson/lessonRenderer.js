@@ -12,6 +12,8 @@ import { renderMixed, renderToString } from '../core/render/katexRenderer.js';
 import { icon } from '../core/ui/icons.js';
 import { mountSimulation } from './simulations/index.js';
 import { QuizEngine } from '../quiz/quizEngine.js';
+// Efek samping: mendaftarkan tipe soal bidang kartesius (plane_tap).
+import './quizTypes.js';
 import { renderQuestionBody } from '../quiz/questionBody.js';
 import {
   markSubtopicStarted, markSubtopicCompleted, recordAttempt,
@@ -428,6 +430,7 @@ export class LessonView {
       this.simulation.destroy();
       this.simulation = null;
     }
+    this.disposeQuiz();
 
     this.body.innerHTML = '';
     if (this.actionHost) this.actionHost.innerHTML = '';
@@ -654,7 +657,16 @@ export class LessonView {
       },
     });
 
+    this.quizEngine = engine;
     engine.start();
+  }
+
+  /** Kuis bisa memegang bidang SVG (soal plane_tap): bongkar tuntas. */
+  disposeQuiz() {
+    if (this.quizEngine) {
+      this.quizEngine.dispose();
+      this.quizEngine = null;
+    }
   }
 
   /** Tampilan review: soal + kunci jawaban + pembahasan, tanpa interaksi. */
@@ -775,6 +787,13 @@ export class LessonView {
         { display: true }
       );
       wrap.appendChild(view);
+      return wrap;
+    }
+
+    // Tipe terdaftar (mis. plane_tap) menulis kuncinya sendiri.
+    const registered = QuizEngine.types.get(q.input_type);
+    if (registered && typeof registered.answerKey === 'function') {
+      wrap.appendChild(el('div', 'answer-key__value', registered.answerKey(q)));
       return wrap;
     }
 
@@ -903,6 +922,7 @@ export class LessonView {
 
   destroy() {
     if (this.simulation) this.simulation.destroy();
+    this.disposeQuiz();
     // Isolasi rute: papan coret ikut dibongkar bersama layarnya.
     if (this.scratchpad) {
       this.scratchpad.destroy();

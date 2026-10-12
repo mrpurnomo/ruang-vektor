@@ -436,4 +436,25 @@
     .celebrate__stats { margin-top: var(--sp-2); font-size: var(--fs-xs); }
     .modal--celebrate .modal__actions { margin-top: var(--sp-3); }
   }
+
+  /* ------------------------------------------------------------
+     SOAL KETUK-BIDANG (plane_tap, lesson/quizTypes.js)
+     Bidang bertinggi TERCADANGKAN dan baris status bertinggi tetap:
+     ketukan siswa mengubah isi, bukan tata letak.
+     ------------------------------------------------------------ */
+  .quiz-plane { display: grid; gap: var(--sp-2); margin-top: var(--sp-3); }
+  .quiz-plane__host { min-height: clamp(240px, 44vh, 360px); }
+  .quiz-plane__status {
+    min-height: 1.6em;
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-700);
+  }
+  .quiz-plane__status strong { color: var(--ink-900); }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .quiz-plane { margin-top: var(--sp-2); }
+    .quiz-plane__host { min-height: 180px; }
+    .quiz-plane__status { font-size: var(--fs-xs); }
+  }
 }

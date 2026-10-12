@@ -60,7 +60,7 @@ MATERI_TYPES = {
     "p": ("x",), "tex": ("x",), "def": ("x",), "tip": ("x",), "warn": ("x",),
     "list": ("items",), "steps": ("items",), "typegroup": ("items",), "carousel": ("items",),
 }
-INPUT_TYPES = {"single_choice", "multi_select", "mathpad", "matrix_input"}
+INPUT_TYPES = {"single_choice", "multi_select", "mathpad", "matrix_input", "plane_tap"}
 OPTION_KEYS = {"label", "tex"}
 HURUF = "ABCDEFGHIJ"
 
@@ -569,6 +569,45 @@ def numbers_in(text):
     return found
 
 
+def _is_point(p):
+    return (isinstance(p, list) and len(p) == 2
+            and all(isinstance(v, int) and not isinstance(v, bool) for v in p))
+
+
+def plane_tap_problems(q):
+    """Skema soal ketuk-bidang (lesson/quizTypes.js)."""
+    out = []
+    plane = q.get("plane") or {}
+    xr, yr = plane.get("xRange"), plane.get("yRange")
+    if not (_is_point(xr) and _is_point(yr) and xr[0] < 0 < xr[1] and yr[0] < 0 < yr[1]):
+        out.append(f"plane.xRange/yRange tidak sah: {xr!r} {yr!r}")
+        return out
+    inside = lambda p: _is_point(p) and xr[0] <= p[0] <= xr[1] and yr[0] <= p[1] <= yr[1]
+    points = q.get("points") or {}
+    for name, p in points.items():
+        if not inside(p):
+            out.append(f"titik {name} {p!r} di luar bidang")
+    for a in q.get("arrows") or []:
+        if a.get("from") not in points or a.get("to") not in points:
+            out.append(f"panah {a!r} merujuk titik yang tidak ada")
+    taps = (q.get("answer") or {}).get("taps")
+    if not isinstance(taps, list) or not 1 <= len(taps) <= 2 or not all(inside(t) for t in taps):
+        out.append(f"answer.taps harus 1-2 titik di dalam bidang: {taps!r}")
+        return out
+    for i, f in enumerate(q.get("feedback") or []):
+        ft = f.get("taps")
+        if not isinstance(ft, list) or len(ft) != len(taps) or not all(inside(t) for t in ft):
+            out.append(f"feedback[{i}].taps tidak sepadan dengan kunci")
+        elif ft == taps:
+            out.append(f"feedback[{i}] sama dengan kunci")
+        if not str(f.get("message", "")).strip():
+            out.append(f"feedback[{i}].message kosong")
+    for k in ("options", "answerIndex", "answerIndices"):
+        if k in q:
+            out.append(f"plane_tap memuat kunci tipe lain `{k}`")
+    return out
+
+
 def check_question(q, where, rep, subtopic_ids):
     qid = q.get("id", "?")
     problems = []
@@ -634,6 +673,9 @@ def check_question(q, where, rep, subtopic_ids):
         elif any(not isinstance(v, (int, float)) or isinstance(v, bool) for r in ans for v in r):
             problems.append("answer memuat bukan-angka")
 
+    elif itype == "plane_tap":
+        problems.extend(plane_tap_problems(q))
+
     if q.get("table"):
         t = q["table"]
         if not t.get("headers") or any(len(r) != len(t["headers"]) for r in t.get("rows", [])):
@@ -655,6 +697,17 @@ def check_question(q, where, rep, subtopic_ids):
         compact = re.sub(r"[\s\\,;{}()$]|pmatrix|begin|end", "", wrong)
         if len(flat) > 1 and "".join(str(v) for v in flat) in compact:
             leak.append(f"menyebut vektor kunci ({body})")
+    if itype == "plane_tap" and isinstance((q.get("answer") or {}).get("taps"), list):
+        # Koordinat kunci tidak boleh tertulis di kalimat salah mana pun.
+        texts = [wrong] + [f.get("message", "") for f in q.get("feedback") or []]
+        for t in q["answer"]["taps"]:
+            if not _is_point(t):
+                continue
+            num = lambda v: (r"[-−]\s*" + str(abs(v))) if v < 0 else str(v)
+            pat = re.compile(r"\(\s*" + num(t[0]) + r"\s*,\s*" + num(t[1]) + r"\s*\)")
+            # "\," adalah spasi tipis LaTeX: "(3,\, 3)" sama dengan "(3, 3)".
+            if any(pat.search(x.replace("\\,", " ")) for x in texts):
+                leak.append(f"menyebut koordinat kunci {tuple(t)}")
     if itype == "single_choice" and isinstance(q.get("answerIndex"), int):
         letter = HURUF[q["answerIndex"]] if q["answerIndex"] < len(HURUF) else "?"
         if re.search(r"\b[Oo]psi\s+\**" + letter + r"\b", wrong):

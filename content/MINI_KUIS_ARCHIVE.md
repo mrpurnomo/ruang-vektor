@@ -39,52 +39,36 @@ E. Seluruh pernyataan, karena semua besaran gerak adalah vektor.
 #### Soal 2
 
 - **ID:** `b1_01_2`
-- **Tipe:** Pilihan ganda (satu jawaban benar)
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `pengertian_notasi`
 
-Vektor $\overrightarrow{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.
+Panah biru pada bidang adalah $\overrightarrow{PQ}$: perpindahan dari titik $P$ ke titik $Q$.
 
-**Pernyataan yang benar tentang $\overrightarrow{QP}$ adalah ....**
+**Tunjukkan vektor lawannya, $\overrightarrow{QP}$! Ketuk titik pangkalnya, lalu ketuk titik ujungnya.**
 
-A. $\overrightarrow{QP} = \overrightarrow{PQ}$
-B. $\overrightarrow{QP} = -\overrightarrow{PQ}$
-C. $|\overrightarrow{QP}| = -|\overrightarrow{PQ}|$
-D. $\overrightarrow{QP} = \vec{0}$
-E. $\overrightarrow{QP} \perp \overrightarrow{PQ}$
+*Bidang:* x ∈ [-4, 5], y ∈ [-2, 5] · titik P(-2, 1), Q(3, 3) · panah P→Q
 
-> **KUNCI JAWABAN:** **B** — $\overrightarrow{QP} = -\overrightarrow{PQ}$
+> **KUNCI JAWABAN:** **Q(3, 3) → P(-2, 1)**
 
-**Pembahasan.** $\overrightarrow{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\overrightarrow{QP} = -\overrightarrow{PQ}$. **Opsi B**.
+**Pembahasan.** $\overrightarrow{QP}$ berangkat dari $Q$ dan berakhir di $P$: ruas garisnya sama persis dengan $\overrightarrow{PQ}$, panjangnya sama, arahnya berlawanan. Karena itu $\overrightarrow{QP} = -\overrightarrow{PQ}$. Ketukan yang benar: pangkal $Q(3,\, 3)$, lalu ujung $P(-2,\, 1)$.
 
 ---
 
 #### Soal 3
 
 - **ID:** `b1_01_3`
-- **Tipe:** Pilih semua jawaban benar
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `pengertian_notasi`
 
-Perhatikan lima besaran berikut.
+Vektor $\overrightarrow{OR}$ berpangkal di titik asal $O$ dan dapat ditulis $\overrightarrow{OR} = \begin{pmatrix} -3 \\ 2 \end{pmatrix}$.
 
-**Pilih semua besaran yang termasuk besaran vektor.**
+**Ketuk letak titik ujungnya, $R$, pada bidang.**
 
-A. Suhu ruangan $24^\circ$C
-B. Gaya dorong $20$ N ke kanan
-C. Massa balok $5$ kg
-D. Kecepatan angin $15$ km/jam ke utara
-E. Waktu tempuh $2$ jam
+*Bidang:* x ∈ [-5, 4], y ∈ [-4, 4] · titik O(0, 0)
 
-> **KUNCI JAWABAN:** **B, D**
+> **KUNCI JAWABAN:** **(-3, 2)**
 
-**Pembahasan.** Yang menjadikan sebuah besaran vektor bukan satuannya, melainkan adanya **keterangan arah**. Hanya gaya dorong dan kecepatan angin yang menyebutkan arah.
-
-**Penjelasan per opsi:**
-
-- **A.** Skalar — suhu punya nilai, tetapi tidak punya arah. Tidak ada "$24^\circ$C ke barat".
-- **B.** **Vektor** — ada nilai ($20$ N) dan ada arah (ke kanan).
-- **C.** Skalar — massa hanya menyatakan banyaknya materi, tidak menunjuk ke mana pun.
-- **D.** **Vektor** — ada nilai ($15$ km/jam) dan ada arah (ke utara).
-- **E.** Skalar — waktu mengalir satu arah untuk semua orang; itu bukan "arah" dalam pengertian ruang.
+**Pembahasan.** Dari $O$, komponen atas $-3$ berarti $3$ satuan ke **kiri**, komponen bawah $2$ berarti $2$ satuan ke **atas**. Ujungnya $R(-3,\, 2)$, di kuadran II.
 
 ---
 

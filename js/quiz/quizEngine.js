@@ -45,7 +45,21 @@ export class QuizEngine {
     // tidak cukup — siswa akan mendarat di soal 3 dengan skor nol, dan
     // navigasi titiknya ikut mati karena tidak ada riwayat jawaban.
     this.sessionKey = options.sessionKey || null;
+    // Pembersih milik soal yang sedang tampil (tipe terdaftar, mis. bidang
+    // SVG dengan ResizeObserver yang selamat dari innerHTML = '').
+    this.cleanups = [];
     this.restoreSession();
+  }
+
+  /** Lepaskan semua milik soal yang sedang tampil. */
+  disposeSlide() {
+    this.cleanups.forEach((fn) => { try { fn(); } catch (err) { console.warn('[kuis] cleanup:', err); } });
+    this.cleanups = [];
+  }
+
+  /** Dipanggil pemilik layar saat kuis ditinggalkan. */
+  dispose() {
+    this.disposeSlide();
   }
 
   restoreSession() {
@@ -182,6 +196,7 @@ export class QuizEngine {
     this.syncNav();
     this.saveSession();
 
+    this.disposeSlide();
     this.slideHost.innerHTML = '';
 
     const wrap = el('div', 'quiz anim-rise');
@@ -216,9 +231,31 @@ export class QuizEngine {
       case 'single_choice': this.renderChoices(q, false); break;
       case 'multi_select': this.renderChoices(q, true); break;
       case 'matrix_input': this.renderMatrixInput(q); break;
-      default:
+      default: {
+        const type = QuizEngine.types.get(q.input_type);
+        if (type) {
+          this.renderRegistered(type, q);
+          break;
+        }
         this.answerHost.innerHTML = `<p class="text-muted">Tipe soal "${q.input_type}" belum didukung.</p>`;
+      }
     }
+  }
+
+  /**
+   * Tipe soal TERDAFTAR (QuizEngine.registerType). Kuis tetap generik: ia
+   * hanya menyerahkan wadah jawaban, tombol Periksa, dan penilai; isi
+   * interaksinya — mis. ketukan di bidang kartesius — milik lapisan domain.
+   */
+  renderRegistered(type, q) {
+    type.render({
+      q,
+      host: this.answerHost,
+      addSubmit: (handler) => this.addSubmitButton(handler),
+      judge: (ok, message) => this.judge(ok, q, message),
+      isAnswered: () => this.answered,
+      onCleanup: (fn) => this.cleanups.push(fn),
+    });
   }
 
   /* ---------------- mathpad ---------------- */
@@ -458,7 +495,7 @@ export class QuizEngine {
     return this.wrongAttempts[this.index] + 1 >= QuizEngine.REVEAL_AFTER;
   }
 
-  judge(ok, q) {
+  judge(ok, q, message = null) {
     if (this.answered) return;
     const reveal = this.shouldReveal(ok);
     this.answered = true;
@@ -479,7 +516,9 @@ export class QuizEngine {
       toast.success('Jawabanmu tepat!');
     } else {
       if (q.subtopic) this.wrongSubtopics.add(q.subtopic);
-      toast.error(q.toastWrong || 'Belum tepat — periksa kembali langkah pengerjaanmu.');
+      // Kalimat khusus dari tipe terdaftar (mis. "itu PQ, bukan QP") lebih
+      // tepat sasaran daripada toastWrong umum soal itu.
+      toast.error(message || q.toastWrong || 'Belum tepat — periksa kembali langkah pengerjaanmu.');
     }
 
     if (this.options.showExplanation !== false && q.explanation && reveal) {
@@ -545,6 +584,7 @@ export class QuizEngine {
     // dihitung dan dirender SEKALI.
     if (this.finished) return;
     this.finished = true;
+    this.disposeSlide();
 
     // Kuis tuntas — posisi tidak perlu diingat lagi. Membiarkannya membuat
     // siswa yang membuka ulang mendarat di soal terakhir, bukan di awal.
@@ -569,5 +609,13 @@ export class QuizEngine {
 
 /** Percobaan salah ke berapa yang membuka pembahasan dalam mode mastery. */
 QuizEngine.REVEAL_AFTER = 3;
+
+/**
+ * Registri tipe soal tambahan: { render(api), answerKey?(q) → HTML }.
+ * Didaftarkan lapisan pelajaran (lesson/quizTypes.js) — titik sambung ke
+ * domain, sejajar dengan registry simulasi.
+ */
+QuizEngine.types = new Map();
+QuizEngine.registerType = (name, def) => QuizEngine.types.set(name, def);
 
 export default QuizEngine;
