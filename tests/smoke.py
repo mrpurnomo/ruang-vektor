@@ -487,6 +487,13 @@ def section_guided_stage(page, errors):
         return { box: [Math.round(a.top), Math.round(a.bottom)], item: [Math.round(b.top), Math.round(b.bottom)] }; }""")
     record("Jejak yang bergulir menampilkan item TERBARU (hasil OA = a)",
            newest["item"][0] >= newest["box"][0] - 1 and newest["item"][1] <= newest["box"][1] + 1, json.dumps(newest))
+    # Mata panah \vec KaTeX = SVG absolut di dalam .accent-body selebar 0.
+    # Reset `svg { max-width: 100% }` pernah memangkasnya jadi 0px di SELURUH
+    # aplikasi: "vektor OA" tampil tanpa tanda panahnya.
+    accents = page.evaluate("""() => [...document.querySelectorAll('.katex-html .accent svg')]
+        .map((s) => Math.round(s.getBoundingClientRect().width * 10) / 10)""")
+    record(f"Mata panah \\vec terlihat ({len(accents)} aksen, lebar > 0)",
+           bool(accents) and all(w > 2 for w in accents), str(accents[:8]))
     toasts = page.evaluate("""() => [...document.querySelectorAll('.toast')].map((t) => {
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",

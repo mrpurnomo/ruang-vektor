@@ -485,6 +485,11 @@
   button { background: none; border: none; cursor: pointer; }
   ul, ol { list-style: none; }
   img, svg { display: block; max-width: 100%; }
+  /* KECUALI SVG milik KaTeX. Mata panah \vec adalah SVG ABSOLUT di dalam
+     .accent-body yang lebarnya 0; `max-width: 100%` memangkasnya jadi 0px
+     sehingga di SELURUH aplikasi "vektor OA" tampil tanpa tanda panahnya
+     (terukur: 8 dari 8 aksen selebar 0, 409 pemakaian \vec di data). */
+  .katex svg { max-width: none; }
 
   ::selection { background: var(--value-soft); color: var(--ink-900); }
 
