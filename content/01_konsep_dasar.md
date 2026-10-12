@@ -33,9 +33,9 @@ Selamat — kamu baru saja melahirkan sebuah vektor.
 
 > **Definisi.** **Vektor** adalah besaran yang memiliki **nilai (panjang)** sekaligus **arah**. Bandingkan dengan **skalar**, yang hanya punya nilai: suhu $30^\circ$C, massa 5 kg, waktu 2 jam.
 
-Panah tadi bernama **vektor $\vec{OA}$**, dibaca *dari $O$ menuju $A$*. Kalau tidak ingin menyebut kedua titiknya, cukup beri satu huruf kecil berpanah:
+Panah tadi bernama **vektor $\overrightarrow{OA}$**, dibaca *dari $O$ menuju $A$*. Kalau tidak ingin menyebut kedua titiknya, cukup beri satu huruf kecil berpanah:
 
-$$\vec{OA} = \vec{a}$$
+$$\overrightarrow{OA} = \vec{a}$$
 
 ### Melacak langkahnya di atas kisi
 
@@ -54,9 +54,9 @@ Titik $A(7,\, 4)$ menjawab pertanyaan **"di mana?"** — ia diam di satu tempat.
 
 ### Cara membaca nama vektor
 
-Huruf **pertama** selalu pangkal (ekor), huruf **kedua** selalu ujung (mata panah). Jadi $\vec{AO}$ berangkat dari $A$ dan berakhir di $O$: panjangnya sama persis, arahnya berlawanan.
+Huruf **pertama** selalu pangkal (ekor), huruf **kedua** selalu ujung (mata panah). Jadi $\overrightarrow{AO}$ berangkat dari $A$ dan berakhir di $O$: panjangnya sama persis, arahnya berlawanan.
 
-$$\vec{AO} = -\vec{OA}$$
+$$\overrightarrow{AO} = -\overrightarrow{OA}$$
 
 > Tanda minus pada vektor **tidak** berarti "negatif" seperti pada bilangan biasa. Ia berarti **arah berlawanan**. Panjangnya sama sekali tidak berubah.
 
@@ -111,14 +111,14 @@ Tanda minus pada komponen **bukan** pengurang panjang. Ia perintah arah: minus p
 
 ## 1.3 Vektor Posisi & Selisih Titik
 
-Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\, 3)$ menuju $B(8,\, 7)$. Panah itu bernama $\vec{AB}$: pangkalnya di $A$, ujungnya di $B$.
+Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\, 3)$ menuju $B(8,\, 7)$. Panah itu bernama $\overrightarrow{AB}$: pangkalnya di $A$, ujungnya di $B$.
 
 ### Cara pertama — hitung langsung di grafik
 
 1. Mendatar: dari $x = 2$ sampai $x = 8$, berarti **6 satuan ke kanan**.
 2. Tegak: dari $y = 3$ sampai $y = 7$, berarti **4 satuan ke atas**.
 
-$$\vec{AB} = \begin{pmatrix} 6 \\ 4 \end{pmatrix}$$
+$$\overrightarrow{AB} = \begin{pmatrix} 6 \\ 4 \end{pmatrix}$$
 
 ### Cara itu aman — selama ada kertas berpetak
 
@@ -128,19 +128,19 @@ $$6 = 8 - 2 \qquad\text{dan}\qquad 4 = 7 - 3$$
 
 Polanya sama di kedua baris: koordinat **ujung** dikurangi koordinat **pangkal**. Kamu baru saja menemukan rumusnya sendiri — tanpa menghafal.
 
-$$\vec{AB} = \vec{b} - \vec{a} = \begin{pmatrix} x_B - x_A \\ y_B - y_A \end{pmatrix}$$
+$$\overrightarrow{AB} = \vec{b} - \vec{a} = \begin{pmatrix} x_B - x_A \\ y_B - y_A \end{pmatrix}$$
 
-> **Definisi.** **Vektor posisi** adalah vektor yang pangkalnya dipatok di $O(0,\, 0)$, ditulis $\vec{a} = \vec{OA}$. Vektor sembarang $\vec{AB}$ selalu merupakan selisih dua vektor posisi: **ujung dikurangi pangkal**.
+> **Definisi.** **Vektor posisi** adalah vektor yang pangkalnya dipatok di $O(0,\, 0)$, ditulis $\vec{a} = \overrightarrow{OA}$. Vektor sembarang $\overrightarrow{AB}$ selalu merupakan selisih dua vektor posisi: **ujung dikurangi pangkal**.
 
 ### ⚠️ Jebakan paling mahal di ujian
 
-Jangan terbalik menjadi $A - B$. Yang kamu hitung bukan lagi $\vec{AB}$, melainkan $\vec{BA}$ — arahnya berputar $180^\circ$ dan seluruh komponen jawabanmu berganti tanda, padahal angkanya terlihat *mirip* benar.
+Jangan terbalik menjadi $A - B$. Yang kamu hitung bukan lagi $\overrightarrow{AB}$, melainkan $\overrightarrow{BA}$ — arahnya berputar $180^\circ$ dan seluruh komponen jawabanmu berganti tanda, padahal angkanya terlihat *mirip* benar.
 
 ### Rumusnya bisa dibalik
 
 Kalau yang ditanyakan justru titik ujungnya, pindahkan saja ruasnya:
 
-$$\vec{AB} = B - A \;\Longrightarrow\; B = A + \vec{AB}$$
+$$\overrightarrow{AB} = B - A \;\Longrightarrow\; B = A + \overrightarrow{AB}$$
 
 ---
 
@@ -250,7 +250,7 @@ Kalau satu arah tidak dilalui, komponennya 0 dan **tetap menempati posisinya**. 
 
 ### Tidak ada rumus baru di ruang
 
-Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\vec{AB} = B - A$, modulus, dan vektor satuan. Cukup tambahkan komponen ketiga — satu angka $z$, atau satu suku $\hat{k}$.
+Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\overrightarrow{AB} = B - A$, modulus, dan vektor satuan. Cukup tambahkan komponen ketiga — satu angka $z$, atau satu suku $\hat{k}$.
 
 ---
 
@@ -258,10 +258,10 @@ Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\vec{AB} = B - A$
 
 | Yang kamu kuasai sekarang | Rumus kuncinya |
 |---|---|
-| Vektor lahir dari pangkal, ujung, dan langkah di antaranya | $\vec{OA} = \vec{a}$ |
-| Arah dibalik, tanda ikut terbalik | $\vec{AO} = -\vec{OA}$ |
+| Vektor lahir dari pangkal, ujung, dan langkah di antaranya | $\overrightarrow{OA} = \vec{a}$ |
+| Arah dibalik, tanda ikut terbalik | $\overrightarrow{AO} = -\overrightarrow{OA}$ |
 | Tiga notasi yang saling tukar | $\begin{pmatrix} 7 \\ 4 \end{pmatrix} = (7,\, 4) = 7\hat{i} + 4\hat{j}$ |
-| Vektor dari dua titik sembarang | $\vec{AB} = B - A$ (**ujung − pangkal**) |
+| Vektor dari dua titik sembarang | $\overrightarrow{AB} = B - A$ (**ujung − pangkal**) |
 | Panjang vektor (Pythagoras) | $\lvert\vec{v}\rvert = \sqrt{x^2 + y^2 + z^2}$ |
 | Jawaban dalam akar eksak | $\sqrt{20} = 2\sqrt{5}$ |
 | Membandingkan panjang tanpa akar | $\lvert\vec{u}\rvert > \lvert\vec{v}\rvert \iff \lvert\vec{u}\rvert^2 > \lvert\vec{v}\rvert^2$ |

@@ -183,9 +183,17 @@ def latex_problems(s, is_pure_tex):
 PURE_TEX_KEYS = {"tex"}
 
 
+# Notasi baku: ruas berarah dua huruf ditulis \overrightarrow{AB}; \vec{AB}
+# menaruh panah kecil di TENGAH dua huruf (dibakukan 13 Okt 2026).
+VEC_PAIR_RE = re.compile(r"\\vec\{(?:[A-Z]'*){2,}\}")
+
+
 def check_text_hygiene(name, tree, rep):
-    control_bad, latex_bad = [], []
+    control_bad, latex_bad, notation_bad = [], [], []
     for path, s in walk_strings(tree):
+        m = VEC_PAIR_RE.search(s)
+        if m:
+            notation_bad.append(f"{path}: {m.group()} → \\overrightarrow")
         m = CONTROL_RE.search(s)
         if m:
             control_bad.append(f"{path}: U+{ord(m.group()):04X} dekat «{s[max(0, m.start() - 12):m.start() + 12]!r}»")
@@ -200,6 +208,7 @@ def check_text_hygiene(name, tree, rep):
             latex_bad.append(f"{path}: {problem}")
     rep.check(not control_bad, f"{name}: tanpa karakter kendali", "; ".join(control_bad[:5]))
     rep.check(not latex_bad, f"{name}: LaTeX seimbang", "; ".join(latex_bad[:5]))
+    rep.check(not notation_bad, f"{name}: notasi ruas berarah memakai \\overrightarrow", "; ".join(notation_bad[:5]))
 
 
 # ============================================================

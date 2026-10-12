@@ -494,6 +494,11 @@ def section_guided_stage(page, errors):
         .map((s) => Math.round(s.getBoundingClientRect().width * 10) / 10)""")
     record(f"Mata panah \\vec terlihat ({len(accents)} aksen, lebar > 0)",
            bool(accents) and all(w > 2 for w in accents), str(accents[:8]))
+    # Notasi baku: ruas berarah dua huruf = \overrightarrow, juga untuk teks
+    # yang dirakit engine saat berjalan (sumber TeX terbaca di anotasi MathML).
+    pairs = page.evaluate(r"""() => [...document.querySelectorAll('annotation')]
+        .map((a) => a.textContent).filter((t) => /\\vec\{(?:[A-Z]'*){2,}\}/.test(t))""")
+    record("Ruas berarah dua huruf dirender \\overrightarrow, bukan \\vec", not pairs, str(pairs[:3]))
     toasts = page.evaluate("""() => [...document.querySelectorAll('.toast')].map((t) => {
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",

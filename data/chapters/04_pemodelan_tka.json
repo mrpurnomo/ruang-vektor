@@ -14,7 +14,7 @@
           "x": "Nilai modulus **diketahui**, tetapi komponen penyusunnya memuat **variabel aljabar**. Yang ditanyakan justru variabelnya. Tanda pengenalnya: **huruf di dalam komponen, angka di luar tanda modulus.**" },
 
         { "t": "tex",
-          "x": "\\vec{AB} = \\begin{pmatrix} 2m \\\\ m+3 \\\\ m \\end{pmatrix}, \\quad |\\vec{AB}| = 9 \\;\\Rightarrow\\; m = \\;?" },
+          "x": "\\overrightarrow{AB} = \\begin{pmatrix} 2m \\\\ m+3 \\\\ m \\end{pmatrix}, \\quad |\\overrightarrow{AB}| = 9 \\;\\Rightarrow\\; m = \\;?" },
 
         { "t": "steps", "title": "Langkah Eksekusi",
           "items": [
@@ -62,8 +62,8 @@
           "subtopic": "parameter_modulus",
           "source": "Contoh Soal TKA · No. 12",
           "prompt": "Diketahui vektor berikut.",
-          "tex": "\\vec{AB} = \\begin{pmatrix} 2m \\\\ m+3 \\\\ m \\end{pmatrix}",
-          "after": "**Jika panjang vektor $\\vec{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....**",
+          "tex": "\\overrightarrow{AB} = \\begin{pmatrix} 2m \\\\ m+3 \\\\ m \\end{pmatrix}",
+          "after": "**Jika panjang vektor $\\overrightarrow{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....**",
           "options": [
             { "tex": "-4 \\ \\text{atau} \\ -3" },
             { "tex": "-4 \\ \\text{atau} \\ 3" },
@@ -116,9 +116,9 @@
 
         { "t": "steps", "title": "Contoh: Trapesium Sama Kaki $ABCD$, $AD = BC$, $A(0,0)$",
           "items": [
-            "**Analisis kesejajaran.** $\\vec{AB} = \\begin{pmatrix} 6 \\\\ 0 \\end{pmatrix}$ berkomponen $y$ nol → alasnya **mendatar**, sejajar sumbu $X$.",
-            "**Terjemahkan \"sama kaki\".** Pada trapesium sama kaki beralas mendatar, kedua kaki naik setinggi yang sama. Karena $\\vec{AD}$ naik $4$, maka $b = 4$.",
-            "**Terjemahkan \"$AD = BC$\" menjadi persamaan panjang.** $|\\vec{AD}| = \\sqrt{1+16} = \\sqrt{17}$, maka $\\sqrt{a^2 + b^2} = \\sqrt{17}$, sehingga $a^2 + 16 = 17$ dan $a^2 = 1$.",
+            "**Analisis kesejajaran.** $\\overrightarrow{AB} = \\begin{pmatrix} 6 \\\\ 0 \\end{pmatrix}$ berkomponen $y$ nol → alasnya **mendatar**, sejajar sumbu $X$.",
+            "**Terjemahkan \"sama kaki\".** Pada trapesium sama kaki beralas mendatar, kedua kaki naik setinggi yang sama. Karena $\\overrightarrow{AD}$ naik $4$, maka $b = 4$.",
+            "**Terjemahkan \"$AD = BC$\" menjadi persamaan panjang.** $|\\overrightarrow{AD}| = \\sqrt{1+16} = \\sqrt{17}$, maka $\\sqrt{a^2 + b^2} = \\sqrt{17}$, sehingga $a^2 + 16 = 17$ dan $a^2 = 1$.",
             "**Jawab yang ditanyakan:** $a^2 + 2b = 1 + 8 = 9$."
           ] },
 
@@ -131,11 +131,11 @@
         { "t": "typegroup", "n": "1", "title": "Kamus Sifat Bangun → Persamaan Vektor",
           "lead": "Hafalkan kamus ini. Ia yang mengubah kalimat soal menjadi persamaan.",
           "items": [
-            { "name": "Jajar genjang", "tex": "\\vec{AB} = \\vec{DC}", "text": "Sisi berhadapan **sejajar dan sama panjang**." },
-            { "name": "Kaki sama panjang", "tex": "|\\vec{AD}| = |\\vec{BC}|", "text": "Trapesium sama kaki, segitiga sama kaki." },
+            { "name": "Jajar genjang", "tex": "\\overrightarrow{AB} = \\overrightarrow{DC}", "text": "Sisi berhadapan **sejajar dan sama panjang**." },
+            { "name": "Kaki sama panjang", "tex": "|\\overrightarrow{AD}| = |\\overrightarrow{BC}|", "text": "Trapesium sama kaki, segitiga sama kaki." },
             { "name": "Sejajar sumbu", "tex": "y = 0 \\ \\text{atau} \\ x = 0", "text": "Sisi mendatar berkomponen $y$ nol; sisi tegak berkomponen $x$ nol." },
-            { "name": "Dua sisi sejajar", "tex": "\\vec{AB} = k\\,\\vec{DC}", "text": "Syarat trapesium — panjangnya boleh berbeda." },
-            { "name": "Siku-siku / diagonal tegak lurus", "tex": "\\vec{AC} \\cdot \\vec{BD} = 0", "text": "Belah ketupat dan layang-layang punya diagonal saling tegak lurus." }
+            { "name": "Dua sisi sejajar", "tex": "\\overrightarrow{AB} = k\\,\\overrightarrow{DC}", "text": "Syarat trapesium — panjangnya boleh berbeda." },
+            { "name": "Siku-siku / diagonal tegak lurus", "tex": "\\overrightarrow{AC} \\cdot \\overrightarrow{BD} = 0", "text": "Belah ketupat dan layang-layang punya diagonal saling tegak lurus." }
           ],
           "note": "Setiap kata sifat di soal adalah satu persamaan yang belum kamu tuliskan." }
       ],
@@ -178,7 +178,7 @@
           "input_type": "single_choice",
           "subtopic": "bangun_segiempat",
           "source": "Contoh Soal TKA · No. 13",
-          "prompt": "Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,\\, 0)$. Vektor-vektor posisi pembentuk trapesium adalah $\\vec{AD} = \\begin{pmatrix} 1 \\\\ 4 \\end{pmatrix}$, $\\vec{AB} = \\begin{pmatrix} 6 \\\\ 0 \\end{pmatrix}$, dan $\\vec{BC} = \\begin{pmatrix} a \\\\ b \\end{pmatrix}$.",
+          "prompt": "Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,\\, 0)$. Vektor-vektor posisi pembentuk trapesium adalah $\\overrightarrow{AD} = \\begin{pmatrix} 1 \\\\ 4 \\end{pmatrix}$, $\\overrightarrow{AB} = \\begin{pmatrix} 6 \\\\ 0 \\end{pmatrix}$, dan $\\overrightarrow{BC} = \\begin{pmatrix} a \\\\ b \\end{pmatrix}$.",
           "after": "**Nilai dari $a^2 + 2b$ adalah ....**",
           "options": [
             { "tex": "5" },
@@ -188,19 +188,19 @@
             { "tex": "13" }
           ],
           "answerIndex": 2,
-          "explanation": "$\\vec{AB}$ berkomponen $y$ nol, jadi alasnya mendatar; pada trapesium sama kaki beralas mendatar kedua kaki naik setinggi sama, sehingga $b = 4$. Dari $AD = BC$: $|\\vec{AD}| = \\sqrt{1+16} = \\sqrt{17}$, maka $a^2 + b^2 = 17 \\Rightarrow a^2 = 1$. Jadi $a^2 + 2b = 1 + 8 = 9$. **Opsi C**.",
+          "explanation": "$\\overrightarrow{AB}$ berkomponen $y$ nol, jadi alasnya mendatar; pada trapesium sama kaki beralas mendatar kedua kaki naik setinggi sama, sehingga $b = 4$. Dari $AD = BC$: $|\\overrightarrow{AD}| = \\sqrt{1+16} = \\sqrt{17}$, maka $a^2 + b^2 = 17 \\Rightarrow a^2 = 1$. Jadi $a^2 + 2b = 1 + 8 = 9$. **Opsi C**.",
           "toastWrong": "Belum tepat — perhatikan bahwa yang ditanyakan $a^2$, bukan $a$, sehingga kamu **tidak perlu** memutuskan antara $1$ dan $-1$. Kalau hasilmu $17$, kamu berhenti pada $a^2 + b^2$ dan lupa bahwa yang diminta $a^2 + 2b$."
         },
         {
           "id": "b4_02_2",
           "input_type": "mathpad",
           "subtopic": "bangun_segiempat",
-          "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\vec{AB} = (5,\\, 2)$ dan $\\vec{AD} = (1,\\, 4)$.",
-          "after": "**Tentukan komponen $x$ dari diagonal $\\vec{AC}$.**",
+          "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\overrightarrow{AB} = (5,\\, 2)$ dan $\\overrightarrow{AD} = (1,\\, 4)$.",
+          "after": "**Tentukan komponen $x$ dari diagonal $\\overrightarrow{AC}$.**",
           "answer": 6,
           "tolerance": 1e-6,
-          "explanation": "Pada jajar genjang, $\\vec{BC} = \\vec{AD}$, sehingga $\\vec{AC} = \\vec{AB} + \\vec{AD} = (5+1,\\; 2+4) = (6,\\, 6)$. Komponen $x$-nya adalah $6$.",
-          "toastWrong": "Belum tepat — diagonal $\\vec{AC}$ berangkat dari titik pangkal bersama, jadi ia adalah **jumlah** kedua sisinya. Kalau hasilmu $4$, kamu menghitung $\\vec{AB} - \\vec{AD}$, yang merupakan diagonal yang satu lagi."
+          "explanation": "Pada jajar genjang, $\\overrightarrow{BC} = \\overrightarrow{AD}$, sehingga $\\overrightarrow{AC} = \\overrightarrow{AB} + \\overrightarrow{AD} = (5+1,\\; 2+4) = (6,\\, 6)$. Komponen $x$-nya adalah $6$.",
+          "toastWrong": "Belum tepat — diagonal $\\overrightarrow{AC}$ berangkat dari titik pangkal bersama, jadi ia adalah **jumlah** kedua sisinya. Kalau hasilmu $4$, kamu menghitung $\\overrightarrow{AB} - \\overrightarrow{AD}$, yang merupakan diagonal yang satu lagi."
         },
         {
           "id": "b4_02_3",
@@ -209,15 +209,15 @@
           "prompt": "Pada segiempat $ABCD$ diketahui sifat: \"sisi berhadapan sejajar dan sama panjang\".",
           "after": "**Manakah terjemahan vektor yang paling tepat untuk sifat tersebut?**",
           "options": [
-            { "tex": "\\vec{AB} = \\vec{CD}" },
-            { "tex": "\\vec{AB} = \\vec{DC}" },
-            { "tex": "|\\vec{AB}| = |\\vec{CD}|" },
-            { "tex": "\\vec{AB} \\cdot \\vec{DC} = 0" },
-            { "tex": "\\vec{AB} = k\\,\\vec{DC}" }
+            { "tex": "\\overrightarrow{AB} = \\overrightarrow{CD}" },
+            { "tex": "\\overrightarrow{AB} = \\overrightarrow{DC}" },
+            { "tex": "|\\overrightarrow{AB}| = |\\overrightarrow{CD}|" },
+            { "tex": "\\overrightarrow{AB} \\cdot \\overrightarrow{DC} = 0" },
+            { "tex": "\\overrightarrow{AB} = k\\,\\overrightarrow{DC}" }
           ],
           "answerIndex": 1,
-          "explanation": "Pada segiempat $ABCD$ yang titik-titiknya berurutan, sisi $AB$ berhadapan dengan sisi $DC$ — perhatikan arah penulisannya. Sejajar **dan** sama panjang berarti kedua vektornya **sama**, yaitu $\\vec{AB} = \\vec{DC}$. **Opsi B**.",
-          "toastWrong": "Belum tepat — periksa arah penulisannya. $\\vec{CD}$ dan $\\vec{DC}$ berlawanan arah, jadi hanya salah satu yang benar. Dan perhatikan bahwa \"sama panjang\" saja ($|\\vec{AB}| = |\\vec{CD}|$) atau \"sejajar\" saja ($\\vec{AB} = k\\vec{DC}$) belum menangkap **kedua** sifatnya sekaligus."
+          "explanation": "Pada segiempat $ABCD$ yang titik-titiknya berurutan, sisi $AB$ berhadapan dengan sisi $DC$ — perhatikan arah penulisannya. Sejajar **dan** sama panjang berarti kedua vektornya **sama**, yaitu $\\overrightarrow{AB} = \\overrightarrow{DC}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — periksa arah penulisannya. $\\overrightarrow{CD}$ dan $\\overrightarrow{DC}$ berlawanan arah, jadi hanya salah satu yang benar. Dan perhatikan bahwa \"sama panjang\" saja ($|\\overrightarrow{AB}| = |\\overrightarrow{CD}|$) atau \"sejajar\" saja ($\\overrightarrow{AB} = k\\overrightarrow{DC}$) belum menangkap **kedua** sifatnya sekaligus."
         }
       ]
     },
@@ -235,14 +235,14 @@
 
         { "t": "steps", "title": "Langkah Eksekusi",
           "items": [
-            "**Cari vektor lintasan total:** $\\vec{AE} = E - A$.",
-            "**Hitung jarak totalnya:** $|\\vec{AE}|$ — biarkan dalam bentuk akar dulu.",
+            "**Cari vektor lintasan total:** $\\overrightarrow{AE} = E - A$.",
+            "**Hitung jarak totalnya:** $|\\overrightarrow{AE}|$ — biarkan dalam bentuk akar dulu.",
             "**Jumlahkan waktu totalnya** dari seluruh ruas yang tertulis.",
-            "**Hitung tiap bagian dengan proporsi:** $\\text{jarak} = \\dfrac{t}{t_{\\text{total}}} \\times |\\vec{AE}|$."
+            "**Hitung tiap bagian dengan proporsi:** $\\text{jarak} = \\dfrac{t}{t_{\\text{total}}} \\times |\\overrightarrow{AE}|$."
           ] },
 
         { "t": "tex",
-          "x": "A(2,3,5),\\ E(11,6,8) \\;\\Rightarrow\\; \\vec{AE} = (9,3,3),\\ |\\vec{AE}| = \\sqrt{99} \\approx 9{,}95 \\ \\text{km}" },
+          "x": "A(2,3,5),\\ E(11,6,8) \\;\\Rightarrow\\; \\overrightarrow{AE} = (9,3,3),\\ |\\overrightarrow{AE}| = \\sqrt{99} \\approx 9{,}95 \\ \\text{km}" },
 
         { "t": "tip", "title": "Jalan Pintas yang Menghemat Setengah Waktu",
           "x": "Kalau soal menanyakan \"ruas mana yang jaraknya kurang dari $3{,}5$ km\", kamu **tidak perlu** menghitung kelima jaraknya. Cari **ambang waktunya** sekali saja: $t < \\dfrac{3{,}5 \\times 13}{9{,}95} \\approx 4{,}57$ menit. Lalu tinggal baca tabel waktunya. **Satu perhitungan menggantikan lima.**" },
@@ -306,7 +306,7 @@
             "**Memenuhi** — $\\tfrac{3}{13} \\times 9{,}95 \\approx 2{,}30$ km, sama dengan $BC$.",
             "Tidak memenuhi — $CE$ adalah gabungan $CD + DE$, sehingga waktunya $2+3 = 5$ menit dan jaraknya $\\approx 3{,}83$ km."
           ],
-          "explanation": "$\\vec{AE} = (9,3,3)$ sehingga $|\\vec{AE}| = \\sqrt{99} \\approx 9{,}95$ km, dengan waktu total $13$ menit. Jalan pintasnya: ambang waktu $t < \\tfrac{3{,}5 \\times 13}{9{,}95} \\approx 4{,}57$ menit. Setiap ruas berwaktu di bawah $4{,}57$ menit memenuhi syarat — yaitu $BC$, $CD$, dan $DE$.",
+          "explanation": "$\\overrightarrow{AE} = (9,3,3)$ sehingga $|\\overrightarrow{AE}| = \\sqrt{99} \\approx 9{,}95$ km, dengan waktu total $13$ menit. Jalan pintasnya: ambang waktu $t < \\tfrac{3{,}5 \\times 13}{9{,}95} \\approx 4{,}57$ menit. Setiap ruas berwaktu di bawah $4{,}57$ menit memenuhi syarat — yaitu $BC$, $CD$, dan $DE$.",
           "toastWrong": "Ada pilihan yang belum tepat — periksa terutama $CE$. Ia **bukan** salah satu ruas di tabel, melainkan gabungan $CD$ dan $DE$, sehingga waktunya harus dijumlahkan dulu menjadi $5$ menit."
         },
         {
@@ -314,11 +314,11 @@
           "input_type": "mathpad",
           "subtopic": "kinematika_lintasan",
           "prompt": "Diketahui stasiun $A(2,\\, 3,\\, 5)$ dan stasiun $E(11,\\, 6,\\, 8)$ dalam satuan km.",
-          "after": "**Tentukan nilai $|\\vec{AE}|^2$.**",
+          "after": "**Tentukan nilai $|\\overrightarrow{AE}|^2$.**",
           "answer": 99,
           "tolerance": 1e-6,
-          "explanation": "$\\vec{AE} = E - A = (9,\\, 3,\\, 3)$, sehingga $|\\vec{AE}|^2 = 81 + 9 + 9 = 99$. Perhatikan bahwa soal menanyakan **kuadratnya**, jadi akarnya tidak perlu ditarik sama sekali.",
-          "toastWrong": "Belum tepat — hitung dulu $\\vec{AE} = E - A$ (ujung dikurangi pangkal), baru jumlahkan kuadrat komponennya. Karena yang ditanyakan sudah berbentuk kuadrat, kamu tidak perlu mengakarkan lalu mengkuadratkan kembali."
+          "explanation": "$\\overrightarrow{AE} = E - A = (9,\\, 3,\\, 3)$, sehingga $|\\overrightarrow{AE}|^2 = 81 + 9 + 9 = 99$. Perhatikan bahwa soal menanyakan **kuadratnya**, jadi akarnya tidak perlu ditarik sama sekali.",
+          "toastWrong": "Belum tepat — hitung dulu $\\overrightarrow{AE} = E - A$ (ujung dikurangi pangkal), baru jumlahkan kuadrat komponennya. Karena yang ditanyakan sudah berbentuk kuadrat, kamu tidak perlu mengakarkan lalu mengkuadratkan kembali."
         },
         {
           "id": "b4_03_3",
@@ -346,31 +346,31 @@
 
       "materi": [
         { "t": "def", "title": "Menyiapkan Kerangka: Tiga Vektor Rusuk",
-          "x": "Ambil titik $A$ sebagai pangkal. Seluruh balok $ABCD.EFGH$ dapat dinyatakan dengan **tiga vektor rusuk** yang saling tegak lurus: $\\vec{AB}$ (panjang), $\\vec{AD}$ (lebar), dan $\\vec{AE}$ (tinggi). Setiap titik lain adalah penjumlahan sebagian dari ketiganya." },
+          "x": "Ambil titik $A$ sebagai pangkal. Seluruh balok $ABCD.EFGH$ dapat dinyatakan dengan **tiga vektor rusuk** yang saling tegak lurus: $\\overrightarrow{AB}$ (panjang), $\\overrightarrow{AD}$ (lebar), dan $\\overrightarrow{AE}$ (tinggi). Setiap titik lain adalah penjumlahan sebagian dari ketiganya." },
 
         { "t": "tex",
-          "x": "\\vec{AB} = \\begin{pmatrix} p \\\\ 0 \\\\ 0 \\end{pmatrix} \\quad \\vec{AD} = \\begin{pmatrix} 0 \\\\ l \\\\ 0 \\end{pmatrix} \\quad \\vec{AE} = \\begin{pmatrix} 0 \\\\ 0 \\\\ t \\end{pmatrix}" },
+          "x": "\\overrightarrow{AB} = \\begin{pmatrix} p \\\\ 0 \\\\ 0 \\end{pmatrix} \\quad \\overrightarrow{AD} = \\begin{pmatrix} 0 \\\\ l \\\\ 0 \\end{pmatrix} \\quad \\overrightarrow{AE} = \\begin{pmatrix} 0 \\\\ 0 \\\\ t \\end{pmatrix}" },
 
         { "t": "typegroup", "n": "1", "title": "Dua Jenis Diagonal",
           "lead": "Bedanya hanya pada **berapa banyak** vektor rusuk yang dijumlahkan.",
           "items": [
-            { "name": "Diagonal bidang", "tex": "\\vec{AC} = \\vec{AB} + \\vec{AD} = (p, l, 0)", "text": "Menghubungkan dua titik pada **satu sisi** balok. Jumlah **dua** rusuk." },
-            { "name": "Diagonal ruang", "tex": "\\vec{AG} = \\vec{AB} + \\vec{AD} + \\vec{AE} = (p, l, t)", "text": "Menghubungkan dua titik yang **berseberangan menembus balok**. Jumlah **ketiga** rusuk." }
+            { "name": "Diagonal bidang", "tex": "\\overrightarrow{AC} = \\overrightarrow{AB} + \\overrightarrow{AD} = (p, l, 0)", "text": "Menghubungkan dua titik pada **satu sisi** balok. Jumlah **dua** rusuk." },
+            { "name": "Diagonal ruang", "tex": "\\overrightarrow{AG} = \\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AE} = (p, l, t)", "text": "Menghubungkan dua titik yang **berseberangan menembus balok**. Jumlah **ketiga** rusuk." }
           ],
           "note": "Rumus panjangnya bukan rumus baru — ia modulus vektor R³ dari Bab 1." },
 
         { "t": "tex",
-          "x": "|\\vec{AC}| = \\sqrt{p^2 + l^2} \\qquad |\\vec{AG}| = \\sqrt{p^2 + l^2 + t^2}" },
+          "x": "|\\overrightarrow{AC}| = \\sqrt{p^2 + l^2} \\qquad |\\overrightarrow{AG}| = \\sqrt{p^2 + l^2 + t^2}" },
 
         { "t": "steps", "title": "Contoh dengan Balok $12 \\times 4 \\times 3$",
           "items": [
-            "Diagonal bidang alas: $|\\vec{AC}| = \\sqrt{144 + 16} = \\sqrt{160} = 4\\sqrt{10}$.",
-            "Diagonal ruang: $|\\vec{AG}| = \\sqrt{144 + 16 + 9} = \\sqrt{169} = 13$.",
+            "Diagonal bidang alas: $|\\overrightarrow{AC}| = \\sqrt{144 + 16} = \\sqrt{160} = 4\\sqrt{10}$.",
+            "Diagonal ruang: $|\\overrightarrow{AG}| = \\sqrt{144 + 16 + 9} = \\sqrt{169} = 13$.",
             "Perhatikan bahwa diagonal ruang hanya menambahkan **satu suku** ke dalam akar yang sama."
           ] },
 
         { "t": "warn", "title": "Perhatikan Tanda pada Diagonal yang Tidak Berpangkal di $A$",
-          "x": "$\\vec{BH}$ berangkat dari $B$, jadi ia harus **mundur** sepanjang $\\vec{AB}$ lebih dulu: $\\vec{BH} = -\\vec{AB} + \\vec{AD} + \\vec{AE} = (-p,\\, l,\\, t)$. Salah tanda di sini **tidak** mengubah panjang diagonalnya (karena dikuadratkan), tetapi **mengubah** jawaban kalau soal menanyakan sudut atau hasil kali titik." },
+          "x": "$\\overrightarrow{BH}$ berangkat dari $B$, jadi ia harus **mundur** sepanjang $\\overrightarrow{AB}$ lebih dulu: $\\overrightarrow{BH} = -\\overrightarrow{AB} + \\overrightarrow{AD} + \\overrightarrow{AE} = (-p,\\, l,\\, t)$. Salah tanda di sini **tidak** mengubah panjang diagonalnya (karena dikuadratkan), tetapi **mengubah** jawaban kalau soal menanyakan sudut atau hasil kali titik." },
 
         { "t": "tip", "title": "Kombinasi Favorit Penyusun Soal",
           "x": "Soal TKA jarang berhenti pada \"tentukan panjang diagonal ruang\". Yang lebih sering: diagonal balok **digabung dengan materi Bab 3** — sudut antara dua diagonal, proyeksi diagonal pada rusuk, atau syarat tegak lurus. Begitu kamu menuliskan keduanya sebagai komponen, soal itu kembali menjadi soal rutin Bab 3." }
@@ -390,7 +390,7 @@
         "toasts": {
           "rusukKurang": "Diagonal **{{nama}}** belum lengkap. Diagonal bidang tersusun dari **dua** rusuk, diagonal ruang dari **tiga** — kamu baru memilih {{jumlah}}.",
           "rusukBerlebih": "Terlalu banyak rusuk. Diagonal **{{nama}}** hanya melewati {{seharusnya}} arah rusuk; menambahkan yang lain membawamu ke titik yang berbeda.",
-          "arahMundurTerlewat": "Belum tepat — $\\vec{{{nama}}}$ berangkat dari titik ${{pangkal}}$, bukan dari $A$. Untuk sampai ke tujuannya, ia harus **mundur** sepanjang $\\vec{AB}$ lebih dulu, sehingga komponen $x$-nya bertanda **negatif**.",
+          "arahMundurTerlewat": "Belum tepat — $\\vec{{{nama}}}$ berangkat dari titik ${{pangkal}}$, bukan dari $A$. Untuk sampai ke tujuannya, ia harus **mundur** sepanjang $\\overrightarrow{AB}$ lebih dulu, sehingga komponen $x$-nya bertanda **negatif**.",
           "panjangSalah": "Belum tepat — jumlahkan kuadrat **setiap** komponen diagonalnya, lalu akarkan. Untuk diagonal ruang berarti tiga suku, bukan dua.",
           "tandaTidakBerpengaruh": "Benar — tanda komponennya memang tidak mengubah **panjang**, karena setiap komponen dikuadratkan. Tetapi ia akan mengubah jawaban begitu soal menanyakan sudut atau hasil kali titik.",
           "success": "Tepat! Diagonal bidang dua rusuk, diagonal ruang tiga rusuk — dan arah pangkalnya menentukan tandanya."
@@ -403,18 +403,18 @@
           "input_type": "mathpad",
           "subtopic": "diagonal_balok",
           "prompt": "Diketahui balok $ABCD.EFGH$ dengan panjang $12$ cm, lebar $4$ cm, dan tinggi $3$ cm.",
-          "after": "**Tentukan panjang diagonal ruang $\\vec{AG}$ dalam cm.**",
+          "after": "**Tentukan panjang diagonal ruang $\\overrightarrow{AG}$ dalam cm.**",
           "answer": 13,
           "tolerance": 1e-6,
-          "explanation": "$\\vec{AG} = (12,\\, 4,\\, 3)$, sehingga $|\\vec{AG}| = \\sqrt{144 + 16 + 9} = \\sqrt{169} = 13$ cm.",
+          "explanation": "$\\overrightarrow{AG} = (12,\\, 4,\\, 3)$, sehingga $|\\overrightarrow{AG}| = \\sqrt{144 + 16 + 9} = \\sqrt{169} = 13$ cm.",
           "toastWrong": "Belum tepat — diagonal **ruang** menjumlahkan **ketiga** rusuk, jadi ada tiga suku di dalam akar. Kalau hasilmu $\\sqrt{160}$ atau $4\\sqrt{10}$, kamu menghitung diagonal **bidang** alas yang hanya memakai panjang dan lebar."
         },
         {
           "id": "b4_04_2",
           "input_type": "single_choice",
           "subtopic": "diagonal_balok",
-          "prompt": "Diketahui balok $ABCD.EFGH$ dengan $\\vec{AB} = \\vec{p}$, $\\vec{AD} = \\vec{l}$, dan $\\vec{AE} = \\vec{t}$.",
-          "after": "**Nyatakan diagonal ruang $\\vec{AG}$ dalam ketiga vektor rusuk tersebut.**",
+          "prompt": "Diketahui balok $ABCD.EFGH$ dengan $\\overrightarrow{AB} = \\vec{p}$, $\\overrightarrow{AD} = \\vec{l}$, dan $\\overrightarrow{AE} = \\vec{t}$.",
+          "after": "**Nyatakan diagonal ruang $\\overrightarrow{AG}$ dalam ketiga vektor rusuk tersebut.**",
           "options": [
             { "tex": "\\vec{p} + \\vec{l}" },
             { "tex": "\\vec{p} + \\vec{t}" },
@@ -423,20 +423,20 @@
             { "tex": "2(\\vec{p} + \\vec{l} + \\vec{t})" }
           ],
           "answerIndex": 2,
-          "explanation": "Titik $G$ berseberangan dengan $A$ menembus balok, sehingga untuk sampai ke sana kita harus menempuh ketiga arah rusuk sekali masing-masing: $\\vec{AG} = \\vec{p} + \\vec{l} + \\vec{t}$. **Opsi C**.",
+          "explanation": "Titik $G$ berseberangan dengan $A$ menembus balok, sehingga untuk sampai ke sana kita harus menempuh ketiga arah rusuk sekali masing-masing: $\\overrightarrow{AG} = \\vec{p} + \\vec{l} + \\vec{t}$. **Opsi C**.",
           "toastWrong": "Belum tepat — telusuri jalannya dari $A$ ke $G$ lewat rusuk-rusuknya: maju sepanjang panjang, lalu lebar, lalu tinggi. Berapa arah rusuk yang kamu lewati? Pilihan yang hanya memuat dua suku adalah diagonal **bidang**, bukan diagonal ruang."
         },
         {
           "id": "b4_04_3",
           "input_type": "matrix_input",
           "subtopic": "diagonal_balok",
-          "prompt": "Diketahui balok $ABCD.EFGH$ dengan $A$ di titik asal, $\\vec{AB} = (6,\\,0,\\,0)$, $\\vec{AD} = (0,\\,3,\\,0)$, dan $\\vec{AE} = (0,\\,0,\\,2)$.",
-          "after": "**Tentukan $\\vec{BH}$ dalam bentuk vektor kolom.**",
+          "prompt": "Diketahui balok $ABCD.EFGH$ dengan $A$ di titik asal, $\\overrightarrow{AB} = (6,\\,0,\\,0)$, $\\overrightarrow{AD} = (0,\\,3,\\,0)$, dan $\\overrightarrow{AE} = (0,\\,0,\\,2)$.",
+          "after": "**Tentukan $\\overrightarrow{BH}$ dalam bentuk vektor kolom.**",
           "rows": 3,
           "cols": 1,
           "answer": [[-6], [3], [2]],
-          "explanation": "$B = (6,0,0)$ dan $H = A + \\vec{AD} + \\vec{AE} = (0,3,2)$, sehingga $\\vec{BH} = H - B = (0-6,\\; 3-0,\\; 2-0) = (-6,\\, 3,\\, 2)$. Komponen $x$-nya negatif karena perjalanan dari $B$ ke $H$ harus **mundur** sepanjang rusuk $AB$.",
-          "toastWrong": "Belum tepat — periksa baris pertamanya. $\\vec{BH}$ berangkat dari $B$, yang sudah berada $6$ satuan ke kanan dari $A$. Untuk mencapai $H$ yang berada di bidang yang memuat $A$, perjalanannya harus **mundur** — sehingga komponen $x$-nya bertanda negatif."
+          "explanation": "$B = (6,0,0)$ dan $H = A + \\overrightarrow{AD} + \\overrightarrow{AE} = (0,3,2)$, sehingga $\\overrightarrow{BH} = H - B = (0-6,\\; 3-0,\\; 2-0) = (-6,\\, 3,\\, 2)$. Komponen $x$-nya negatif karena perjalanan dari $B$ ke $H$ harus **mundur** sepanjang rusuk $AB$.",
+          "toastWrong": "Belum tepat — periksa baris pertamanya. $\\overrightarrow{BH}$ berangkat dari $B$, yang sudah berada $6$ satuan ke kanan dari $A$. Untuk mencapai $H$ yang berada di bidang yang memuat $A$, perjalanannya harus **mundur** — sehingga komponen $x$-nya bertanda negatif."
         }
       ]
     },

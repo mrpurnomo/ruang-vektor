@@ -20,7 +20,7 @@
         "input_type": "single_choice",
         "subtopic": "vektor_posisi",
         "prompt": "Diketahui titik $P(-2,\\, 5)$ dan $Q(4,\\, -1)$.",
-        "after": "**Tentukan vektor $\\vec{PQ}$.**",
+        "after": "**Tentukan vektor $\\overrightarrow{PQ}$.**",
         "options": [
           { "tex": "(2,\\, 4)" },
           { "tex": "(6,\\, -6)" },
@@ -29,8 +29,8 @@
           { "tex": "(6,\\, 6)" }
         ],
         "answerIndex": 1,
-        "explanation": "$\\vec{PQ} = Q - P = (4-(-2),\\; -1-5) = (6,\\, -6)$. Perhatikan komponen $x$: mengurangi bilangan negatif berarti menambah.",
-        "toastWrong": "Belum tepat — ingat rumus **ujung dikurangi pangkal**. Kalau jawabanmu $(-6,6)$, kamu menghitung $\\vec{QP}$. Kalau jawabanmu $(2,4)$, kamu menjumlahkan kedua titiknya."
+        "explanation": "$\\overrightarrow{PQ} = Q - P = (4-(-2),\\; -1-5) = (6,\\, -6)$. Perhatikan komponen $x$: mengurangi bilangan negatif berarti menambah.",
+        "toastWrong": "Belum tepat — ingat rumus **ujung dikurangi pangkal**. Kalau jawabanmu $(-6,6)$, kamu menghitung $\\overrightarrow{QP}$. Kalau jawabanmu $(2,4)$, kamu menjumlahkan kedua titiknya."
       },
       {
         "id": "u1_02",
@@ -83,11 +83,11 @@
         "input_type": "matrix_input",
         "subtopic": "vektor_posisi",
         "prompt": "Diketahui titik $A(4,\\, -1,\\, 2)$ dan $B(1,\\, 3,\\, -2)$ di ruang.",
-        "after": "**Tentukan $\\vec{AB}$ dalam bentuk vektor kolom.**",
+        "after": "**Tentukan $\\overrightarrow{AB}$ dalam bentuk vektor kolom.**",
         "rows": 3,
         "cols": 1,
         "answer": [[-3], [4], [-4]],
-        "explanation": "$\\vec{AB} = B - A = (1-4,\\; 3-(-1),\\; -2-2) = (-3,\\, 4,\\, -4)$.",
+        "explanation": "$\\overrightarrow{AB} = B - A = (1-4,\\; 3-(-1),\\; -2-2) = (-3,\\, 4,\\, -4)$.",
         "toastWrong": "Belum tepat — periksa baris keduanya. $3 - (-1) = 3 + 1 = 4$: dua tanda minus yang bertemu menjadi tambah. Dan pastikan urutannya **ujung dikurangi pangkal**, bukan sebaliknya."
       },
       {
@@ -122,17 +122,17 @@
         "input_type": "single_choice",
         "subtopic": "penjumlahan_segitiga",
         "prompt": "Perhatikan penjumlahan vektor berikut.",
-        "tex": "\\vec{AB} + \\vec{BC} + \\vec{CA}",
+        "tex": "\\overrightarrow{AB} + \\overrightarrow{BC} + \\overrightarrow{CA}",
         "after": "**Hasil penjumlahan tersebut adalah ....**",
         "options": [
-          { "tex": "\\vec{AC}" },
-          { "tex": "\\vec{CA}" },
+          { "tex": "\\overrightarrow{AC}" },
+          { "tex": "\\overrightarrow{CA}" },
           { "tex": "\\vec{0}" },
-          { "tex": "2\\vec{AB}" },
-          { "tex": "\\vec{AA} + \\vec{BB}" }
+          { "tex": "2\\overrightarrow{AB}" },
+          { "tex": "\\overrightarrow{AA} + \\overrightarrow{BB}" }
         ],
         "answerIndex": 2,
-        "explanation": "Rantainya berangkat dari $A$ dan berakhir kembali di $A$: $\\vec{AB}+\\vec{BC}+\\vec{CA} = \\vec{AA} = \\vec{0}$. Berkeliling kembali ke titik semula menghasilkan perpindahan nol. **Opsi C**.",
+        "explanation": "Rantainya berangkat dari $A$ dan berakhir kembali di $A$: $\\overrightarrow{AB}+\\overrightarrow{BC}+\\overrightarrow{CA} = \\overrightarrow{AA} = \\vec{0}$. Berkeliling kembali ke titik semula menghasilkan perpindahan nol. **Opsi C**.",
         "toastWrong": "Belum tepat — tuliskan hurufnya berderet: $A\\,B + B\\,C + C\\,A$. Huruf di tengah saling menghapus, dan yang tersisa adalah perjalanan dari $A$ ke $A$. Ke mana kamu berpindah kalau titik akhirmu sama dengan titik awalmu?"
       },
       {
@@ -200,10 +200,10 @@
         "prompt": "Perhatikan pernyataan tentang vektor sejajar dan titik segaris berikut.",
         "after": "**Pilih semua pernyataan yang benar.**",
         "options": [
-          { "label": "Jika $\\vec{AB} = 3\\,\\vec{BC}$, maka titik $A$, $B$, dan $C$ segaris." },
+          { "label": "Jika $\\overrightarrow{AB} = 3\\,\\overrightarrow{BC}$, maka titik $A$, $B$, dan $C$ segaris." },
           { "label": "Dua vektor sejajar selalu terletak pada satu garis yang sama." },
           { "label": "Vektor $(2,\\,-6)$ dan $(-1,\\,3)$ saling sejajar." },
-          { "label": "Pada jajar genjang $ABCD$ berlaku $\\vec{AB} = \\vec{DC}$." },
+          { "label": "Pada jajar genjang $ABCD$ berlaku $\\overrightarrow{AB} = \\overrightarrow{DC}$." },
           { "label": "Untuk membuktikan tiga titik segaris, cukup memeriksa satu komponen saja." }
         ],
         "answerIndices": [0, 2, 3],
@@ -337,18 +337,18 @@
         "input_type": "mathpad",
         "subtopic": "diagonal_balok",
         "prompt": "Diketahui balok $ABCD.EFGH$ dengan panjang $8$ cm, lebar $6$ cm, dan tinggi $24$ cm.",
-        "after": "**Tentukan panjang diagonal ruang $\\vec{AG}$ dalam cm.**",
+        "after": "**Tentukan panjang diagonal ruang $\\overrightarrow{AG}$ dalam cm.**",
         "answer": 26,
         "tolerance": 1e-6,
-        "explanation": "$|\\vec{AG}| = \\sqrt{8^2 + 6^2 + 24^2} = \\sqrt{64 + 36 + 576} = \\sqrt{676} = 26$ cm.",
+        "explanation": "$|\\overrightarrow{AG}| = \\sqrt{8^2 + 6^2 + 24^2} = \\sqrt{64 + 36 + 576} = \\sqrt{676} = 26$ cm.",
         "toastWrong": "Belum tepat — diagonal **ruang** menjumlahkan ketiga ukuran, jadi ada tiga suku di dalam akar. Kalau hasilmu $10$, kamu hanya memakai panjang dan lebar — itu diagonal **bidang** alas."
       },
       {
         "id": "u4_03",
         "input_type": "single_choice",
         "subtopic": "bangun_segiempat",
-        "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\vec{AB} = (4,\\, 1)$ dan $\\vec{BC} = (2,\\, 5)$.",
-        "after": "**Tentukan diagonal $\\vec{AC}$.**",
+        "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\overrightarrow{AB} = (4,\\, 1)$ dan $\\overrightarrow{BC} = (2,\\, 5)$.",
+        "after": "**Tentukan diagonal $\\overrightarrow{AC}$.**",
         "options": [
           { "tex": "(2,\\, -4)" },
           { "tex": "(-2,\\, 4)" },
@@ -357,8 +357,8 @@
           { "tex": "(6,\\, 4)" }
         ],
         "answerIndex": 2,
-        "explanation": "$\\vec{AC} = \\vec{AB} + \\vec{BC} = (4+2,\\; 1+5) = (6,\\, 6)$. **Opsi C**.",
-        "toastWrong": "Belum tepat — $\\vec{AB}$ dan $\\vec{BC}$ sudah sambung-menyambung (huruf $B$ bertemu $B$), jadi cukup dijumlahkan langsung. Kalau jawabanmu $(2,-4)$, kamu mengurangkan — itu diagonal yang satu lagi, bukan $\\vec{AC}$."
+        "explanation": "$\\overrightarrow{AC} = \\overrightarrow{AB} + \\overrightarrow{BC} = (4+2,\\; 1+5) = (6,\\, 6)$. **Opsi C**.",
+        "toastWrong": "Belum tepat — $\\overrightarrow{AB}$ dan $\\overrightarrow{BC}$ sudah sambung-menyambung (huruf $B$ bertemu $B$), jadi cukup dijumlahkan langsung. Kalau jawabanmu $(2,-4)$, kamu mengurangkan — itu diagonal yang satu lagi, bukan $\\overrightarrow{AC}$."
       },
       {
         "id": "u4_04",
@@ -454,7 +454,7 @@
           "**Memenuhi** — $\\tfrac{1}{10} \\times 9 = 0{,}9$ km, yang terpendek.",
           "Tidak memenuhi — $CE$ gabungan $CD + DE$, sehingga waktunya $3+1 = 4$ menit dan jaraknya $3{,}6$ km."
         ],
-        "explanation": "$\\vec{AE} = (6,\\,3,\\,6)$, sehingga $|\\vec{AE}| = \\sqrt{36+9+36} = \\sqrt{81} = 9$ km dengan waktu total $10$ menit. Ambang waktunya: $t < \\tfrac{2{,}5 \\times 10}{9} \\approx 2{,}78$ menit. Hanya $BC$ ($2$ menit) dan $DE$ ($1$ menit) yang lolos.",
+        "explanation": "$\\overrightarrow{AE} = (6,\\,3,\\,6)$, sehingga $|\\overrightarrow{AE}| = \\sqrt{36+9+36} = \\sqrt{81} = 9$ km dengan waktu total $10$ menit. Ambang waktunya: $t < \\tfrac{2{,}5 \\times 10}{9} \\approx 2{,}78$ menit. Hanya $BC$ ($2$ menit) dan $DE$ ($1$ menit) yang lolos.",
         "toastWrong": "Ada pilihan yang belum tepat — periksa $CD$ dan $CE$. Ruas $CD$ berada tepat di dekat ambang, dan $CE$ **bukan** ruas di tabel melainkan gabungan dua ruas yang waktunya harus dijumlahkan dulu."
       },
       {
@@ -472,8 +472,8 @@
           { "tex": "C(9,\\, 10)" }
         ],
         "answerIndex": 1,
-        "explanation": "Pada jajar genjang $ABCD$, $\\vec{BC} = \\vec{AD} = D - A = (2,\\, 5)$. Maka $C = B + \\vec{BC} = (6+2,\\; 3+5) = (8,\\, 8)$. **Opsi B**.",
-        "toastWrong": "Belum tepat — terjemahkan dulu sifat jajar genjangnya menjadi persamaan vektor: sisi berhadapan sejajar dan sama panjang, sehingga $\\vec{BC} = \\vec{AD}$. Hitung $\\vec{AD}$ dengan ujung dikurangi pangkal, baru tambahkan ke titik $B$."
+        "explanation": "Pada jajar genjang $ABCD$, $\\overrightarrow{BC} = \\overrightarrow{AD} = D - A = (2,\\, 5)$. Maka $C = B + \\overrightarrow{BC} = (6+2,\\; 3+5) = (8,\\, 8)$. **Opsi B**.",
+        "toastWrong": "Belum tepat — terjemahkan dulu sifat jajar genjangnya menjadi persamaan vektor: sisi berhadapan sejajar dan sama panjang, sehingga $\\overrightarrow{BC} = \\overrightarrow{AD}$. Hitung $\\overrightarrow{AD}$ dengan ujung dikurangi pangkal, baru tambahkan ke titik $B$."
       },
       {
         "id": "tka26_04",
@@ -510,12 +510,12 @@
         "input_type": "matrix_input",
         "subtopic": "diagonal_balok",
         "source": "Latihan TKA · No. 6",
-        "prompt": "Diketahui balok $ABCD.EFGH$ dengan $A$ berimpit titik asal, $\\vec{AB} = (10,\\,0,\\,0)$, $\\vec{AD} = (0,\\,10,\\,0)$, dan $\\vec{AE} = (0,\\,0,\\,5)$.",
-        "after": "**Tentukan $\\vec{EC}$ dalam bentuk vektor kolom.**",
+        "prompt": "Diketahui balok $ABCD.EFGH$ dengan $A$ berimpit titik asal, $\\overrightarrow{AB} = (10,\\,0,\\,0)$, $\\overrightarrow{AD} = (0,\\,10,\\,0)$, dan $\\overrightarrow{AE} = (0,\\,0,\\,5)$.",
+        "after": "**Tentukan $\\overrightarrow{EC}$ dalam bentuk vektor kolom.**",
         "rows": 3,
         "cols": 1,
         "answer": [[10], [10], [-5]],
-        "explanation": "$E = (0,0,5)$ dan $C = A + \\vec{AB} + \\vec{AD} = (10,10,0)$, sehingga $\\vec{EC} = C - E = (10,\\, 10,\\, -5)$. Komponen $z$ bertanda negatif karena perjalanan dari $E$ ke $C$ bergerak **turun**.",
+        "explanation": "$E = (0,0,5)$ dan $C = A + \\overrightarrow{AB} + \\overrightarrow{AD} = (10,10,0)$, sehingga $\\overrightarrow{EC} = C - E = (10,\\, 10,\\, -5)$. Komponen $z$ bertanda negatif karena perjalanan dari $E$ ke $C$ bergerak **turun**.",
         "toastWrong": "Belum tepat — periksa baris ketiganya. Titik $E$ berada di atas dan titik $C$ di bidang alas, jadi perjalanannya **turun** dan komponen $z$-nya harus bertanda negatif. Salah tanda di sini tidak mengubah panjang diagonalnya, tetapi mengubah vektornya."
       },
       {
@@ -545,8 +545,8 @@
           { "tex": "11" }
         ],
         "answerIndex": 3,
-        "explanation": "$\\vec{AB} = (2,\\,2,\\,2)$ dan $\\vec{AC} = (6,\\,6,\\,p-3)$. Agar segaris, $\\vec{AC} = k\\,\\vec{AB}$; dari komponen $x$ diperoleh $k = 3$. Maka $p - 3 = 3(2) = 6$, sehingga $p = 9$. **Opsi D**.",
-        "toastWrong": "Belum tepat — cari $k$ dari komponen yang **kedua angkanya sudah diketahui** ($x$ atau $y$), baru pakai $k$ itu di komponen $z$. Dan ingat komponen $z$ dari $\\vec{AC}$ adalah $p - 3$, bukan $p$ — pangkalnya harus ikut dikurangkan."
+        "explanation": "$\\overrightarrow{AB} = (2,\\,2,\\,2)$ dan $\\overrightarrow{AC} = (6,\\,6,\\,p-3)$. Agar segaris, $\\overrightarrow{AC} = k\\,\\overrightarrow{AB}$; dari komponen $x$ diperoleh $k = 3$. Maka $p - 3 = 3(2) = 6$, sehingga $p = 9$. **Opsi D**.",
+        "toastWrong": "Belum tepat — cari $k$ dari komponen yang **kedua angkanya sudah diketahui** ($x$ atau $y$), baru pakai $k$ itu di komponen $z$. Dan ingat komponen $z$ dari $\\overrightarrow{AC}$ adalah $p - 3$, bukan $p$ — pangkalnya harus ikut dikurangkan."
       },
       {
         "id": "tka26_09",

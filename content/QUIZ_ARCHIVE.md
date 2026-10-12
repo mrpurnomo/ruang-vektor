@@ -23,7 +23,7 @@ Konsistensi datanya diperiksa `python tests/validate_data.py`.
 
 Diketahui titik $P(-2,\, 5)$ dan $Q(4,\, -1)$.
 
-**Tentukan vektor $\vec{PQ}$.**
+**Tentukan vektor $\overrightarrow{PQ}$.**
 
 A. $(2,\, 4)$
 B. $(6,\, -6)$
@@ -33,7 +33,7 @@ E. $(6,\, 6)$
 
 > **KUNCI JAWABAN:** **B** — $(6,\, -6)$
 
-**Pembahasan.** $\vec{PQ} = Q - P = (4-(-2),\; -1-5) = (6,\, -6)$. Perhatikan komponen $x$: mengurangi bilangan negatif berarti menambah.
+**Pembahasan.** $\overrightarrow{PQ} = Q - P = (4-(-2),\; -1-5) = (6,\, -6)$. Perhatikan komponen $x$: mengurangi bilangan negatif berarti menambah.
 
 ---
 
@@ -107,11 +107,11 @@ E. $\left(-\tfrac{3}{4},\, 1\right)$
 
 Diketahui titik $A(4,\, -1,\, 2)$ dan $B(1,\, 3,\, -2)$ di ruang.
 
-**Tentukan $\vec{AB}$ dalam bentuk vektor kolom.**
+**Tentukan $\overrightarrow{AB}$ dalam bentuk vektor kolom.**
 
 > **KUNCI JAWABAN:** $\begin{pmatrix} -3 \\ 4 \\ -4 \end{pmatrix}$
 
-**Pembahasan.** $\vec{AB} = B - A = (1-4,\; 3-(-1),\; -2-2) = (-3,\, 4,\, -4)$.
+**Pembahasan.** $\overrightarrow{AB} = B - A = (1-4,\; 3-(-1),\; -2-2) = (-3,\, 4,\, -4)$.
 
 ---
 
@@ -157,19 +157,19 @@ E. Jika $|\vec{u}|^2 = 25$ dan $|\vec{v}|^2 = 36$, maka $|\vec{u}| > |\vec{v}|$.
 
 Perhatikan penjumlahan vektor berikut.
 
-$$ \vec{AB} + \vec{BC} + \vec{CA} $$
+$$ \overrightarrow{AB} + \overrightarrow{BC} + \overrightarrow{CA} $$
 
 **Hasil penjumlahan tersebut adalah ....**
 
-A. $\vec{AC}$
-B. $\vec{CA}$
+A. $\overrightarrow{AC}$
+B. $\overrightarrow{CA}$
 C. $\vec{0}$
-D. $2\vec{AB}$
-E. $\vec{AA} + \vec{BB}$
+D. $2\overrightarrow{AB}$
+E. $\overrightarrow{AA} + \overrightarrow{BB}$
 
 > **KUNCI JAWABAN:** **C** — $\vec{0}$
 
-**Pembahasan.** Rantainya berangkat dari $A$ dan berakhir kembali di $A$: $\vec{AB}+\vec{BC}+\vec{CA} = \vec{AA} = \vec{0}$. Berkeliling kembali ke titik semula menghasilkan perpindahan nol. **Opsi C**.
+**Pembahasan.** Rantainya berangkat dari $A$ dan berakhir kembali di $A$: $\overrightarrow{AB}+\overrightarrow{BC}+\overrightarrow{CA} = \overrightarrow{AA} = \vec{0}$. Berkeliling kembali ke titik semula menghasilkan perpindahan nol. **Opsi C**.
 
 ---
 
@@ -261,10 +261,10 @@ Perhatikan pernyataan tentang vektor sejajar dan titik segaris berikut.
 
 **Pilih semua pernyataan yang benar.**
 
-A. Jika $\vec{AB} = 3\,\vec{BC}$, maka titik $A$, $B$, dan $C$ segaris.
+A. Jika $\overrightarrow{AB} = 3\,\overrightarrow{BC}$, maka titik $A$, $B$, dan $C$ segaris.
 B. Dua vektor sejajar selalu terletak pada satu garis yang sama.
 C. Vektor $(2,\,-6)$ dan $(-1,\,3)$ saling sejajar.
-D. Pada jajar genjang $ABCD$ berlaku $\vec{AB} = \vec{DC}$.
+D. Pada jajar genjang $ABCD$ berlaku $\overrightarrow{AB} = \overrightarrow{DC}$.
 E. Untuk membuktikan tiga titik segaris, cukup memeriksa satu komponen saja.
 
 > **KUNCI JAWABAN:** **A, C, D**
@@ -441,11 +441,11 @@ E. $20 \ \text{saja}$
 
 Diketahui balok $ABCD.EFGH$ dengan panjang $8$ cm, lebar $6$ cm, dan tinggi $24$ cm.
 
-**Tentukan panjang diagonal ruang $\vec{AG}$ dalam cm.**
+**Tentukan panjang diagonal ruang $\overrightarrow{AG}$ dalam cm.**
 
 > **KUNCI JAWABAN:** **26**
 
-**Pembahasan.** $|\vec{AG}| = \sqrt{8^2 + 6^2 + 24^2} = \sqrt{64 + 36 + 576} = \sqrt{676} = 26$ cm.
+**Pembahasan.** $|\overrightarrow{AG}| = \sqrt{8^2 + 6^2 + 24^2} = \sqrt{64 + 36 + 576} = \sqrt{676} = 26$ cm.
 
 ---
 
@@ -455,9 +455,9 @@ Diketahui balok $ABCD.EFGH$ dengan panjang $8$ cm, lebar $6$ cm, dan tinggi $24$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `bangun_segiempat`
 
-Diketahui jajar genjang $ABCD$ dengan $\vec{AB} = (4,\, 1)$ dan $\vec{BC} = (2,\, 5)$.
+Diketahui jajar genjang $ABCD$ dengan $\overrightarrow{AB} = (4,\, 1)$ dan $\overrightarrow{BC} = (2,\, 5)$.
 
-**Tentukan diagonal $\vec{AC}$.**
+**Tentukan diagonal $\overrightarrow{AC}$.**
 
 A. $(2,\, -4)$
 B. $(-2,\, 4)$
@@ -467,7 +467,7 @@ E. $(6,\, 4)$
 
 > **KUNCI JAWABAN:** **C** — $(6,\, 6)$
 
-**Pembahasan.** $\vec{AC} = \vec{AB} + \vec{BC} = (4+2,\; 1+5) = (6,\, 6)$. **Opsi C**.
+**Pembahasan.** $\overrightarrow{AC} = \overrightarrow{AB} + \overrightarrow{BC} = (4+2,\; 1+5) = (6,\, 6)$. **Opsi C**.
 
 ---
 

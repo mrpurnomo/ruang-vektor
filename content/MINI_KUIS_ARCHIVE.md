@@ -12,7 +12,7 @@ atau sesudah salah ke-3 pada soal yang sama.
 
 ## Bab 1: Konsep Dasar Vektor
 
-### 1.1 Lahirnya Sebuah Vektor
+### 1.1 Konsep Dasar Vektor
 
 #### Soal 1
 
@@ -42,19 +42,19 @@ E. Seluruh pernyataan, karena semua besaran gerak adalah vektor.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `pengertian_notasi`
 
-Vektor $\vec{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.
+Vektor $\overrightarrow{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.
 
-**Pernyataan yang benar tentang $\vec{QP}$ adalah ....**
+**Pernyataan yang benar tentang $\overrightarrow{QP}$ adalah ....**
 
-A. $\vec{QP} = \vec{PQ}$
-B. $\vec{QP} = -\vec{PQ}$
-C. $|\vec{QP}| = -|\vec{PQ}|$
-D. $\vec{QP} = \vec{0}$
-E. $\vec{QP} \perp \vec{PQ}$
+A. $\overrightarrow{QP} = \overrightarrow{PQ}$
+B. $\overrightarrow{QP} = -\overrightarrow{PQ}$
+C. $|\overrightarrow{QP}| = -|\overrightarrow{PQ}|$
+D. $\overrightarrow{QP} = \vec{0}$
+E. $\overrightarrow{QP} \perp \overrightarrow{PQ}$
 
-> **KUNCI JAWABAN:** **B** — $\vec{QP} = -\vec{PQ}$
+> **KUNCI JAWABAN:** **B** — $\overrightarrow{QP} = -\overrightarrow{PQ}$
 
-**Pembahasan.** $\vec{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\vec{QP} = -\vec{PQ}$. **Opsi B**.
+**Pembahasan.** $\overrightarrow{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\overrightarrow{QP} = -\overrightarrow{PQ}$. **Opsi B**.
 
 ---
 
@@ -88,7 +88,7 @@ E. Waktu tempuh $2$ jam
 
 ---
 
-### 1.2 Tiga Cara Menulis Komponen
+### 1.2 Bentuk Komponen Vektor
 
 #### Soal 1
 
@@ -146,7 +146,7 @@ Diketahui $\vec{u} = -2\hat{i} + 4\hat{k}$.
 
 ---
 
-### 1.3 Kalau Pangkalnya Bukan di Nol
+### 1.3 Vektor Posisi & Selisih Titik
 
 #### Soal 1
 
@@ -156,11 +156,11 @@ Diketahui $\vec{u} = -2\hat{i} + 4\hat{k}$.
 
 Diketahui titik $A(3,\, -2)$ dan $B(7,\, 5)$.
 
-**Tentukan komponen $x$ dari vektor $\vec{AB}$.**
+**Tentukan komponen $x$ dari vektor $\overrightarrow{AB}$.**
 
 > **KUNCI JAWABAN:** **4**
 
-**Pembahasan.** $\vec{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.
+**Pembahasan.** $\overrightarrow{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.
 
 ---
 
@@ -172,11 +172,11 @@ Diketahui titik $A(3,\, -2)$ dan $B(7,\, 5)$.
 
 Diketahui titik $A(1,\, 4,\, -2)$ dan $B(5,\, 2,\, 3)$ di ruang.
 
-**Tentukan $\vec{AB}$ dalam bentuk vektor kolom.**
+**Tentukan $\overrightarrow{AB}$ dalam bentuk vektor kolom.**
 
 > **KUNCI JAWABAN:** $\begin{pmatrix} 4 \\ -2 \\ 5 \end{pmatrix}$
 
-**Pembahasan.** $\vec{AB} = B - A = \begin{pmatrix} 5-1 \\ 2-4 \\ 3-(-2) \end{pmatrix} = \begin{pmatrix} 4 \\ -2 \\ 5 \end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.
+**Pembahasan.** $\overrightarrow{AB} = B - A = \begin{pmatrix} 5-1 \\ 2-4 \\ 3-(-2) \end{pmatrix} = \begin{pmatrix} 4 \\ -2 \\ 5 \end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.
 
 ---
 
@@ -186,9 +186,9 @@ Diketahui titik $A(1,\, 4,\, -2)$ dan $B(5,\, 2,\, 3)$ di ruang.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_posisi`
 
-Diketahui vektor posisi $\vec{OA} = (2,\, 5)$ dan $\vec{OB} = (-1,\, 3)$.
+Diketahui vektor posisi $\overrightarrow{OA} = (2,\, 5)$ dan $\overrightarrow{OB} = (-1,\, 3)$.
 
-**Tentukan $\vec{AB}$.**
+**Tentukan $\overrightarrow{AB}$.**
 
 A. $(3,\, 2)$
 B. $(-3,\, -2)$
@@ -198,7 +198,7 @@ E. $(3,\, -2)$
 
 > **KUNCI JAWABAN:** **B** — $(-3,\, -2)$
 
-**Pembahasan.** Vektor posisi $\vec{OA}$ dan $\vec{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\vec{AB} = B - A = (-1-2,\; 3-5) = (-3,\, -2)$. **Opsi B**.
+**Pembahasan.** Vektor posisi $\overrightarrow{OA}$ dan $\overrightarrow{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\overrightarrow{AB} = B - A = (-1-2,\; 3-5) = (-3,\, -2)$. **Opsi B**.
 
 ---
 
@@ -208,7 +208,7 @@ E. $(3,\, -2)$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_posisi`
 
-Diketahui $\vec{PQ} = (6,\, -4)$ dan koordinat titik $P(2,\, 1)$.
+Diketahui $\overrightarrow{PQ} = (6,\, -4)$ dan koordinat titik $P(2,\, 1)$.
 
 **Tentukan koordinat titik $Q$.**
 
@@ -220,11 +220,11 @@ E. $Q(3,\, -2)$
 
 > **KUNCI JAWABAN:** **B** — $Q(8,\, -3)$
 
-**Pembahasan.** Dari $\vec{PQ} = Q - P$ diperoleh $Q = P + \vec{PQ} = (2+6,\; 1+(-4)) = (8,\, -3)$. **Opsi B**.
+**Pembahasan.** Dari $\overrightarrow{PQ} = Q - P$ diperoleh $Q = P + \overrightarrow{PQ} = (2+6,\; 1+(-4)) = (8,\, -3)$. **Opsi B**.
 
 ---
 
-### 1.4 Modulus — Berapa Jauh Sebenarnya?
+### 1.4 Panjang Vektor (Modulus)
 
 #### Soal 1
 
@@ -308,7 +308,7 @@ E. Tidak dapat dibandingkan tanpa menghitung akarnya.
 
 ---
 
-### 1.5 Vektor Satuan — Kunci Arahnya
+### 1.5 Vektor Satuan
 
 #### Soal 1
 
@@ -370,7 +370,7 @@ E. Karena vektor nol tidak boleh ditulis dalam bentuk kolom.
 
 ---
 
-### 1.6 Melangkah ke Ruang Tiga Dimensi
+### 1.6 Vektor di Ruang Tiga Dimensi ($R^3$)
 
 #### Soal 1
 
@@ -452,19 +452,19 @@ E. Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif.
 
 Perhatikan penjumlahan vektor berikut.
 
-$$ \vec{AB} + \vec{BC} $$
+$$ \overrightarrow{AB} + \overrightarrow{BC} $$
 
 **Hasil penjumlahan tersebut adalah ....**
 
-A. $\vec{AC}$
-B. $\vec{CA}$
-C. $\vec{AB}$
-D. $\vec{BC}$
+A. $\overrightarrow{AC}$
+B. $\overrightarrow{CA}$
+C. $\overrightarrow{AB}$
+D. $\overrightarrow{BC}$
 E. $\vec{0}$
 
-> **KUNCI JAWABAN:** **A** — $\vec{AC}$
+> **KUNCI JAWABAN:** **A** — $\overrightarrow{AC}$
 
-**Pembahasan.** Ujung vektor pertama ($B$) bertemu pangkal vektor kedua ($B$), sehingga huruf $B$ saling menghapus. Yang tersisa adalah perjalanan dari $A$ ke $C$, yaitu $\vec{AC}$. **Opsi A**.
+**Pembahasan.** Ujung vektor pertama ($B$) bertemu pangkal vektor kedua ($B$), sehingga huruf $B$ saling menghapus. Yang tersisa adalah perjalanan dari $A$ ke $C$, yaitu $\overrightarrow{AC}$. **Opsi A**.
 
 ---
 
@@ -476,17 +476,17 @@ E. $\vec{0}$
 
 Sebuah drone terbang dari $P$ ke $Q$, lalu ke $R$, lalu ke $S$.
 
-$$ \vec{PQ} + \vec{QR} + \vec{RS} $$
+$$ \overrightarrow{PQ} + \overrightarrow{QR} + \overrightarrow{RS} $$
 
 **Vektor perpindahan total drone tersebut adalah ....**
 
-A. $\vec{PR}$
-B. $\vec{QS}$
-C. $\vec{PS}$
-D. $\vec{SP}$
-E. $\vec{PQ} + \vec{RS}$
+A. $\overrightarrow{PR}$
+B. $\overrightarrow{QS}$
+C. $\overrightarrow{PS}$
+D. $\overrightarrow{SP}$
+E. $\overrightarrow{PQ} + \overrightarrow{RS}$
 
-> **KUNCI JAWABAN:** **C** — $\vec{PS}$
+> **KUNCI JAWABAN:** **C** — $\overrightarrow{PS}$
 
 **Pembahasan.** Aturan poligon: sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ($P$) ke titik paling akhir ($S$). Huruf $Q$ dan $R$ saling menghapus. **Opsi C**.
 
@@ -498,13 +498,13 @@ E. $\vec{PQ} + \vec{RS}$
 - **Tipe:** Isian angka (papan angka)
 - **Sub-topik:** `penjumlahan_segitiga`
 
-Diketahui panjang $\vec{AB} = 12$ satuan.
+Diketahui panjang $\overrightarrow{AB} = 12$ satuan.
 
-**Tentukan panjang vektor $\vec{AB} + \vec{BA}$.**
+**Tentukan panjang vektor $\overrightarrow{AB} + \overrightarrow{BA}$.**
 
 > **KUNCI JAWABAN:** **0**
 
-**Pembahasan.** $\vec{AB} + \vec{BA} = \vec{AA} = \vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.
+**Pembahasan.** $\overrightarrow{AB} + \overrightarrow{BA} = \overrightarrow{AA} = \vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.
 
 ---
 
@@ -516,9 +516,9 @@ Diketahui panjang $\vec{AB} = 12$ satuan.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `penjumlahan_jajargenjang`
 
-Diketahui jajar genjang $ABCD$ dengan $\vec{AB} = \vec{a}$ dan $\vec{AD} = \vec{b}$.
+Diketahui jajar genjang $ABCD$ dengan $\overrightarrow{AB} = \vec{a}$ dan $\overrightarrow{AD} = \vec{b}$.
 
-**Nyatakan diagonal $\vec{AC}$ dalam $\vec{a}$ dan $\vec{b}$.**
+**Nyatakan diagonal $\overrightarrow{AC}$ dalam $\vec{a}$ dan $\vec{b}$.**
 
 A. $\vec{a} - \vec{b}$
 B. $\vec{a} + \vec{b}$
@@ -528,7 +528,7 @@ E. $\tfrac{1}{2}(\vec{a} + \vec{b})$
 
 > **KUNCI JAWABAN:** **B** — $\vec{a} + \vec{b}$
 
-**Pembahasan.** $\vec{AC} = \vec{AB} + \vec{BC}$. Pada jajar genjang, $\vec{BC} = \vec{AD} = \vec{b}$ karena sisi berhadapan sejajar dan sama panjang. Maka $\vec{AC} = \vec{a} + \vec{b}$. **Opsi B**.
+**Pembahasan.** $\overrightarrow{AC} = \overrightarrow{AB} + \overrightarrow{BC}$. Pada jajar genjang, $\overrightarrow{BC} = \overrightarrow{AD} = \vec{b}$ karena sisi berhadapan sejajar dan sama panjang. Maka $\overrightarrow{AC} = \vec{a} + \vec{b}$. **Opsi B**.
 
 ---
 
@@ -538,9 +538,9 @@ E. $\tfrac{1}{2}(\vec{a} + \vec{b})$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `penjumlahan_jajargenjang`
 
-Masih pada jajar genjang $ABCD$ dengan $\vec{AB} = \vec{a}$ dan $\vec{AD} = \vec{b}$.
+Masih pada jajar genjang $ABCD$ dengan $\overrightarrow{AB} = \vec{a}$ dan $\overrightarrow{AD} = \vec{b}$.
 
-**Nyatakan diagonal $\vec{DB}$ dalam $\vec{a}$ dan $\vec{b}$.**
+**Nyatakan diagonal $\overrightarrow{DB}$ dalam $\vec{a}$ dan $\vec{b}$.**
 
 A. $\vec{a} + \vec{b}$
 B. $\vec{a} - \vec{b}$
@@ -550,7 +550,7 @@ E. $\vec{0}$
 
 > **KUNCI JAWABAN:** **B** — $\vec{a} - \vec{b}$
 
-**Pembahasan.** $\vec{DB} = \vec{DA} + \vec{AB} = -\vec{b} + \vec{a} = \vec{a} - \vec{b}$. **Opsi B**.
+**Pembahasan.** $\overrightarrow{DB} = \overrightarrow{DA} + \overrightarrow{AB} = -\vec{b} + \vec{a} = \vec{a} - \vec{b}$. **Opsi B**.
 
 ---
 
@@ -846,7 +846,7 @@ Diketahui titik $A(1,\, 2)$, $B(3,\, 6)$, dan $C(p,\, 14)$ terletak pada satu ga
 
 > **KUNCI JAWABAN:** **7**
 
-**Pembahasan.** $\vec{AB} = (2,\, 4)$ dan $\vec{AC} = (p-1,\, 12)$. Agar segaris, $\vec{AC} = k\,\vec{AB}$. Dari komponen $y$: $12 = 4k \Rightarrow k = 3$. Maka dari komponen $x$: $p - 1 = 3(2) = 6$, sehingga $p = 7$.
+**Pembahasan.** $\overrightarrow{AB} = (2,\, 4)$ dan $\overrightarrow{AC} = (p-1,\, 12)$. Agar segaris, $\overrightarrow{AC} = k\,\overrightarrow{AB}$. Dari komponen $y$: $12 = 4k \Rightarrow k = 3$. Maka dari komponen $x$: $p - 1 = 3(2) = 6$, sehingga $p = 7$.
 
 ---
 
@@ -868,7 +868,7 @@ E. $A(1,0)$, $B(3,2)$, $C(6,4)$
 
 > **KUNCI JAWABAN:** **B** — $A(0,0)$, $B(2,3)$, $C(6,9)$
 
-**Pembahasan.** Pada opsi B: $\vec{AB} = (2,3)$ dan $\vec{AC} = (6,9)$. Dari komponen $x$: $k = 3$; diuji pada komponen $y$: $3 \times 3 = 9$ ✓. Nilai $k$ sama untuk keduanya, jadi segaris. **Opsi B**.
+**Pembahasan.** Pada opsi B: $\overrightarrow{AB} = (2,3)$ dan $\overrightarrow{AC} = (6,9)$. Dari komponen $x$: $k = 3$; diuji pada komponen $y$: $3 \times 3 = 9$ ✓. Nilai $k$ sama untuk keduanya, jadi segaris. **Opsi B**.
 
 ---
 
@@ -878,7 +878,7 @@ E. $A(1,0)$, $B(3,2)$, $C(6,4)$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `titik_segaris`
 
-Diketahui $\vec{AB} = (2,\, 4)$ dan $\vec{CD} = (1,\, 2)$, dengan $A$, $B$, $C$, $D$ empat titik yang berbeda dan tidak ada huruf yang berulang.
+Diketahui $\overrightarrow{AB} = (2,\, 4)$ dan $\overrightarrow{CD} = (1,\, 2)$, dengan $A$, $B$, $C$, $D$ empat titik yang berbeda dan tidak ada huruf yang berulang.
 
 **Manakah kesimpulan yang paling tepat?**
 
@@ -890,7 +890,7 @@ E. Tidak dapat disimpulkan apa pun dari data tersebut.
 
 > **KUNCI JAWABAN:** **B** — Ruas garis $AB$ dan $CD$ sejajar, tetapi belum tentu segaris.
 
-**Pembahasan.** $\vec{AB} = 2\,\vec{CD}$, sehingga keduanya **sejajar**. Tetapi karena kedua vektor tidak berbagi satu titik pun, keduanya bisa saja terletak pada dua garis sejajar yang berbeda. Sejajar tidak otomatis segaris. **Opsi B**.
+**Pembahasan.** $\overrightarrow{AB} = 2\,\overrightarrow{CD}$, sehingga keduanya **sejajar**. Tetapi karena kedua vektor tidak berbagi satu titik pun, keduanya bisa saja terletak pada dua garis sejajar yang berbeda. Sejajar tidak otomatis segaris. **Opsi B**.
 
 ---
 
@@ -947,7 +947,7 @@ Seorang siswa menuliskan rumus pembagian ruas garis untuk $AP : PB = m : n$ seba
 A. Menggambar ruas garisnya terlebih dahulu di bidang koordinat.
 B. Memasukkan $n = 0$: rumus itu memberi $\vec{p} = \vec{a}$, padahal $P$ seharusnya berimpit dengan $B$.
 C. Memeriksa apakah penyebutnya bernilai positif.
-D. Menghitung panjang $\vec{AB}$ lebih dahulu.
+D. Menghitung panjang $\overrightarrow{AB}$ lebih dahulu.
 E. Rumus tersebut sebenarnya tidak keliru.
 
 > **KUNCI JAWABAN:** **B** — Memasukkan $n = 0$: rumus itu memberi $\vec{p} = \vec{a}$, padahal $P$ seharusnya berimpit dengan $B$.
@@ -1374,9 +1374,9 @@ E. Tidak ada yang terlewat; vektor proyeksi memang berupa angka.
 
 Diketahui vektor berikut.
 
-$$ \vec{AB} = \begin{pmatrix} 2m \\ m+3 \\ m \end{pmatrix} $$
+$$ \overrightarrow{AB} = \begin{pmatrix} 2m \\ m+3 \\ m \end{pmatrix} $$
 
-**Jika panjang vektor $\vec{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....**
+**Jika panjang vektor $\overrightarrow{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....**
 
 A. $-4 \ \text{atau} \ -3$
 B. $-4 \ \text{atau} \ 3$
@@ -1436,7 +1436,7 @@ E. Dua kesalahan, tetapi keduanya terletak pada ruas kanan.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `bangun_segiempat`
 
-Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,\, 0)$. Vektor-vektor posisi pembentuk trapesium adalah $\vec{AD} = \begin{pmatrix} 1 \\ 4 \end{pmatrix}$, $\vec{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$, dan $\vec{BC} = \begin{pmatrix} a \\ b \end{pmatrix}$.
+Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,\, 0)$. Vektor-vektor posisi pembentuk trapesium adalah $\overrightarrow{AD} = \begin{pmatrix} 1 \\ 4 \end{pmatrix}$, $\overrightarrow{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$, dan $\overrightarrow{BC} = \begin{pmatrix} a \\ b \end{pmatrix}$.
 
 **Nilai dari $a^2 + 2b$ adalah ....**
 
@@ -1448,7 +1448,7 @@ E. $13$
 
 > **KUNCI JAWABAN:** **C** — $9$
 
-**Pembahasan.** $\vec{AB}$ berkomponen $y$ nol, jadi alasnya mendatar; pada trapesium sama kaki beralas mendatar kedua kaki naik setinggi sama, sehingga $b = 4$. Dari $AD = BC$: $|\vec{AD}| = \sqrt{1+16} = \sqrt{17}$, maka $a^2 + b^2 = 17 \Rightarrow a^2 = 1$. Jadi $a^2 + 2b = 1 + 8 = 9$. **Opsi C**.
+**Pembahasan.** $\overrightarrow{AB}$ berkomponen $y$ nol, jadi alasnya mendatar; pada trapesium sama kaki beralas mendatar kedua kaki naik setinggi sama, sehingga $b = 4$. Dari $AD = BC$: $|\overrightarrow{AD}| = \sqrt{1+16} = \sqrt{17}$, maka $a^2 + b^2 = 17 \Rightarrow a^2 = 1$. Jadi $a^2 + 2b = 1 + 8 = 9$. **Opsi C**.
 
 ---
 
@@ -1458,13 +1458,13 @@ E. $13$
 - **Tipe:** Isian angka (papan angka)
 - **Sub-topik:** `bangun_segiempat`
 
-Diketahui jajar genjang $ABCD$ dengan $\vec{AB} = (5,\, 2)$ dan $\vec{AD} = (1,\, 4)$.
+Diketahui jajar genjang $ABCD$ dengan $\overrightarrow{AB} = (5,\, 2)$ dan $\overrightarrow{AD} = (1,\, 4)$.
 
-**Tentukan komponen $x$ dari diagonal $\vec{AC}$.**
+**Tentukan komponen $x$ dari diagonal $\overrightarrow{AC}$.**
 
 > **KUNCI JAWABAN:** **6**
 
-**Pembahasan.** Pada jajar genjang, $\vec{BC} = \vec{AD}$, sehingga $\vec{AC} = \vec{AB} + \vec{AD} = (5+1,\; 2+4) = (6,\, 6)$. Komponen $x$-nya adalah $6$.
+**Pembahasan.** Pada jajar genjang, $\overrightarrow{BC} = \overrightarrow{AD}$, sehingga $\overrightarrow{AC} = \overrightarrow{AB} + \overrightarrow{AD} = (5+1,\; 2+4) = (6,\, 6)$. Komponen $x$-nya adalah $6$.
 
 ---
 
@@ -1478,15 +1478,15 @@ Pada segiempat $ABCD$ diketahui sifat: "sisi berhadapan sejajar dan sama panjang
 
 **Manakah terjemahan vektor yang paling tepat untuk sifat tersebut?**
 
-A. $\vec{AB} = \vec{CD}$
-B. $\vec{AB} = \vec{DC}$
-C. $|\vec{AB}| = |\vec{CD}|$
-D. $\vec{AB} \cdot \vec{DC} = 0$
-E. $\vec{AB} = k\,\vec{DC}$
+A. $\overrightarrow{AB} = \overrightarrow{CD}$
+B. $\overrightarrow{AB} = \overrightarrow{DC}$
+C. $|\overrightarrow{AB}| = |\overrightarrow{CD}|$
+D. $\overrightarrow{AB} \cdot \overrightarrow{DC} = 0$
+E. $\overrightarrow{AB} = k\,\overrightarrow{DC}$
 
-> **KUNCI JAWABAN:** **B** — $\vec{AB} = \vec{DC}$
+> **KUNCI JAWABAN:** **B** — $\overrightarrow{AB} = \overrightarrow{DC}$
 
-**Pembahasan.** Pada segiempat $ABCD$ yang titik-titiknya berurutan, sisi $AB$ berhadapan dengan sisi $DC$ — perhatikan arah penulisannya. Sejajar **dan** sama panjang berarti kedua vektornya **sama**, yaitu $\vec{AB} = \vec{DC}$. **Opsi B**.
+**Pembahasan.** Pada segiempat $ABCD$ yang titik-titiknya berurutan, sisi $AB$ berhadapan dengan sisi $DC$ — perhatikan arah penulisannya. Sejajar **dan** sama panjang berarti kedua vektornya **sama**, yaitu $\overrightarrow{AB} = \overrightarrow{DC}$. **Opsi B**.
 
 ---
 
@@ -1517,7 +1517,7 @@ E. $CE$
 
 > **KUNCI JAWABAN:** **B, C, D**
 
-**Pembahasan.** $\vec{AE} = (9,3,3)$ sehingga $|\vec{AE}| = \sqrt{99} \approx 9{,}95$ km, dengan waktu total $13$ menit. Jalan pintasnya: ambang waktu $t < \tfrac{3{,}5 \times 13}{9{,}95} \approx 4{,}57$ menit. Setiap ruas berwaktu di bawah $4{,}57$ menit memenuhi syarat — yaitu $BC$, $CD$, dan $DE$.
+**Pembahasan.** $\overrightarrow{AE} = (9,3,3)$ sehingga $|\overrightarrow{AE}| = \sqrt{99} \approx 9{,}95$ km, dengan waktu total $13$ menit. Jalan pintasnya: ambang waktu $t < \tfrac{3{,}5 \times 13}{9{,}95} \approx 4{,}57$ menit. Setiap ruas berwaktu di bawah $4{,}57$ menit memenuhi syarat — yaitu $BC$, $CD$, dan $DE$.
 
 **Penjelasan per opsi:**
 
@@ -1537,11 +1537,11 @@ E. $CE$
 
 Diketahui stasiun $A(2,\, 3,\, 5)$ dan stasiun $E(11,\, 6,\, 8)$ dalam satuan km.
 
-**Tentukan nilai $|\vec{AE}|^2$.**
+**Tentukan nilai $|\overrightarrow{AE}|^2$.**
 
 > **KUNCI JAWABAN:** **99**
 
-**Pembahasan.** $\vec{AE} = E - A = (9,\, 3,\, 3)$, sehingga $|\vec{AE}|^2 = 81 + 9 + 9 = 99$. Perhatikan bahwa soal menanyakan **kuadratnya**, jadi akarnya tidak perlu ditarik sama sekali.
+**Pembahasan.** $\overrightarrow{AE} = E - A = (9,\, 3,\, 3)$, sehingga $|\overrightarrow{AE}|^2 = 81 + 9 + 9 = 99$. Perhatikan bahwa soal menanyakan **kuadratnya**, jadi akarnya tidak perlu ditarik sama sekali.
 
 ---
 
@@ -1577,11 +1577,11 @@ E. $10{,}3 \ \text{km}$
 
 Diketahui balok $ABCD.EFGH$ dengan panjang $12$ cm, lebar $4$ cm, dan tinggi $3$ cm.
 
-**Tentukan panjang diagonal ruang $\vec{AG}$ dalam cm.**
+**Tentukan panjang diagonal ruang $\overrightarrow{AG}$ dalam cm.**
 
 > **KUNCI JAWABAN:** **13**
 
-**Pembahasan.** $\vec{AG} = (12,\, 4,\, 3)$, sehingga $|\vec{AG}| = \sqrt{144 + 16 + 9} = \sqrt{169} = 13$ cm.
+**Pembahasan.** $\overrightarrow{AG} = (12,\, 4,\, 3)$, sehingga $|\overrightarrow{AG}| = \sqrt{144 + 16 + 9} = \sqrt{169} = 13$ cm.
 
 ---
 
@@ -1591,9 +1591,9 @@ Diketahui balok $ABCD.EFGH$ dengan panjang $12$ cm, lebar $4$ cm, dan tinggi $3$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `diagonal_balok`
 
-Diketahui balok $ABCD.EFGH$ dengan $\vec{AB} = \vec{p}$, $\vec{AD} = \vec{l}$, dan $\vec{AE} = \vec{t}$.
+Diketahui balok $ABCD.EFGH$ dengan $\overrightarrow{AB} = \vec{p}$, $\overrightarrow{AD} = \vec{l}$, dan $\overrightarrow{AE} = \vec{t}$.
 
-**Nyatakan diagonal ruang $\vec{AG}$ dalam ketiga vektor rusuk tersebut.**
+**Nyatakan diagonal ruang $\overrightarrow{AG}$ dalam ketiga vektor rusuk tersebut.**
 
 A. $\vec{p} + \vec{l}$
 B. $\vec{p} + \vec{t}$
@@ -1603,7 +1603,7 @@ E. $2(\vec{p} + \vec{l} + \vec{t})$
 
 > **KUNCI JAWABAN:** **C** — $\vec{p} + \vec{l} + \vec{t}$
 
-**Pembahasan.** Titik $G$ berseberangan dengan $A$ menembus balok, sehingga untuk sampai ke sana kita harus menempuh ketiga arah rusuk sekali masing-masing: $\vec{AG} = \vec{p} + \vec{l} + \vec{t}$. **Opsi C**.
+**Pembahasan.** Titik $G$ berseberangan dengan $A$ menembus balok, sehingga untuk sampai ke sana kita harus menempuh ketiga arah rusuk sekali masing-masing: $\overrightarrow{AG} = \vec{p} + \vec{l} + \vec{t}$. **Opsi C**.
 
 ---
 
@@ -1613,13 +1613,13 @@ E. $2(\vec{p} + \vec{l} + \vec{t})$
 - **Tipe:** Isian vektor kolom
 - **Sub-topik:** `diagonal_balok`
 
-Diketahui balok $ABCD.EFGH$ dengan $A$ di titik asal, $\vec{AB} = (6,\,0,\,0)$, $\vec{AD} = (0,\,3,\,0)$, dan $\vec{AE} = (0,\,0,\,2)$.
+Diketahui balok $ABCD.EFGH$ dengan $A$ di titik asal, $\overrightarrow{AB} = (6,\,0,\,0)$, $\overrightarrow{AD} = (0,\,3,\,0)$, dan $\overrightarrow{AE} = (0,\,0,\,2)$.
 
-**Tentukan $\vec{BH}$ dalam bentuk vektor kolom.**
+**Tentukan $\overrightarrow{BH}$ dalam bentuk vektor kolom.**
 
 > **KUNCI JAWABAN:** $\begin{pmatrix} -6 \\ 3 \\ 2 \end{pmatrix}$
 
-**Pembahasan.** $B = (6,0,0)$ dan $H = A + \vec{AD} + \vec{AE} = (0,3,2)$, sehingga $\vec{BH} = H - B = (0-6,\; 3-0,\; 2-0) = (-6,\, 3,\, 2)$. Komponen $x$-nya negatif karena perjalanan dari $B$ ke $H$ harus **mundur** sepanjang rusuk $AB$.
+**Pembahasan.** $B = (6,0,0)$ dan $H = A + \overrightarrow{AD} + \overrightarrow{AE} = (0,3,2)$, sehingga $\overrightarrow{BH} = H - B = (0-6,\; 3-0,\; 2-0) = (-6,\, 3,\, 2)$. Komponen $x$-nya negatif karena perjalanan dari $B$ ke $H$ harus **mundur** sepanjang rusuk $AB$.
 
 ---
 

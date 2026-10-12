@@ -33,13 +33,13 @@ Bentuk yang terjadi adalah segitiga — karena itu namanya **aturan segitiga**.
 
 Aturan yang sama berlaku berapa pun banyaknya vektor. Sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ke titik paling akhir.
 
-$$\vec{AB} + \vec{BC} + \vec{CD} = \vec{AD}$$
+$$\overrightarrow{AB} + \overrightarrow{BC} + \overrightarrow{CD} = \overrightarrow{AD}$$
 
 > 💡 **Perhatikan hurufnya.** Huruf yang "bertemu" di tengah saling menghapus: $A\underline{B} + \underline{B}C = AC$. Kalau kamu melihat pola ini di soal, kamu bisa menjawab tanpa menghitung satu komponen pun.
 
 Kasus istimewanya:
 
-$$\vec{AB} + \vec{BA} = \vec{AA} = \vec{0}$$
+$$\overrightarrow{AB} + \overrightarrow{BA} = \overrightarrow{AA} = \vec{0}$$
 
 Berangkat lalu kembali ke titik semula — perpindahan totalnya nol.
 
@@ -59,7 +59,7 @@ Aturan segitiga menuntut kamu **memindahkan** salah satu vektor. Aturan jajar ge
 
 | Situasi | Aturan yang lebih nyaman |
 |---|---|
-| Vektor-vektor sudah tersusun sambung-menyambung ($\vec{AB}$, $\vec{BC}$) | **Segitiga / poligon** |
+| Vektor-vektor sudah tersusun sambung-menyambung ($\overrightarrow{AB}$, $\overrightarrow{BC}$) | **Segitiga / poligon** |
 | Dua vektor berpangkal sama, misalnya dua gaya pada satu benda | **Jajar genjang** |
 | Lebih dari dua vektor | **Poligon** (jajar genjang hanya untuk dua) |
 
@@ -95,11 +95,11 @@ Apa arti $\vec{a} - \vec{b}$ pada gambar?
 
 Tulis ulang sebagai $\vec{a} + (-\vec{b})$. Artinya: **balik arah $\vec{b}$ lebih dulu**, baru jumlahkan dengan aturan segitiga.
 
-Ada cara baca yang lebih berguna lagi. Kalau $\vec{a} = \vec{OA}$ dan $\vec{b} = \vec{OB}$ adalah vektor posisi, maka:
+Ada cara baca yang lebih berguna lagi. Kalau $\vec{a} = \overrightarrow{OA}$ dan $\vec{b} = \overrightarrow{OB}$ adalah vektor posisi, maka:
 
-$$\vec{a} - \vec{b} = \vec{OA} - \vec{OB} = \vec{BA}$$
+$$\vec{a} - \vec{b} = \overrightarrow{OA} - \overrightarrow{OB} = \overrightarrow{BA}$$
 
-Yaitu **vektor dari ujung $\vec{b}$ menuju ujung $\vec{a}$**. Inilah bentuk $\vec{AB} = B - A$ dari Bab 1, dilihat dari sudut pandang lain.
+Yaitu **vektor dari ujung $\vec{b}$ menuju ujung $\vec{a}$**. Inilah bentuk $\overrightarrow{AB} = B - A$ dari Bab 1, dilihat dari sudut pandang lain.
 
 ---
 
@@ -207,23 +207,23 @@ Vektor yang sama pasti sejajar. Vektor yang sejajar belum tentu sama.
 
 Titik $A$, $B$, dan $C$ dikatakan **segaris** (kolinier) jika terdapat skalar $k$ sehingga:
 
-$$\vec{AB} = k \cdot \vec{BC} \qquad \text{atau} \qquad \vec{AB} = k \cdot \vec{AC}$$
+$$\overrightarrow{AB} = k \cdot \overrightarrow{BC} \qquad \text{atau} \qquad \overrightarrow{AB} = k \cdot \overrightarrow{AC}$$
 
 ### Kenapa rumus itu masuk akal
 
-Kalau ketiga titik ada di satu garis lurus, maka $\vec{AB}$ dan $\vec{BC}$ pasti **sejajar** — keduanya menunjuk sepanjang garis yang sama. Dan dua vektor sejajar selalu bisa ditulis sebagai kelipatan satu sama lain.
+Kalau ketiga titik ada di satu garis lurus, maka $\overrightarrow{AB}$ dan $\overrightarrow{BC}$ pasti **sejajar** — keduanya menunjuk sepanjang garis yang sama. Dan dua vektor sejajar selalu bisa ditulis sebagai kelipatan satu sama lain.
 
 Jadi "segaris" hanyalah nama lain untuk "kedua vektornya sejajar **dan** punya titik bersama".
 
-> **Kata terakhir itu penting.** Dua vektor sejajar yang tidak berbagi titik hanya membentuk dua garis sejajar, bukan satu garis. Itulah sebabnya rumusnya memakai vektor yang berbagi huruf: $\vec{AB}$ dan $\vec{BC}$ sama-sama memuat $B$.
+> **Kata terakhir itu penting.** Dua vektor sejajar yang tidak berbagi titik hanya membentuk dua garis sejajar, bukan satu garis. Itulah sebabnya rumusnya memakai vektor yang berbagi huruf: $\overrightarrow{AB}$ dan $\overrightarrow{BC}$ sama-sama memuat $B$.
 
 ### Langkah pengerjaan di soal
 
-1. Hitung $\vec{AB} = B - A$.
-2. Hitung $\vec{BC} = C - B$.
+1. Hitung $\overrightarrow{AB} = B - A$.
+2. Hitung $\overrightarrow{BC} = C - B$.
 3. Periksa apakah ada $k$ tunggal yang memenuhi **semua** komponennya sekaligus.
 
-Contoh: $\vec{AB} = (2, 4)$ dan $\vec{BC} = (3, 6)$.
+Contoh: $\overrightarrow{AB} = (2, 4)$ dan $\overrightarrow{BC} = (3, 6)$.
 Dari komponen $x$: $2 = k \cdot 3 \Rightarrow k = \tfrac{2}{3}$.
 Periksa komponen $y$: $k \cdot 6 = \tfrac{2}{3} \cdot 6 = 4$ ✓.
 Nilai $k$ yang sama berlaku untuk keduanya → **segaris**.
@@ -286,12 +286,12 @@ $$\vec{p} = \frac{m\,\vec{b} - n\,\vec{a}}{m - n}$$
 | Yang kamu kuasai sekarang | Rumus kuncinya |
 |---|---|
 | Penjumlahan geometri | Aturan segitiga (ujung ke pangkal) & jajar genjang (pangkal berimpit) |
-| Aturan poligon | $\vec{AB} + \vec{BC} + \vec{CD} = \vec{AD}$ |
+| Aturan poligon | $\overrightarrow{AB} + \overrightarrow{BC} + \overrightarrow{CD} = \overrightarrow{AD}$ |
 | Penjumlahan aljabar | Jumlahkan komponen **seletak**; dimensi harus sama |
 | Perkalian skalar | $k\vec{v} = (kx,\, ky)$ — menyentuh **semua** komponen |
 | Panjang setelah dikali skalar | $\lvert k\vec{v}\rvert = \lvert k\rvert \cdot \lvert\vec{v}\rvert$ |
 | Kesamaan vektor | Satu persamaan vektor **pecah** menjadi beberapa persamaan biasa |
-| Titik segaris | $\vec{AB} = k\,\vec{BC}$ dengan $k$ yang **sama** untuk semua komponen |
+| Titik segaris | $\overrightarrow{AB} = k\,\overrightarrow{BC}$ dengan $k$ yang **sama** untuk semua komponen |
 | Pembagian ruas garis | $\vec{p} = \dfrac{m\vec{b} + n\vec{a}}{m+n}$ — **bersilang** |
 | Titik tengah | $\vec{p} = \dfrac{\vec{a}+\vec{b}}{2}$ |
 

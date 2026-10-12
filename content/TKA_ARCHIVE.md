@@ -63,7 +63,7 @@ E. $CE$
 
 > **KUNCI JAWABAN:** **B, D**
 
-**Pembahasan.** $\vec{AE} = (6,\,3,\,6)$, sehingga $|\vec{AE}| = \sqrt{36+9+36} = \sqrt{81} = 9$ km dengan waktu total $10$ menit. Ambang waktunya: $t < \tfrac{2{,}5 \times 10}{9} \approx 2{,}78$ menit. Hanya $BC$ ($2$ menit) dan $DE$ ($1$ menit) yang lolos.
+**Pembahasan.** $\overrightarrow{AE} = (6,\,3,\,6)$, sehingga $|\overrightarrow{AE}| = \sqrt{36+9+36} = \sqrt{81} = 9$ km dengan waktu total $10$ menit. Ambang waktunya: $t < \tfrac{2{,}5 \times 10}{9} \approx 2{,}78$ menit. Hanya $BC$ ($2$ menit) dan $DE$ ($1$ menit) yang lolos.
 
 **Penjelasan per opsi:**
 
@@ -93,7 +93,7 @@ E. $C(9,\, 10)$
 
 > **KUNCI JAWABAN:** **B** — $C(8,\, 8)$
 
-**Pembahasan.** Pada jajar genjang $ABCD$, $\vec{BC} = \vec{AD} = D - A = (2,\, 5)$. Maka $C = B + \vec{BC} = (6+2,\; 3+5) = (8,\, 8)$. **Opsi B**.
+**Pembahasan.** Pada jajar genjang $ABCD$, $\overrightarrow{BC} = \overrightarrow{AD} = D - A = (2,\, 5)$. Maka $C = B + \overrightarrow{BC} = (6+2,\; 3+5) = (8,\, 8)$. **Opsi B**.
 
 ---
 
@@ -141,13 +141,13 @@ E. $8(1,\, 2,\, 2)$
 - **Tipe:** Isian vektor kolom
 - **Sub-topik:** `diagonal_balok`
 
-Diketahui balok $ABCD.EFGH$ dengan $A$ berimpit titik asal, $\vec{AB} = (10,\,0,\,0)$, $\vec{AD} = (0,\,10,\,0)$, dan $\vec{AE} = (0,\,0,\,5)$.
+Diketahui balok $ABCD.EFGH$ dengan $A$ berimpit titik asal, $\overrightarrow{AB} = (10,\,0,\,0)$, $\overrightarrow{AD} = (0,\,10,\,0)$, dan $\overrightarrow{AE} = (0,\,0,\,5)$.
 
-**Tentukan $\vec{EC}$ dalam bentuk vektor kolom.**
+**Tentukan $\overrightarrow{EC}$ dalam bentuk vektor kolom.**
 
 > **KUNCI JAWABAN:** $\begin{pmatrix} 10 \\ 10 \\ -5 \end{pmatrix}$
 
-**Pembahasan.** $E = (0,0,5)$ dan $C = A + \vec{AB} + \vec{AD} = (10,10,0)$, sehingga $\vec{EC} = C - E = (10,\, 10,\, -5)$. Komponen $z$ bertanda negatif karena perjalanan dari $E$ ke $C$ bergerak **turun**.
+**Pembahasan.** $E = (0,0,5)$ dan $C = A + \overrightarrow{AB} + \overrightarrow{AD} = (10,10,0)$, sehingga $\overrightarrow{EC} = C - E = (10,\, 10,\, -5)$. Komponen $z$ bertanda negatif karena perjalanan dari $E$ ke $C$ bergerak **turun**.
 
 ---
 
@@ -185,7 +185,7 @@ E. $11$
 
 > **KUNCI JAWABAN:** **D** — $9$
 
-**Pembahasan.** $\vec{AB} = (2,\,2,\,2)$ dan $\vec{AC} = (6,\,6,\,p-3)$. Agar segaris, $\vec{AC} = k\,\vec{AB}$; dari komponen $x$ diperoleh $k = 3$. Maka $p - 3 = 3(2) = 6$, sehingga $p = 9$. **Opsi D**.
+**Pembahasan.** $\overrightarrow{AB} = (2,\,2,\,2)$ dan $\overrightarrow{AC} = (6,\,6,\,p-3)$. Agar segaris, $\overrightarrow{AC} = k\,\overrightarrow{AB}$; dari komponen $x$ diperoleh $k = 3$. Maka $p - 3 = 3(2) = 6$, sehingga $p = 9$. **Opsi D**.
 
 ---
 

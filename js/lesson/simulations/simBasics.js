@@ -127,7 +127,7 @@ export class GuidedVectorIntroSim extends CaseSimulation {
    */
   caseDonePrompt(c, allDone) {
     if (c.guided) {
-      return `**Inilah vektor $\\vec{${c.name}}$**, boleh ditulis $\\vec{a}$: ia punya **nilai** — panjang perpindahannya — dan **arah**, dari $O$ menuju $${c.point}$.`;
+      return `**Inilah vektor $\\overrightarrow{${c.name}}$**, boleh ditulis $\\vec{a}$: ia punya **nilai** — panjang perpindahannya — dan **arah**, dari $O$ menuju $${c.point}$.`;
     }
     return super.caseDonePrompt(c, allDone);
   }
@@ -320,15 +320,15 @@ export class GuidedVectorIntroSim extends CaseSimulation {
       kind: 'pick',
       label: 'Gambar panahnya',
       prompt: c.guided
-        ? `Sekarang **gambar vektor $\\vec{${name}}$**! Ketuk titik **pangkalnya**, lalu ketuk titik **ujungnya**.`
-        : `Gambar $\\vec{${name}}$: ketuk **pangkalnya**, lalu **ujungnya**.`,
+        ? `Sekarang **gambar vektor $\\overrightarrow{${name}}$**! Ketuk titik **pangkalnya**, lalu ketuk titik **ujungnya**.`
+        : `Gambar $\\overrightarrow{${name}}$: ketuk **pangkalnya**, lalu **ujungnya**.`,
       intro: 'Ketuk dua titik di bidang: **pangkal** dulu, baru **ujung**.',
       onEnter: () => this.disarm(),
       onLeave: () => this.disarm(),
       check: (p) => this.checkDraw(p, c),
       summary: () => (c.guided
-        ? `$\\vec{${name}} = \\vec{a} = ${texTuple(target)}$`
-        : `$\\vec{${name}} = ${texTuple(target)}$`),
+        ? `$\\overrightarrow{${name}} = \\vec{a} = ${texTuple(target)}$`
+        : `$\\overrightarrow{${name}} = ${texTuple(target)}$`),
       onSolved: async () => {
         const arrow = this.drawVector({
           to: [0, 0],

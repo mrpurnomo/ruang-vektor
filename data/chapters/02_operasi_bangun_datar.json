@@ -23,13 +23,13 @@
         { "t": "p",
           "x": "Aturan yang sama berlaku berapa pun banyaknya vektor. Sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ke titik paling akhir. Inilah **aturan poligon**." },
 
-        { "t": "tex", "x": "\\vec{AB} + \\vec{BC} + \\vec{CD} = \\vec{AD}" },
+        { "t": "tex", "x": "\\overrightarrow{AB} + \\overrightarrow{BC} + \\overrightarrow{CD} = \\overrightarrow{AD}" },
 
         { "t": "tip", "title": "Huruf yang Bertemu Saling Menghapus",
           "x": "Perhatikan pola hurufnya: $A\\underline{B} + \\underline{B}C = AC$. Huruf yang bertemu di tengah lenyap. Kalau kamu mengenali pola ini di soal, kamu bisa menjawab **tanpa menghitung satu komponen pun**." },
 
         { "t": "warn", "title": "Kasus Istimewa",
-          "x": "$\\vec{AB} + \\vec{BA} = \\vec{AA} = \\vec{0}$. Berangkat lalu kembali ke titik semula — perpindahan totalnya nol, berapa pun jauhnya kamu sempat pergi." }
+          "x": "$\\overrightarrow{AB} + \\overrightarrow{BA} = \\overrightarrow{AA} = \\vec{0}$. Berangkat lalu kembali ke titik semula — perpindahan totalnya nol, berapa pun jauhnya kamu sempat pergi." }
       ],
 
       "simulation": {
@@ -59,17 +59,17 @@
           "input_type": "single_choice",
           "subtopic": "penjumlahan_segitiga",
           "prompt": "Perhatikan penjumlahan vektor berikut.",
-          "tex": "\\vec{AB} + \\vec{BC}",
+          "tex": "\\overrightarrow{AB} + \\overrightarrow{BC}",
           "after": "**Hasil penjumlahan tersebut adalah ....**",
           "options": [
-            { "tex": "\\vec{AC}" },
-            { "tex": "\\vec{CA}" },
-            { "tex": "\\vec{AB}" },
-            { "tex": "\\vec{BC}" },
+            { "tex": "\\overrightarrow{AC}" },
+            { "tex": "\\overrightarrow{CA}" },
+            { "tex": "\\overrightarrow{AB}" },
+            { "tex": "\\overrightarrow{BC}" },
             { "tex": "\\vec{0}" }
           ],
           "answerIndex": 0,
-          "explanation": "Ujung vektor pertama ($B$) bertemu pangkal vektor kedua ($B$), sehingga huruf $B$ saling menghapus. Yang tersisa adalah perjalanan dari $A$ ke $C$, yaitu $\\vec{AC}$. **Opsi A**.",
+          "explanation": "Ujung vektor pertama ($B$) bertemu pangkal vektor kedua ($B$), sehingga huruf $B$ saling menghapus. Yang tersisa adalah perjalanan dari $A$ ke $C$, yaitu $\\overrightarrow{AC}$. **Opsi A**.",
           "toastWrong": "Belum tepat — tuliskan hurufnya berderet: $A\\,B + B\\,C$. Huruf yang bertemu di tengah lenyap, dan yang tersisa adalah huruf paling **kiri** lalu huruf paling **kanan**. Kalau urutanmu terbalik, yang kamu dapat adalah vektor yang arahnya berlawanan."
         },
         {
@@ -77,14 +77,14 @@
           "input_type": "single_choice",
           "subtopic": "penjumlahan_segitiga",
           "prompt": "Sebuah drone terbang dari $P$ ke $Q$, lalu ke $R$, lalu ke $S$.",
-          "tex": "\\vec{PQ} + \\vec{QR} + \\vec{RS}",
+          "tex": "\\overrightarrow{PQ} + \\overrightarrow{QR} + \\overrightarrow{RS}",
           "after": "**Vektor perpindahan total drone tersebut adalah ....**",
           "options": [
-            { "tex": "\\vec{PR}" },
-            { "tex": "\\vec{QS}" },
-            { "tex": "\\vec{PS}" },
-            { "tex": "\\vec{SP}" },
-            { "tex": "\\vec{PQ} + \\vec{RS}" }
+            { "tex": "\\overrightarrow{PR}" },
+            { "tex": "\\overrightarrow{QS}" },
+            { "tex": "\\overrightarrow{PS}" },
+            { "tex": "\\overrightarrow{SP}" },
+            { "tex": "\\overrightarrow{PQ} + \\overrightarrow{RS}" }
           ],
           "answerIndex": 2,
           "explanation": "Aturan poligon: sambung terus ujung ke pangkal, lalu tarik satu vektor dari titik paling awal ($P$) ke titik paling akhir ($S$). Huruf $Q$ dan $R$ saling menghapus. **Opsi C**.",
@@ -94,11 +94,11 @@
           "id": "b2_01_3",
           "input_type": "mathpad",
           "subtopic": "penjumlahan_segitiga",
-          "prompt": "Diketahui panjang $\\vec{AB} = 12$ satuan.",
-          "after": "**Tentukan panjang vektor $\\vec{AB} + \\vec{BA}$.**",
+          "prompt": "Diketahui panjang $\\overrightarrow{AB} = 12$ satuan.",
+          "after": "**Tentukan panjang vektor $\\overrightarrow{AB} + \\overrightarrow{BA}$.**",
           "answer": 0,
           "tolerance": 1e-6,
-          "explanation": "$\\vec{AB} + \\vec{BA} = \\vec{AA} = \\vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.",
+          "explanation": "$\\overrightarrow{AB} + \\overrightarrow{BA} = \\overrightarrow{AA} = \\vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.",
           "toastWrong": "Belum tepat — jangan buru-buru memakai angka $12$. Gambarkan dulu: kamu berjalan dari $A$ ke $B$, lalu kembali dari $B$ ke $A$. Di mana posisimu sekarang, dan berapa **perpindahan**-mu dari titik awal?"
         }
       ]
@@ -118,7 +118,7 @@
         { "t": "typegroup", "n": "1", "title": "Memilih Aturan yang Tepat",
           "lead": "Keduanya memberi hasil yang **sama persis**. Yang berbeda hanya cara menggambarnya.",
           "items": [
-            { "name": "Sudah sambung-menyambung", "tex": "\\vec{AB},\\ \\vec{BC}", "text": "Pakai **aturan segitiga / poligon** — tidak perlu memindahkan apa pun." },
+            { "name": "Sudah sambung-menyambung", "tex": "\\overrightarrow{AB},\\ \\overrightarrow{BC}", "text": "Pakai **aturan segitiga / poligon** — tidak perlu memindahkan apa pun." },
             { "name": "Berpangkal sama", "tex": "\\vec{F_1},\\ \\vec{F_2}", "text": "Pakai **aturan jajar genjang** — misalnya dua gaya pada satu benda." },
             { "name": "Lebih dari dua vektor", "tex": "\\vec{a} + \\vec{b} + \\vec{c}", "text": "Pakai **aturan poligon**. Jajar genjang hanya melayani dua vektor." }
           ],
@@ -157,8 +157,8 @@
           "id": "b2_02_1",
           "input_type": "single_choice",
           "subtopic": "penjumlahan_jajargenjang",
-          "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\vec{AB} = \\vec{a}$ dan $\\vec{AD} = \\vec{b}$.",
-          "after": "**Nyatakan diagonal $\\vec{AC}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
+          "prompt": "Diketahui jajar genjang $ABCD$ dengan $\\overrightarrow{AB} = \\vec{a}$ dan $\\overrightarrow{AD} = \\vec{b}$.",
+          "after": "**Nyatakan diagonal $\\overrightarrow{AC}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
           "options": [
             { "tex": "\\vec{a} - \\vec{b}" },
             { "tex": "\\vec{a} + \\vec{b}" },
@@ -167,15 +167,15 @@
             { "tex": "\\tfrac{1}{2}(\\vec{a} + \\vec{b})" }
           ],
           "answerIndex": 1,
-          "explanation": "$\\vec{AC} = \\vec{AB} + \\vec{BC}$. Pada jajar genjang, $\\vec{BC} = \\vec{AD} = \\vec{b}$ karena sisi berhadapan sejajar dan sama panjang. Maka $\\vec{AC} = \\vec{a} + \\vec{b}$. **Opsi B**.",
-          "toastWrong": "Belum tepat — $\\vec{AC}$ berangkat dari titik pangkal bersama $A$, jadi ia diagonal **jumlah**. Diagonal selisih adalah yang menghubungkan kedua ujung, yaitu $\\vec{DB}$ atau $\\vec{BD}$."
+          "explanation": "$\\overrightarrow{AC} = \\overrightarrow{AB} + \\overrightarrow{BC}$. Pada jajar genjang, $\\overrightarrow{BC} = \\overrightarrow{AD} = \\vec{b}$ karena sisi berhadapan sejajar dan sama panjang. Maka $\\overrightarrow{AC} = \\vec{a} + \\vec{b}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — $\\overrightarrow{AC}$ berangkat dari titik pangkal bersama $A$, jadi ia diagonal **jumlah**. Diagonal selisih adalah yang menghubungkan kedua ujung, yaitu $\\overrightarrow{DB}$ atau $\\overrightarrow{BD}$."
         },
         {
           "id": "b2_02_2",
           "input_type": "single_choice",
           "subtopic": "penjumlahan_jajargenjang",
-          "prompt": "Masih pada jajar genjang $ABCD$ dengan $\\vec{AB} = \\vec{a}$ dan $\\vec{AD} = \\vec{b}$.",
-          "after": "**Nyatakan diagonal $\\vec{DB}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
+          "prompt": "Masih pada jajar genjang $ABCD$ dengan $\\overrightarrow{AB} = \\vec{a}$ dan $\\overrightarrow{AD} = \\vec{b}$.",
+          "after": "**Nyatakan diagonal $\\overrightarrow{DB}$ dalam $\\vec{a}$ dan $\\vec{b}$.**",
           "options": [
             { "tex": "\\vec{a} + \\vec{b}" },
             { "tex": "\\vec{a} - \\vec{b}" },
@@ -184,8 +184,8 @@
             { "tex": "\\vec{0}" }
           ],
           "answerIndex": 1,
-          "explanation": "$\\vec{DB} = \\vec{DA} + \\vec{AB} = -\\vec{b} + \\vec{a} = \\vec{a} - \\vec{b}$. **Opsi B**.",
-          "toastWrong": "Belum tepat — perhatikan arah penulisannya. $\\vec{DB}$ berangkat dari $D$ **menuju** $B$, jadi yang berdiri di depan tanda kurang adalah vektor menuju $B$. Kalau jawabanmu $\\vec{b} - \\vec{a}$, yang kamu hitung adalah $\\vec{BD}$."
+          "explanation": "$\\overrightarrow{DB} = \\overrightarrow{DA} + \\overrightarrow{AB} = -\\vec{b} + \\vec{a} = \\vec{a} - \\vec{b}$. **Opsi B**.",
+          "toastWrong": "Belum tepat — perhatikan arah penulisannya. $\\overrightarrow{DB}$ berangkat dari $D$ **menuju** $B$, jadi yang berdiri di depan tanda kurang adalah vektor menuju $B$. Kalau jawabanmu $\\vec{b} - \\vec{a}$, yang kamu hitung adalah $\\overrightarrow{BD}$."
         },
         {
           "id": "b2_02_3",
@@ -235,7 +235,7 @@
           "x": "Apa arti $\\vec{a} - \\vec{b}$ pada gambar? Tulis ulang sebagai $\\vec{a} + (-\\vec{b})$: **balik arah $\\vec{b}$ lebih dulu**, baru jumlahkan dengan aturan segitiga." },
 
         { "t": "tip", "title": "Cara Baca yang Lebih Berguna",
-          "x": "Kalau $\\vec{a} = \\vec{OA}$ dan $\\vec{b} = \\vec{OB}$ adalah vektor posisi, maka $\\vec{a} - \\vec{b} = \\vec{OA} - \\vec{OB} = \\vec{BA}$ — yaitu vektor **dari ujung $\\vec{b}$ menuju ujung $\\vec{a}$**. Inilah rumus $\\vec{AB} = B - A$ dari Bab 1, dilihat dari sudut pandang lain." }
+          "x": "Kalau $\\vec{a} = \\overrightarrow{OA}$ dan $\\vec{b} = \\overrightarrow{OB}$ adalah vektor posisi, maka $\\vec{a} - \\vec{b} = \\overrightarrow{OA} - \\overrightarrow{OB} = \\overrightarrow{BA}$ — yaitu vektor **dari ujung $\\vec{b}$ menuju ujung $\\vec{a}$**. Inilah rumus $\\overrightarrow{AB} = B - A$ dari Bab 1, dilihat dari sudut pandang lain." }
       ],
 
       "simulation": {
@@ -608,24 +608,24 @@
 
       "materi": [
         { "t": "def", "title": "Titik Segaris (Kolinier)",
-          "x": "Titik $A$, $B$, dan $C$ dikatakan **segaris** jika terdapat skalar $k$ sehingga $\\vec{AB} = k \\cdot \\vec{BC}$ atau $\\vec{AB} = k \\cdot \\vec{AC}$." },
+          "x": "Titik $A$, $B$, dan $C$ dikatakan **segaris** jika terdapat skalar $k$ sehingga $\\overrightarrow{AB} = k \\cdot \\overrightarrow{BC}$ atau $\\overrightarrow{AB} = k \\cdot \\overrightarrow{AC}$." },
 
         { "t": "p",
-          "x": "Kenapa rumus itu masuk akal? Kalau ketiga titik ada di satu garis lurus, maka $\\vec{AB}$ dan $\\vec{BC}$ pasti **sejajar** — keduanya menunjuk sepanjang garis yang sama. Dan dua vektor sejajar selalu bisa ditulis sebagai kelipatan satu sama lain." },
+          "x": "Kenapa rumus itu masuk akal? Kalau ketiga titik ada di satu garis lurus, maka $\\overrightarrow{AB}$ dan $\\overrightarrow{BC}$ pasti **sejajar** — keduanya menunjuk sepanjang garis yang sama. Dan dua vektor sejajar selalu bisa ditulis sebagai kelipatan satu sama lain." },
 
         { "t": "warn", "title": "Sejajar Saja Belum Cukup",
-          "x": "Dua vektor sejajar yang **tidak berbagi titik** hanya membentuk dua garis sejajar, bukan satu garis. Itulah sebabnya rumusnya memakai vektor yang berbagi huruf: $\\vec{AB}$ dan $\\vec{BC}$ sama-sama memuat $B$. Titik bersama itu yang mengunci keduanya ke satu garis." },
+          "x": "Dua vektor sejajar yang **tidak berbagi titik** hanya membentuk dua garis sejajar, bukan satu garis. Itulah sebabnya rumusnya memakai vektor yang berbagi huruf: $\\overrightarrow{AB}$ dan $\\overrightarrow{BC}$ sama-sama memuat $B$. Titik bersama itu yang mengunci keduanya ke satu garis." },
 
         { "t": "steps", "title": "Langkah Pengerjaan",
           "items": [
-            "Hitung $\\vec{AB} = B - A$.",
-            "Hitung $\\vec{BC} = C - B$.",
+            "Hitung $\\overrightarrow{AB} = B - A$.",
+            "Hitung $\\overrightarrow{BC} = C - B$.",
             "Cari $k$ dari komponen pertama.",
             "**Uji $k$ itu pada komponen-komponen lainnya.** Kalau cocok semua → segaris."
           ] },
 
         { "t": "tex",
-          "x": "\\vec{AB} = (2,4),\\ \\vec{BC} = (3,6) \\;\\Rightarrow\\; k = \\tfrac{2}{3} \\ \\text{dan} \\ \\tfrac{2}{3}(6) = 4 \\ \\checkmark" },
+          "x": "\\overrightarrow{AB} = (2,4),\\ \\overrightarrow{BC} = (3,6) \\;\\Rightarrow\\; k = \\tfrac{2}{3} \\ \\text{dan} \\ \\tfrac{2}{3}(6) = 4 \\ \\checkmark" },
 
         { "t": "tip", "title": "Satu Komponen Cukup untuk Menggugurkan",
           "x": "Kalau komponen $x$ memberi $k = \\tfrac{2}{3}$ tetapi komponen $y$ memberi $k = 2$, maka **tidak segaris**. Kamu tidak perlu memeriksa sisanya — satu ketidakcocokan sudah menutup perkara." },
@@ -663,8 +663,8 @@
           "after": "**Tentukan nilai $p$.**",
           "answer": 7,
           "tolerance": 1e-6,
-          "explanation": "$\\vec{AB} = (2,\\, 4)$ dan $\\vec{AC} = (p-1,\\, 12)$. Agar segaris, $\\vec{AC} = k\\,\\vec{AB}$. Dari komponen $y$: $12 = 4k \\Rightarrow k = 3$. Maka dari komponen $x$: $p - 1 = 3(2) = 6$, sehingga $p = 7$.",
-          "toastWrong": "Belum tepat — mulailah dari komponen yang **kedua-duanya sudah diketahui angkanya**, yaitu komponen $y$: $12$ berbanding $4$. Nilai $k$ dari situ baru kamu pakai untuk komponen $x$. Jangan lupa $\\vec{AC}$ berkomponen $x$ sebesar $p-1$, bukan $p$."
+          "explanation": "$\\overrightarrow{AB} = (2,\\, 4)$ dan $\\overrightarrow{AC} = (p-1,\\, 12)$. Agar segaris, $\\overrightarrow{AC} = k\\,\\overrightarrow{AB}$. Dari komponen $y$: $12 = 4k \\Rightarrow k = 3$. Maka dari komponen $x$: $p - 1 = 3(2) = 6$, sehingga $p = 7$.",
+          "toastWrong": "Belum tepat — mulailah dari komponen yang **kedua-duanya sudah diketahui angkanya**, yaitu komponen $y$: $12$ berbanding $4$. Nilai $k$ dari situ baru kamu pakai untuk komponen $x$. Jangan lupa $\\overrightarrow{AC}$ berkomponen $x$ sebesar $p-1$, bukan $p$."
         },
         {
           "id": "b2_07_2",
@@ -680,14 +680,14 @@
             { "label": "$A(1,0)$, $B(3,2)$, $C(6,4)$" }
           ],
           "answerIndex": 1,
-          "explanation": "Pada opsi B: $\\vec{AB} = (2,3)$ dan $\\vec{AC} = (6,9)$. Dari komponen $x$: $k = 3$; diuji pada komponen $y$: $3 \\times 3 = 9$ ✓. Nilai $k$ sama untuk keduanya, jadi segaris. **Opsi B**.",
-          "toastWrong": "Belum tepat — untuk setiap pilihan, hitung $\\vec{AB}$ dan $\\vec{AC}$, lalu periksa apakah ada **satu** nilai $k$ yang berlaku untuk **kedua** komponennya. Banyak pilihan yang cocok di komponen $x$ tetapi meleset di komponen $y$ — itulah pengecohnya."
+          "explanation": "Pada opsi B: $\\overrightarrow{AB} = (2,3)$ dan $\\overrightarrow{AC} = (6,9)$. Dari komponen $x$: $k = 3$; diuji pada komponen $y$: $3 \\times 3 = 9$ ✓. Nilai $k$ sama untuk keduanya, jadi segaris. **Opsi B**.",
+          "toastWrong": "Belum tepat — untuk setiap pilihan, hitung $\\overrightarrow{AB}$ dan $\\overrightarrow{AC}$, lalu periksa apakah ada **satu** nilai $k$ yang berlaku untuk **kedua** komponennya. Banyak pilihan yang cocok di komponen $x$ tetapi meleset di komponen $y$ — itulah pengecohnya."
         },
         {
           "id": "b2_07_3",
           "input_type": "single_choice",
           "subtopic": "titik_segaris",
-          "prompt": "Diketahui $\\vec{AB} = (2,\\, 4)$ dan $\\vec{CD} = (1,\\, 2)$, dengan $A$, $B$, $C$, $D$ empat titik yang berbeda dan tidak ada huruf yang berulang.",
+          "prompt": "Diketahui $\\overrightarrow{AB} = (2,\\, 4)$ dan $\\overrightarrow{CD} = (1,\\, 2)$, dengan $A$, $B$, $C$, $D$ empat titik yang berbeda dan tidak ada huruf yang berulang.",
           "after": "**Manakah kesimpulan yang paling tepat?**",
           "options": [
             { "label": "Keempat titik pasti terletak pada satu garis lurus." },
@@ -697,7 +697,7 @@
             { "label": "Tidak dapat disimpulkan apa pun dari data tersebut." }
           ],
           "answerIndex": 1,
-          "explanation": "$\\vec{AB} = 2\\,\\vec{CD}$, sehingga keduanya **sejajar**. Tetapi karena kedua vektor tidak berbagi satu titik pun, keduanya bisa saja terletak pada dua garis sejajar yang berbeda. Sejajar tidak otomatis segaris. **Opsi B**.",
+          "explanation": "$\\overrightarrow{AB} = 2\\,\\overrightarrow{CD}$, sehingga keduanya **sejajar**. Tetapi karena kedua vektor tidak berbagi satu titik pun, keduanya bisa saja terletak pada dua garis sejajar yang berbeda. Sejajar tidak otomatis segaris. **Opsi B**.",
           "toastWrong": "Belum tepat — memang benar keduanya kelipatan satu sama lain, jadi sejajar. Tetapi periksa lagi: apakah kedua vektor itu punya **titik bersama**? Tanpa titik bersama, dua garis sejajar tetap dua garis yang berbeda."
         }
       ]
@@ -799,7 +799,7 @@
             { "label": "Menggambar ruas garisnya terlebih dahulu di bidang koordinat." },
             { "label": "Memasukkan $n = 0$: rumus itu memberi $\\vec{p} = \\vec{a}$, padahal $P$ seharusnya berimpit dengan $B$." },
             { "label": "Memeriksa apakah penyebutnya bernilai positif." },
-            { "label": "Menghitung panjang $\\vec{AB}$ lebih dahulu." },
+            { "label": "Menghitung panjang $\\overrightarrow{AB}$ lebih dahulu." },
             { "label": "Rumus tersebut sebenarnya tidak keliru." }
           ],
           "answerIndex": 1,

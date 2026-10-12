@@ -9,7 +9,7 @@
 
 Soal latihan di buku biasanya berbunyi: *"Diketahui $\vec{a} = (3,4)$, tentukan $|\vec{a}|$."* Kamu tahu persis rumus mana yang diminta.
 
-Soal TKA berbunyi: *"Diketahui $\vec{AB} = (2m, m+3, m)$. Jika panjang $\vec{AB} = 9$, maka nilai $m$ adalah ...."*
+Soal TKA berbunyi: *"Diketahui $\overrightarrow{AB} = (2m, m+3, m)$. Jika panjang $\overrightarrow{AB} = 9$, maka nilai $m$ adalah ...."*
 
 Rumusnya sama persis. Yang berbeda: **kamu harus menemukan sendiri bahwa rumus itulah yang diminta**, lalu memakainya **terbalik** — dari hasil menuju komponen, bukan dari komponen menuju hasil.
 
@@ -25,7 +25,7 @@ Nilai modulus **diketahui**, tetapi komponen penyusunnya memuat **variabel aljab
 
 ### Contoh kasus (bentuk asli soal TKA)
 
-> Diketahui $\vec{AB} = \begin{pmatrix} 2m \\ m+3 \\ m \end{pmatrix}$. Jika panjang vektor $\vec{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....
+> Diketahui $\overrightarrow{AB} = \begin{pmatrix} 2m \\ m+3 \\ m \end{pmatrix}$. Jika panjang vektor $\overrightarrow{AB} = 9$ satuan panjang, maka nilai $m$ yang memenuhi adalah ....
 
 ### Langkah eksekusi
 
@@ -69,23 +69,23 @@ Kunci taktiknya: **sifat bangun datar itu sendiri adalah datanya.** Kamu tidak p
 
 ### Contoh kasus (bentuk asli soal TKA)
 
-> Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,0)$. Vektor-vektor posisi pembentuk trapesium adalah $\vec{AD} = \begin{pmatrix} 1 \\ 4 \end{pmatrix}$, $\vec{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$, dan $\vec{BC} = \begin{pmatrix} a \\ b \end{pmatrix}$. Nilai dari $a^2 + 2b$ adalah ....
+> Diketahui trapesium sama kaki $ABCD$ dengan $AD = BC$ dan titik $A(0,0)$. Vektor-vektor posisi pembentuk trapesium adalah $\overrightarrow{AD} = \begin{pmatrix} 1 \\ 4 \end{pmatrix}$, $\overrightarrow{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$, dan $\overrightarrow{BC} = \begin{pmatrix} a \\ b \end{pmatrix}$. Nilai dari $a^2 + 2b$ adalah ....
 
 ### Langkah eksekusi
 
 **Langkah 1 — analisis kesejajaran.**
-$\vec{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$ punya komponen $y$ nol. Artinya **alasnya mendatar**, sejajar sumbu $X$.
+$\overrightarrow{AB} = \begin{pmatrix} 6 \\ 0 \end{pmatrix}$ punya komponen $y$ nol. Artinya **alasnya mendatar**, sejajar sumbu $X$.
 
 **Langkah 2 — terjemahkan sifat "sama kaki".**
-Pada trapesium sama kaki beralas mendatar, kedua kaki miringnya naik setinggi yang sama. Karena $\vec{AD}$ naik $4$ satuan, maka $\vec{BC}$ juga harus naik $4$ satuan:
+Pada trapesium sama kaki beralas mendatar, kedua kaki miringnya naik setinggi yang sama. Karena $\overrightarrow{AD}$ naik $4$ satuan, maka $\overrightarrow{BC}$ juga harus naik $4$ satuan:
 
 $$b = 4$$
 
 **Langkah 3 — terjemahkan sifat "$AD = BC$" menjadi persamaan panjang.**
 
-$$|\vec{AD}| = \sqrt{1^2 + 4^2} = \sqrt{17}$$
+$$|\overrightarrow{AD}| = \sqrt{1^2 + 4^2} = \sqrt{17}$$
 
-Karena $AD = BC$, maka $|\vec{BC}|$ juga harus $\sqrt{17}$:
+Karena $AD = BC$, maka $|\overrightarrow{BC}|$ juga harus $\sqrt{17}$:
 
 $$\sqrt{a^2 + b^2} = \sqrt{17} \;\Rightarrow\; a^2 + 16 = 17 \;\Rightarrow\; a^2 = 1$$
 
@@ -103,13 +103,13 @@ Soal menanyakan $a^2 + 2b$, **bukan** $a$ dan $b$. Dan memang $a^2$-lah yang bis
 
 | Sifat bangun | Terjemahan vektornya |
 |---|---|
-| Sisi berhadapan sejajar & sama panjang (jajar genjang) | $\vec{AB} = \vec{DC}$ |
-| Kaki sama panjang (trapesium sama kaki, segitiga sama kaki) | $\lvert\vec{AD}\rvert = \lvert\vec{BC}\rvert$ |
+| Sisi berhadapan sejajar & sama panjang (jajar genjang) | $\overrightarrow{AB} = \overrightarrow{DC}$ |
+| Kaki sama panjang (trapesium sama kaki, segitiga sama kaki) | $\lvert\overrightarrow{AD}\rvert = \lvert\overrightarrow{BC}\rvert$ |
 | Sisi sejajar sumbu $X$ | Komponen $y$ bernilai $0$ |
 | Sisi sejajar sumbu $Y$ | Komponen $x$ bernilai $0$ |
-| Dua sisi sejajar (trapesium) | $\vec{AB} = k\,\vec{DC}$ |
+| Dua sisi sejajar (trapesium) | $\overrightarrow{AB} = k\,\overrightarrow{DC}$ |
 | Sudut siku-siku di suatu titik | Hasil kali titik kedua sisinya $= 0$ |
-| Diagonal saling tegak lurus (layang-layang, belah ketupat) | $\vec{AC} \cdot \vec{BD} = 0$ |
+| Diagonal saling tegak lurus (layang-layang, belah ketupat) | $\overrightarrow{AC} \cdot \overrightarrow{BD} = 0$ |
 
 Hafalkan kamus ini. Ia yang mengubah kalimat soal menjadi persamaan.
 
@@ -138,11 +138,11 @@ Itu saja. Tidak ada rumus kinematika lain yang diperlukan.
 
 **Langkah 1 — cari vektor lintasan total.**
 
-$$\vec{AE} = E - A = \begin{pmatrix} 11-2 \\ 6-3 \\ 8-5 \end{pmatrix} = \begin{pmatrix} 9 \\ 3 \\ 3 \end{pmatrix}$$
+$$\overrightarrow{AE} = E - A = \begin{pmatrix} 11-2 \\ 6-3 \\ 8-5 \end{pmatrix} = \begin{pmatrix} 9 \\ 3 \\ 3 \end{pmatrix}$$
 
 **Langkah 2 — hitung jarak totalnya.**
 
-$$|\vec{AE}| = \sqrt{81 + 9 + 9} = \sqrt{99} = 3\sqrt{11} \approx 9{,}95 \text{ km}$$
+$$|\overrightarrow{AE}| = \sqrt{81 + 9 + 9} = \sqrt{99} = 3\sqrt{11} \approx 9{,}95 \text{ km}$$
 
 **Langkah 3 — jumlahkan waktu totalnya.**
 
@@ -187,25 +187,25 @@ Sebuah balok $ABCD.EFGH$ diberikan, dan yang ditanyakan adalah vektor atau panja
 
 Ambil titik $A$ sebagai pangkal. Seluruh balok dapat dinyatakan dengan **tiga vektor rusuk** yang saling tegak lurus:
 
-$$\vec{AB} = \text{panjang} \qquad \vec{AD} = \text{lebar} \qquad \vec{AE} = \text{tinggi}$$
+$$\overrightarrow{AB} = \text{panjang} \qquad \overrightarrow{AD} = \text{lebar} \qquad \overrightarrow{AE} = \text{tinggi}$$
 
 Dalam koordinat, dengan balok berukuran $p \times l \times t$:
 
-$$\vec{AB} = \begin{pmatrix} p \\ 0 \\ 0 \end{pmatrix} \quad \vec{AD} = \begin{pmatrix} 0 \\ l \\ 0 \end{pmatrix} \quad \vec{AE} = \begin{pmatrix} 0 \\ 0 \\ t \end{pmatrix}$$
+$$\overrightarrow{AB} = \begin{pmatrix} p \\ 0 \\ 0 \end{pmatrix} \quad \overrightarrow{AD} = \begin{pmatrix} 0 \\ l \\ 0 \end{pmatrix} \quad \overrightarrow{AE} = \begin{pmatrix} 0 \\ 0 \\ t \end{pmatrix}$$
 
 ### Dua jenis diagonal
 
 **Diagonal bidang** — menghubungkan dua titik pada **satu sisi** balok. Ia adalah jumlah **dua** vektor rusuk.
 
-$$\vec{AC} = \vec{AB} + \vec{BC} = \vec{AB} + \vec{AD} = \begin{pmatrix} p \\ l \\ 0 \end{pmatrix}$$
+$$\overrightarrow{AC} = \overrightarrow{AB} + \overrightarrow{BC} = \overrightarrow{AB} + \overrightarrow{AD} = \begin{pmatrix} p \\ l \\ 0 \end{pmatrix}$$
 
 **Diagonal ruang** — menghubungkan dua titik yang **berseberangan menembus balok**. Ia adalah jumlah **ketiga** vektor rusuk.
 
-$$\vec{AG} = \vec{AB} + \vec{AD} + \vec{AE} = \begin{pmatrix} p \\ l \\ t \end{pmatrix}$$
+$$\overrightarrow{AG} = \overrightarrow{AB} + \overrightarrow{AD} + \overrightarrow{AE} = \begin{pmatrix} p \\ l \\ t \end{pmatrix}$$
 
 ### Panjangnya
 
-$$|\vec{AC}| = \sqrt{p^2 + l^2} \qquad\qquad |\vec{AG}| = \sqrt{p^2 + l^2 + t^2}$$
+$$|\overrightarrow{AC}| = \sqrt{p^2 + l^2} \qquad\qquad |\overrightarrow{AG}| = \sqrt{p^2 + l^2 + t^2}$$
 
 Perhatikan: rumus diagonal ruang **bukan rumus baru** — ia hanya modulus vektor di R³ dari Bab 1, dipakai pada bangun ruang.
 
@@ -213,27 +213,27 @@ Perhatikan: rumus diagonal ruang **bukan rumus baru** — ia hanya modulus vekto
 
 Balok berukuran $12 \times 4 \times 3$:
 
-$$|\vec{AC}| = \sqrt{144 + 16} = \sqrt{160} = 4\sqrt{10}$$
-$$|\vec{AG}| = \sqrt{144 + 16 + 9} = \sqrt{169} = 13$$
+$$|\overrightarrow{AC}| = \sqrt{144 + 16} = \sqrt{160} = 4\sqrt{10}$$
+$$|\overrightarrow{AG}| = \sqrt{144 + 16 + 9} = \sqrt{169} = 13$$
 
 ### Kamus diagonal balok $ABCD.EFGH$
 
 | Vektor | Susunan rusuk | Komponen | Jenis |
 |---|---|---|---|
-| $\vec{AC}$ | $\vec{AB} + \vec{AD}$ | $(p, l, 0)$ | Diagonal bidang alas |
-| $\vec{AF}$ | $\vec{AB} + \vec{AE}$ | $(p, 0, t)$ | Diagonal bidang depan |
-| $\vec{AH}$ | $\vec{AD} + \vec{AE}$ | $(0, l, t)$ | Diagonal bidang samping |
-| $\vec{AG}$ | $\vec{AB} + \vec{AD} + \vec{AE}$ | $(p, l, t)$ | **Diagonal ruang** |
-| $\vec{BH}$ | $-\vec{AB} + \vec{AD} + \vec{AE}$ | $(-p, l, t)$ | **Diagonal ruang** |
-| $\vec{EC}$ | $\vec{AB} + \vec{AD} - \vec{AE}$ | $(p, l, -t)$ | **Diagonal ruang** |
+| $\overrightarrow{AC}$ | $\overrightarrow{AB} + \overrightarrow{AD}$ | $(p, l, 0)$ | Diagonal bidang alas |
+| $\overrightarrow{AF}$ | $\overrightarrow{AB} + \overrightarrow{AE}$ | $(p, 0, t)$ | Diagonal bidang depan |
+| $\overrightarrow{AH}$ | $\overrightarrow{AD} + \overrightarrow{AE}$ | $(0, l, t)$ | Diagonal bidang samping |
+| $\overrightarrow{AG}$ | $\overrightarrow{AB} + \overrightarrow{AD} + \overrightarrow{AE}$ | $(p, l, t)$ | **Diagonal ruang** |
+| $\overrightarrow{BH}$ | $-\overrightarrow{AB} + \overrightarrow{AD} + \overrightarrow{AE}$ | $(-p, l, t)$ | **Diagonal ruang** |
+| $\overrightarrow{EC}$ | $\overrightarrow{AB} + \overrightarrow{AD} - \overrightarrow{AE}$ | $(p, l, -t)$ | **Diagonal ruang** |
 
-> ⚠️ **Perhatikan tanda pada dua baris terakhir.** $\vec{BH}$ berangkat dari $B$, jadi ia harus **mundur** sepanjang $\vec{AB}$ lebih dulu — komponennya menjadi $-p$. Salah tanda di sini tidak mengubah **panjang** diagonalnya (karena dikuadratkan), tetapi mengubah jawaban kalau soal menanyakan **sudut** atau **hasil kali titik**.
+> ⚠️ **Perhatikan tanda pada dua baris terakhir.** $\overrightarrow{BH}$ berangkat dari $B$, jadi ia harus **mundur** sepanjang $\overrightarrow{AB}$ lebih dulu — komponennya menjadi $-p$. Salah tanda di sini tidak mengubah **panjang** diagonalnya (karena dikuadratkan), tetapi mengubah jawaban kalau soal menanyakan **sudut** atau **hasil kali titik**.
 
 ### 💡 Kombinasi favorit penyusun soal
 
 Soal TKA jarang berhenti pada "tentukan panjang diagonal ruang". Yang lebih sering: **diagonal balok digabung dengan materi Bab 3** — sudut antara dua diagonal, proyeksi satu diagonal pada rusuk, atau syarat tegak lurus.
 
-Contoh: *"Tentukan sudut antara diagonal ruang $\vec{AG}$ dan diagonal bidang $\vec{AC}$."*
+Contoh: *"Tentukan sudut antara diagonal ruang $\overrightarrow{AG}$ dan diagonal bidang $\overrightarrow{AC}$."*
 
 Begitu kamu menuliskan keduanya sebagai komponen, soal itu kembali menjadi soal rutin Bab 3.
 

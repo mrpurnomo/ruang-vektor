@@ -6,9 +6,22 @@
 
 const hasKatex = () => typeof window !== 'undefined' && typeof window.katex !== 'undefined';
 
+/**
+ * Notasi baku: panah di atas DUA huruf kapital atau lebih (ruas berarah AB)
+ * harus membentang utuh — `\overrightarrow{AB}`. `\vec` hanya menaruh panah
+ * kecil di tengah, sehingga "AB" terbaca seperti A dikali vektor B.
+ * Sumber data sudah ditulis ulang; ini jaring pengaman untuk teks yang
+ * dirakit saat berjalan (templat engine, placeholder `\vec{{{nama}}}`).
+ * Tipografi murni — tidak tahu apa-apa soal vektor.
+ */
+export function normalizeNotation(tex) {
+  return String(tex).replace(/\\vec\{((?:[A-Z]'*){2,})\}/g, '\\overrightarrow{$1}');
+}
+
 /** Render satu ekspresi LaTeX menjadi string HTML. */
 export function renderToString(tex, { display = false } = {}) {
   if (!hasKatex()) return escapeHtml(tex);
+  tex = normalizeNotation(tex);
   try {
     return window.katex.renderToString(tex, {
       displayMode: display,

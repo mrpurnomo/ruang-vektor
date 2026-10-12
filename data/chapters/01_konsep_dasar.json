@@ -26,11 +26,11 @@
         },
         {
           "t": "p",
-          "x": "Panah tadi bernama **vektor $\\vec{OA}$**, dibaca *dari $O$ menuju $A$*. Kalau tidak ingin menyebut kedua titiknya, cukup beri satu huruf kecil berpanah."
+          "x": "Panah tadi bernama **vektor $\\overrightarrow{OA}$**, dibaca *dari $O$ menuju $A$*. Kalau tidak ingin menyebut kedua titiknya, cukup beri satu huruf kecil berpanah."
         },
         {
           "t": "tex",
-          "x": "\\vec{OA} = \\vec{a}"
+          "x": "\\overrightarrow{OA} = \\vec{a}"
         },
         {
           "t": "p",
@@ -56,11 +56,11 @@
         {
           "t": "tip",
           "title": "Cara Membaca Nama Vektor",
-          "x": "Huruf **pertama** selalu pangkal (ekor), huruf **kedua** selalu ujung (mata panah). Jadi $\\vec{AO}$ berangkat dari $A$ dan berakhir di $O$: panjangnya sama persis, arahnya berlawanan."
+          "x": "Huruf **pertama** selalu pangkal (ekor), huruf **kedua** selalu ujung (mata panah). Jadi $\\overrightarrow{AO}$ berangkat dari $A$ dan berakhir di $O$: panjangnya sama persis, arahnya berlawanan."
         },
         {
           "t": "tex",
-          "x": "\\vec{AO} = -\\vec{OA}"
+          "x": "\\overrightarrow{AO} = -\\overrightarrow{OA}"
         }
       ],
       "simulation": {
@@ -114,11 +114,11 @@
           "titikMeleset": "Belum tepat — kamu mendarat di {{titik}}. Hitung kotak kisinya dari $O$: mendatar dulu, baru tegak.",
           "langkahSalahTanda": "Besarnya sudah benar, tandanya belum. Langkah {{sumbu}} itu menuju **{{arah}}**, dan arah itulah yang menentukan tanda positif atau negatifnya.",
           "langkahSalahBesar": "Belum tepat — hitung ulang kotak kisi pada arah {{sumbu}}, satu per satu, mulai dari $O$ dan berhenti tepat di titik tujuan.",
-          "arahPanahTerbalik": "Belum tepat — yang kamu gambar adalah $\\vec{{{balik}}}$, bukan $\\vec{{{nama}}}$. Nama $\\vec{{{nama}}}$ berarti **berangkat** dari huruf pertama **menuju** huruf kedua. Ketuk lagi pangkalnya.",
+          "arahPanahTerbalik": "Belum tepat — yang kamu gambar adalah $\\overrightarrow{{{balik}}}$, bukan $\\overrightarrow{{{nama}}}$. Nama $\\overrightarrow{{{nama}}}$ berarti **berangkat** dari huruf pertama **menuju** huruf kedua. Ketuk lagi pangkalnya.",
           "pangkalBukanTitik": "Belum tepat — {{titik}} belum ditandai di bidang. Panah ini berpangkal pada salah satu titik yang sudah kamu tandai.",
           "ujungBukanTitik": "Belum tepat — ujung panah harus jatuh tepat pada titik tujuan yang sudah kamu tandai, bukan di {{titik}}. Mulai lagi dari pangkalnya.",
           "belumLengkap": "Masih ada kotak yang kosong. Isi langkah mendatar **dan** tegaknya lebih dulu.",
-          "success": "Tepat! Dari $O$ ke $A$: $7$ satuan ke kanan dan $4$ satuan ke atas, lalu satu panah menyatukannya. Itulah $\\vec{OA}$, yang boleh ditulis $\\vec{a}$.",
+          "success": "Tepat! Dari $O$ ke $A$: $7$ satuan ke kanan dan $4$ satuan ke atas, lalu satu panah menyatukannya. Itulah $\\overrightarrow{OA}$, yang boleh ditulis $\\vec{a}$.",
           "successLatihan": "Tepat! Panahnya berangkat dari $O$ dan berujung tepat di titik tujuan. Tanda pada tiap komponen sudah kamu baca sebagai arah langkah, bukan sekadar hiasan."
         }
       },
@@ -154,27 +154,27 @@
           "id": "b1_01_2",
           "input_type": "single_choice",
           "subtopic": "pengertian_notasi",
-          "prompt": "Vektor $\\vec{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.",
-          "after": "**Pernyataan yang benar tentang $\\vec{QP}$ adalah ....**",
+          "prompt": "Vektor $\\overrightarrow{PQ}$ menyatakan perpindahan dari titik $P$ ke titik $Q$.",
+          "after": "**Pernyataan yang benar tentang $\\overrightarrow{QP}$ adalah ....**",
           "options": [
             {
-              "tex": "\\vec{QP} = \\vec{PQ}"
+              "tex": "\\overrightarrow{QP} = \\overrightarrow{PQ}"
             },
             {
-              "tex": "\\vec{QP} = -\\vec{PQ}"
+              "tex": "\\overrightarrow{QP} = -\\overrightarrow{PQ}"
             },
             {
-              "tex": "|\\vec{QP}| = -|\\vec{PQ}|"
+              "tex": "|\\overrightarrow{QP}| = -|\\overrightarrow{PQ}|"
             },
             {
-              "tex": "\\vec{QP} = \\vec{0}"
+              "tex": "\\overrightarrow{QP} = \\vec{0}"
             },
             {
-              "tex": "\\vec{QP} \\perp \\vec{PQ}"
+              "tex": "\\overrightarrow{QP} \\perp \\overrightarrow{PQ}"
             }
           ],
           "answerIndex": 1,
-          "explanation": "$\\vec{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\\vec{QP} = -\\vec{PQ}$. **Opsi B**.",
+          "explanation": "$\\overrightarrow{QP}$ menempuh ruas garis yang sama persis, tetapi ke arah sebaliknya. Panjangnya tetap, arahnya berlawanan — itulah arti $\\overrightarrow{QP} = -\\overrightarrow{PQ}$. **Opsi B**.",
           "toastWrong": "Belum tepat — perhatikan bahwa panjangnya **tidak berubah**, yang berubah hanya arahnya. Dan ingat: panjang vektor tidak pernah bernilai negatif, jadi opsi yang memberi tanda minus pada modulus pasti keliru."
         },
         {
@@ -407,7 +407,7 @@
       "materi": [
         {
           "t": "p",
-          "x": "Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\\, 3)$ menuju $B(8,\\, 7)$. Panah itu bernama $\\vec{AB}$: pangkalnya di $A$, ujungnya di $B$."
+          "x": "Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\\, 3)$ menuju $B(8,\\, 7)$. Panah itu bernama $\\overrightarrow{AB}$: pangkalnya di $A$, ujungnya di $B$."
         },
         {
           "t": "steps",
@@ -415,7 +415,7 @@
           "items": [
             "Mendatar: dari $x = 2$ sampai $x = 8$, berarti **$6$ satuan ke kanan**.",
             "Tegak: dari $y = 3$ sampai $y = 7$, berarti **$4$ satuan ke atas**.",
-            "Jadi $\\vec{AB} = \\begin{pmatrix} 6 \\\\ 4 \\end{pmatrix}$."
+            "Jadi $\\overrightarrow{AB} = \\begin{pmatrix} 6 \\\\ 4 \\end{pmatrix}$."
           ]
         },
         {
@@ -432,22 +432,22 @@
         },
         {
           "t": "tex",
-          "x": "\\vec{AB} = \\vec{b} - \\vec{a} = \\begin{pmatrix} x_B - x_A \\\\ y_B - y_A \\end{pmatrix}"
+          "x": "\\overrightarrow{AB} = \\vec{b} - \\vec{a} = \\begin{pmatrix} x_B - x_A \\\\ y_B - y_A \\end{pmatrix}"
         },
         {
           "t": "def",
           "title": "Vektor Posisi",
-          "x": "**Vektor posisi** adalah vektor yang pangkalnya dipatok di $O(0,\\, 0)$, ditulis $\\vec{a} = \\vec{OA}$. Vektor sembarang $\\vec{AB}$ selalu merupakan selisih dua vektor posisi: **ujung dikurangi pangkal**."
+          "x": "**Vektor posisi** adalah vektor yang pangkalnya dipatok di $O(0,\\, 0)$, ditulis $\\vec{a} = \\overrightarrow{OA}$. Vektor sembarang $\\overrightarrow{AB}$ selalu merupakan selisih dua vektor posisi: **ujung dikurangi pangkal**."
         },
         {
           "t": "warn",
           "title": "Jebakan Paling Mahal di Ujian",
-          "x": "Jangan terbalik menjadi $A - B$. Yang kamu hitung bukan lagi $\\vec{AB}$, melainkan $\\vec{BA}$ — arahnya berputar $180^\\circ$ dan seluruh komponen jawabanmu berganti tanda, padahal angkanya terlihat *mirip* benar."
+          "x": "Jangan terbalik menjadi $A - B$. Yang kamu hitung bukan lagi $\\overrightarrow{AB}$, melainkan $\\overrightarrow{BA}$ — arahnya berputar $180^\\circ$ dan seluruh komponen jawabanmu berganti tanda, padahal angkanya terlihat *mirip* benar."
         },
         {
           "t": "tip",
           "title": "Rumusnya Bisa Dibalik",
-          "x": "Kalau yang ditanyakan justru titik ujungnya, pindahkan saja ruasnya: dari $\\vec{AB} = B - A$ diperoleh $B = A + \\vec{AB}$. Satu rumus, dua arah pemakaian."
+          "x": "Kalau yang ditanyakan justru titik ujungnya, pindahkan saja ruasnya: dari $\\overrightarrow{AB} = B - A$ diperoleh $B = A + \\overrightarrow{AB}$. Satu rumus, dua arah pemakaian."
         }
       ],
       "simulation": {
@@ -502,9 +502,9 @@
           ]
         },
         "toasts": {
-          "pangkalUjungTertukar": "Belum tepat — pada $\\vec{{{nama}}}$, huruf pertamanya adalah ${{titik}}$, dan huruf pertama selalu **pangkal**. Yang kamu ketuk justru titik ujungnya.",
+          "pangkalUjungTertukar": "Belum tepat — pada $\\overrightarrow{{{nama}}}$, huruf pertamanya adalah ${{titik}}$, dan huruf pertama selalu **pangkal**. Yang kamu ketuk justru titik ujungnya.",
           "komponenTidakSeletak": "Belum tepat — ada komponen yang dikurangkan dengan komponen yang tidak seletak. Kurangkan $x$ dengan $x$, lalu $y$ dengan $y$, baris demi baris.",
-          "tandaTerbalik": "Belum tepat — seluruh tandamu berlawanan, jadi yang kamu hitung sebenarnya $\\vec{{{kebalikan}}}$. Untuk $\\vec{{{nama}}}$, koordinat **ujung** yang berdiri di depan tanda kurang.",
+          "tandaTerbalik": "Belum tepat — seluruh tandamu berlawanan, jadi yang kamu hitung sebenarnya $\\vec{{{kebalikan}}}$. Untuk $\\overrightarrow{{{nama}}}$, koordinat **ujung** yang berdiri di depan tanda kurang.",
           "hasilSalah": "Belum tepat — kerjakan satu baris dulu, dan bawa tandanya apa adanya. Ingat bahwa mengurangi bilangan negatif sama artinya dengan **menambah**.",
           "success": "Tepat! Ujung dikurangi pangkal — rumus yang sama bekerja di bidang maupun di ruang."
         }
@@ -515,18 +515,18 @@
           "input_type": "mathpad",
           "subtopic": "vektor_posisi",
           "prompt": "Diketahui titik $A(3,\\, -2)$ dan $B(7,\\, 5)$.",
-          "after": "**Tentukan komponen $x$ dari vektor $\\vec{AB}$.**",
+          "after": "**Tentukan komponen $x$ dari vektor $\\overrightarrow{AB}$.**",
           "answer": 4,
           "tolerance": 1e-06,
-          "explanation": "$\\vec{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.",
-          "toastWrong": "Belum tepat — periksa urutan pengurangannya. Pada $\\vec{AB}$, titik $B$ adalah **ujung** sehingga ia berdiri di depan: $x_B - x_A$, bukan $x_A - x_B$."
+          "explanation": "$\\overrightarrow{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.",
+          "toastWrong": "Belum tepat — periksa urutan pengurangannya. Pada $\\overrightarrow{AB}$, titik $B$ adalah **ujung** sehingga ia berdiri di depan: $x_B - x_A$, bukan $x_A - x_B$."
         },
         {
           "id": "b1_03_2",
           "input_type": "matrix_input",
           "subtopic": "vektor_posisi",
           "prompt": "Diketahui titik $A(1,\\, 4,\\, -2)$ dan $B(5,\\, 2,\\, 3)$ di ruang.",
-          "after": "**Tentukan $\\vec{AB}$ dalam bentuk vektor kolom.**",
+          "after": "**Tentukan $\\overrightarrow{AB}$ dalam bentuk vektor kolom.**",
           "rows": 3,
           "cols": 1,
           "answer": [
@@ -540,15 +540,15 @@
               5
             ]
           ],
-          "explanation": "$\\vec{AB} = B - A = \\begin{pmatrix} 5-1 \\\\ 2-4 \\\\ 3-(-2) \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -2 \\\\ 5 \\end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.",
+          "explanation": "$\\overrightarrow{AB} = B - A = \\begin{pmatrix} 5-1 \\\\ 2-4 \\\\ 3-(-2) \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -2 \\\\ 5 \\end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.",
           "toastWrong": "Belum tepat — periksa baris ketiganya. $3 - (-2)$ bukan $1$, melainkan $3 + 2 = 5$. Dua tanda minus yang bertemu menjadi tambah."
         },
         {
           "id": "b1_03_3",
           "input_type": "single_choice",
           "subtopic": "vektor_posisi",
-          "prompt": "Diketahui vektor posisi $\\vec{OA} = (2,\\, 5)$ dan $\\vec{OB} = (-1,\\, 3)$.",
-          "after": "**Tentukan $\\vec{AB}$.**",
+          "prompt": "Diketahui vektor posisi $\\overrightarrow{OA} = (2,\\, 5)$ dan $\\overrightarrow{OB} = (-1,\\, 3)$.",
+          "after": "**Tentukan $\\overrightarrow{AB}$.**",
           "options": [
             {
               "tex": "(3,\\, 2)"
@@ -567,14 +567,14 @@
             }
           ],
           "answerIndex": 1,
-          "explanation": "Vektor posisi $\\vec{OA}$ dan $\\vec{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\\vec{AB} = B - A = (-1-2,\\; 3-5) = (-3,\\, -2)$. **Opsi B**.",
-          "toastWrong": "Belum tepat — kalau jawabanmu $(3,2)$, kamu menghitung $A - B$, yaitu $\\vec{BA}$. Kalau jawabanmu $(1,8)$, kamu **menjumlahkan** keduanya, bukan mengurangkan."
+          "explanation": "Vektor posisi $\\overrightarrow{OA}$ dan $\\overrightarrow{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\\overrightarrow{AB} = B - A = (-1-2,\\; 3-5) = (-3,\\, -2)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — kalau jawabanmu $(3,2)$, kamu menghitung $A - B$, yaitu $\\overrightarrow{BA}$. Kalau jawabanmu $(1,8)$, kamu **menjumlahkan** keduanya, bukan mengurangkan."
         },
         {
           "id": "b1_03_4",
           "input_type": "single_choice",
           "subtopic": "vektor_posisi",
-          "prompt": "Diketahui $\\vec{PQ} = (6,\\, -4)$ dan koordinat titik $P(2,\\, 1)$.",
+          "prompt": "Diketahui $\\overrightarrow{PQ} = (6,\\, -4)$ dan koordinat titik $P(2,\\, 1)$.",
           "after": "**Tentukan koordinat titik $Q$.**",
           "options": [
             {
@@ -594,8 +594,8 @@
             }
           ],
           "answerIndex": 1,
-          "explanation": "Dari $\\vec{PQ} = Q - P$ diperoleh $Q = P + \\vec{PQ} = (2+6,\\; 1+(-4)) = (8,\\, -3)$. **Opsi B**.",
-          "toastWrong": "Belum tepat — rumusnya $\\vec{PQ} = Q - P$. Untuk mencari $Q$, pindahkan $P$ ke ruas kanan sehingga menjadi $Q = P + \\vec{PQ}$. Jadi yang dilakukan adalah **menambah**, bukan mengurangi."
+          "explanation": "Dari $\\overrightarrow{PQ} = Q - P$ diperoleh $Q = P + \\overrightarrow{PQ} = (2+6,\\; 1+(-4)) = (8,\\, -3)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — rumusnya $\\overrightarrow{PQ} = Q - P$. Untuk mencari $Q$, pindahkan $P$ ke ruas kanan sehingga menjadi $Q = P + \\overrightarrow{PQ}$. Jadi yang dilakukan adalah **menambah**, bukan mengurangi."
         }
       ]
     },
@@ -1041,7 +1041,7 @@
         {
           "t": "tip",
           "title": "Tidak Ada Rumus Baru di Ruang",
-          "x": "Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\\vec{AB} = B - A$, modulus, dan vektor satuan. Cukup tambahkan komponen ketiga — satu angka $z$, atau satu suku $\\hat{k}$."
+          "x": "Semua yang sudah kamu kuasai di bidang berlaku utuh di ruang: $\\overrightarrow{AB} = B - A$, modulus, dan vektor satuan. Cukup tambahkan komponen ketiga — satu angka $z$, atau satu suku $\\hat{k}$."
         }
       ],
       "simulation": {
