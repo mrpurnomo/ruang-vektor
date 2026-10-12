@@ -4,7 +4,7 @@
   "subtopics": [
     {
       "id": "pengertian_notasi",
-      "title": "Lahirnya Sebuah Vektor",
+      "title": "Konsep Dasar Vektor",
       "materi": [
         {
           "t": "p",
@@ -195,7 +195,7 @@
     },
     {
       "id": "notasi_penyajian",
-      "title": "Tiga Cara Menulis Komponen",
+      "title": "Bentuk Komponen Vektor",
       "materi": [
         {
           "t": "p",
@@ -380,7 +380,7 @@
     },
     {
       "id": "vektor_posisi",
-      "title": "Kalau Pangkalnya Bukan di Nol",
+      "title": "Vektor Posisi & Selisih Titik",
       "materi": [
         {
           "t": "p",
@@ -578,7 +578,7 @@
     },
     {
       "id": "panjang_vektor",
-      "title": "Modulus — Berapa Jauh Sebenarnya?",
+      "title": "Panjang Vektor (Modulus)",
       "materi": [
         {
           "t": "p",
@@ -794,7 +794,7 @@
     },
     {
       "id": "vektor_satuan",
-      "title": "Vektor Satuan — Kunci Arahnya",
+      "title": "Vektor Satuan",
       "materi": [
         {
           "t": "p",
@@ -954,7 +954,7 @@
     },
     {
       "id": "komponen_r2_r3",
-      "title": "Melangkah ke Ruang Tiga Dimensi",
+      "title": "Vektor di Ruang Tiga Dimensi ($R^3$)",
       "materi": [
         {
           "t": "p",

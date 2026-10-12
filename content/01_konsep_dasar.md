@@ -17,7 +17,7 @@ Di situlah vektor lahir.
 
 ---
 
-## 1.1 Lahirnya Sebuah Vektor
+## 1.1 Konsep Dasar Vektor
 
 ### Mulai dari bidang yang benar-benar kosong
 
@@ -62,7 +62,7 @@ $$\vec{AO} = -\vec{OA}$$
 
 ---
 
-## 1.2 Tiga Cara Menulis Komponen
+## 1.2 Bentuk Komponen Vektor
 
 Langkah tadi — 7 ke kanan, 4 ke atas — punya tiga gaya penulisan resmi. Ketiganya membicarakan vektor yang **sama persis**; yang berbeda hanya bajunya.
 
@@ -109,7 +109,7 @@ Tanda minus pada komponen **bukan** pengurang panjang. Ia perintah arah: minus p
 
 ---
 
-## 1.3 Kalau Pangkalnya Bukan di Nol
+## 1.3 Vektor Posisi & Selisih Titik
 
 Sejauh ini kita selalu enak: berangkat dari titik asal $O(0,\, 0)$. Sekarang naikkan taruhannya — berangkat dari $A(2,\, 3)$ menuju $B(8,\, 7)$. Panah itu bernama $\vec{AB}$: pangkalnya di $A$, ujungnya di $B$.
 
@@ -144,7 +144,7 @@ $$\vec{AB} = B - A \;\Longrightarrow\; B = A + \vec{AB}$$
 
 ---
 
-## 1.4 Modulus — Berapa Jauh Sebenarnya?
+## 1.4 Panjang Vektor (Modulus)
 
 Vektor $\vec{v} = \begin{pmatrix} 3 \\ 4 \end{pmatrix}$ melangkah 3 ke kanan lalu 4 ke atas. Tetapi berapa **jarak lurus** dari pangkal langsung ke mata panahnya? Jelas bukan $3 + 4$ — itu panjang jalur memutarnya, bukan panjang panahnya.
 
@@ -182,7 +182,7 @@ $$|\vec{u}| > |\vec{v}| \iff |\vec{u}|^2 > |\vec{v}|^2$$
 
 ---
 
-## 1.5 Vektor Satuan — Kunci Arahnya
+## 1.5 Vektor Satuan
 
 Bayangkan kamu membuat kompas penunjuk jalan. Yang perlu ditunjukkan hanya **ke arah sana** — tidak peduli jalannya panjang atau pendek. Untuk itu kita butuh vektor yang arahnya tetap, tetapi panjangnya distandarkan.
 
@@ -216,7 +216,7 @@ Secara aljabar, rumusnya membagi dengan nol. Secara makna, alasannya lebih dalam
 
 ---
 
-## 1.6 Melangkah ke Ruang Tiga Dimensi
+## 1.6 Vektor di Ruang Tiga Dimensi ($R^3$)
 
 Dunia nyata tidak datar. Drone yang lepas landas, pesawat yang menanjak, sampai karakter di dalam game bergerak di **ruang** tiga dimensi ($R^3$). Bidang kita kekurangan satu arah: naik dan turun.
 

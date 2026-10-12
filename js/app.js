@@ -802,7 +802,7 @@ function renderSubtopicList(params, options) {
 
       item.innerHTML = `
         <span class="subtopic-item__state">${icon(stateIcon, { size: 15 })}</span>
-        <span class="subtopic-item__title">${index + 1}. ${sub.title}</span>
+        <span class="subtopic-item__title">${index + 1}. ${renderMixed(sub.title)}</span>
         ${isDone
           ? `<span class="badge badge--success">${progress.bestQuizScore}</span>
              <span class="badge badge--primary">Review</span>`
