@@ -674,6 +674,8 @@ def section_quiz_retry(page, errors):
         record(f"{w}×{h}: tombol papan coret tidak menimpa tombol layar hasil", not hit, str(hit))
     page.set_viewport_size({"width": 1024, "height": 600})
     record("Tanpa galat konsol selama coba lagi kuis", not errors, "; ".join(errors[:2]))
+    # Isolasi: rekor buatan uji ini tidak boleh bocor ke bagian sesudahnya.
+    reset_storage(page)
 
 
 def section_sound_toggle(page, errors):

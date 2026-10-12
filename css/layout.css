@@ -445,6 +445,15 @@
                 border-color var(--dur-base) var(--ease-out);
   }
 
+  /* Di mode review tab tahap menjadi TOMBOL. Tingginya 31px di 740×360,
+     jadi area sentuhnya diperluas ke --hit-min (pola tokens.css). */
+  .steps__item { position: relative; }
+  .steps__item::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+
   .steps__item[data-state="active"] {
     background: var(--royal);
     color: var(--white);
