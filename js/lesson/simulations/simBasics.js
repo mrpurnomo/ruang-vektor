@@ -70,6 +70,11 @@ function springPop(node) {
   ], { duration: 300, easing: 'cubic-bezier(.3, 1.3, .5, 1)' });
 }
 
+/** Tempo animasi KONSTAN di semua kasus: irama yang berubah antar kasus
+    terasa seperti aplikasi "tidak sabar" dan mengacaukan hitungan siswa. */
+const HOP_MS = 110;
+const ARROW_MS = 520;
+
 /** "+7" / "−5": langkah bertanda, sebagaimana siswa menuliskannya. */
 const signedStep = (n, sign) => (sign < 0 ? `-${n}` : `+${n}`);
 
@@ -305,7 +310,7 @@ export class GuidedVectorIntroSim extends CaseSimulation {
       },
       summary: () => `Langkah: $${tx}$ ${DIRECTION.x(tx)}, $${ty}$ ${DIRECTION.y(ty)}.`,
       // Jejak langkah digambar SESUDAH siswa menghitungnya sendiri.
-      onSolved: () => this.animateSteps(target, { hopMs: c.guided ? 150 : 90 }),
+      onSolved: () => this.animateSteps(target, { hopMs: HOP_MS }),
     };
 
     // Vektor adalah TINDAKAN, bukan tebakan: panahnya digambar dengan dua
@@ -332,7 +337,7 @@ export class GuidedVectorIntroSim extends CaseSimulation {
           // Nama dua huruf = \overrightarrow, sama dengan label bawaan bidang.
           label: c.guided ? `\\overrightarrow{${name}} = \\vec{a}` : undefined,
         }, { essential: true });
-        await arrow.setVector({ to: target }, { animate: !stillMotion(), duration: c.guided ? 560 : 460 });
+        await arrow.setVector({ to: target }, { animate: !stillMotion(), duration: ARROW_MS });
         if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);
       },
     };

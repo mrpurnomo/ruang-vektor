@@ -477,7 +477,8 @@ export class CaseSimulation extends Simulation {
     const next = this.cases[index];
     const invite = el('div', 'case-invite');
     invite.appendChild(el('p', 'case-invite__text', mixed(this.nextCaseInvite(next, index))));
-    const go = el('button', 'btn btn--primary case-invite__go');
+    // Berdenyut: kompas mata siswa ke aksi berikutnya.
+    const go = el('button', 'btn btn--primary btn--pulse case-invite__go');
     go.type = 'button';
     go.dataset.simAction = 'next-case-stage';
     go.innerHTML = `<span>Lanjut ke ${mixed(this.caseLabel(next, index))}</span>${icon('arrow-right', { size: 16 })}`;

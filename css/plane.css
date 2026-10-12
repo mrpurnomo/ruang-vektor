@@ -272,7 +272,8 @@
   /* Titik pangkal yang sudah diketuk: berdenyut menunggu ujungnya. Ukuran
      DAN tebal bingkai berubah — terbaca tanpa membedakan warna. */
   .plane__point-mark.is-armed > .plane__point {
-    stroke: var(--plane-vector);
+    stroke: var(--plane-point-rim);
+    filter: drop-shadow(0 0 5px var(--plane-amber-line));
     animation: planeArm 900ms var(--ease) infinite;
   }
   @keyframes planeArm {

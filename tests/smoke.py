@@ -507,11 +507,12 @@ def section_guided_stage(page, errors):
         if (!go) return { go: null };
         const r = go.getBoundingClientRect();
         return { go: [Math.round(r.top), Math.round(r.bottom)], view: [Math.round(body.top), Math.round(body.bottom)],
-                 text: go.innerText, chip: chip ? chip.innerText : null };
+                 text: go.innerText, chip: chip ? chip.innerText : null, pulse: go.classList.contains('btn--pulse') };
     }""")
     record("Tombol 'Lanjut ke kasus berikutnya' ada di panggung dan terlihat",
            bool(cta.get("go")) and cta["go"][0] >= cta["view"][0] and cta["go"][1] <= cta["view"][1], json.dumps(cta, ensure_ascii=False))
     record("Chip kasus berikutnya ditandai berdenyut (data-next)", cta.get("chip") == "Titik B", json.dumps(cta, ensure_ascii=False))
+    record("Tombol 'Lanjut ke Titik B' berdenyut (kompas mata siswa)", cta.get("pulse") is True, json.dumps(cta, ensure_ascii=False))
     # Tombol "Lewati Simulasi" muncul sesudah 30 detik; di lanskap pendek ia
     # pernah menjepit tombol utama jadi "L… KE M… K…".
     squeeze = page.evaluate("""() => {
