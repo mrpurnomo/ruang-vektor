@@ -19,6 +19,7 @@ import {
 } from '../core/state/progressStore.js';
 import toast, { anchorToasts } from '../core/ui/toast.js';
 import { createScratchpad } from '../core/ui/scratchpad.js';
+import { showModal } from '../core/ui/modal.js';
 import { lessonKey, getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 /**
@@ -37,6 +38,20 @@ const STEPS = [
 
 /** Rangkuman: di luar deret tab, dibuka lewat tombol. */
 const REVIEW_STEP = STEPS.length;
+
+/** Segel instrumen untuk selebrasi: piringan bertik (busur derajat) + centang. */
+const SEAL_SVG = (() => {
+  const ticks = Array.from({ length: 24 }, (_, i) => {
+    const a = (i / 24) * Math.PI * 2;
+    const r1 = i % 6 === 0 ? 24.5 : 26.5;
+    const p = (r) => [32 + r * Math.cos(a), 32 + r * Math.sin(a)].map((v) => v.toFixed(2));
+    const [x1, y1] = p(r1); const [x2, y2] = p(29.5);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  }).join('');
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><g class="celebrate__ticks">${ticks}</g>`
+    + '<circle class="celebrate__disc" cx="32" cy="32" r="20"/>'
+    + '<path class="celebrate__check" d="M23.5 32.5l6 6 11-12"/></svg>';
+})();
 
 function el(tag, className, html) {
   const node = document.createElement(tag);
@@ -518,6 +533,9 @@ export class LessonView {
     this.actionHost.appendChild(actions);
 
     this.simulation = mountSimulation(simHost, subtopic.simulation, () => {
+      // Selebrasi hanya pada penuntasan PERTAMA. Kunjungan ulang ke simulasi
+      // yang sudah tuntas juga memanggil callback ini — tanpa modal.
+      if (!this.simulationDone) this.celebrateSimulation();
       this.simulationDone = true;
       this.remember({ simulationDone: true });
       next.disabled = false;
@@ -544,6 +562,54 @@ export class LessonView {
         actions.insertBefore(skip, actions.querySelector('.actionbar__spacer'));
       }
     }, 30000);
+  }
+
+  /**
+   * Selebrasi simulasi tuntas: segel instrumen, lencana, rekap gagasan inti,
+   * statistik yang BISA DITELUSURI (Kontrak 11), lalu dua jalan: Rangkuman
+   * atau Mini Kuis. Ditunda sejenak supaya panah terakhir sempat mendarat
+   * dan siswa melihat hasil kerjanya sebelum modal menutup panggung.
+   */
+  celebrateSimulation() {
+    setTimeout(async () => {
+      const sim = this.simulation;
+      if (!sim || this.step !== 0 || !this.body || !this.body.isConnected) return;
+      const data = typeof sim.celebration === 'function' ? sim.celebration() : null;
+      if (!data) return;
+      const { subtopic, subtopicOrder } = this.ctx;
+      const number = (subtopicOrder || []).indexOf(subtopic.id) + 1;
+      const stats = `**${data.cases} kasus**${Number.isInteger(data.steps) ? ` · **${data.steps} langkah**` : ''} kamu tuntaskan sendiri.`;
+
+      const body = el('div', 'celebrate');
+      body.innerHTML = `
+        <div class="celebrate__seal">${SEAL_SVG}</div>
+        <div class="celebrate__main">
+          <div class="celebrate__badge">${renderMixed(`Simulasi Sub-topik ${number} Tuntas · ${data.badge}`)}</div>
+          <ol class="celebrate__recap">${data.recap.map((r) => `<li>${renderMixed(r)}</li>`).join('')}</ol>
+          <p class="celebrate__stats">${renderMixed(stats)}</p>
+        </div>`;
+
+      // Modal ini sendiri umpan baliknya: toast "Tepat!" yang masih melayang
+      // di atas scrim menutupi tombol Mini Kuis di 740×360 (terukur).
+      toast.clear();
+      const pending = showModal({
+        title: 'Simulasi Tuntas!',
+        body,
+        icon: 'trophy',
+        variant: 'celebrate',
+        actions: [
+          { label: 'Buka Rangkuman Konsep', value: 'review', style: 'ghost', icon: 'book' },
+          { label: 'Mulai Mini Kuis →', value: 'quiz', style: 'primary' },
+        ],
+      });
+      // Fokus awal ke aksi UTAMA, bukan tombol pertama (Rangkuman).
+      const primary = document.querySelector('.modal--celebrate .modal__actions .btn--primary');
+      if (primary) primary.focus();
+      const choice = await pending;
+      if (this.simulation !== sim) return;
+      if (choice === 'quiz') { this.step = 1; this.renderStep(); }
+      else if (choice === 'review') this.openRangkuman();
+    }, 900);
   }
 
   /** Tulis judul + kalimat konteks di panel kiri. */

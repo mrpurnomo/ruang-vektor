@@ -334,4 +334,88 @@
     .typegroup__grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
     .typecard__figure, .materi-carousel__figure { min-height: 44px; }
   }
+
+  /* ------------------------------------------------------------
+     SELEBRASI SIMULASI TUNTAS (modal--celebrate)
+     Segel instrumen (piringan bertik + centang yang tergores), lencana
+     amber, rekap gagasan inti bernomor, statistik yang bisa ditelusuri.
+     ------------------------------------------------------------ */
+  .modal--celebrate { width: min(600px, 100%); }
+  .modal--celebrate .modal__icon { display: none; }
+
+  .celebrate {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: start;
+    margin-top: var(--sp-2);
+  }
+  .celebrate__seal svg { display: block; width: 88px; height: 88px; animation: sealIn 600ms var(--pop) both; }
+  .celebrate__ticks line { stroke: var(--royal); stroke-width: 1.6; stroke-linecap: round; }
+  .celebrate__disc { fill: var(--royal); }
+  .celebrate__check {
+    fill: none;
+    stroke: var(--white);
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: sealCheck 420ms 380ms var(--ease-out) forwards;
+  }
+  @keyframes sealIn { from { transform: scale(.6) rotate(-30deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes sealCheck { to { stroke-dashoffset: 0; } }
+
+  .celebrate__badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--value-line);
+    background: var(--value-soft);
+    color: var(--accent-amber-dark);
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+  .celebrate__recap { list-style: none; display: grid; gap: 6px; margin-top: var(--sp-3); counter-reset: recap; }
+  .celebrate__recap li {
+    position: relative;
+    padding-left: 28px;
+    counter-increment: recap;
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+    color: var(--ink-900);
+  }
+  .celebrate__recap li::before {
+    content: counter(recap);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--r-xs);
+    border: 1px solid var(--brand-primary-line);
+    background: var(--blue-50);
+    color: var(--royal);
+    font: 700 11px/18px var(--font-value);
+    text-align: center;
+  }
+  .celebrate__stats { margin-top: var(--sp-3); font-size: var(--fs-sm); color: var(--ink-700); }
+  .celebrate__stats strong { color: var(--ink-900); }
+  /* Aksi utama menyala: ke Mini Kuis. */
+  .modal--celebrate .modal__actions .btn--primary { animation: btnPulse 1.8s var(--ease-out) infinite; }
+
+  /* Lanskap pendek: modal setinggi ≤ 312px harus muat TANPA menggulir. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .modal--celebrate { padding: var(--sp-3) var(--sp-4); }
+    .modal--celebrate .modal__title { font-size: var(--fs-lg); }
+    .celebrate { grid-template-columns: 60px minmax(0, 1fr); gap: var(--sp-3); margin-top: var(--sp-1); }
+    .celebrate__seal svg { width: 60px; height: 60px; }
+    .celebrate__recap { margin-top: var(--sp-2); gap: 3px; }
+    .celebrate__recap li { font-size: var(--fs-xs); }
+    .celebrate__stats { margin-top: var(--sp-2); font-size: var(--fs-xs); }
+    .modal--celebrate .modal__actions { margin-top: var(--sp-3); }
+  }
 }

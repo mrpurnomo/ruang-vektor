@@ -132,6 +132,23 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return super.caseDonePrompt(c, allDone);
   }
 
+  /** Selebrasi: kuadran yang benar-benar dijelajahi + rekap tiga gagasan inti. */
+  celebration() {
+    const base = super.celebration();
+    const quadrant = ([x, y]) => (x > 0 ? (y > 0 ? 'I' : 'IV') : (y > 0 ? 'II' : 'III'));
+    const quadrants = new Set(this.cases.filter((c) => c.to[0] && c.to[1]).map((c) => quadrant(c.to)));
+    const first = this.cases.find((c) => c.guided) || this.cases[0];
+    return {
+      ...base,
+      badge: `${quadrants.size} Kuadran Dikuasai`,
+      recap: [
+        `Dari titik asal $O$ menuju titik tujuan $${first.point}$`,
+        'Langkah **mendatar** dulu, lalu **tegak** — tandanya adalah arah',
+        `$\\overrightarrow{${first.name}} = \\vec{a}$: punya **nilai** dan **arah**`,
+      ],
+    };
+  }
+
   nextCaseInvite(next) {
     const lead = this.cases[this.caseIndex].guided ? 'Hebat! Sekarang coba kuasai' : 'Sekarang';
     return `${lead} **kuadran ${next.quadrant}** dengan **titik ${next.point}**.`;

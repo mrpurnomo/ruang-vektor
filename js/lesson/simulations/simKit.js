@@ -152,6 +152,23 @@ export class CaseSimulation extends Simulation {
       : 'Kasus ini selesai. Lanjut ke kasus berikutnya.';
   }
 
+  /**
+   * Isi selebrasi saat SEMUA kasus tuntas — hanya yang bisa ditelusuri
+   * siswa (Kontrak 11): berapa kasus & langkah yang ia tuntaskan sendiri,
+   * dan nama kasusnya. Tidak ada skor, persentase, atau lencana koleksi.
+   * Engine boleh menimpa `badge` dan `recap` (deret teks bermarkdown).
+   */
+  celebration() {
+    const counts = this.caseStepCounts || {};
+    const known = this.cases.every((_, i) => Number.isInteger(counts[i]));
+    return {
+      badge: `${this.cases.length} Kasus Dikuasai`,
+      recap: this.cases.map((c, i) => this.caseLabel(c, i)),
+      cases: this.cases.length,
+      steps: known ? this.cases.reduce((sum, _, i) => sum + counts[i], 0) : null,
+    };
+  }
+
   /** Kalimat ajakan di banner panggung menuju kasus berikutnya (bermarkdown). */
   nextCaseInvite(next, index) {
     return `Berikutnya: **${this.caseLabel(next, index)}**.`;
@@ -446,6 +463,8 @@ export class CaseSimulation extends Simulation {
     this.syncChecklist();
     const wasSolved = this.solved.has(this.caseIndex);
     this.solved.add(this.caseIndex);
+    // Jumlah langkah kasus ini, untuk statistik selebrasi yang bisa ditelusuri.
+    this.caseStepCounts = { ...(this.caseStepCounts || {}), [this.caseIndex]: this.steps.length };
     this.saveState({ solved: [...this.solved], caseIndex: this.caseIndex });
     this.syncCaseBar();
 

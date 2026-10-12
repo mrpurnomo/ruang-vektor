@@ -578,6 +578,63 @@ def section_guided_stage(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+SOLVE_ALL_CASES = """async () => {
+    const sim = window.__vektorLab.state.activeView.simulation;
+    for (let i = 0; i < sim.cases.length; i += 1) {
+        if (sim.solved.has(i)) continue;
+        sim.goToCase(i);
+        while (sim.currentStep && sim.caseIndex === i) await sim.solveStep(sim.currentStep, [0, 0]);
+    }
+    return sim.solved.size === sim.cases.length;
+}"""
+
+CELEBRATION = """() => {
+    const m = document.querySelector('.modal--celebrate');
+    if (!m) return null;
+    const r = m.getBoundingClientRect(), b = m.querySelector('.modal__body');
+    return { box: [Math.round(r.top), Math.round(r.bottom)], vh: innerHeight,
+             bodyScrolls: b.scrollHeight > b.clientHeight + 1,
+             badge: m.querySelector('.celebrate__badge').innerText,
+             recap: m.querySelectorAll('.celebrate__recap li').length,
+             stats: m.querySelector('.celebrate__stats').innerText,
+             actions: [...m.querySelectorAll('.modal__actions .btn')].map((x) => x.innerText.trim()),
+             toasts: document.querySelectorAll('.toast').length,
+             focus: document.activeElement && document.activeElement.classList.contains('btn--primary') };
+}"""
+
+
+def section_celebration(page, errors):
+    print("\n6f. Selebrasi simulasi tuntas + dua jalan (Rangkuman · Mini Kuis)")
+    for (w, h), pick in [((740, 360), "Mulai Mini Kuis"), ((1024, 600), "Buka Rangkuman Konsep")]:
+        page.set_viewport_size({"width": w, "height": h})
+        fresh_position(page)
+        open_route(page, GUIDED_ROUTE, settle=700)
+        record(f"{w}×{h}: keempat kasus tuntas lewat solveStep()", page.evaluate(SOLVE_ALL_CASES))
+        page.wait_for_timeout(1500)
+        c = page.evaluate(CELEBRATION)
+        record(f"{w}×{h}: modal selebrasi muncul", bool(c), json.dumps(c, ensure_ascii=False))
+        if not c:
+            continue
+        record(f"{w}×{h}: lencana menyebut 4 kuadran yang dikuasai", "4 KUADRAN" in c["badge"].upper(), c["badge"])
+        record(f"{w}×{h}: rekap 3 gagasan + statistik yang bisa ditelusuri", c["recap"] == 3 and "4 kasus" in c["stats"], json.dumps(c, ensure_ascii=False))
+        record(f"{w}×{h}: modal muat di layar tanpa menggulir isinya",
+               c["box"][0] >= 0 and c["box"][1] <= c["vh"] and not c["bodyScrolls"], json.dumps(c))
+        record(f"{w}×{h}: dua aksi — Rangkuman & Mini Kuis",
+               any("RANGKUMAN" in a.upper() for a in c["actions"]) and any("MINI KUIS" in a.upper() for a in c["actions"]), str(c["actions"]))
+        record(f"{w}×{h}: toast dibersihkan, fokus di aksi utama Mini Kuis", c["toasts"] == 0 and c["focus"], json.dumps(c, ensure_ascii=False))
+        page.locator(".modal__actions .btn", has_text=pick).click()
+        page.wait_for_timeout(700)
+        landed = page.evaluate("() => ({ quiz: !!document.querySelector('.quiz'), materi: !!document.querySelector('.materi-card'), modal: !!document.querySelector('.modal--celebrate') })")
+        want = "quiz" if "Kuis" in pick else "materi"
+        record(f"{w}×{h}: '{pick}' membawa siswa ke tujuannya", landed[want] and not landed["modal"], json.dumps(landed))
+    # Kunjungan ulang simulasi yang sudah tuntas: TANPA selebrasi lagi.
+    page.evaluate("() => { const v = window.__vektorLab.state.activeView; v.step = 0; v.renderStep(); }")
+    page.wait_for_timeout(1600)
+    record("Kunjungan ulang simulasi tuntas tidak memunculkan selebrasi lagi", page.evaluate(CELEBRATION) is None)
+    record("Tanpa galat konsol selama selebrasi", not errors, "; ".join(errors[:2]))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1036,6 +1093,7 @@ def main():
             section_guided_stage(page, errors)
             section_quiz_sticky(page, errors)
             section_sound_toggle(page, errors)
+            section_celebration(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)
