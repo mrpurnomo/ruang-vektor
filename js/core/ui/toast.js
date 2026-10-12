@@ -12,6 +12,9 @@ import { icon } from './icons.js';
 
 const DURATIONS = { info: 3500, success: 3500, warn: 4500, error: 5000 };
 const MAX_VISIBLE = 2;
+/** Sama dengan media query lanskap pendek di tokens.css / components.css. */
+const COMPACT_QUERY = '(orientation: landscape) and (max-height: 470px)';
+const COMPACT_MAX_MS = 2200;
 
 let host = null;
 const active = new Set();
@@ -175,7 +178,13 @@ export function showToast(message, options = {}) {
     </div>
   `;
 
-  const duration = options.duration ?? DURATIONS[type] ?? 3500;
+  let duration = options.duration ?? DURATIONS[type] ?? 3500;
+  // Lanskap pendek (740×360): ruang layar terlalu berharga — toast ramping
+  // di kanan bawah dan pergi paling lambat 2,2 detik (keputusan pengguna,
+  // 13 Okt 2026). Kalimat penjelas tetap utuh; hanya waktunya dipangkas.
+  if (typeof matchMedia === 'function' && matchMedia(COMPACT_QUERY).matches) {
+    duration = Math.min(duration, COMPACT_MAX_MS);
+  }
   const timer = setTimeout(() => dismiss(el), duration);
 
   // SENGAJA tidak ada "tutup dengan mengetuk": toast melayang di atas bilah

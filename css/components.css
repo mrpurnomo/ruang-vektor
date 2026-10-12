@@ -778,4 +778,22 @@
     .actionbar { padding: var(--sp-3); }
   }
 
+  /* Lanskap pendek (740×360): pelat RAMPING di kanan bawah. Bidang
+     kartesius duduk di kolom KIRI panggung; selebar 250px dari tepi kanan,
+     toast tidak pernah menyentuhnya (terukur: dulu 239–689px menutupi
+     bidang 98px). Durasinya dipangkas toast.js ke ≤ 2,2 detik. */
+  @media (orientation: landscape) and (max-height: 470px) {
+    .toast-host {
+      left: auto;
+      right: var(--sp-3);
+      bottom: calc(var(--h-footer) + var(--sp-2));
+      transform: none;
+      width: min(250px, calc(100vw - 24px));
+    }
+    .toast { padding: var(--sp-2) var(--sp-3); gap: var(--sp-2); border-radius: var(--r-md); }
+    .toast__icon { flex-basis: 16px; }
+    .toast__icon svg { width: 16px; height: 16px; }
+    .toast__body { font-size: var(--fs-xs); line-height: 1.4; }
+  }
+
 }

@@ -503,6 +503,18 @@ def section_guided_stage(page, errors):
         const r = t.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })""")
     record(f"Toast sukses utuh di dalam layar (lebar {page.viewport_size['width']})",
            bool(toasts) and all(l >= 0 and r <= page.viewport_size["width"] for l, r in toasts), str(toasts))
+    # Lanskap pendek: toast ramping di KANAN BAWAH, tidak menutupi bidang,
+    # dan hilang paling lambat 2,2 detik (keputusan pengguna 13 Okt 2026).
+    over = page.evaluate("""() => {
+        const p = document.querySelector('.plane-host').getBoundingClientRect();
+        return [...document.querySelectorAll('.toast')].map((t) => { const r = t.getBoundingClientRect();
+            return { box: [r.left, r.top, r.right, r.bottom].map(Math.round), h: Math.round(r.height),
+                     hit: !(r.right <= p.left || p.right <= r.left || r.bottom <= p.top || p.bottom <= r.top) }; });
+    }""")
+    record("740×360: toast tidak menutupi bidang kartesius", bool(over) and not any(o["hit"] for o in over), json.dumps(over))
+    page.wait_for_timeout(2600)
+    left = page.evaluate("() => document.querySelectorAll('.toast').length")
+    record("740×360: toast hilang paling lambat 2,2 detik", left == 0, f"masih {left} toast")
     # Kasus berikutnya harus bisa dicapai DARI PANGGUNG: tombol di sidebar
     # terukur berada di bawah lipatan panel kiri di 740×360.
     cta = page.evaluate("""() => {
