@@ -120,6 +120,27 @@
           "belumLengkap": "Masih ada kotak yang kosong. Isi langkah mendatar **dan** tegaknya lebih dulu.",
           "success": "Tepat! Dari $O$ ke $A$: $7$ satuan ke kanan dan $4$ satuan ke atas, lalu satu panah menyatukannya. Itulah $\\overrightarrow{OA}$, yang boleh ditulis $\\vec{a}$.",
           "successLatihan": "Tepat! Panahnya berangkat dari $O$ dan berujung tepat di titik tujuan. Tanda pada tiap komponen sudah kamu baca sebagai arah langkah, bukan sekadar hiasan."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: apa itu vektor?",
+          "definition": "**Vektor** adalah besaran yang memiliki **nilai** (besar) **dan arah**. Panah $\\overrightarrow{OA}$ yang baru kamu gambar punya keduanya: panjang perpindahannya, dan arahnya dari $O$ menuju $A$.",
+          "vector": {
+            "title": "Besaran vektor — ada arahnya",
+            "items": [
+              "Perpindahan $5$ m **ke timur**",
+              "Gaya dorong $20$ N **ke kanan**",
+              "Kecepatan angin $15$ km/jam **ke utara**"
+            ]
+          },
+          "scalar": {
+            "title": "Besaran skalar — hanya nilai",
+            "items": [
+              "Massa balok $5$ kg",
+              "Suhu ruangan $24^\\circ$C",
+              "Kelajuan $60$ km/jam (tanpa arah)"
+            ]
+          },
+          "remember": "Uji dengan satu pertanyaan: **\"ke mana?\"** Kalau pertanyaan itu masuk akal untuk sebuah besaran, besaran itu vektor."
         }
       },
       "quiz": [
@@ -148,7 +169,8 @@
           ],
           "answerIndex": 2,
           "explanation": "Nilai $60$ km/jam saja hanya menjadikannya **kelajuan** — sebuah skalar. Yang menambahkan unsur **arah**, dan karenanya menjadikannya vektor (kecepatan), adalah frasa \"ke arah timur\". **Opsi C**.",
-          "toastWrong": "Belum tepat — angka $60$ dan satuan km/jam juga dimiliki besaran skalar, jadi kalau kamu memilih salah satunya, kamu masih menilai dari **besarnya** saja. Cari bagian kalimat yang menjawab pertanyaan **\"ke mana?\"**."
+          "toastWrong": "Belum tepat — angka $60$ dan satuan km/jam juga dimiliki besaran skalar, jadi kalau kamu memilih salah satunya, kamu masih menilai dari **besarnya** saja. Cari bagian kalimat yang menjawab pertanyaan **\"ke mana?\"**.",
+          "hint": "Ingat kesimpulan simulasi: vektor punya **nilai** dan **arah**. Bagian kalimat mana yang menjawab pertanyaan **\"ke mana?\"**"
         },
         {
           "id": "b1_01_2",
@@ -211,7 +233,8 @@
             }
           ],
           "explanation": "$\\overrightarrow{QP}$ berangkat dari $Q$ dan berakhir di $P$: ruas garisnya sama persis dengan $\\overrightarrow{PQ}$, panjangnya sama, arahnya berlawanan. Karena itu $\\overrightarrow{QP} = -\\overrightarrow{PQ}$. Ketukan yang benar: pangkal $Q(3,\\, 3)$, lalu ujung $P(-2,\\, 1)$.",
-          "toastWrong": "Belum tepat — panah $\\overrightarrow{QP}$ berpangkal dan berujung pada titik yang sudah ada di bidang. Baca namanya: huruf **pertama** pangkal, huruf **kedua** ujung."
+          "toastWrong": "Belum tepat — panah $\\overrightarrow{QP}$ berpangkal dan berujung pada titik yang sudah ada di bidang. Baca namanya: huruf **pertama** pangkal, huruf **kedua** ujung.",
+          "hint": "Vektor lawan menempuh ruas garis yang **sama**, tetapi berangkat dari ujung yang lain. Baca namanya: huruf **pertama** adalah pangkal."
         },
         {
           "id": "b1_01_3",
@@ -274,7 +297,8 @@
             }
           ],
           "explanation": "Dari $O$, komponen atas $-3$ berarti $3$ satuan ke **kiri**, komponen bawah $2$ berarti $2$ satuan ke **atas**. Ujungnya $R(-3,\\, 2)$, di kuadran II.",
-          "toastWrong": "Belum tepat — mulai dari $O$: komponen atas adalah langkah mendatar, komponen bawah langkah tegak, dan tanda masing-masing adalah arahnya."
+          "toastWrong": "Belum tepat — mulai dari $O$: komponen atas adalah langkah mendatar, komponen bawah langkah tegak, dan tanda masing-masing adalah arahnya.",
+          "hint": "Mulai dari $O$. Komponen **atas** adalah langkah mendatar, komponen **bawah** langkah tegak — dan tanda minus berarti ke kiri atau ke bawah."
         }
       ]
     },

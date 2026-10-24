@@ -41,6 +41,23 @@ const STEPS = [
 /** Rangkuman: di luar deret tab, dibuka lewat tombol. */
 const REVIEW_STEP = STEPS.length;
 
+/**
+ * Blok kesimpulan (definisi · vektor vs skalar · kiat) — dipakai pop-up
+ * kesimpulan simulasi DAN dokumen Rangkuman, supaya isinya satu sumber.
+ */
+export function conclusionBlock(c) {
+  const col = (side, cls) => `<div class="conclude__col conclude__col--${cls}">
+      <div class="conclude__head">${renderMixed(side.title)}</div>
+      <ul>${side.items.map((it) => `<li>${renderMixed(it)}</li>`).join('')}</ul>
+    </div>`;
+  const node = el('div', 'conclude');
+  node.innerHTML = `
+    <p class="conclude__def">${renderMixed(c.definition)}</p>
+    <div class="conclude__cols">${col(c.vector, 'vector')}${col(c.scalar, 'scalar')}</div>
+    ${c.remember ? `<p class="conclude__remember">${icon('lightbulb', { size: 15 })}<span>${renderMixed(c.remember)}</span></p>` : ''}`;
+  return node;
+}
+
 /** Segel instrumen untuk selebrasi: piringan bertik (busur derajat) + centang. */
 const SEAL_SVG = (() => {
   const ticks = Array.from({ length: 24 }, (_, i) => {
@@ -585,6 +602,16 @@ export class LessonView {
       const data = typeof sim.celebration === 'function' ? sim.celebration() : null;
       if (!data) return;
       const { subtopic, subtopicOrder } = this.ctx;
+
+      // KESIMPULAN dulu (revisi guru): simulasinya mengajarkan BENTUK vektor,
+      // tetapi "besaran bernilai DAN berarah" baru dirumuskan di sini — tanpa
+      // ini soal 1 Mini Kuis menanyakan hal yang belum pernah dikatakan.
+      const conclusion = subtopic.simulation && subtopic.simulation.conclusion;
+      if (conclusion) {
+        toast.clear();
+        const go = await this.showConclusion(conclusion);
+        if (this.simulation !== sim || go === 'stop') return;
+      }
       const number = (subtopicOrder || []).indexOf(subtopic.id) + 1;
       const stats = `**${data.cases} kasus**${Number.isInteger(data.steps) ? ` · **${data.steps} langkah**` : ''} kamu tuntaskan sendiri.`;
 
@@ -618,6 +645,21 @@ export class LessonView {
       if (choice === 'quiz') { this.step = 1; this.renderStep(); }
       else if (choice === 'review') this.openRangkuman();
     }, 900);
+  }
+
+  /** Modal kesimpulan simulasi: definisi, contoh vektor vs skalar, kiat ingat. */
+  showConclusion(c) {
+    const body = conclusionBlock(c);
+    const pending = showModal({
+      title: c.title,
+      body,
+      icon: 'lightbulb',
+      variant: 'conclusion',
+      actions: [{ label: 'Mengerti, lanjut', value: 'next', style: 'primary' }],
+    });
+    const primary = document.querySelector('.modal--conclusion .modal__actions .btn--primary');
+    if (primary) primary.focus();
+    return pending.then((v) => (v === null ? 'next' : v));
   }
 
   /** Tulis judul + kalimat konteks di panel kiri. */

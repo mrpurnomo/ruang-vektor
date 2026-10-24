@@ -611,6 +611,17 @@ def section_celebration(page, errors):
         open_route(page, GUIDED_ROUTE, settle=700)
         record(f"{w}×{h}: keempat kasus tuntas lewat solveStep()", page.evaluate(SOLVE_ALL_CASES))
         page.wait_for_timeout(1500)
+        # Revisi guru: KESIMPULAN "vektor = nilai + arah" muncul lebih dulu.
+        k = page.evaluate("""() => { const m = document.querySelector('.modal--conclusion');
+            if (!m) return null; const r = m.getBoundingClientRect(), b = m.querySelector('.modal__body');
+            return { box: [Math.round(r.top), Math.round(r.bottom)], vh: innerHeight, scrolls: b.scrollHeight > b.clientHeight + 1,
+                     def: m.querySelector('.conclude__def').innerText.slice(0, 60), cols: m.querySelectorAll('.conclude__col li').length }; }""")
+        record(f"{w}×{h}: pop-up kesimpulan muncul sebelum selebrasi (nilai + arah, contoh vektor & skalar)",
+               bool(k) and "arah" in k["def"] and k["cols"] >= 4, json.dumps(k, ensure_ascii=False))
+        if k:
+            record(f"{w}×{h}: pop-up kesimpulan muat tanpa menggulir", k["box"][0] >= 0 and k["box"][1] <= k["vh"] and not k["scrolls"], json.dumps(k))
+            page.locator(".modal--conclusion .modal__actions .btn--primary").click()
+            page.wait_for_timeout(600)
         c = page.evaluate(CELEBRATION)
         record(f"{w}×{h}: modal selebrasi muncul", bool(c), json.dumps(c, ensure_ascii=False))
         if not c:
@@ -651,6 +662,9 @@ def section_celebration(page, errors):
 
 def tap_quiz_plane(page, x, y):
     """Klik mouse SUNGGUHAN pada titik kisi (x, y) bidang soal — lewat garis kisinya."""
+    # Seperti siswa: gulir bidangnya ke pandangan dulu (bilah aksi menempel di dasar).
+    page.evaluate("() => document.querySelector('.quiz-plane svg.plane').scrollIntoView({ block: 'center' })")
+    page.wait_for_timeout(120)
     xy = page.evaluate("""([x, y]) => {
         const svg = document.querySelector('.quiz-plane svg.plane');
         const lx = svg.querySelector(`line[data-axis="x"][data-value="${x}"]`);
@@ -677,6 +691,11 @@ def section_quiz_plane(page, errors):
     page.wait_for_timeout(400)
     page.locator(".quiz .actionbar .btn--primary", has_text="Berikutnya").click()
     page.wait_for_timeout(500)
+    # Petunjuk: ada di soal ini, tertutup, dan terbuka saat diketuk.
+    page.locator(".quiz__hint-btn").click()
+    page.wait_for_timeout(200)
+    hint = page.evaluate("() => { const t = document.querySelector('.quiz__hint-text'); return t && !t.hidden ? t.innerText : null; }")
+    record("Soal 2 punya Petunjuk yang terbuka saat diketuk", bool(hint) and "pangkal" in hint, str(hint)[:80])
     record("Soal 2 menampilkan bidang kartesius dengan panah PQ",
            page.evaluate("() => !!document.querySelector('.quiz-plane svg.plane .plane__arrow')"))
     # Salah KHAS: urutan terbalik (P lalu Q) = menggambar PQ lagi.

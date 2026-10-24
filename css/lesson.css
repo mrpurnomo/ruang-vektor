@@ -457,4 +457,87 @@
     .quiz-plane__host { min-height: 180px; }
     .quiz-plane__status { font-size: var(--fs-xs); }
   }
+
+  /* ------------------------------------------------------------
+     KESIMPULAN SIMULASI (modal--conclusion & Rangkuman)
+     Definisi · dua kolom contoh vektor vs skalar · kiat ingat.
+     ------------------------------------------------------------ */
+  .modal--conclusion { width: min(640px, 100%); }
+  .modal--conclusion .modal__icon { --m-accent: var(--accent-amber); --m-soft: var(--value-soft); }
+  .conclude { display: grid; gap: var(--sp-3); margin-top: var(--sp-2); }
+  .conclude__def { margin: 0; font-size: var(--fs-base); line-height: 1.55; color: var(--ink-900); }
+  .conclude__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); }
+  .conclude__col {
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    border-left: 3px solid var(--royal);
+    background: var(--blue-50);
+  }
+  .conclude__col--scalar { border-left-color: var(--graphite-4); background: var(--bg-sunken); }
+  .conclude__head {
+    margin-bottom: 4px;
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--brand-primary-dark);
+  }
+  .conclude__col--scalar .conclude__head { color: var(--ink-700); }
+  .conclude__col ul { list-style: none; display: grid; gap: 3px; margin: 0; padding: 0; }
+  .conclude__col li { position: relative; padding-left: 16px; font-size: var(--fs-sm); line-height: 1.45; color: var(--ink-900); }
+  .conclude__col li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: .55em;
+    width: 10px; height: 6px;
+    background: var(--royal);
+    clip-path: var(--arrow-shape);
+  }
+  .conclude__col--scalar li::before { width: 6px; height: 6px; border-radius: 50%; clip-path: none; background: var(--graphite-4); }
+  .conclude__remember {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: flex-start;
+    margin: 0;
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--r-md);
+    border: 1px solid var(--value-line);
+    background: var(--value-soft);
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+    color: var(--ink-900);
+  }
+  .conclude__remember svg { flex: none; margin-top: 2px; color: var(--accent-amber); }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .modal--conclusion { padding: var(--sp-3) var(--sp-4); }
+    .modal--conclusion .modal__icon { display: none; }
+    .modal--conclusion .modal__title { font-size: var(--fs-lg); }
+    .modal--conclusion .modal__actions { margin-top: var(--sp-2); }
+    .conclude { gap: var(--sp-2); margin-top: var(--sp-1); }
+    .conclude__def { font-size: var(--fs-xs); line-height: 1.45; }
+    .conclude__col { padding: 6px var(--sp-2); }
+    .conclude__col li, .conclude__remember { font-size: var(--fs-xs); line-height: 1.35; }
+    .conclude__remember { padding: 6px var(--sp-2); }
+  }
+
+  /* ------------------------------------------------------------
+     PETUNJUK SOAL (QuizEngine.buildHint)
+     ------------------------------------------------------------ */
+  .quiz__hint-box { display: grid; justify-items: start; gap: var(--sp-2); margin-top: var(--sp-3); }
+  .quiz__hint-btn { color: var(--accent-amber); border-color: var(--value-line); }
+  .quiz__hint-btn svg { color: var(--accent-amber); }
+  .quiz__hint-text {
+    width: 100%;
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    border-left: 3px solid var(--value-deep);
+    background: var(--value-soft);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--ink-900);
+    animation: rise var(--dur-base) var(--ease-out) both;
+  }
+  .quiz__hint-text[hidden] { display: none; }
 }

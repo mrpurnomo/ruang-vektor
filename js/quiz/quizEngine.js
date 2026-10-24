@@ -16,6 +16,7 @@ import { attachMathpad } from '../core/ui/mathpad.js';
 import { icon } from '../core/ui/icons.js';
 import toast from '../core/ui/toast.js';
 import { celebrate } from '../core/interactions/flyToAnimation.js';
+import sfx from '../core/ui/sfx.js';
 import { getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 function el(tag, className, html) {
@@ -210,6 +211,10 @@ export class QuizEngine {
     // prompt → table → tex → after, lewat perender tunggal (lihat questionBody.js).
     renderQuestionBody(card, q);
 
+    // Petunjuk: tombol yang membuka kalimat penuntun soal (bukan kuncinya —
+    // validator memeriksa hint seperti toastWrong). Dibuka atas kehendak siswa.
+    if (q.hint) card.appendChild(this.buildHint(q.hint));
+
     this.answerHost = el('div');
     card.appendChild(this.answerHost);
 
@@ -256,6 +261,25 @@ export class QuizEngine {
       isAnswered: () => this.answered,
       onCleanup: (fn) => this.cleanups.push(fn),
     });
+  }
+
+  buildHint(text) {
+    const wrap = el('div', 'quiz__hint-box');
+    const btn = el('button', 'btn btn--ghost btn--sm quiz__hint-btn');
+    btn.type = 'button';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = `${icon('lightbulb', { size: 15 })}<span>Lihat Petunjuk</span>`;
+    const body = el('div', 'quiz__hint-text', renderMixed(text));
+    body.hidden = true;
+    btn.addEventListener('click', () => {
+      const open = body.hidden;
+      body.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.querySelector('span').textContent = open ? 'Tutup Petunjuk' : 'Lihat Petunjuk';
+      sfx.tap();
+    });
+    wrap.append(btn, body);
+    return wrap;
   }
 
   /* ---------------- mathpad ---------------- */

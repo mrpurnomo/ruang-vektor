@@ -685,7 +685,9 @@ def check_question(q, where, rep, subtopic_ids):
 
     # --- Aksioma: kalimat salah tidak boleh membocorkan kunci ---
     leak = []
-    wrong = q.get("toastWrong") or ""
+    # Petunjuk (hint) tunduk pada aksioma yang sama: ia menuntun, tidak
+    # boleh menyebut kunci. Keduanya diperiksa sebagai satu teks.
+    wrong = (q.get("toastWrong") or "") + " " + (q.get("hint") or "")
     if qid in LEAK_REVIEWED:
         rep.check(True, f"{where}/{qid}: toastWrong ditinjau manual — {LEAK_REVIEWED[qid]}")
     elif itype == "mathpad" and isinstance(q.get("answer"), (int, float)):
@@ -712,7 +714,7 @@ def check_question(q, where, rep, subtopic_ids):
         letter = HURUF[q["answerIndex"]] if q["answerIndex"] < len(HURUF) else "?"
         if re.search(r"\b[Oo]psi\s+\**" + letter + r"\b", wrong):
             leak.append(f"menyebut opsi benar {letter}")
-    rep.check(not leak, f"{where}/{qid}: toastWrong tidak membocorkan kunci", "; ".join(leak))
+    rep.check(not leak, f"{where}/{qid}: toastWrong & petunjuk tidak membocorkan kunci", "; ".join(leak))
 
 
 def check_questions(lessons, chapter_data, rep):
