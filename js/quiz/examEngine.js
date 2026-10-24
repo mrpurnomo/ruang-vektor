@@ -106,7 +106,7 @@ export class ExamEngine {
     const back = el('button', 'btn btn--icon btn--ghost ws-side__back');
     back.type = 'button';
     back.setAttribute('aria-label', 'Keluar dari ujian');
-    back.title = 'Keluar dari ujian';
+    back.dataset.tip = 'Keluar dari ujian';
     back.innerHTML = icon('arrow-left', { size: 18 });
     back.addEventListener('click', () => this.confirmExit());
     head.appendChild(back);
@@ -505,7 +505,7 @@ export class ExamEngine {
     const prev = el('button', 'btn btn--ghost btn--icon');
     prev.type = 'button';
     prev.setAttribute('aria-label', 'Soal sebelumnya');
-    prev.title = 'Soal sebelumnya';
+    prev.dataset.tip = 'Soal sebelumnya';
     prev.innerHTML = icon('arrow-left', { size: 16 });
     prev.disabled = this.index === 0;
     prev.addEventListener('click', () => this.goTo(this.index - 1));
@@ -513,7 +513,7 @@ export class ExamEngine {
     const next = el('button', 'btn btn--ghost btn--icon');
     next.type = 'button';
     next.setAttribute('aria-label', 'Soal berikutnya');
-    next.title = 'Soal berikutnya';
+    next.dataset.tip = 'Soal berikutnya';
     next.innerHTML = icon('arrow-right', { size: 16 });
     next.disabled = this.index >= this.questions.length - 1;
     next.addEventListener('click', () => this.goTo(this.index + 1));

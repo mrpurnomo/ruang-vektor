@@ -933,4 +933,47 @@
     transition: opacity var(--dur-base) var(--ease-out);
   }
   .sigpad.is-signed .sigpad__hint { opacity: 0; }
+
+  /* ---------------------------------------------------------------------
+     Tooltip bertema (core/ui/tooltip.js) — pengganti `title` bawaan.
+     Pelat grafit kecil berpanah; tembus-ketuk, tidak pernah menghalangi.
+     --------------------------------------------------------------------- */
+  .tip {
+    position: fixed;
+    z-index: calc(var(--z-toast) + 1);
+    max-width: min(280px, calc(100vw - 16px));
+    padding: 6px 10px 7px;
+    border-radius: var(--r-md);
+    background: var(--graphite);
+    color: var(--on-navy);
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: .01em;
+    box-shadow: var(--shadow-float), inset 0 -2px 0 var(--value);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(3px) scale(.97);
+    transition: opacity var(--dur-fast) var(--ease), transform var(--dur-base) var(--pop);
+  }
+  .tip[data-side="bottom"] { transform: translateY(-3px) scale(.97); }
+  .tip.is-on { opacity: 1; transform: none; }
+  .tip::after {
+    content: "";
+    position: absolute;
+    left: var(--tip-x, 50%);
+    width: 8px;
+    height: 8px;
+    background: var(--graphite);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .tip[data-side="top"]::after { bottom: -4px; box-shadow: 2px 2px 0 0 var(--value); }
+  .tip[data-side="bottom"]::after { top: -4px; }
+  @media (prefers-reduced-motion: reduce) {
+    .tip { transition: none; transform: none; }
+  }
+
+  /* Seleksi teks bertema (bukan biru bawaan sistem). */
+  ::selection { background: var(--value-line); color: var(--ink); }
 }

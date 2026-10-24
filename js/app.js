@@ -27,6 +27,7 @@ import { quizKey, clearAllResume } from './core/state/sessionState.js';
 import { attachMathpad, closeMathpad } from './core/ui/mathpad.js';
 import { killAllMotion } from './core/interactions/motion.js';
 import { createSignaturePad } from './core/ui/signaturePad.js';
+import { initTooltips } from './core/ui/tooltip.js';
 import sfx from './core/ui/sfx.js';
 
 /* ------------------------------------------------------------
@@ -600,7 +601,7 @@ async function renderMenu(params, options) {
       swap.innerHTML = `${icon('refresh', { size: 14 })}<span>Ganti Akun</span>`;
       swap.setAttribute('aria-label',
         `Keluar dari akun ${firstName(identity.nama)} dan masuk sebagai siswa lain`);
-      swap.title = 'Keluar dan masuk sebagai siswa lain';
+      swap.dataset.tip = 'Keluar dan masuk sebagai siswa lain';
       swap.addEventListener('click', () => switchAccount(identity));
 
       row.appendChild(swap);
@@ -892,7 +893,7 @@ function renderSubtopicList(params, options) {
           router.navigate(`belajar/${chapterMeta.id}/${id}`));
       } else {
         // Tombol terkunci tetap menjelaskan alasannya.
-        item.title = 'Selesaikan sub-topik sebelumnya untuk membuka yang ini.';
+        item.dataset.tip = 'Selesaikan sub-topik sebelumnya untuk membuka yang ini.';
       }
 
       list.appendChild(item);
@@ -1318,7 +1319,7 @@ function syncSoundButton() {
   const on = sfx.isEnabled();
   btn.setAttribute('aria-pressed', String(on));
   btn.setAttribute('aria-label', on ? 'Suara aktif. Ketuk untuk membisukan' : 'Suara bisu. Ketuk untuk menyalakan');
-  btn.title = on ? 'Suara aktif' : 'Suara bisu';
+  btn.dataset.tip = on ? 'Suara aktif' : 'Suara bisu';
   btn.innerHTML = icon(on ? 'volume' : 'volume-x', { size: 16 });
 }
 
@@ -1382,6 +1383,7 @@ async function init() {
   touchSession();
   initFullscreen();
   initSound();
+  initTooltips();
   initNavrail();
   registerRoutes();
 

@@ -343,7 +343,7 @@ export function createStepSlider({ count, labels = [], onJump = null, allowJump 
     dot.type = 'button';
     dot.setAttribute('role', 'tab');
     dot.setAttribute('aria-label', labels[i] || `Langkah ${i + 1}`);
-    dot.title = labels[i] || `Langkah ${i + 1}`;
+    dot.dataset.tip = labels[i] || `Langkah ${i + 1}`;
     dot.setAttribute('aria-current', String(i === 0));
     if (!allowJump) dot.disabled = true;
     dot.addEventListener('click', () => { if (allowJump && onJump) onJump(i); });

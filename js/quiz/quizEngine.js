@@ -121,14 +121,14 @@ export class QuizEngine {
     this.prevBtn = el('button', 'btn btn--ghost btn--icon btn--sm');
     this.prevBtn.type = 'button';
     this.prevBtn.setAttribute('aria-label', 'Soal sebelumnya');
-    this.prevBtn.title = 'Soal sebelumnya';
+    this.prevBtn.dataset.tip = 'Soal sebelumnya';
     this.prevBtn.innerHTML = icon('arrow-left', { size: 16 });
     this.prevBtn.addEventListener('click', () => this.goTo(this.index - 1));
 
     this.nextBtn = el('button', 'btn btn--ghost btn--icon btn--sm');
     this.nextBtn.type = 'button';
     this.nextBtn.setAttribute('aria-label', 'Soal berikutnya');
-    this.nextBtn.title = 'Soal berikutnya';
+    this.nextBtn.dataset.tip = 'Soal berikutnya';
     this.nextBtn.innerHTML = icon('arrow-right', { size: 16 });
     this.nextBtn.addEventListener('click', () => this.goTo(this.index + 1));
 
@@ -137,7 +137,7 @@ export class QuizEngine {
       const step = el('button', 'quiz-nav__step');
       step.type = 'button';
       step.setAttribute('aria-label', `Soal ${i + 1}`);
-      step.title = `Soal ${i + 1}`;
+      step.dataset.tip = `Soal ${i + 1}`;
       step.addEventListener('click', () => this.goTo(i));
       track.appendChild(step);
       return step;

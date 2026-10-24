@@ -144,7 +144,7 @@ export function createScratchpad(host) {
   fab.type = 'button';
   fab.innerHTML = icon('pencil', { size: 20 });
   fab.setAttribute('aria-label', 'Buka papan coret');
-  fab.title = 'Papan coret — hitung manual di atas panggung';
+  fab.dataset.tip = 'Papan coret — hitung manual di atas panggung';
 
   const root = el('div', 'pad');
   root.hidden = true;
@@ -195,7 +195,7 @@ export function createScratchpad(host) {
     b.type = 'button';
     b.style.setProperty('--swatch', c.value);
     b.setAttribute('aria-label', `Warna ${c.label}`);
-    b.title = c.label;
+    b.dataset.tip = c.label;
     b.addEventListener('click', () => setColor(c.value));
     colorBtns[c.value] = b;
     gColor.appendChild(b);
@@ -207,7 +207,7 @@ export function createScratchpad(host) {
     const b = el('button', 'pad__width');
     b.type = 'button';
     b.setAttribute('aria-label', `Ketebalan ${w.label}`);
-    b.title = w.label;
+    b.dataset.tip = w.label;
     b.innerHTML = `<span style="height:${w.value}px"></span>`;
     b.addEventListener('click', () => setWidth(w.value));
     widthBtns[w.value] = b;
@@ -818,7 +818,7 @@ function iconButton(name, label) {
   b.type = 'button';
   b.innerHTML = icon(name, { size: 17 });
   b.setAttribute('aria-label', label);
-  b.title = label;
+  b.dataset.tip = label;
   return b;
 }
 

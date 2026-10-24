@@ -904,6 +904,34 @@ def section_rangkuman_doc(page, errors):
     record("Tanpa galat konsol selama dokumen Rangkuman", not errors, "; ".join(errors[:2]))
 
 
+TIP_PROBE = """() => { const t = document.querySelector('.tip'); if (!t || t.hidden) return null;
+    const r = t.getBoundingClientRect();
+    return { text: t.textContent, on: t.classList.contains('is-on'),
+             inView: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight }; }"""
+NATIVE_TITLES = "() => [...document.querySelectorAll('[title]')].filter((e) => !(e instanceof SVGElement)).length"
+
+
+def section_tooltip(page, errors):
+    print("\n6j. Tooltip bertema menggantikan title bawaan peramban")
+    page.set_viewport_size({"width": 740, "height": 360})
+    fresh_position(page)
+    open_route(page, "#/", settle=600)
+    record("Beranda: tidak ada atribut title bawaan", page.evaluate(NATIVE_TITLES) == 0)
+    page.hover('[data-role="sound"]')
+    page.wait_for_timeout(700)
+    t = page.evaluate(TIP_PROBE)
+    record("Hover tombol suara → tooltip bertema muncul utuh di layar",
+           bool(t) and t["text"] == "Suara aktif" and t["on"] and t["inView"], json.dumps(t))
+    page.mouse.move(5, 355)
+    page.wait_for_timeout(300)
+    record("Tooltip hilang saat penunjuk pergi", page.evaluate(TIP_PROBE) is None)
+    open_route(page, GUIDED_ROUTE, settle=800)
+    record("Layar pelajaran: tidak ada atribut title bawaan", page.evaluate(NATIVE_TITLES) == 0)
+    page.dispatch_event(".ws-side__back", "pointerover", {"pointerType": "touch", "bubbles": True})
+    page.wait_for_timeout(600)
+    record("Sentuhan tidak memunculkan tooltip", page.evaluate(TIP_PROBE) is None)
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1366,6 +1394,7 @@ def main():
             section_quiz_retry(page, errors)
             section_quiz_plane(page, errors)
             section_rangkuman_doc(page, errors)
+            section_tooltip(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

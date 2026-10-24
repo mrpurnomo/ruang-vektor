@@ -232,7 +232,7 @@ function renderCarousel(block) {
     const dot = el('button', 'slider-dot');
     dot.type = 'button';
     dot.setAttribute('role', 'tab');
-    dot.title = slide.name;
+    dot.dataset.tip = slide.name;
     dot.setAttribute('aria-label', slide.name);
     dot.addEventListener('click', () => go(i));
     dots.appendChild(dot);
@@ -326,7 +326,7 @@ export class LessonView {
     const back = el('button', 'btn btn--icon btn--ghost ws-side__back');
     back.type = 'button';
     back.setAttribute('aria-label', 'Kembali ke daftar sub-topik');
-    back.title = 'Kembali ke daftar sub-topik';
+    back.dataset.tip = 'Kembali ke daftar sub-topik';
     back.innerHTML = icon('arrow-left', { size: 18 });
     back.addEventListener('click', () => this.ctx.onExit());
     sideHead.appendChild(back);
@@ -341,7 +341,7 @@ export class LessonView {
     if (this.reviewMode) {
       const flag = el('div', 'review-flag');
       flag.innerHTML = `${icon('check-circle', { size: 13 })}<span>Mode Review</span>`;
-      flag.title = 'Sub-topik ini sudah selesai — kamu bebas melompat ke bagian mana pun.';
+      flag.dataset.tip = 'Sub-topik ini sudah selesai — kamu bebas melompat ke bagian mana pun.';
       side.appendChild(flag);
     }
 
@@ -360,7 +360,7 @@ export class LessonView {
         item.type = 'button';
         item.setAttribute('role', 'tab');
         item.setAttribute('aria-selected', String(i === 0));
-        item.title = `Lompat ke ${s.label}`;
+        item.dataset.tip = `Lompat ke ${s.label}`;
         item.addEventListener('click', () => this.goTo(i));
       }
 
@@ -528,7 +528,7 @@ export class LessonView {
     const back = el('button', 'btn btn--ghost');
     back.type = 'button';
     back.innerHTML = `${icon('book', { size: 16 })}<span>Rangkuman</span>`;
-    back.title = 'Buka catatan lengkap sub-topik ini';
+    back.dataset.tip = 'Buka catatan lengkap sub-topik ini';
     back.addEventListener('click', () => this.openRangkuman());
     actions.appendChild(back);
 
@@ -1037,7 +1037,7 @@ export class LessonView {
       item.dataset.state = old.dataset.state;
       item.setAttribute('role', 'tab');
       item.setAttribute('aria-selected', String(i === this.step));
-      item.title = `Lompat ke ${STEPS[i].label}`;
+      item.dataset.tip = `Lompat ke ${STEPS[i].label}`;
       item.innerHTML = old.innerHTML;
       item.addEventListener('click', () => this.goTo(i));
       old.replaceWith(item);
