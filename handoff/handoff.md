@@ -295,7 +295,7 @@ Aturan:
 ### 4.3 Uji wajib sebelum setiap commit
 - `node tests/engine.test.mjs` → **130/130**.
 - `py tests/validate_data.py` → **0 GAGAL** (saat ini 755 lolos, 0 PERINGATAN).
-- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 219 lolos penuh (217 dengan `--skip-suites`),
+- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 250 lolos dengan `--skip-suites`,
   ±8 menit; sudah menjalankan `tests/plane.html` **33/33** dan `tests/sims.html` **26/26**).
   Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
 - Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
@@ -365,6 +365,7 @@ vektor-lab-interaktif/
 │   ├── mathpad.css            [components] numfield, scrim, papan angka semua mode
 │   ├── lesson.css             [components] typegroup, carousel, quiz-nav, answer-key, lesson-done
 │   ├── quiz.css               [components] ujian CBT
+│   ├── document.css           [components] dokumen Rangkuman A4 + aturan cetak
 │   ├── vector.css             [domain] sel, kurung vektor kolom, chip, stage, sim, checklist
 │   ├── plane.css              [domain] bidang kartesius SVG (.plane__*, titik ketuk 44px)
 │   ├── simulations.css        [domain] sim-host, sim-board, case-bar, sim-steps, isian & jejak kerja
@@ -381,7 +382,7 @@ vektor-lab-interaktif/
 │   │   ├── numeric.js         numbersMatch · formatNumber · parseNumberInput
 │   │   ├── text.js            fillTemplate ({{kunci}})
 │   │   ├── state/             progressStore.js (subscribe) · sessionState.js
-│   │   ├── ui/                mathpad.js · toast.js (show) · modal.js · icons.js · scratchpad.js
+│   │   ├── ui/                mathpad.js · toast.js (show) · modal.js · icons.js · scratchpad.js · sfx.js · burst.js · tooltip.js · signaturePad.js
 │   │   ├── interactions/      dragDrop.js · flyToAnimation.js · motion.js
 │   │   └── render/            katexRenderer.js (renderMixed · renderToString · renderBlock)
 │   ├── quiz/                  ══ generik ══
@@ -391,6 +392,8 @@ vektor-lab-interaktif/
 │   │   └── quizResult.js      layar hasil (judul sub-topik dari ctx.subtopicTitles)
 │   ├── lesson/
 │   │   ├── lessonRenderer.js  LessonView: Simulasi → Mini Kuis (+ Rangkuman opsional)
+│   │   ├── rangkumanDoc.js    Rangkuman → lembar A4 (identitas, tanda tangan, cetak)
+│   │   ├── quizTypes.js       tipe soal Mini Kuis tambahan (plane_tap)
 │   │   └── simulations/
 │   │       ├── index.js       SIMULATION_REGISTRY · registerSimulation · mountSimulation
 │   │       ├── simCore.js     kelas dasar Simulation + helper (renderColumnVector, dll.)
@@ -468,3 +471,36 @@ ter-commit dengan uji yang MERAH lebih dulu (atau uji mutasi), lalu gerbang penu
 (+ Mini Kuis `plane_tap` bila cocok). **Catatan terbuka:** toast 740×360 (≤ 2,2 dtk)
 masih bisa menutupi tombol di kolom kerja kanan sesaat (tembus-ketuk); toast galat
 di layar besar tetap 5 detik.
+
+---
+
+## 7. ADENDUM 25 Okt 2026 — Tujuh revisi guru atas sub-topik 1
+
+| Commit | Revisi | Isi |
+|---|---|---|
+| `b763b58` | 2 | **Label bidang tidak bertumpuk** di 25 simulasi: `VectorPlane.declutter()` (kandidat geser atas/bawah/kanan/kiri/diagonal ×1/1,6/2,3; rintangan = lingkaran titik non-hantu; prioritas label titik 3 > tag/busur 2 > panah 1). `sims.browser.mjs` memeriksa `labelClashes()` tiap kasus |
+| `ab38e07` | 1 | **Simulasi tuntas tidak terulang sendiri**: kembali dari Mini Kuis/Rangkuman → penutup "Simulasi tuntas" (`showCompleteCover()`, papan disembunyikan), tombol `data-sim-action` = `restart`·`review`·`quiz`; mengulang hanya lewat **Ulangi** (`restart()`) |
+| `f06510a` | 5 | **Pop-up kesimpulan** "Apa itu vektor?" (`simulation.conclusion` di JSON: definisi + contoh vektor/skalar + ingat) muncul sebelum selebrasi; **petunjuk** (`hint`) per soal Mini Kuis |
+| `789a96c` | 6 | **Mini Kuis seru**: `sfx.select` saat memilih, `core/ui/burst.js` (pop-up ±1 dtk, tembus-ketuk, `aria-hidden`) + `sfx.correct`/`sfx.oops`, kartu `is-ok`/`is-no`; `plane_tap.reveal` menggambar panah siswa (soal 3: panah OR ke titik yang diketuk) |
+| `eb034c1` | 7 | **Layar hasil Mini Kuis**: dial skor beranimasi + sinar, hitung naik + `sfx.fanfare`, statistik & rekor, tautan Beranda / Daftar Sub-topik / Coba Lagi Kuis, bilah aksi menempel |
+| `3c6070e` | 3 | **Rangkuman = dokumen A4 potret** (`lesson/rangkumanDoc.js`, `css/document.css`): kepala bezel + identitas (nama, sekolah, tanggal), dua kolom seimbang, kaki bertanda tangan & nomor halaman; luapan diukur dari kotak tiap unit (bukan `scrollHeight` — kontainer berkolom tidak melaporkannya) lalu pindah lembar. Tombol **Cetak / Simpan PDF** (`#print-root` + `html.is-printing` + `@page A4`). Sub-topik 1 punya `rangkuman` terstruktur di JSON (`subtitle`, `sections[].blocks`, `notes`) sesuai simulasi; 24 sub-topik lain memakai materi lama per blok. Terukur: **25/25 muat 1 lembar**, PDF sub-topik 1 = 1 halaman. Layar masuk: **tanda tangan opsional** (`core/ui/signaturePad.js`, PNG terpangkas di `vektorLab.identity.v1.ttd`) |
+| `bd32672` | 4 | **Nol UI bawaan**: `core/ui/tooltip.js` menggantikan SEMUA atribut `title` (23 titik + `index.html`) dengan `data-tip` — pelat grafit berpanah, delegasi di `document`, jeda hover 380 ms, fokus papan ketik langsung, sentuhan tidak memunculkan, `aria-describedby` saat tampil; jaring pengaman mengubah `title` yang tersisa saat disentuh. `::selection` bertema. (Scrollbar, modal, toast sudah kustom sejak awal.) **Satu-satunya yang tetap bawaan:** dialog cetak peramban — tidak bisa diberi gaya oleh halaman web |
+
+**Kontrak baru yang mengikat:**
+- Petunjuk melayang = `el.dataset.tip`, **jangan pernah `title`** (smoke §6j menghitung `[title]` = 0).
+- Label bidang lewat `createLabel(tone, cls, priority)`/`placeLabel`; jangan memposisikan
+  `foreignObject` label secara manual — `declutter()` yang menata.
+- Tipe soal Mini Kuis baru didaftarkan lewat `QuizEngine.registerType(name, {render, answerKey})`
+  (contoh: `lesson/quizTypes.js` → `plane_tap`).
+- Rangkuman baru per sub-topik: isi `subtopic.rangkuman` terstruktur (lihat sub-topik 1),
+  wajib muat satu lembar (smoke §6i mencatat jumlah lembar 25 sub-topik).
+- Identitas `{nama, sekolah, ttd, at}`; `ctx.identity` & `ctx.onHome` tersedia di LessonView.
+- Uji yang menyentuh progres wajib `progressStore.resetAll()` — `localStorage.clear()` saja
+  ditulis balik dari memori.
+
+**Uji terakhir (`bd32672`):** Node 130/130 · data 755/0/0 · plane 33/33 · sims 26/26 ·
+smoke `--skip-suites` **250**/0 (1 CATATAN = jumlah lembar Rangkuman per sub-topik).
+
+**Antrean berikutnya:** tunggu penilaian guru atas tujuh revisi ini, lalu §4.1 butir 2
+(lima sub-topik Bab 1 lain ke pola terpandu, masing-masing dengan `conclusion`,
+`rangkuman` terstruktur, dan Mini Kuis ber-`hint`).
