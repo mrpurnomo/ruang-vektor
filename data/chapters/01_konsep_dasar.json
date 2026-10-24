@@ -307,7 +307,131 @@
             "name": "OR"
           }
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Dari titik asal $O$ ke titik $A$: membentuk vektor pertamamu, lalu membaca tandanya di empat kuadran.",
+        "sections": [
+          {
+            "title": "1 · Apa itu vektor?",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Membentuk vektor dari $O$ ke $A$",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "vektor_oa",
+                "caption": "Jejak langkah $+7$ mendatar lalu $+4$ tegak, disatukan panah $\\overrightarrow{OA}$."
+              },
+              {
+                "t": "steps",
+                "items": [
+                  "Tandai titik asal $O(0,\\, 0)$ — tempat sumbu $X$ dan $Y$ berpotongan.",
+                  "Cari titik tujuan $A(7,\\, 4)$: angka **pertama** mendatar, angka **kedua** tegak.",
+                  "Hitung langkahnya: $7$ satuan ke kanan, $4$ satuan ke atas.",
+                  "Gambar **satu panah**: pangkal di $O$, mata panah di $A$."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Cara menuliskan vektor",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Bentuk",
+                  "Contoh"
+                ],
+                "rows": [
+                  [
+                    "Nama dua huruf",
+                    "$\\overrightarrow{OA}$ (pangkal $O$, ujung $A$)"
+                  ],
+                  [
+                    "Satu huruf",
+                    "$\\vec{a}$"
+                  ],
+                  [
+                    "Vektor kolom",
+                    "$\\begin{pmatrix} 7 \\\\ 4 \\end{pmatrix}$"
+                  ],
+                  [
+                    "Pasangan",
+                    "$(7,\\, 4)$"
+                  ]
+                ]
+              },
+              {
+                "t": "p",
+                "x": "Huruf **pertama** selalu pangkal, huruf **kedua** selalu ujung."
+              }
+            ]
+          },
+          {
+            "title": "4 · Tanda komponen = arah",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Titik",
+                  "Kuadran",
+                  "Langkah"
+                ],
+                "rows": [
+                  [
+                    "$A(7,\\, 4)$",
+                    "I",
+                    "kanan $+7$, atas $+4$"
+                  ],
+                  [
+                    "$B(-5,\\, 3)$",
+                    "II",
+                    "kiri $-5$, atas $+3$"
+                  ],
+                  [
+                    "$C(-4,\\, -6)$",
+                    "III",
+                    "kiri $-4$, bawah $-6$"
+                  ],
+                  [
+                    "$D(3,\\, -5)$",
+                    "IV",
+                    "kanan $+3$, bawah $-5$"
+                  ]
+                ]
+              },
+              {
+                "t": "p",
+                "x": "Tanda **minus** bukan hiasan: ia memerintahkan langkah ke **kiri** (mendatar) atau ke **bawah** (tegak)."
+              }
+            ]
+          },
+          {
+            "title": "5 · Vektor lawan",
+            "blocks": [
+              {
+                "t": "p",
+                "x": "$\\overrightarrow{QP}$ menempuh ruas garis yang sama dengan $\\overrightarrow{PQ}$, panjangnya sama, arahnya **berlawanan**:"
+              },
+              {
+                "t": "tex",
+                "x": "\\overrightarrow{QP} = -\\overrightarrow{PQ}"
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Jangan tertukar: $(7,\\, 4)$ berarti $7$ **mendatar** dulu, baru $4$ **tegak** — bukan sebaliknya.",
+          "Panjang vektor tidak pernah negatif; yang bertanda hanya **komponennya**.",
+          "Kelajuan $60$ km/jam itu **skalar**; begitu ditambah \"ke timur\", ia menjadi **kecepatan** — vektor.",
+          "Saat menggambar, cek dulu: apakah mata panah ada di titik **ujung** (huruf kedua)?"
+        ]
+      }
     },
     {
       "id": "notasi_penyajian",

@@ -897,4 +897,40 @@
     60% { transform: translateX(-4px); }
     80% { transform: translateX(2px); }
   }
+
+  /* ------------------------------------------------------------
+     BANTALAN TANDA TANGAN (core/ui/signaturePad.js)
+     Kertas bergaris tipis + garis dasar, tanpa elemen native.
+     ------------------------------------------------------------ */
+  .sigpad {
+    position: relative;
+    width: 100%;
+    border-radius: var(--r-md);
+    border: 1px dashed var(--border-strong);
+    background: repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 8px), var(--white);
+    touch-action: none;
+    overflow: hidden;
+  }
+  .sigpad.is-signed { border-style: solid; border-color: var(--brand-primary-line); }
+  .sigpad__canvas { display: block; cursor: crosshair; touch-action: none; }
+  .sigpad__line {
+    position: absolute;
+    left: var(--sp-4);
+    right: var(--sp-4);
+    bottom: 22px;
+    height: 0;
+    border-bottom: 1.5px solid var(--ink-300);
+    pointer-events: none;
+  }
+  .sigpad__hint {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    font-size: var(--fs-xs);
+    color: var(--ink-300);
+    pointer-events: none;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .sigpad.is-signed .sigpad__hint { opacity: 0; }
 }

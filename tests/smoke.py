@@ -33,6 +33,7 @@ Jalankan:
 """
 
 import argparse
+import re
 import json
 import subprocess
 import sys
@@ -371,14 +372,14 @@ def section_subtopics(page, errors, chapters):
     fresh_position(page)
     open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
     record("Sub-topik dibuka langsung di Simulasi, bukan Materi",
-           page.query_selector(".sim-host") is not None and page.query_selector(".materi") is None)
+           page.query_selector(".sim-host") is not None and page.query_selector(".doc-sheet") is None)
     click_text(page, "Rangkuman")
     page.wait_for_timeout(500)
-    record("Tombol Rangkuman membuka materi teks", page.query_selector(".materi") is not None)
+    record("Tombol Rangkuman membuka dokumen Rangkuman", page.query_selector(".doc-sheet") is not None)
     click_text(page, "Kembali ke Simulasi")
     page.wait_for_timeout(600)
     record("Kembali dari Rangkuman mendarat di Simulasi lagi",
-           page.query_selector(".sim-host") is not None and page.query_selector(".materi") is None)
+           page.query_selector(".sim-host") is not None and page.query_selector(".doc-sheet") is None)
     record("Tanpa galat konsol selama Rangkuman", not errors, "; ".join(errors[:2]))
 
 
@@ -635,7 +636,7 @@ def section_celebration(page, errors):
         record(f"{w}×{h}: toast dibersihkan, fokus di aksi utama Mini Kuis", c["toasts"] == 0 and c["focus"], json.dumps(c, ensure_ascii=False))
         page.locator(".modal__actions .btn", has_text=pick).click()
         page.wait_for_timeout(700)
-        landed = page.evaluate("() => ({ quiz: !!document.querySelector('.quiz'), materi: !!document.querySelector('.materi-card'), modal: !!document.querySelector('.modal--celebrate') })")
+        landed = page.evaluate("() => ({ quiz: !!document.querySelector('.quiz'), materi: !!document.querySelector('.doc-sheet'), modal: !!document.querySelector('.modal--celebrate') })")
         want = "quiz" if "Kuis" in pick else "materi"
         record(f"{w}×{h}: '{pick}' membawa siswa ke tujuannya", landed[want] and not landed["modal"], json.dumps(landed))
     # Kunjungan ulang simulasi yang sudah tuntas: TANPA selebrasi lagi.
@@ -825,6 +826,82 @@ def section_quiz_retry(page, errors):
     # menulis ulang progres lama dari memori (terukur: 6h mendarat di review).
     page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
     reset_storage(page)
+
+
+DOC_PROBE = r"""() => [...document.querySelectorAll('.doc-stack .doc-sheet')].map((s) => { const b = s.querySelector('.doc-body');
+    return { overflow: b.scrollHeight > b.clientHeight + 1 || b.scrollWidth > b.clientWidth + 1,
+             sections: b.querySelectorAll('.doc-sec').length, notes: !!b.querySelector('.doc-notes'),
+             ident: s.querySelector('.doc-ident').innerText.replace(/\s+/g, ' '), sign: !!s.querySelector('.doc-sign__box img'),
+             text: b.innerText.slice(0, 4000) }; })"""
+
+
+def section_rangkuman_doc(page, errors):
+    print("\n6i. Rangkuman = dokumen A4 + tanda tangan siswa dari layar masuk")
+    page.set_viewport_size({"width": 1024, "height": 600})
+    page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
+    page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
+    open_route(page, "#/login", settle=600)
+    for sel, text in [("#login-nama", "Ayu Lestari"), ("#login-sekolah", "SMAS YPVDP Bontang")]:
+        page.click(sel)
+        page.wait_for_timeout(200)
+        page.keyboard.type(text)
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(200)
+    box = page.locator(".sigpad__canvas").bounding_box()
+    record("Layar masuk punya bantalan tanda tangan (opsional)", box is not None)
+    x0, y0 = box["x"] + 30, box["y"] + box["height"] * 0.6
+    page.mouse.move(x0, y0)
+    page.mouse.down()
+    for i in range(1, 30):
+        page.mouse.move(x0 + i * 7, y0 - (i % 6) * 4, steps=2)
+    page.mouse.up()
+    page.click(".login__submit")
+    page.wait_for_timeout(800)
+    ident = page.evaluate("() => JSON.parse(localStorage.getItem('vektorLab.identity.v1') || 'null')")
+    record("Tanda tangan tersimpan bersama identitas (PNG)",
+           bool(ident) and str(ident.get("ttd") or "").startswith("data:image/png"), str((ident or {}).get("ttd"))[:40])
+    for w, h in [(1024, 600), (740, 360)]:
+        page.set_viewport_size({"width": w, "height": h})
+        fresh_position(page)
+        open_route(page, GUIDED_ROUTE, settle=700)
+        click_text(page, "Rangkuman")
+        page.wait_for_timeout(900)
+        d = page.evaluate(DOC_PROBE)
+        record(f"{w}×{h}: Rangkuman sub-topik 1 muat SATU lembar A4 tanpa luapan",
+               len(d) == 1 and not d[0]["overflow"], json.dumps([{k: v for k, v in x.items() if k != "text"} for x in d], ensure_ascii=False))
+        if d:
+            record(f"{w}×{h}: kepala dokumen memuat nama & asal sekolah; kaki memuat tanda tangan",
+                   "Ayu Lestari" in d[0]["ident"] and "SMAS YPVDP Bontang" in d[0]["ident"] and d[0]["sign"], d[0]["ident"])
+            record(f"{w}×{h}: isi mengikuti simulasi (kesimpulan, O→A, 4 kuadran) + catatan kecil",
+                   d[0]["sections"] >= 6 and d[0]["notes"] and "arah" in d[0]["text"] and "kuadran" in d[0]["text"].lower(), d[0]["text"][:120])
+    record("Tombol Cetak / Simpan PDF tersedia", page.query_selector('[data-role="print-rangkuman"]') is not None)
+    # Cetak: kondisi yang sama dengan print() lalu PDF A4 sungguhan.
+    page.evaluate("""() => { const d = window.__vektorLab.state.activeView.rangkumanDoc;
+        const root = document.createElement('div'); root.id = 'print-root';
+        d.pages.forEach((p) => root.appendChild(p.cloneNode(true))); document.body.appendChild(root);
+        document.documentElement.classList.add('is-printing'); }""")
+    pdf = page.pdf(format="A4", print_background=True, prefer_css_page_size=True)
+    pages = len(re.findall(rb"/Type\s*/Page[^s]", pdf))
+    record("Hasil cetak (PDF A4) = 1 halaman", pages == 1, f"{pages} halaman")
+    page.evaluate("() => { document.getElementById('print-root').remove(); document.documentElement.classList.remove('is-printing'); }")
+    # Ke-25 sub-topik: rangkuman tergambar tanpa galat (jumlah lembar dicatat).
+    errors.clear()
+    page.set_viewport_size({"width": 1024, "height": 600})
+    counts = {}
+    for cid, subs in load_manifest():
+        for sid in subs:
+            fresh_position(page)
+            # Tahap 2 = Rangkuman (REVIEW_STEP): mendarat langsung di dokumennya.
+            page.evaluate("""async ([c, s]) => { const m = await import('/js/core/state/sessionState.js');
+                m.patchResume(m.lessonKey(c, s), { step: 2 }); }""", [cid, sid])
+            open_route(page, f"#/belajar/{cid}/{sid}", settle=500)
+            n = page.evaluate("() => document.querySelectorAll('.doc-stack .doc-sheet').length")
+            counts.setdefault(n, []).append(sid)
+    rendered = sum(len(v) for k, v in counts.items() if k >= 1)
+    record(f"Rangkuman {EXPECTED_SUBTOPICS} sub-topik tergambar sebagai dokumen A4", rendered == EXPECTED_SUBTOPICS,
+           json.dumps({k: len(v) for k, v in counts.items()}))
+    note("Jumlah lembar Rangkuman per sub-topik", json.dumps({f"{k} lembar": v for k, v in sorted(counts.items())}, ensure_ascii=False))
+    record("Tanpa galat konsol selama dokumen Rangkuman", not errors, "; ".join(errors[:2]))
 
 
 def section_sound_toggle(page, errors):
@@ -1288,6 +1365,7 @@ def main():
             section_celebration(page, errors)
             section_quiz_retry(page, errors)
             section_quiz_plane(page, errors)
+            section_rangkuman_doc(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

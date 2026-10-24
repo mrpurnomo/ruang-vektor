@@ -270,4 +270,10 @@
     .login__fields { gap: var(--sp-2); }
     .login__submit { margin-top: var(--sp-1); }
   }
+
+  /* Tanda tangan (opsional) di layar masuk. */
+  .login__sign { display: grid; gap: 6px; }
+  .login__sign-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+  .login__sign-head small { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--ink-500); }
+  .login__sign-clear[disabled] { opacity: .45; }
 }

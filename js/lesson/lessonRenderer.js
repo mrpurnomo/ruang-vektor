@@ -14,6 +14,7 @@ import { mountSimulation } from './simulations/index.js';
 import { QuizEngine } from '../quiz/quizEngine.js';
 // Efek samping: mendaftarkan tipe soal bidang kartesius (plane_tap).
 import './quizTypes.js';
+import { renderRangkumanDoc } from './rangkumanDoc.js';
 import { renderQuestionBody } from '../quiz/questionBody.js';
 import {
   markSubtopicStarted, markSubtopicCompleted, recordAttempt,
@@ -449,6 +450,10 @@ export class LessonView {
       this.simulation = null;
     }
     this.disposeQuiz();
+    if (this.rangkumanDoc) {
+      this.rangkumanDoc.destroy();
+      this.rangkumanDoc = null;
+    }
 
     this.body.innerHTML = '';
     if (this.actionHost) this.actionHost.innerHTML = '';
@@ -461,34 +466,40 @@ export class LessonView {
 
   /* ---------------- A. Rangkuman (materi teks, opsional) ---------------- */
   renderRangkuman() {
-    const { subtopic } = this.ctx;
+    const { chapter, subtopic, subtopicOrder, identity } = this.ctx;
 
-    // Teks TIDAK PERNAH langsung di atas latar grid — selalu di dalam kartu solid.
-    // Fase 9 — SATU kolom mengalir, titik. Paginasi berkolom dari Fase 8
-    // memotong-motong bacaan menjadi kolom sempit yang justru sulit diikuti.
-    // Teori panjang sekarang digulir dengan tenang DI DALAM kartunya sendiri
-    // (lihat `.materi-card` di phase9.css), sementara halamannya tetap 100vh.
+    // Revisi guru: Rangkuman = DOKUMEN A4 siap cetak yang mengikuti apa yang
+    // disimulasikan — kepala & kaki dokumen, nama, sekolah, tanda tangan.
     this.setHint(
       'Rangkuman',
-      'Catatan lengkap sub-topik ini. Boleh dibuka kapan saja — simulasinya menunggu di tempat terakhirmu.'
+      'Catatan ringkas sub-topik ini dalam satu lembar A4 — bisa dicetak atau disimpan sebagai PDF. Simulasinya menunggu di tempat terakhirmu.'
     );
 
-    const card = el('div', 'content-card materi-card anim-rise');
-    const wrap = el('div', 'materi');
-    subtopic.materi.forEach((block) => wrap.appendChild(renderBlock(block)));
-    card.appendChild(wrap);
-    this.body.appendChild(card);
+    const host = el('div', 'doc-host anim-rise');
+    this.body.appendChild(host);
+    this.rangkumanDoc = renderRangkumanDoc(host, {
+      chapter,
+      subtopic,
+      number: subtopicOrder.indexOf(subtopic.id) + 1,
+      identity,
+    });
 
     const actions = el('div', 'actionbar');
-    actions.appendChild(el('span', 'actionbar__note', 'Sudah cukup? Kembali ke tempatmu tadi.'));
-    actions.appendChild(el('div', 'actionbar__spacer'));
-
-    const next = el('button', 'btn btn--primary');
+    const next = el('button', 'btn btn--ghost');
     next.type = 'button';
     const backLabel = this.returnStep === 1 ? 'Kembali ke Mini Kuis' : 'Kembali ke Simulasi';
     next.innerHTML = `${icon('arrow-left', { size: 17 })}<span>${backLabel}</span>`;
     next.addEventListener('click', () => { this.step = this.returnStep; this.renderStep(); });
     actions.appendChild(next);
+
+    actions.appendChild(el('div', 'actionbar__spacer'));
+
+    const print = el('button', 'btn btn--primary');
+    print.type = 'button';
+    print.dataset.role = 'print-rangkuman';
+    print.innerHTML = `${icon('save', { size: 17 })}<span>Cetak / Simpan PDF</span>`;
+    print.addEventListener('click', () => this.rangkumanDoc && this.rangkumanDoc.print());
+    actions.appendChild(print);
 
     this.actionHost.appendChild(actions);
   }
@@ -1042,6 +1053,7 @@ export class LessonView {
   destroy() {
     if (this.simulation) this.simulation.destroy();
     this.disposeQuiz();
+    if (this.rangkumanDoc) this.rangkumanDoc.destroy();
     // Isolasi rute: papan coret ikut dibongkar bersama layarnya.
     if (this.scratchpad) {
       this.scratchpad.destroy();

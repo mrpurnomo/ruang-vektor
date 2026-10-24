@@ -26,6 +26,7 @@ import {
 import { quizKey, clearAllResume } from './core/state/sessionState.js';
 import { attachMathpad, closeMathpad } from './core/ui/mathpad.js';
 import { killAllMotion } from './core/interactions/motion.js';
+import { createSignaturePad } from './core/ui/signaturePad.js';
 import sfx from './core/ui/sfx.js';
 
 /* ------------------------------------------------------------
@@ -420,6 +421,27 @@ function renderLogin(params, options) {
 
     card.appendChild(fields);
 
+    // Tanda tangan siswa (OPSIONAL): tampil di kaki dokumen Rangkuman dan
+    // dokumen hasil belajar. Bantalan kanvas bertema — tanpa elemen native.
+    const sign = el('div', 'login__field login__sign');
+    const signHead = el('div', 'login__sign-head');
+    signHead.appendChild(el('span', 'login__label', 'Tanda tangan <small>(opsional)</small>'));
+    const clear = el('button', 'btn btn--ghost btn--sm login__sign-clear');
+    clear.type = 'button';
+    clear.innerHTML = `${icon('eraser', { size: 14 })}<span>Hapus</span>`;
+    signHead.appendChild(clear);
+    sign.appendChild(signHead);
+    // Di kolom isian (kanan), di atas tombol Mulai Belajar.
+    fields.appendChild(sign);
+    const pad = createSignaturePad(sign, {
+      height: 96,
+      onChange: (p) => { clear.disabled = p.isEmpty(); },
+    });
+    clear.disabled = true;
+    clear.addEventListener('click', () => pad.clear());
+    // Bongkar bantalan (ResizeObserver) saat layar berganti.
+    state.activeView = { destroy: () => pad.destroy() };
+
     const submit = el('button', 'btn btn--primary btn--lg login__submit');
     submit.type = 'button';
     submit.innerHTML = `<span>Mulai Belajar</span>${icon('arrow-right', { size: 18 })}`;
@@ -442,7 +464,7 @@ function renderLogin(params, options) {
         return;
       }
 
-      setIdentity({ nama, sekolah, at: Date.now() });
+      setIdentity({ nama, sekolah, ttd: pad.isEmpty() ? null : pad.toDataURL(), at: Date.now() });
       toast.success(`Selamat belajar, ${firstName(nama)}!`);
       router.navigate('');
     });
