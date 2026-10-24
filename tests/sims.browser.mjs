@@ -144,6 +144,26 @@ const CASE_SUCCESS = {
   vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
 };
 
+/**
+ * Pasangan label bidang yang saling menimpa, atau menimpa titik.
+ * Terukur 26 tumpang-tindih di simulasi terpandu sebelum declutter().
+ */
+function labelClashes() {
+  const svg = host.querySelector('svg.plane');
+  if (!svg) return [];
+  const labels = [...svg.querySelectorAll('.plane__label-inner, .plane__arc-slot')]
+    .filter((e) => e.textContent.trim())
+    .map((e) => ({ t: e.textContent.trim().slice(0, 10), r: e.getBoundingClientRect() }));
+  const dots = [...svg.querySelectorAll('.plane__point:not(.plane__point--ghost)')].map((e) => e.getBoundingClientRect());
+  const hit = (a, b, pad = 1) => !(a.right - pad <= b.left || b.right - pad <= a.left || a.bottom - pad <= b.top || b.bottom - pad <= a.top);
+  const out = [];
+  labels.forEach((a, i) => {
+    labels.slice(i + 1).forEach((b) => { if (hit(a.r, b.r)) out.push(`${a.t} ⟷ ${b.t}`); });
+    dots.forEach((d) => { if (hit(a.r, d, 0.5)) out.push(`${a.t} ⟷ titik`); });
+  });
+  return out;
+}
+
 function planeRect() {
   const p = host.querySelector('.plane-host');
   if (!p) return null;
@@ -226,6 +246,12 @@ async function runEngine(def, plan) {
       }
 
       await waitFor(() => sim.solved.has(ci), 3000, `kasus ${ci + 1} selesai`);
+      // Panah hasil boleh masih beranimasi sesudah kasus tuntas: tunggu
+      // sampai diam, lalu beri declutter() satu frame.
+      await sleep(700);
+      await frames(2);
+      const clash = labelClashes();
+      assert(!clash.length, `kasus ${ci + 1}: label bidang bertumpuk — ${clash.slice(0, 3).join('; ')}`);
       // Toast sukses harus milik kasus INI. Terukur di purwarupa terpandu:
       // kasus latihan B, C, D membunyikan "Dari O ke A: 7 ke kanan…".
       const wantKey = CASE_SUCCESS[def.engine] && CASE_SUCCESS[def.engine](sim.cases[ci]);

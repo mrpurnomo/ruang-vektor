@@ -218,6 +218,7 @@ export class VectorPlane {
     this.arrows.forEach((arrow) => arrow.layout());
     this.marks.forEach((mark) => mark.layout());
     this.layoutListeners.forEach((fn) => fn(this.viewport));
+    this.declutter();
   }
 
   /** Dipanggil setiap kali bidang digambar ulang (mis. untuk memosisikan overlay). */
@@ -250,6 +251,8 @@ export class VectorPlane {
     this.destroyed = true;
     if (this.raf) cancelAnimationFrame(this.raf);
     this.raf = 0;
+    if (this.declutterRaf) cancelAnimationFrame(this.declutterRaf);
+    this.declutterRaf = 0;
     this.observer.disconnect();
     this.animations.forEach((handle) => handle.cancel());
     this.animations.clear();
@@ -341,8 +344,14 @@ export class VectorPlane {
      LABEL — <foreignObject> + KaTeX (kontrak 5)
      ============================================================ */
 
-  createLabel(toneClass = '', innerClass = 'plane__label-inner') {
+  /**
+   * @param {number} priority  urutan penataan ulang (declutter): titik 3,
+   *   lencana/busur 2, panah 1. Label berprioritas tinggi menempati posisi
+   *   aslinya lebih dulu; yang lebih rendah mengalah.
+   */
+  createLabel(toneClass = '', innerClass = 'plane__label-inner', priority = 1) {
     const fo = svgEl('foreignObject', { width: LABEL_W, height: LABEL_H }, `plane__label ${toneClass}`.trim());
+    fo.dataset.prio = String(priority);
     const box = document.createElementNS(XHTML_NS, 'div');
     box.className = 'plane__label-box';
     const inner = document.createElementNS(XHTML_NS, 'span');
@@ -356,12 +365,77 @@ export class VectorPlane {
   setLabelContent(fo, tex) {
     const inner = fo.firstChild.firstChild;
     inner.innerHTML = tex ? renderToString(tex) : '';
+    this.scheduleDeclutter();
   }
 
   /** Pusatkan kotak label pada titik jangkar (piksel). */
   placeLabel(fo, [x, y]) {
+    fo._anchor = [x, y];
     fo.setAttribute('x', fmt(x - LABEL_W / 2));
     fo.setAttribute('y', fmt(y - LABEL_H / 2));
+    this.scheduleDeclutter();
+  }
+
+  scheduleDeclutter() {
+    if (this.destroyed || this.declutterRaf) return;
+    this.declutterRaf = requestAnimationFrame(() => {
+      this.declutterRaf = 0;
+      this.declutter();
+    });
+  }
+
+  /**
+   * TATA ULANG LABEL supaya tidak ada teks yang tertimpa.
+   *
+   * Terukur 26 tumpang-tindih di 4 kasus simulasi terpandu: lencana "−5"
+   * tertutup label OD, "+3" menimpa label O, label titik menempel di
+   * titiknya. Setiap label (urut prioritas) mencoba posisi aslinya, lalu
+   * posisi alternatif terdekat yang tidak menimpa label lain atau titik dan
+   * tetap di dalam bidang. Jangkarnya (koordinat matematika) tidak berubah,
+   * jadi penataan dihitung ulang setiap bidang digambar ulang.
+   */
+  declutter() {
+    if (this.destroyed || !this.viewport) return;
+    const vp = this.viewport;
+    const occupied = [];
+    this.layers.interactive.querySelectorAll('.plane__point:not(.plane__point--ghost)').forEach((c) => {
+      const cx = Number(c.getAttribute('cx'));
+      const cy = Number(c.getAttribute('cy'));
+      const r = Number(c.getAttribute('r')) + 2;
+      if (Number.isFinite(cx) && Number.isFinite(cy)) occupied.push([cx - r, cy - r, cx + r, cy + r]);
+    });
+    const overlap = (a, b) => !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]);
+    const labels = [...this.layers.label.children]
+      .filter((fo) => fo._anchor && fo.isConnected)
+      .sort((a, b) => (Number(b.dataset.prio) || 1) - (Number(a.dataset.prio) || 1));
+
+    for (const fo of labels) {
+      const inner = fo.firstChild && fo.firstChild.firstChild;
+      if (!inner || !inner.textContent.trim()) continue;
+      const w = inner.offsetWidth;
+      const h = inner.offsetHeight;
+      if (!w || !h) continue;
+      const [ax, ay] = fo._anchor;
+      const box = (cx, cy) => [cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2];
+      const candidates = [[0, 0]];
+      for (const d of [1, 1.6, 2.3]) {
+        const dx = (w * 0.6 + 4) * d;
+        const dy = (h * 0.75 + 3) * d;
+        candidates.push([0, -dy], [0, dy], [dx, 0], [-dx, 0], [dx, -dy], [-dx, -dy], [dx, dy], [-dx, dy]);
+      }
+      let at = null;
+      for (const [dx, dy] of candidates) {
+        const b = box(ax + dx, ay + dy);
+        if (b[0] < 1 || b[1] < 1 || b[2] > vp.width - 1 || b[3] > vp.height - 1) continue;
+        if (occupied.some((o) => overlap(o, b))) continue;
+        at = [ax + dx, ay + dy];
+        break;
+      }
+      const [px, py] = at || [ax, ay];
+      fo.setAttribute('x', fmt(px - LABEL_W / 2));
+      fo.setAttribute('y', fmt(py - LABEL_H / 2));
+      occupied.push(box(px, py));
+    }
   }
 
   /* ============================================================
@@ -433,11 +507,12 @@ export class VectorPlane {
         node.setAttribute('cx', fmt(x));
         node.setAttribute('cy', fmt(y));
       }
-      if (m.labelEl) this.placeLabel(m.labelEl, [x + 14, y - 14]);
+      // Jangkar 19px serong kanan-atas: kotak label tidak menempel di titiknya sendiri.
+      if (m.labelEl) this.placeLabel(m.labelEl, [x + 19, y - 19]);
     });
     mark.setPosition = (p) => { position = toPlanePoint(p); mark.layout(); return mark; };
     mark.setLabel = (tex) => {
-      if (!mark.labelEl && tex) mark.labelEl = this.createLabel();
+      if (!mark.labelEl && tex) mark.labelEl = this.createLabel('', 'plane__label-inner', 3);
       if (mark.labelEl) this.setLabelContent(mark.labelEl, tex);
       mark.layout();
       return mark;
@@ -488,7 +563,7 @@ export class VectorPlane {
    */
   drawTag(point, tex, { offset = [0, 0], tone = '' } = {}) {
     let position = toPlanePoint(point);
-    const fo = this.createLabel(`plane__tag${tone ? ` plane__label--${tone}` : ''}`);
+    const fo = this.createLabel(`plane__tag${tone ? ` plane__label--${tone}` : ''}`, 'plane__label-inner', 2);
     const mark = this.addMark('label', fo, (vp) => {
       const [x, y] = vp.toScreen(position);
       this.placeLabel(fo, [x + offset[0], y + offset[1]]);
@@ -582,7 +657,7 @@ export class VectorPlane {
       }
       if (m.labelEl) this.placeLabel(m.labelEl, arcPoints(vp, o, du, dv, radius).labelAt);
     });
-    mark.labelEl = this.createLabel('', 'plane__arc-slot');
+    mark.labelEl = this.createLabel('', 'plane__arc-slot', 2);
     mark.setLabel = (tex) => {
       this.setLabelContent(mark.labelEl, tex);
       return mark;
