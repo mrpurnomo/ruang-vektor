@@ -771,6 +771,16 @@ if (!only || only === 'position_vector') {
     await frames(2);
     assert(completes === 1, `kunjungan ulang: onComplete ${completes}×`);
     assert(!toasts.some((t) => t.type === 'success'), 'kunjungan ulang: toast sukses berbunyi lagi');
+    // Simulasi tuntas TIDAK boleh terulang sendiri: penutup "tuntas" tampil,
+    // papan tersembunyi, chip kasus terkunci — baru "Ulangi" yang membukanya.
+    const cover = host.querySelector('.sim-complete');
+    assert(cover, 'kunjungan ulang: penutup "Simulasi tuntas" tidak tampil');
+    assert(getComputedStyle(host.querySelector('.sim-board')).visibility === 'hidden', 'kunjungan ulang: papan simulasi masih bisa dikerjakan');
+    assert([...hint.querySelectorAll('.case-chip')].every((c) => c.disabled), 'kunjungan ulang: chip kasus masih bisa diketuk');
+    cover.querySelector('[data-sim-action="restart"]').click();
+    await frames(2);
+    assert(!host.querySelector('.sim-complete') && sim.solved.size === 0 && sim.caseIndex === 0 && sim.currentStep,
+      'Ulangi tidak memulai simulasi dari kasus pertama');
     sim.destroy();
     results.push({ name: 'pemulihan-sesi', ok: true, notes: [] });
     log.insertAdjacentHTML('beforeend', '<div class="ok">✓ pemulihan sesi (kasus, chip, lompatan terkunci, kunjungan ulang)</div>');

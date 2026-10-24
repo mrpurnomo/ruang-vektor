@@ -234,7 +234,73 @@
 
   .sim-host { container-type: inline-size; }
 
-  .sim-kit { min-height: 0; }
+  .sim-kit { min-height: 0; position: relative; }
+
+  /* ------------------------------------------------------------
+     PENUTUP "SIMULASI TUNTAS" (simKit.showCompleteCover)
+     Papan tetap memesan ruangnya (visibility, bukan display) — penutup
+     muncul/hilang tanpa menggeser apa pun.
+     ------------------------------------------------------------ */
+  .sim-kit.is-complete .sim-board { visibility: hidden; }
+  /* `display: grid` milik daftar langkah mengalahkan atribut hidden. */
+  .sim-steps[hidden] { display: none; }
+  .sim-complete {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-4);
+    text-align: center;
+    overflow-y: auto;
+    border-radius: var(--r-md);
+    background: var(--reticle), var(--bg-surface);
+  }
+  .sim-complete__seal {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--success);
+    background: var(--success-soft);
+    color: var(--success-hi);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--success) 12%, transparent);
+  }
+  .sim-complete__title {
+    font-family: var(--font-ui);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--ink-900);
+  }
+  .sim-complete__text { max-width: 46ch; margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--ink-700); }
+  .sim-complete__cases { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .sim-complete__case {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: var(--r-sm);
+    background: var(--success-soft);
+    color: var(--success-hi);
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+  .sim-complete__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    /* Papan lebih tinggi dari layar: isi dimulai dari ATAS, bukan tengah
+       papan (terukur: tombol terpotong di bawah lipatan). */
+    .sim-complete { gap: 6px; padding: var(--sp-3); align-content: start; }
+    .sim-complete__seal { width: 46px; height: 46px; }
+    .sim-complete__seal svg { width: 26px; height: 26px; }
+    .sim-complete__title { font-size: var(--fs-lg); }
+    .sim-complete__text { font-size: var(--fs-xs); }
+    .sim-complete__actions .btn { min-height: 36px; font-size: var(--fs-xs); padding: 4px var(--sp-3); }
+  }
 
   .sim-board {
     /* Tinggi panduan & celah papan dipakai dua kali: oleh panduan itu

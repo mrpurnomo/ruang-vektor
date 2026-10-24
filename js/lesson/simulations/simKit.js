@@ -243,10 +243,12 @@ export class CaseSimulation extends Simulation {
     }
     if (this.solved.size === this.cases.length && this.cases.length) {
       // Kunjungan ulang sesudah tuntas: Mini Kuis tetap terbuka, TANPA toast
-      // sukses yang berbunyi lagi setiap kali siswa membuka simulasinya.
+      // sukses yang berbunyi lagi — dan simulasinya TIDAK terulang sendiri.
+      // Penutup "Simulasi tuntas" menahan papan sampai siswa menekan Ulangi.
       this.goToCase(0);
       this.finished = true;
       this.onComplete();
+      this.showCompleteCover();
       return;
     }
     this.goToCase(this.firstUnsolved());
@@ -274,7 +276,7 @@ export class CaseSimulation extends Simulation {
       // siswa membaca sumber LaTeX-nya mentah-mentah di pemilih kasus.
       chip.innerHTML = `<b>${mixed(this.caseLabel(c, i))}</b>`;
       const onClick = () => {
-        if (!this.isReachable(i) || i === this.caseIndex) return;
+        if (this.completeCover || !this.isReachable(i) || i === this.caseIndex) return;
         this.goToCase(i);
       };
       chip.addEventListener('click', onClick);
@@ -288,9 +290,11 @@ export class CaseSimulation extends Simulation {
   syncCaseBar() {
     if (!this.caseChips) return;
     this.caseChips.forEach((chip, i) => {
-      const state = i === this.caseIndex ? 'current' : this.solved.has(i) ? 'solved' : this.isReachable(i) ? 'open' : 'locked';
+      const state = this.completeCover ? 'solved'
+        : i === this.caseIndex ? 'current' : this.solved.has(i) ? 'solved' : this.isReachable(i) ? 'open' : 'locked';
       chip.dataset.state = state;
-      chip.disabled = state === 'locked';
+      // Selama penutup "tuntas" tampil, kasus hanya dibuka lewat Ulangi.
+      chip.disabled = state === 'locked' || Boolean(this.completeCover);
       chip.setAttribute('aria-selected', String(i === this.caseIndex));
       // Pembaca layar tidak perlu mendengar tanda dolar pembatas rumus.
       const spoken = String(this.caseLabel(this.cases[i], i)).replace(/\$/g, '');
@@ -478,6 +482,13 @@ export class CaseSimulation extends Simulation {
     const text = this.msg(this.caseSuccessKey(c, this.caseIndex)) || this.msg('success');
     if (allDone && !this.finished) {
       this.markAllDone(text);
+      // Panah terakhir sempat mendarat & terbaca dulu, baru papan ditutup.
+      this.later(() => this.showCompleteCover(), 1400);
+      return;
+    }
+    if (allDone) {
+      if (text && !wasSolved) toast.success(text);
+      this.later(() => this.showCompleteCover(), 1400);
       return;
     }
     if (text && !wasSolved) toast.success(text);
@@ -508,6 +519,73 @@ export class CaseSimulation extends Simulation {
     this.inputsEl.appendChild(invite);
     this.syncCaseBar();
     go.scrollIntoView({ block: 'nearest' });
+  }
+
+  /**
+   * PENUTUP "SIMULASI TUNTAS". Kunjungan ulang ke simulasi yang sudah tuntas
+   * dulu langsung memulai kasus pertama lagi — progres terasa hilang. Kini
+   * papan ditutup: segel, daftar kasus yang selesai, dan tiga jalan (Ulangi ·
+   * Mini Kuis · Rangkuman). Simulasi baru berjalan lagi lewat Ulangi.
+   */
+  showCompleteCover() {
+    if (this.destroyed || this.completeCover) return;
+    this.disposeStep();
+    if (isMathpadOpen()) closeMathpad(true);
+    const cover = el('div', 'sim-complete anim-rise');
+    cover.setAttribute('role', 'status');
+    const chips = this.cases.map((c, i) => `<span class="sim-complete__case">${icon('check', { size: 12 })}${mixed(this.caseLabel(c, i))}</span>`).join('');
+    cover.innerHTML = `
+      <span class="sim-complete__seal">${icon('check-circle', { size: 34 })}</span>
+      <div class="sim-complete__title">Simulasi tuntas</div>
+      <p class="sim-complete__text">Semua <strong>${this.cases.length} kasus</strong> sudah kamu selesaikan dan progresmu tersimpan. Simulasi tidak akan terulang sendiri.</p>
+      <div class="sim-complete__cases">${chips}</div>
+      <div class="sim-complete__actions"></div>`;
+    const actions = cover.querySelector('.sim-complete__actions');
+    const button = (cls, iconName, label, action, onClick) => {
+      const b = el('button', `btn ${cls}`);
+      b.type = 'button';
+      b.dataset.simAction = action;
+      b.innerHTML = `${icon(iconName, { size: 16 })}<span>${label}</span>`;
+      b.addEventListener('click', onClick);
+      actions.appendChild(b);
+    };
+    button('btn--ghost', 'rotate', 'Ulangi Simulasi', 'restart', () => this.restart());
+    if (this.actions && this.actions.review) button('btn--ghost', 'book', 'Rangkuman', 'review', this.actions.review);
+    if (this.actions && this.actions.quiz) button('btn--primary btn--pulse', 'arrow-right', 'Lanjut ke Mini Kuis', 'quiz', this.actions.quiz);
+    this.completeCover = cover;
+    this.root.appendChild(cover);
+    this.root.classList.add('is-complete');
+    this.nextCaseBtn.style.visibility = 'hidden';
+    // Daftar langkah kasus terakhir di panel kiri menyesatkan ("Titik D
+    // sedang dikerjakan") selama simulasi berstatus tuntas.
+    this.checklist.hidden = true;
+    this.toggleBrief(false);
+    for (let n = this.root.parentElement; n; n = n.parentElement) {
+      if (n.scrollTop) n.scrollTop = 0;
+    }
+    this.syncCaseBar();
+  }
+
+  /** Brief pembuka ("bidangnya masih kosong…") basi selama simulasi tuntas. */
+  toggleBrief(show) {
+    const brief = this.hintHost && this.hintHost.querySelector('.sim__brief');
+    if (brief) brief.style.display = show ? '' : 'none';
+  }
+
+  /** Ulangi dari kasus pertama — pilihan sadar siswa, bukan pemulihan otomatis. */
+  restart() {
+    if (this.completeCover) {
+      this.completeCover.remove();
+      this.completeCover = null;
+    }
+    this.root.classList.remove('is-complete');
+    this.checklist.hidden = false;
+    this.toggleBrief(true);
+    this.solved.clear();
+    this.caseStepCounts = {};
+    this.finished = false;
+    sfx.tap();
+    this.goToCase(0);
   }
 
   markAllDone(text) {

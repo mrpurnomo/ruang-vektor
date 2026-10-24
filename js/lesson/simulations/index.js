@@ -75,6 +75,8 @@ export function mountSimulation(container, definition, onComplete, options = {})
   sim.onSlideChange = options.onSlideChange || null;
   sim.savedState = options.resumeState ?? null;
   sim.onStateChange = options.onStateChange || null;
+  // Aksi pemilik layar untuk penutup "Simulasi tuntas" (Mini Kuis, Rangkuman).
+  sim.actions = options.actions || null;
 
   try {
     sim.build();

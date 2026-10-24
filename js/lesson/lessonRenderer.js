@@ -547,6 +547,11 @@ export class LessonView {
       next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, {
       hintHost: this.hintHost,
+      // Tombol penutup "Simulasi tuntas".
+      actions: {
+        quiz: () => { this.step = 1; this.renderStep(); },
+        review: () => this.openRangkuman(),
+      },
       resumeSlide: this.resumeSimSlide,
       onSlideChange: (index) => {
         this.resumeSimSlide = index;

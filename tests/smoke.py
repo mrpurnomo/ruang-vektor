@@ -631,6 +631,20 @@ def section_celebration(page, errors):
     page.evaluate("() => { const v = window.__vektorLab.state.activeView; v.step = 0; v.renderStep(); }")
     page.wait_for_timeout(1600)
     record("Kunjungan ulang simulasi tuntas tidak memunculkan selebrasi lagi", page.evaluate(CELEBRATION) is None)
+    # Revisi guru: kembali ke simulasi yang sudah tuntas TIDAK boleh langsung
+    # mengulang kasus pertama — penutup "Simulasi tuntas" sampai Ulangi ditekan.
+    cov = page.evaluate("""() => ({ cover: !!document.querySelector('.sim-complete'),
+        boardHidden: getComputedStyle(document.querySelector('.sim-board')).visibility === 'hidden',
+        actions: [...document.querySelectorAll('.sim-complete [data-sim-action]')].map((b) => b.dataset.simAction) })""")
+    record("Kembali ke simulasi tuntas: penutup 'Simulasi tuntas', papan tidak terulang sendiri",
+           cov["cover"] and cov["boardHidden"], json.dumps(cov))
+    record("Penutup menyediakan Ulangi · Rangkuman · Mini Kuis",
+           set(cov["actions"]) == {"restart", "review", "quiz"}, json.dumps(cov))
+    page.click('.sim-complete [data-sim-action="restart"]')
+    page.wait_for_timeout(500)
+    rs = page.evaluate("""() => { const s = window.__vektorLab.state.activeView.simulation;
+        return { cover: !!document.querySelector('.sim-complete'), solved: s.solved.size, step: s.stepIndex, case: s.caseIndex }; }""")
+    record("Ulangi memulai simulasi dari kasus pertama", not rs["cover"] and rs["solved"] == 0 and rs["case"] == 0, json.dumps(rs))
     record("Tanpa galat konsol selama selebrasi", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
 
