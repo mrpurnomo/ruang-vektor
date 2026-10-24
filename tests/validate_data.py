@@ -602,6 +602,12 @@ def plane_tap_problems(q):
             out.append(f"feedback[{i}] sama dengan kunci")
         if not str(f.get("message", "")).strip():
             out.append(f"feedback[{i}].message kosong")
+    rv = q.get("reveal")
+    if rv is not None:
+        if not re.fullmatch(r"[A-Z]{2}", str(rv.get("name", ""))):
+            out.append(f"reveal.name {rv.get('name')!r} harus dua huruf kapital (mis. OR)")
+        if len(taps) == 1 and rv.get("from") not in points:
+            out.append(f"reveal.from {rv.get('from')!r} wajib titik yang ada untuk soal satu ketukan")
     for k in ("options", "answerIndex", "answerIndices"):
         if k in q:
             out.append(f"plane_tap memuat kunci tipe lain `{k}`")

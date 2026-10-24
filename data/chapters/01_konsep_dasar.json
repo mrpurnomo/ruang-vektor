@@ -234,7 +234,10 @@
           ],
           "explanation": "$\\overrightarrow{QP}$ berangkat dari $Q$ dan berakhir di $P$: ruas garisnya sama persis dengan $\\overrightarrow{PQ}$, panjangnya sama, arahnya berlawanan. Karena itu $\\overrightarrow{QP} = -\\overrightarrow{PQ}$. Ketukan yang benar: pangkal $Q(3,\\, 3)$, lalu ujung $P(-2,\\, 1)$.",
           "toastWrong": "Belum tepat — panah $\\overrightarrow{QP}$ berpangkal dan berujung pada titik yang sudah ada di bidang. Baca namanya: huruf **pertama** pangkal, huruf **kedua** ujung.",
-          "hint": "Vektor lawan menempuh ruas garis yang **sama**, tetapi berangkat dari ujung yang lain. Baca namanya: huruf **pertama** adalah pangkal."
+          "hint": "Vektor lawan menempuh ruas garis yang **sama**, tetapi berangkat dari ujung yang lain. Baca namanya: huruf **pertama** adalah pangkal.",
+          "reveal": {
+            "name": "QP"
+          }
         },
         {
           "id": "b1_01_3",
@@ -298,7 +301,11 @@
           ],
           "explanation": "Dari $O$, komponen atas $-3$ berarti $3$ satuan ke **kiri**, komponen bawah $2$ berarti $2$ satuan ke **atas**. Ujungnya $R(-3,\\, 2)$, di kuadran II.",
           "toastWrong": "Belum tepat — mulai dari $O$: komponen atas adalah langkah mendatar, komponen bawah langkah tegak, dan tanda masing-masing adalah arahnya.",
-          "hint": "Mulai dari $O$. Komponen **atas** adalah langkah mendatar, komponen **bawah** langkah tegak — dan tanda minus berarti ke kiri atau ke bawah."
+          "hint": "Mulai dari $O$. Komponen **atas** adalah langkah mendatar, komponen **bawah** langkah tegak — dan tanda minus berarti ke kiri atau ke bawah.",
+          "reveal": {
+            "from": "O",
+            "name": "OR"
+          }
         }
       ]
     },

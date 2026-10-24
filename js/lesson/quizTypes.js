@@ -74,9 +74,11 @@ QuizEngine.registerType('plane_tap', {
 
     let taps = [];
     let trail = [];
+    let studentArrow = null;
     const clearTrail = () => {
       trail.forEach((m) => m.remove());
       trail = [];
+      studentArrow = null;
       Object.values(marks).forEach((m) => m.el.classList.remove('is-armed'));
     };
     const say = () => {
@@ -102,6 +104,7 @@ QuizEngine.registerType('plane_tap', {
         // Panah MILIK SISWA (bukan kunci): dari ketukan pertama ke kedua.
         const arrow = plane.drawVector({ from: taps[0], to: taps[1], name: 'jawaban', tone: 'amber', label: null });
         trail.push(arrow);
+        studentArrow = arrow;
       }
       say();
     });
@@ -117,7 +120,35 @@ QuizEngine.registerType('plane_tap', {
       const special = ok ? null : (q.feedback || []).find((f) => sameSeq(taps, f.taps));
       if (!ok) plane.flashMiss(taps[taps.length - 1]);
       api.judge(ok, special ? special.message : null);
+      revealArrow(ok);
     });
+
+    /**
+     * Sesudah diperiksa, vektor MILIK SISWA ditampilkan utuh (revisi guru:
+     * "OR harus muncul sesuai titik yang dibuat siswa"). Kobalt bila benar,
+     * beri bila salah — siswa melihat vektor yang benar-benar ia buat.
+     */
+    function revealArrow(ok) {
+      const rv = q.reveal;
+      if (!rv) return;
+      const tone = ok ? 'blue' : 'coral';
+      status.innerHTML = renderMixed(ok
+        ? `**Benar!** Inilah vektor $\\overrightarrow{${rv.name}}$ yang kamu buat.`
+        : `Inilah vektor $\\overrightarrow{${rv.name}}$ yang kamu buat — bandingkan dengan yang diminta, lalu coba lagi.`);
+      const label = `\\overrightarrow{${rv.name}}`;
+      if (need === 1 && rv.from && q.points[rv.from]) {
+        const from = q.points[rv.from];
+        const to = taps[0];
+        trail.forEach((m) => m.remove());
+        trail = [];
+        plane.drawPoint(to, { label: ok ? rv.name.slice(-1) : null });
+        const arrow = plane.drawVector({ from, to: from, name: rv.name, tone, label });
+        arrow.setVector({ from, to }, { animate: true, duration: 520 });
+      } else if (studentArrow) {
+        studentArrow.setTone(tone);
+        studentArrow.setLabel(label);
+      }
+    }
   },
 
   /** Kunci untuk mode review: urutan ketukan yang benar, bertitik nama. */

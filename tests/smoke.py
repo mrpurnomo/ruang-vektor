@@ -680,14 +680,40 @@ def last_toast(page):
     return page.evaluate("() => { const t = [...document.querySelectorAll('.toast')].pop(); return t ? t.innerText : ''; }")
 
 
+SFX_SPY = """async () => { const m = await import('/js/core/ui/sfx.js'); window.__sfx = [];
+    for (const k of ['select', 'correct', 'oops', 'fanfare']) { const f = m.default[k];
+        m.default[k] = (...a) => { window.__sfx.push(k); return f(...a); }; } }"""
+
+
+def burst_state(page):
+    return page.evaluate("""() => { const b = document.querySelector('.burst');
+        return b ? { ok: b.classList.contains('burst--ok'), title: b.innerText.trim() } : null; }""")
+
+
 def section_quiz_plane(page, errors):
     print("\n6h. Mini Kuis sub-topik 1: soal ketuk-bidang (plane_tap)")
     page.set_viewport_size({"width": 1024, "height": 600})
     open_mini_quiz(page, "01_konsep_dasar", "pengertian_notasi")
     page.wait_for_timeout(400)
-    # Soal 1: pilihan tunggal (frasa "ke arah timur" = opsi ke-3).
+    page.evaluate(SFX_SPY)
+    # Soal 1: pilihan salah dulu (opsi 1), lalu benar (frasa "ke arah timur").
+    page.locator(".quiz .option").nth(0).click()
+    record("Memilih opsi berbunyi (sfx.select)", page.evaluate("() => window.__sfx.includes('select')"), str(page.evaluate("() => window.__sfx")))
+    page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(250)
+    b = burst_state(page)
+    record("Jawaban salah: pop-up 'Belum tepat!' + bunyi oops + kartu bergetar",
+           bool(b) and not b["ok"] and page.evaluate("() => window.__sfx.includes('oops') && !!document.querySelector('.quiz__card.is-no')"), json.dumps(b, ensure_ascii=False))
+    page.wait_for_timeout(1000)
+    record("Pop-up hilang sendiri dalam ±1 detik", burst_state(page) is None)
+    page.locator(".quiz .actionbar button", has_text="Coba Lagi").click()
+    page.wait_for_timeout(400)
     page.locator(".quiz .option").nth(2).click()
     page.locator(".quiz .actionbar .btn--primary").click()
+    page.wait_for_timeout(250)
+    b = burst_state(page)
+    record("Jawaban benar: pop-up 'Tepat!' + bunyi meriah + kartu berdenyut",
+           bool(b) and b["ok"] and page.evaluate("() => window.__sfx.includes('correct') && !!document.querySelector('.quiz__card.is-ok')"), json.dumps(b, ensure_ascii=False))
     page.wait_for_timeout(400)
     page.locator(".quiz .actionbar .btn--primary", has_text="Berikutnya").click()
     page.wait_for_timeout(500)
@@ -710,7 +736,10 @@ def section_quiz_plane(page, errors):
     tap_quiz_plane(page, 3, 3); tap_quiz_plane(page, -2, 1)
     page.locator(".quiz .actionbar .btn--primary").click()
     page.wait_for_timeout(300)
-    record("Ketukan Q lalu P diterima sebagai QP", "tepat" in last_toast(page).lower(), last_toast(page)[:80])
+    b = burst_state(page)
+    record("Ketukan Q lalu P diterima sebagai QP (pop-up Tepat!)", bool(b) and b["ok"], json.dumps(b, ensure_ascii=False))
+    qp = page.evaluate("() => { const a = [...document.querySelectorAll('.quiz-plane .plane__arrow')].pop(); return a ? { blue: a.classList.contains('plane__arrow--blue') } : null; }")
+    record("Panah QP siswa diwarnai kobalt sesudah benar", bool(qp) and qp["blue"], json.dumps(qp))
     page.locator(".quiz .actionbar .btn--primary", has_text="Berikutnya").click()
     page.wait_for_timeout(500)
     # Soal 3: komponen tertukar → kalimat khas, lalu jawaban benar.
@@ -724,7 +753,13 @@ def section_quiz_plane(page, errors):
     tap_quiz_plane(page, -3, 2)
     page.locator(".quiz .actionbar .btn--primary").click()
     page.wait_for_timeout(300)
-    record("Soal 3: ketukan R(−3, 2) diterima", "tepat" in last_toast(page).lower(), last_toast(page)[:80])
+    b = burst_state(page)
+    record("Soal 3: ketukan R(−3, 2) diterima (pop-up Tepat!)", bool(b) and b["ok"], json.dumps(b, ensure_ascii=False))
+    page.wait_for_timeout(700)
+    orr = page.evaluate("""() => { const svg = document.querySelector('.quiz-plane svg.plane');
+        const labels = [...svg.querySelectorAll('.plane__label')].map((l) => l.textContent);
+        return { arrows: svg.querySelectorAll('.plane__arrow').length, hasOR: labels.some((t) => t.includes('OR')) }; }""")
+    record("Soal 3: panah OR muncul ke titik R yang diketuk siswa", orr["arrows"] >= 1 and orr["hasOR"], json.dumps(orr))
     page.locator(".quiz .actionbar .btn--success").click()
     page.wait_for_timeout(800)
     done = page.evaluate("() => ({ done: !!document.querySelector('.lesson-done'), planes: document.querySelectorAll('svg.plane').length })")

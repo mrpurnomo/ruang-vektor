@@ -796,4 +796,105 @@
     .toast__body { font-size: var(--fs-xs); line-height: 1.4; }
   }
 
+  /* ------------------------------------------------------------
+     POP-UP UMPAN BALIK "HEBOH" (core/ui/burst.js)
+     Sesaat (1 dtk), tembus-ketuk; kalimat penjelas tetap di toast.
+     ------------------------------------------------------------ */
+  .burst {
+    position: fixed;
+    left: var(--bx, 50%);
+    top: var(--by, 50%);
+    z-index: var(--z-toast);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .burst--ok { --b-accent: var(--success); --b-ink: var(--success-hi); }
+  .burst--no { --b-accent: var(--danger); --b-ink: var(--danger-hi); }
+  .burst__card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-5) var(--sp-3) var(--sp-3);
+    border-radius: var(--r-lg);
+    border: 2px solid var(--b-accent);
+    background: var(--bg-elevated);
+    box-shadow: var(--sh-3), 0 0 0 6px color-mix(in srgb, var(--b-accent) 18%, transparent);
+    animation: burstIn 1000ms var(--pop) both;
+  }
+  .burst--no .burst__card { animation-name: burstShake; animation-timing-function: var(--ease-out); }
+  .burst__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--b-accent);
+    color: var(--white);
+  }
+  .burst__title {
+    font-family: var(--font-ui);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--b-ink);
+    white-space: nowrap;
+  }
+  .burst__sparks { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+  .burst__sparks i {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--c);
+    animation: burstSpark 900ms var(--ease-out) both;
+  }
+  .burst--still .burst__card { animation: burstFade 1000ms linear both; }
+
+  @keyframes burstIn {
+    0%   { transform: scale(.4); opacity: 0; }
+    18%  { transform: scale(1.12); opacity: 1; }
+    30%  { transform: scale(1); }
+    82%  { transform: scale(1); opacity: 1; }
+    100% { transform: scale(.92); opacity: 0; }
+  }
+  @keyframes burstShake {
+    0%   { transform: scale(.6); opacity: 0; }
+    12%  { transform: scale(1.05); opacity: 1; }
+    20%  { transform: translateX(-14px); }
+    28%  { transform: translateX(12px); }
+    36%  { transform: translateX(-8px); }
+    44%  { transform: translateX(5px); }
+    52%  { transform: none; }
+    82%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes burstSpark {
+    0%   { transform: rotate(var(--a)) translateX(30px) scale(1); opacity: 1; }
+    100% { transform: rotate(var(--a)) translateX(calc(var(--d) + 70px)) scale(.3) rotate(160deg); opacity: 0; }
+  }
+  @keyframes burstFade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .burst__icon { width: 40px; height: 40px; }
+    .burst__icon svg { width: 26px; height: 26px; }
+    .burst__title { font-size: 1.5rem; }
+  }
+
+  /* Kartu soal ikut bereaksi: denyut hijau (benar) / getar merah (salah). */
+  .quiz__card.is-ok { animation: cardOk 700ms var(--ease-out); }
+  .quiz__card.is-no { animation: cardNo 600ms var(--ease-out); }
+  @keyframes cardOk {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 55%, transparent); border-color: var(--success); }
+    100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--success) 0%, transparent); }
+  }
+  @keyframes cardNo {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-8px); border-color: var(--danger); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
+  }
 }

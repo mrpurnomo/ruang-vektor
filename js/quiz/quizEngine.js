@@ -17,6 +17,7 @@ import { icon } from '../core/ui/icons.js';
 import toast from '../core/ui/toast.js';
 import { celebrate } from '../core/interactions/flyToAnimation.js';
 import sfx from '../core/ui/sfx.js';
+import { burst, dismissBurst } from '../core/ui/burst.js';
 import { getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 function el(tag, className, html) {
@@ -54,6 +55,7 @@ export class QuizEngine {
 
   /** Lepaskan semua milik soal yang sedang tampil. */
   disposeSlide() {
+    dismissBurst();
     this.cleanups.forEach((fn) => { try { fn(); } catch (err) { console.warn('[kuis] cleanup:', err); } });
     this.cleanups = [];
   }
@@ -202,6 +204,7 @@ export class QuizEngine {
 
     const wrap = el('div', 'quiz anim-rise');
     const card = el('div', 'quiz__card');
+    this.cardEl = card;
 
     const meta = el('div', 'quiz__meta');
     meta.appendChild(el('span', 'badge badge--primary', `Soal ${this.index + 1} dari ${this.questions.length}`));
@@ -339,6 +342,7 @@ export class QuizEngine {
 
       btn.addEventListener('click', () => {
         if (this.answered) return;
+        sfx.select();
         if (multi) {
           const now = btn.getAttribute('aria-checked') === 'true';
           btn.setAttribute('aria-checked', String(!now));
@@ -536,9 +540,19 @@ export class QuizEngine {
       this.correctCount += 1;
     }
 
-    if (ok) {
-      toast.success('Jawabanmu tepat!');
-    } else {
+    // Revisi guru: memeriksa jawaban harus terasa seperti PERISTIWA — pop-up
+    // heboh sesaat + bunyi (burst.js), kartu soal ikut bereaksi. Kalimat
+    // penjelas untuk jawaban salah tetap di toast.
+    // Jawaban benar menutup kalimat salah dari percobaan sebelumnya.
+    if (ok) toast.clear();
+    burst(ok ? 'success' : 'error', { anchor: this.cardEl });
+    if (this.cardEl) {
+      const cls = ok ? 'is-ok' : 'is-no';
+      this.cardEl.classList.remove('is-ok', 'is-no');
+      void this.cardEl.offsetWidth;
+      this.cardEl.classList.add(cls);
+    }
+    if (!ok) {
       if (q.subtopic) this.wrongSubtopics.add(q.subtopic);
       // Kalimat khusus dari tipe terdaftar (mis. "itu PQ, bukan QP") lebih
       // tepat sasaran daripada toastWrong umum soal itu.

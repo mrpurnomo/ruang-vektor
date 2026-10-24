@@ -113,4 +113,32 @@ export function wrong() {
   } catch { /* getar tidak tersedia: abaikan */ }
 }
 
-export default { tap, step, success, wrong, setEnabled, isEnabled };
+/** Memilih opsi jawaban: blip lembut bernada sedang. */
+export function select() {
+  tone(880, { type: 'sine', dur: 0.06, gain: 0.04 });
+  tone(1320, { type: 'triangle', at: 0.025, dur: 0.05, gain: 0.025 });
+}
+
+/** Jawaban benar di kuis: arpeggio naik cepat + kilau — lebih meriah dari success(). */
+export function correct() {
+  [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, { type: 'triangle', at: i * 0.07, dur: 0.22, gain: 0.045 }));
+  tone(2093, { type: 'sine', at: 0.3, dur: 0.25, gain: 0.025 });
+}
+
+/** Jawaban salah di kuis: "dum-dum" turun — jelas salah, tidak menghukum. */
+export function oops() {
+  tone(330, { type: 'square', dur: 0.12, gain: 0.03, slideTo: 260 });
+  tone(247, { type: 'square', at: 0.14, dur: 0.2, gain: 0.03, slideTo: 165 });
+  try {
+    const active = !navigator.userActivation || navigator.userActivation.isActive;
+    if (enabled && active && navigator.vibrate) navigator.vibrate([40, 50, 40]);
+  } catch { /* getar tidak tersedia */ }
+}
+
+/** Kuis tuntas: fanfare pendek tiga ketukan lalu akor panjang. */
+export function fanfare() {
+  [[523.25, 0], [659.25, 0.12], [783.99, 0.24]].forEach(([f, at]) => tone(f, { type: 'triangle', at, dur: 0.14, gain: 0.05 }));
+  [523.25, 659.25, 783.99, 1046.5].forEach((f) => tone(f, { type: 'sine', at: 0.4, dur: 0.9, gain: 0.035 }));
+}
+
+export default { tap, step, success, wrong, select, correct, oops, fanfare, setEnabled, isEnabled };
