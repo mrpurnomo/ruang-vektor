@@ -297,49 +297,118 @@
 
 
   /* ============================================================
-     5. RINGKASAN SELESAI SUB-TOPIK
+     5. LAYAR HASIL MINI KUIS — perayaan terpusat (revisi guru 7)
+     Piringan skor + angka menghitung naik, sinar berputar, lencana
+     statistik tertelusur, pesan, aksi (Beranda · Daftar · Coba Lagi ·
+     Berikutnya). Memenuhi panggung dan rata tengah.
      ============================================================ */
-
-  /* Isinya KALIMAT ("Skor Mini Kuis kamu: 100 dari 100."), bukan angka
-     tunggal — hanya angkanya (<strong>) yang diperlakukan sebagai nilai:
-     mono, tabular, dan amber (versi kuning yang aman kontras di atas putih). */
-  .lesson-done__score {
-    font-size: var(--fs-md);
-    line-height: 1.5;
-    color: var(--ink-700);
+  .lesson-done {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--sp-3);
+    min-height: 100%;
+    max-width: none;
+  }
+  .done {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-5) var(--sp-4) var(--sp-4);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border-soft);
+    background: var(--reticle), radial-gradient(120% 90% at 50% 0%, var(--blue-50), var(--bg-surface) 60%);
+    box-shadow: var(--sh-2);
+    text-align: center;
+    overflow: hidden;
   }
 
-  .lesson-done__score strong {
+  .done__dial { position: relative; width: 132px; height: 132px; display: grid; place-items: center; }
+  .done__dial svg { position: relative; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .done__track { fill: none; stroke: var(--plate-deep); stroke-width: 10; }
+  .done__bar { fill: none; stroke: var(--success); stroke-width: 10; stroke-linecap: round; }
+  .done__rays {
+    position: absolute;
+    inset: -28px;
+    border-radius: 50%;
+    background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--yellow) 30%, transparent) 0 8deg, transparent 8deg 22deg);
+    mask: radial-gradient(circle, transparent 46%, var(--ink-900) 47%, var(--ink-900) 64%, transparent 66%);
+    -webkit-mask: radial-gradient(circle, transparent 46%, var(--ink-900) 47%, var(--ink-900) 64%, transparent 66%);
+    animation: doneSpin 14s linear infinite;
+    opacity: .9;
+  }
+  .done__score {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    line-height: 1;
+  }
+  .done__score b {
     font-family: var(--font-value);
-    font-size: 1.35em;
+    font-size: 2.6rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
-    color: var(--accent-amber);
+    color: var(--ink-900);
   }
+  .done__score small { margin-top: 2px; font-family: var(--font-value); font-size: var(--fs-xs); color: var(--ink-500); }
+  .done.is-landed .done__dial { animation: donePop 420ms var(--pop); }
 
-  /* Tiga aksi (Daftar · Coba Lagi Kuis · Berikutnya) tidak muat satu baris
-     di samping zona FAB: aksi utama sengaja turun selebar penuh di bawah,
-     bukan terbungkus acak ke kiri. */
+  .done__title {
+    font-family: var(--font-ui);
+    font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+    font-weight: 700;
+    line-height: 1.02;
+    color: var(--ink-900);
+  }
+  .done__sub { font-size: var(--fs-sm); color: var(--ink-500); }
+  .done__stats { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-1); }
+  .done__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border-soft);
+    background: var(--bg-elevated);
+    font-size: var(--fs-xs);
+    color: var(--ink-700);
+  }
+  .done__stat b { font-family: var(--font-value); color: var(--ink-900); }
+  .done__stat--ok { border-color: color-mix(in srgb, var(--success) 35%, transparent); background: var(--success-soft); color: var(--success-hi); }
+  .done__stat--ok b { color: var(--success-hi); }
+  .done__stat--best { border-color: var(--value-line); background: var(--value-soft); color: var(--accent-amber-dark); }
+  .done__stat--best b { color: var(--accent-amber-dark); }
+  .done__msg { max-width: 56ch; margin: var(--sp-1) 0 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--ink-700); }
+  .done__keep { display: block; margin-top: 2px; color: var(--ink-500); }
+  .done__keep b { font-family: var(--font-value); color: var(--accent-amber); }
+
+  .done__links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); }
+  .done__mini { display: none; gap: 6px; flex: 0 0 auto; }
+  /* Aksi utama: bilah menempel di dasar panggung, selalu terlihat. */
+  .done__actions { justify-content: center; }
   .lesson-done .actionbar .btn--primary,
   .lesson-done .actionbar .btn--success { flex: 1 1 100%; justify-content: center; }
 
-  /* Rekor terbaik yang TIDAK turun oleh latihan ulang. */
-  .lesson-done__best {
-    margin-top: var(--sp-1);
-    font-size: var(--fs-sm);
-    color: var(--ink-700);
-  }
-  .lesson-done__best strong {
-    font-family: var(--font-value);
-    font-weight: 700;
-    color: var(--accent-amber);
-  }
+  @keyframes doneSpin { to { transform: rotate(360deg); } }
+  @keyframes donePop { 0% { transform: scale(1); } 45% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
-  .lesson-done__title {
-    font-size: var(--fs-xl);
-    font-weight: 700;
-    letter-spacing: var(--tracking-display);
-    color: var(--ink-900);
+  @media (orientation: landscape) and (max-height: 470px) {
+    .done { padding: var(--sp-3); gap: 4px; }
+    .done__dial { width: 84px; height: 84px; }
+    .done__rays { inset: -16px; }
+    .done__score b { font-size: 1.7rem; }
+    .done__title { font-size: 1.35rem; }
+    .done__sub, .done__msg { font-size: var(--fs-xs); }
+    .done__stat { padding: 2px 8px; }
+    .done__keep { display: inline; }
+    .done__sub { display: none; }
+    .done__links { display: none; }
+    .done__mini { display: flex; }
+    .lesson-done .actionbar { flex-wrap: nowrap; }
+    .lesson-done .actionbar .btn--primary,
+    .lesson-done .actionbar .btn--success { flex: 1 1 auto; }
   }
 
 

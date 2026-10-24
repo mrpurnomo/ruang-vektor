@@ -414,7 +414,15 @@
 
   /* Layar hasil Mini Kuis juga duduk di bawah FAB papan coret: zona yang
      sama, kalau tidak FAB menimpa "Sub-topik Berikutnya" (terukur 740×360). */
-  .ws-stage .lesson-done .actionbar { padding-right: calc(48px + var(--sp-4)); }
+  .ws-stage .lesson-done .actionbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    margin-top: 0;
+    background: var(--bg-elevated);
+    box-shadow: 0 -12px 18px -14px rgba(13, 19, 32, .35);
+    padding-right: calc(48px + var(--sp-4));
+  }
   @media (orientation: landscape) and (max-height: 470px) {
     .ws-stage .lesson-done .actionbar { padding-right: calc(42px + var(--sp-4)); }
   }

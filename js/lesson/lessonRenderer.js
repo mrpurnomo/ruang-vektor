@@ -22,6 +22,7 @@ import {
 import toast, { anchorToasts } from '../core/ui/toast.js';
 import { createScratchpad } from '../core/ui/scratchpad.js';
 import { showModal } from '../core/ui/modal.js';
+import sfx from '../core/ui/sfx.js';
 import { lessonKey, getResume, patchResume, clearResume } from '../core/state/sessionState.js';
 
 /**
@@ -791,6 +792,33 @@ export class LessonView {
     this.renderStep();
   }
 
+  /** Piringan skor terisi + angka menghitung naik + fanfare (hormat reduced-motion). */
+  animateDone(stage, score) {
+    const bar = stage.querySelector('.done__bar');
+    const out = stage.querySelector('.done__score b');
+    const C = Number(bar.getAttribute('stroke-dasharray'));
+    const target = C * (1 - Math.max(0, Math.min(100, score)) / 100);
+    sfx.fanfare();
+    const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) {
+      bar.setAttribute('stroke-dashoffset', String(target));
+      out.textContent = String(score);
+      return;
+    }
+    const t0 = performance.now();
+    const dur = 1100;
+    const tick = (now) => {
+      if (!stage.isConnected) return;
+      const k = Math.min(1, (now - t0) / dur);
+      const e = 1 - (1 - k) ** 3;
+      bar.setAttribute('stroke-dashoffset', String(C - (C - target) * e));
+      out.textContent = String(Math.round(score * e));
+      if (k < 1) requestAnimationFrame(tick);
+      else stage.classList.add('is-landed');
+    };
+    requestAnimationFrame(tick);
+  }
+
   /** Kunci jawaban yang dirender sesuai tipe soalnya. */
   buildAnswerKey(q) {
     const wrap = el('div', 'answer-key');
@@ -887,35 +915,78 @@ export class LessonView {
     // memakai seluruh ruang yang tersedia dan tetap terpusat sempurna —
     // termasuk di lanskap, tempat versi lama tampil kecil dan melenceng
     // karena hanya mengandalkan gaya sebaris.
-    const panel = el('div', 'quiz lesson-done anim-rise');
-
-    const card = el('div', 'quiz__card lesson-done__card');
-    const inner = el('div', 'lesson-done__inner');
-    inner.appendChild(el('span', 'lesson-done__icon', icon('trophy', { size: 46 })));
-    inner.appendChild(el('h3', 'lesson-done__title',
-      practice ? 'Latihan ulang selesai!' : this.reviewMode ? 'Review selesai!' : 'Sub-topik selesai!'));
-    inner.appendChild(el('p', 'lesson-done__score text-muted',
-      `Skor Mini Kuis kamu: <strong>${result.score}</strong> dari 100.`));
+    // Revisi guru: layar hasil terlalu biasa. Kini PERAYAAN yang terpusat:
+    // piringan skor yang terisi + angka menghitung naik, sinar berputar,
+    // lencana statistik yang bisa ditelusuri, fanfare + konfeti (skor 100).
     const best = getSubtopicProgress(chapter.id, subtopic.id).bestQuizScore || 0;
     this.setHint('Mini Kuis', `Rekor terbaikmu **${best}** dari 100. Kamu boleh berlatih ulang kapan saja — rekornya tidak akan turun.`);
-    if (practice || best > result.score) {
-      inner.appendChild(el('p', 'lesson-done__best',
-        `Rekor terbaikmu tetap <strong>${best}</strong> — latihan ulang tidak pernah menurunkannya.`));
-    }
-    card.appendChild(inner);
-    panel.appendChild(card);
+    const total = result.totalQuestions || (subtopic.quiz || []).length;
+    const correct = Number.isInteger(result.correct) ? result.correct : Math.round((result.score / 100) * total);
+    const number = subtopicOrder.indexOf(subtopic.id) + 1;
+    const title = practice ? 'Latihan Ulang Selesai!' : this.reviewMode ? 'Review Selesai!' : 'Mini Kuis Tuntas!';
+    const message = result.score === 100
+      ? 'Sempurna! Semua soal kamu jawab dengan benar.'
+      : result.score >= 60
+        ? 'Bagus! Pemahamanmu sudah terbentuk — latihan ulang akan membuatnya mantap.'
+        : 'Terus berlatih! Buka Rangkuman, lalu coba lagi — rekormu tidak akan turun.';
+    const R = 52;
+    const C = +(2 * Math.PI * R).toFixed(1);
 
-    const actions = el('div', 'actionbar');
+    const panel = el('div', 'quiz lesson-done anim-rise');
+    const stage = el('div', 'done');
+    stage.innerHTML = `
+      <div class="done__dial" style="--done-c:${C}">
+        <span class="done__rays" aria-hidden="true"></span>
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="done__track" cx="60" cy="60" r="${R}"/>
+          <circle class="done__bar" cx="60" cy="60" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C}"/>
+        </svg>
+        <span class="done__score"><b>0</b><small>/100</small></span>
+      </div>
+      <div class="done__title">${title}</div>
+      <div class="done__sub">Bab ${chapter.number} · Sub-topik ${number} — ${renderMixed(subtopic.title)}</div>
+      <div class="done__stats">
+        <span class="done__stat done__stat--ok">${icon('check-circle', { size: 15 })}<b>${correct}/${total}</b> benar</span>
+        <span class="done__stat done__stat--best">${icon('trophy', { size: 15 })}Rekor <b>${best}</b></span>
+        <span class="done__stat">Skor Mini Kuis kamu: <b>${result.score}</b> dari 100</span>
+      </div>
+      <p class="done__msg">${message}${(practice || best > result.score) ? ` <span class="done__keep">Rekor terbaikmu tetap <b>${best}</b> — latihan ulang tidak pernah menurunkannya.</span>` : ''}</p>`;
+    panel.appendChild(stage);
 
-    const toList = el('button', 'btn btn--ghost');
+    // Aksi SEKUNDER di dalam kartu (baris tombol kecil); aksi UTAMA saja di
+    // bilah yang menempel — terukur: empat tombol di bilah jatuh di bawah
+    // lipatan pada 740×360 dan 1024×600.
+    const links = el('div', 'done__links');
+    const home = el('button', 'btn btn--ghost btn--sm');
+    home.type = 'button';
+    home.innerHTML = `${icon('home', { size: 15 })}<span>Beranda</span>`;
+    home.addEventListener('click', () => (this.ctx.onHome ? this.ctx.onHome() : this.ctx.onExit()));
+    links.appendChild(home);
+
+    const toList = el('button', 'btn btn--ghost btn--sm');
     toList.type = 'button';
-    toList.innerHTML = `${icon('layers', { size: 17 })}<span>Daftar Sub-topik</span>`;
+    toList.innerHTML = `${icon('layers', { size: 15 })}<span>Daftar Sub-topik</span>`;
     toList.addEventListener('click', () => this.ctx.onExit());
-    actions.appendChild(toList);
+    links.appendChild(toList);
 
-    actions.appendChild(el('div', 'actionbar__spacer'));
+    links.appendChild(this.retryQuizButton('btn--ghost btn--sm'));
+    stage.appendChild(links);
 
-    actions.appendChild(this.retryQuizButton('btn--ghost'));
+    const actions = el('div', 'actionbar done__actions');
+    // Lanskap pendek: aksi sekunder pindah ke bilah sebagai tombol ikon
+    // (baris di kartu disembunyikan CSS) — semua aksi terlihat tanpa gulir.
+    const mini = el('div', 'done__mini');
+    [['home', 'Beranda', () => home.click()], ['layers', 'Daftar Sub-topik', () => toList.click()],
+      ['rotate', 'Coba Lagi Kuis', () => this.retryQuiz()]].forEach(([ic, label, go]) => {
+      const b = el('button', 'btn btn--ghost btn--icon');
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      b.dataset.tip = label;
+      b.innerHTML = icon(ic, { size: 17 });
+      b.addEventListener('click', go);
+      mini.appendChild(b);
+    });
+    actions.appendChild(mini);
 
     if (nextId) {
       const next = el('button', 'btn btn--primary btn--pulse');
@@ -933,7 +1004,8 @@ export class LessonView {
 
     panel.appendChild(actions);
     host.appendChild(panel);
-    panel.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    this.body.scrollTop = 0;
+    this.animateDone(stage, result.score);
 
     // Sejak sekarang tab bisa diklik untuk review.
     if (!this.reviewMode) {

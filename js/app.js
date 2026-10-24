@@ -911,6 +911,9 @@ function renderLesson(params, options) {
       subtopic,
       subtopicOrder: chapterMeta.subtopicOrder,
       onExit: () => router.navigate(`belajar/${chapterMeta.id}`),
+      onHome: () => router.navigate(''),
+      // Identitas dibaca saat layar dibuka: Rangkuman mencetak nama, sekolah, tanda tangan.
+      identity: getIdentity(),
       onNextSubtopic: (nextId) => router.navigate(`belajar/${chapterMeta.id}/${nextId}`),
     });
 

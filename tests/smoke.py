@@ -787,6 +787,7 @@ def section_quiz_retry(page, errors):
     live = page.evaluate("() => !!document.querySelector('.quiz .actionbar .btn--primary') && !document.querySelector('.answer-key')")
     record("'Coba Lagi Kuis' membuka kuis yang bisa dijawab (bukan kunci jawaban)", live)
     # Percobaan latihan berakhir dengan skor lebih rendah.
+    page.evaluate(SFX_SPY)
     page.evaluate("""() => { const v = window.__vektorLab.state.activeView;
         const host = document.querySelector('.ws-stage .workspace__body > div') || v.body; v.onQuizFinish({ score: 60 }, host); }""")
     page.wait_for_timeout(500)
@@ -798,16 +799,31 @@ def section_quiz_retry(page, errors):
            after["best"] == 100 and after["status"] == "completed", json.dumps(after, ensure_ascii=False))
     record("Layar hasil menyebut rekor terbaik yang tetap", "100" in after["text"] and "60" in after["text"], after["text"][:160])
     record("Layar hasil menyediakan 'Coba Lagi Kuis' lagi", after["again"], json.dumps(after, ensure_ascii=False))
+    page.wait_for_timeout(900)
+    done = page.evaluate("""() => { const d = document.querySelector('.done');
+        return d ? { dial: d.querySelector('.done__score b').textContent, title: d.querySelector('.done__title').innerText,
+                     home: [...document.querySelectorAll('.lesson-done button')].some((b) => /beranda/i.test(b.innerText) || b.getAttribute('aria-label') === 'Beranda'),
+                     fanfare: window.__sfx.includes('fanfare') } : null; }""")
+    record("Layar hasil premium: piringan skor terisi, judul, fanfare, tombol Beranda",
+           bool(done) and done["dial"] == "60" and done["fanfare"] and done["home"], json.dumps(done, ensure_ascii=False))
     for w, h in [(740, 360), (1024, 600)]:
         page.set_viewport_size({"width": w, "height": h})
         page.wait_for_timeout(300)
         hit = page.evaluate("""() => { const fab = document.querySelector('.pad-fab').getBoundingClientRect();
-            return [...document.querySelectorAll('.lesson-done .actionbar .btn')].filter((x) => { const b = x.getBoundingClientRect();
+            return [...document.querySelectorAll('.lesson-done .btn')].filter((x) => { const b = x.getBoundingClientRect();
                 return !(fab.right <= b.left || b.right <= fab.left || fab.bottom <= b.top || b.bottom <= fab.top); }).map((x) => x.innerText); }""")
         record(f"{w}×{h}: tombol papan coret tidak menimpa tombol layar hasil", not hit, str(hit))
     page.set_viewport_size({"width": 1024, "height": 600})
     record("Tanpa galat konsol selama coba lagi kuis", not errors, "; ".join(errors[:2]))
+    page.locator(".done__links button", has_text="Beranda").click()
+    page.wait_for_timeout(700)
+    record("Tombol Beranda di layar hasil membawa ke Beranda", page.evaluate("() => location.hash === '#/' || location.hash === ''"),
+           page.evaluate("() => location.hash"))
     # Isolasi: rekor buatan uji ini tidak boleh bocor ke bagian sesudahnya.
+    # resetAll() mengosongkan state DI MEMORI juga — localStorage.clear() saja
+    # tidak cukup: navigasi hash berikutnya di instans aplikasi yang sama
+    # menulis ulang progres lama dari memori (terukur: 6h mendarat di review).
+    page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
     reset_storage(page)
 
 
