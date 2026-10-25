@@ -1,18 +1,30 @@
 /**
  * core/ui/mathpad.js
- * Numpad on-screen kustom — satu-satunya jalur input angka di aplikasi ini.
+ * Papan angka on-screen kustom — satu-satunya jalur input angka di aplikasi ini.
  *
- * Empat mode angka + satu mode teks:
- *   decimal  — bilangan bulat & desimal, 4 digit bagian bulat
- *   fraction — pecahan bertumpuk pembilang/penyebut
- *   surd     — bentuk akar k√r, jawaban eksak seperti 2√5 atau √29
- *   letter   — satu huruf variabel
- *   text     — papan huruf penuh (nama, asal sekolah)
+ * SATU mode angka yang menulis bentuk eksak secara langsung, seperti
+ * kalkulator ilmiah (revisi guru: pindah-pindah mode Angka/Pecahan/Akar
+ * tidak efisien, ukurannya berubah-ubah, dan 1/√5 tidak bisa ditulis):
+ *
+ *   7 8 9 ⌫ C      digit · hapus satu · bersihkan
+ *   4 5 6 √ ±      √ = akar pada bagian aktif · ± = tanda
+ *   1 2 3 a/b ,    a/b = pecahan (penyebut) · koma desimal
+ *   0 ……… ✓        selesai
+ *
+ *   "2√5"  →  2 √ 5          "1/√5"  →  1 a/b √ 5
+ *   "√5/5" →  √ 5 a/b 5      "−3"    →  ± 3        "2,5" → 2 , 5
+ *
+ * Ukuran papan TETAP di semua keadaan: layar bentuk bertinggi tetap, kisi
+ * 20 tuts tetap. Tuts yang tidak berlaku di sebuah isian (mis. √ untuk
+ * bilangan bulat) diredupkan dan menjelaskan dirinya bila ditekan.
+ *
+ * Dua mode lain: `letter` (satu huruf variabel) dan `text` (papan huruf
+ * penuh untuk nama & asal sekolah).
  *
  * Kenapa ini wajib (PRD §7.4): keyboard bawaan OS akan mendorong/merusak
  * tata letak 100vh yang sudah dirancang presisi, dan gayanya keluar dari tema.
  * Karena itu setiap field angka diberi readonly + inputmode="none" sehingga
- * keyboard native TIDAK PERNAH muncul, lalu Mathpad ini yang mengisinya.
+ * keyboard native TIDAK PERNAH muncul, lalu papan ini yang mengisinya.
  */
 
 import { icon } from './icons.js';
@@ -41,19 +53,24 @@ const KEYS = [
   { label: '7', value: '7' },
   { label: '8', value: '8' },
   { label: '9', value: '9' },
-  { key: 'backspace', icon: 'delete', style: 'danger', aria: 'Hapus satu digit' },
+  { key: 'backspace', icon: 'delete', style: 'danger', aria: 'Hapus satu angka' },
+  { key: 'clear', label: 'C', style: 'util', aria: 'Bersihkan isian' },
   { label: '4', value: '4' },
   { label: '5', value: '5' },
   { label: '6', value: '6' },
+  { key: 'root', label: '√', style: 'form', aria: 'Akar pada bagian yang aktif', tip: 'Akar: angka berikutnya masuk ke dalam akar' },
   { key: 'sign', icon: 'plus-minus', style: 'util', aria: 'Ganti tanda positif atau negatif' },
   { label: '1', value: '1' },
   { label: '2', value: '2' },
   { label: '3', value: '3' },
-  { key: 'clear', label: 'C', style: 'util', aria: 'Bersihkan isian' },
-  { label: '0', value: '0', wide: true },
+  { key: 'frac', label: 'a/b', style: 'form', aria: 'Pecahan: pindah ke penyebut', tip: 'Pecahan: angka berikutnya menjadi penyebut' },
   { label: ',', value: '.', aria: 'Koma desimal' },
-  { key: 'confirm', icon: 'check', style: 'confirm', aria: 'Konfirmasi jawaban' },
+  { label: '0', value: '0', span: 3 },
+  { key: 'confirm', icon: 'check', style: 'confirm', aria: 'Selesai', span: 2 },
 ];
+
+/** Bagian kosong: koefisien '' dan tanpa akar. */
+const emptyPart = () => ({ coef: '', rad: null });
 
 function build() {
   if (padEl && document.body.contains(padEl)) return;
@@ -76,42 +93,17 @@ function build() {
   padEl.setAttribute('role', 'group');
   padEl.setAttribute('aria-label', 'Papan angka');
   padEl.dataset.open = 'false';
-  padEl.dataset.mode = 'decimal';
+  padEl.dataset.mode = 'number';
 
   padEl.innerHTML = `
     <div class="mathpad__head">
-      <div class="mathpad__preview" data-role="preview" data-empty="true" aria-live="polite"></div>
       <div class="mathpad__mode" data-role="mode">
-        <button type="button" data-mode-btn="decimal" aria-pressed="true">Angka</button>
-        <button type="button" data-mode-btn="fraction" aria-pressed="false">Pecahan</button>
-        <button type="button" data-mode-btn="surd" aria-pressed="false">Akar</button>
+        <button type="button" data-mode-btn="number" aria-pressed="true">Angka</button>
         <button type="button" data-mode-btn="letter" aria-pressed="false">Variabel</button>
       </div>
-    </div>
-    <div class="mathpad__fraction">
-      <!-- Tersusun VERTIKAL: pembilang di atas, garis, penyebut di bawah —
-           persis seperti pecahan ditulis di buku. -->
-      <div class="mathpad__frac-stack">
-        <span class="mathpad__frac-caption">Pembilang</span>
-        <button type="button" class="mathpad__frac-slot" data-slot="num" data-active="true"
-                aria-label="Pembilang">0</button>
-        <div class="mathpad__frac-bar" aria-hidden="true"></div>
-        <button type="button" class="mathpad__frac-slot" data-slot="den"
-                aria-label="Penyebut">1</button>
-        <span class="mathpad__frac-caption">Penyebut</span>
-      </div>
-    </div>
-    <div class="mathpad__surd">
-      <!-- Bentuk akar eksak: koefisien di depan, radikan di bawah atap akar.
-           Keduanya SLOT yang dipilih siswa, sama seperti pembilang/penyebut. -->
-      <div class="mathpad__surd-stack">
-        <button type="button" class="mathpad__surd-slot" data-slot="coef" data-active="true"
-                aria-label="Koefisien di depan akar">1</button>
-        <span class="mathpad__surd-radical">
-          <button type="button" class="mathpad__surd-slot" data-slot="rad"
-                  aria-label="Bilangan di dalam akar">?</button>
-        </span>
-      </div>
+      <!-- Layar bentuk: bertinggi TETAP, menampilkan isian sebagaimana ditulis
+           di buku (pecahan bertumpuk, akar beratap). Bagiannya bisa diketuk. -->
+      <div class="mathpad__preview" data-role="preview" data-empty="true" aria-live="polite"></div>
     </div>
     <div class="mathpad__grid" data-role="grid"></div>
     <div class="mathpad__letters" data-role="letters"></div>
@@ -122,9 +114,13 @@ function build() {
   KEYS.forEach((k) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `mp-key${k.style ? ` mp-key--${k.style}` : ''}${k.wide ? ' mp-key--wide' : ''}`;
+    btn.className = `mp-key${k.style ? ` mp-key--${k.style}` : ''}`;
+    if (k.span) btn.style.gridColumn = `span ${k.span}`;
+    if (k.key) btn.dataset.key = k.key;
+    if (k.value === '.') btn.dataset.key = 'decimal';
     btn.innerHTML = k.icon ? icon(k.icon) : `<span>${k.label}</span>`;
     btn.setAttribute('aria-label', k.aria || k.label);
+    if (k.tip) btn.dataset.tip = k.tip;
     // pointerdown (bukan click) agar respons terasa <100ms dan tidak
     // memicu blur pada field sumber.
     btn.addEventListener('pointerdown', (e) => {
@@ -132,6 +128,15 @@ function build() {
       handleKey(k);
     });
     grid.appendChild(btn);
+  });
+
+  // Bagian pecahan di layar bentuk bisa diketuk untuk dipilih.
+  padEl.querySelector('[data-role="preview"]').addEventListener('pointerdown', (e) => {
+    const part = e.target.closest('[data-part]');
+    if (!part || !session || session.mode !== 'number') return;
+    e.preventDefault();
+    session.part = part.dataset.part;
+    sync();
   });
 
   buildAbc(padEl.querySelector('[data-role="abc"]'));
@@ -171,15 +176,6 @@ function build() {
     btn.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       setMode(btn.dataset.modeBtn);
-    });
-  });
-
-  padEl.querySelectorAll('[data-slot]').forEach((slot) => {
-    slot.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      if (!session) return;
-      session.activeSlot = slot.dataset.slot;
-      sync();
     });
   });
 
@@ -319,6 +315,21 @@ function toggleAbcCase() {
   if (shift) shift.setAttribute('aria-pressed', String(Boolean(session.abcUpper)));
 }
 
+/* ------------------------------------------------------------
+   Mode angka: isian = { num, den } — masing-masing { coef, rad }.
+   coef: teks bertanda ("", "-", "12", "2.5"); rad: null (tanpa akar)
+   atau teks digit di dalam akar ("" = akar baru dibuka). den: null bila
+   bukan pecahan. `part` = bagian yang sedang diketik.
+   ------------------------------------------------------------ */
+
+function activePart() {
+  return session.part === 'den' && session.den ? session.den : session.num;
+}
+
+function isBlank(p) {
+  return !p || ((p.coef === '' || p.coef === '-') && p.rad === null);
+}
+
 function handleKey(k) {
   if (!session) return;
 
@@ -328,83 +339,130 @@ function handleKey(k) {
     return;
   }
 
+  if (session.mode !== 'number') {
+    // Mode huruf: hanya hapus/bersihkan yang berlaku.
+    if (k.key === 'backspace') session.buffer = session.buffer.slice(0, -1);
+    if (k.key === 'clear') session.buffer = '';
+    sync();
+    return;
+  }
+
   if (k.key === 'clear') {
-    if (session.mode === 'fraction') {
-      session.numerator = '';
-      session.denominator = '';
-    } else if (session.mode === 'surd') {
-      session.coef = '';
-      session.radicand = '';
-      session.activeSlot = 'rad';
-    } else {
-      session.buffer = '';
-    }
+    session.num = emptyPart();
+    session.den = null;
+    session.part = 'num';
     sync();
     return;
   }
 
   if (k.key === 'backspace') {
-    mutateActive((cur) => cur.slice(0, -1));
+    const p = activePart();
+    if (p.rad !== null) {
+      if (p.rad !== '') p.rad = p.rad.slice(0, -1);
+      else p.rad = null;
+    } else if (p.coef !== '') {
+      p.coef = p.coef.slice(0, -1);
+    } else if (session.part === 'den') {
+      // Penyebut kosong dihapus → kembali menjadi bilangan biasa.
+      session.den = null;
+      session.part = 'num';
+    }
     sync();
     return;
   }
 
   if (k.key === 'sign') {
-    if (session.mode === 'surd') {
-      // Tanda milik KOEFISIEN, tidak pernah milik radikan: √(−5) bukan
-      // bilangan real, dan menerimanya diam-diam mengajarkan hal yang salah.
-      session.coef = session.coef.startsWith('-') ? session.coef.slice(1) : `-${session.coef}`;
-      sync();
-      return;
-    }
-    mutateActive((cur) => (cur.startsWith('-') ? cur.slice(1) : `-${cur}`));
+    // Tanda milik pembilang/koefisien, tidak pernah milik penyebut atau isi
+    // akar: √(−5) bukan bilangan real.
+    const c = session.num.coef;
+    session.num.coef = c.startsWith('-') ? c.slice(1) : `-${c}`;
     sync();
     return;
   }
 
-  // Tombol digit / desimal
-  mutateActive((cur) => {
-    if (k.value === '.') {
-      if (session.mode === 'fraction') {
-        flashLimit('Pecahan ditulis dengan bilangan bulat — pembilang dan penyebutnya tidak memakai koma.');
-        return cur;
-      }
-      if (session.mode === 'surd') {
-        flashLimit('Bentuk akar ditulis dengan bilangan bulat, misalnya 2√5. Koma tidak dipakai di sini.');
-        return cur;
-      }
-      if (cur.includes('.')) return cur;
-      return cur === '' || cur === '-' ? `${cur}0.` : `${cur}.`;
+  if (k.key === 'root') {
+    if (!session.allow.root) {
+      flashLimit('Isian ini tidak memakai bentuk akar — tulis bilangan biasa.');
+      return;
     }
-    if (cur === '0') return k.value;
-    if (cur === '-0') return `-${k.value}`;
-
-    const unsigned = cur.replace('-', '');
-    const [intPart, decPart] = unsigned.split('.');
-
-    if (session.mode === 'surd' && session.activeSlot === 'rad') {
-      if (unsigned.length >= LIMITS.radicandDigits) {
-        flashLimit(`Bilangan di dalam akar paling banyak ${LIMITS.radicandDigits} digit.`);
-        return cur;
+    const p = activePart();
+    if (p.rad === null) {
+      if (p.coef.includes('.')) {
+        flashLimit('Bentuk akar ditulis dengan bilangan bulat, misalnya 2√5.');
+        return;
       }
-      return cur + k.value;
+      p.rad = '';
+    } else if (p.rad === '') {
+      p.rad = null;          // √ ditekan dua kali: batal
+    } else {
+      flashLimit('Akar ini sudah berisi. Hapus dulu angka di dalamnya untuk membuang akarnya.');
+      return;
     }
+    sync();
+    return;
+  }
 
-    if (decPart !== undefined) {
-      if (decPart.length >= LIMITS.decimalDigits) {
-        flashLimit(`Paling banyak ${LIMITS.decimalDigits} angka di belakang koma.`);
-        return cur;
+  if (k.key === 'frac') {
+    if (!session.allow.frac) {
+      flashLimit('Isian ini hanya menerima bilangan bulat — tidak memakai pecahan.');
+      return;
+    }
+    if (!session.den) {
+      if (isBlank(session.num) || (session.num.rad === '')) {
+        flashLimit('Tulis pembilangnya dulu, baru tekan a/b untuk penyebutnya.');
+        return;
       }
-      return cur + k.value;
+      if (session.num.coef.includes('.')) {
+        flashLimit('Pecahan ditulis dengan bilangan bulat — pembilangnya tidak memakai koma.');
+        return;
+      }
+      session.den = emptyPart();
+      session.part = 'den';
+    } else {
+      session.part = session.part === 'den' ? 'num' : 'den';
     }
+    sync();
+    return;
+  }
 
-    if (intPart.length >= LIMITS.intDigits) {
-      flashLimit(`Paling banyak ${LIMITS.intDigits} digit. Periksa lagi — jawaban soal di sini tidak pernah sepanjang itu.`);
-      return cur;
+  // Digit / koma
+  const p = activePart();
+  if (k.value === '.') {
+    if (session.den || p.rad !== null) {
+      flashLimit('Koma hanya untuk bilangan desimal biasa — pecahan dan akar ditulis dengan bilangan bulat.');
+      return;
     }
-    return cur + k.value;
-  });
+    if (p.coef.includes('.')) return;
+    p.coef = (p.coef === '' || p.coef === '-') ? `${p.coef}0.` : `${p.coef}.`;
+    sync();
+    return;
+  }
 
+  if (p.rad !== null) {
+    if (p.rad.length >= LIMITS.radicandDigits) {
+      flashLimit(`Bilangan di dalam akar paling banyak ${LIMITS.radicandDigits} digit.`);
+      return;
+    }
+    p.rad = p.rad === '0' ? k.value : p.rad + k.value;
+    sync();
+    return;
+  }
+
+  const cur = p.coef;
+  if (cur === '0') { p.coef = k.value; sync(); return; }
+  if (cur === '-0') { p.coef = `-${k.value}`; sync(); return; }
+  const unsigned = cur.replace('-', '');
+  const [intPart, decPart] = unsigned.split('.');
+  if (decPart !== undefined) {
+    if (decPart.length >= LIMITS.decimalDigits) {
+      flashLimit(`Paling banyak ${LIMITS.decimalDigits} angka di belakang koma.`);
+      return;
+    }
+  } else if (intPart.length >= LIMITS.intDigits) {
+    flashLimit(`Paling banyak ${LIMITS.intDigits} digit. Periksa lagi — jawaban soal di sini tidak pernah sepanjang itu.`);
+    return;
+  }
+  p.coef = cur + k.value;
   sync();
 }
 
@@ -445,27 +503,8 @@ function flashLimit(message) {
   toast.warn(message, { title: 'Batas isian' });
 }
 
-/** Terapkan perubahan ke buffer yang sedang aktif (biasa / pembilang / penyebut). */
-function mutateActive(fn) {
-  if (session.mode === 'fraction') {
-    if (session.activeSlot === 'den') session.denominator = fn(session.denominator);
-    else session.numerator = fn(session.numerator);
-  } else if (session.mode === 'surd') {
-    if (session.activeSlot === 'coef') session.coef = fn(session.coef);
-    else session.radicand = fn(session.radicand).replace('-', '');
-  } else {
-    session.buffer = fn(session.buffer);
-  }
-}
-
 function setMode(mode) {
   if (!session) return;
-  if (session.mode !== mode) {
-    // Slot awal tiap mode: pembilang untuk pecahan, RADIKAN untuk akar —
-    // yang paling sering diisi lebih dulu di bentuk √29.
-    if (mode === 'fraction') session.activeSlot = 'num';
-    if (mode === 'surd') session.activeSlot = 'rad';
-  }
   session.mode = mode;
   padEl.dataset.mode = mode;
   padEl.querySelectorAll('[data-mode-btn]').forEach((btn) => {
@@ -473,14 +512,9 @@ function setMode(mode) {
   });
   sync();
 
-  // Mode pecahan menambah tinggi pad, jadi posisinya harus dihitung ulang —
-  // tanpa ini, deretan tombol bawah bisa terpotong di luar layar.
-  //
-  // Sesi DITANGKAP sekarang dan diperiksa ulang di dalam callback. Terukur
-  // saat Tahap 1: mengetuk mode lalu langsung "✓" menutup papan di frame
-  // yang sama, dan callback yang membaca `session.field` sesudahnya
-  // melempar TypeError karena `session` sudah null. Hal yang sama terjadi
-  // bila layar berganti tepat setelah papan dibuka.
+  // Papan huruf punya tinggi berbeda, jadi posisinya dihitung ulang.
+  // Sesi DITANGKAP sekarang dan diperiksa ulang di dalam callback: mengetuk
+  // mode lalu langsung "✓" menutup papan di frame yang sama (terukur).
   const opened = session;
   if (opened.field) {
     requestAnimationFrame(() => {
@@ -489,95 +523,105 @@ function setMode(mode) {
   }
 }
 
-function syncFraction() {
-  padEl.querySelectorAll('[data-slot]').forEach((slot) => {
-    slot.dataset.active = String(slot.dataset.slot === session.activeSlot);
-  });
-  padEl.querySelector('[data-slot="num"]').textContent = session.numerator || '0';
-  padEl.querySelector('[data-slot="den"]').textContent = session.denominator || '1';
+const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+/** Tulisan koefisien untuk layar: minus tipografis, koma desimal. */
+const showCoef = (c) => esc(c.replace('-', '−').replace('.', ','));
+const PLACEHOLDER = '<i class="mp-ph">□</i>';
+
+function partHtml(p, name) {
+  const active = session.part === name;
+  const coef = (!p.coef && p.rad === null) ? PLACEHOLDER : showCoef(p.coef === '-' && p.rad === null ? '-' : p.coef);
+  const rad = p.rad === null ? ''
+    : `<span class="mp-rad"><span class="mp-rad__sign">√</span><span class="mp-rad__body">${p.rad ? esc(p.rad) : PLACEHOLDER}</span></span>`;
+  return `<span class="mp-part${active ? ' is-active' : ''}" data-part="${name}">${coef}${rad}</span>`;
 }
 
-function syncSurd() {
-  padEl.querySelectorAll('[data-slot]').forEach((slot) => {
-    slot.dataset.active = String(slot.dataset.slot === session.activeSlot);
-  });
-  const coef = session.coef;
-  padEl.querySelector('[data-slot="coef"]').textContent =
-    coef === '' ? '1' : coef === '-' ? '−1' : coef;
-  padEl.querySelector('[data-slot="rad"]').textContent = session.radicand || '?';
+/** Layar bentuk: isian sebagaimana ditulis di buku — pecahan bertumpuk, akar beratap. */
+function renderStage(preview) {
+  const { num, den } = session;
+  const blank = isBlank(num) && !den;
+  preview.dataset.empty = String(blank && num.coef === '');
+  preview.dataset.frac = String(Boolean(den));
+  preview.innerHTML = den
+    ? `<span class="mp-frac">${partHtml(num, 'num')}<span class="mp-frac__bar" aria-hidden="true"></span>${partHtml(den, 'den')}</span>`
+    : (num.coef === '' && num.rad === null ? '<span class="mp-part is-active" data-part="num"><i class="mp-ph">0</i></span>' : partHtml(num, 'num'));
 }
 
-/** Koefisien sebagai bilangan: kosong berarti 1, "-" saja berarti −1. */
-function surdCoef() {
-  if (session.coef === '' ) return 1;
-  if (session.coef === '-') return -1;
-  return Number(session.coef);
+/** Tuts yang tidak berlaku diredupkan; tuts bentuk menyala saat sedang dipakai. */
+function syncKeys() {
+  const p = activePart();
+  const set = (key, attr, on) => {
+    const b = padEl.querySelector(`.mathpad__grid [data-key="${key}"]`);
+    if (b) b.toggleAttribute(attr, Boolean(on));
+  };
+  set('root', 'data-off', !session.allow.root);
+  set('frac', 'data-off', !session.allow.frac);
+  set('decimal', 'data-off', Boolean(session.den) || p.rad !== null);
+  set('root', 'data-on', p.rad === '');
+  set('frac', 'data-on', Boolean(session.den));
 }
 
 function sync() {
   if (!session) return;
 
   const preview = padEl.querySelector('[data-role="preview"]');
-  let text;
-
-  if (session.mode === 'fraction') {
-    syncFraction();
-    text = `${session.numerator || '0'}/${session.denominator || '1'}`;
-  } else if (session.mode === 'surd') {
-    syncSurd();
-    text = displayValue();
+  if (session.mode === 'number') {
+    renderStage(preview);
+    syncKeys();
   } else {
-    text = session.buffer;
+    const text = session.buffer;
+    preview.textContent = text || '—';
+    preview.dataset.empty = String(!text);
+    preview.dataset.frac = 'false';
   }
-
-  preview.textContent = text || '—';
-  preview.dataset.empty = String(!text);
 
   // Tampilkan nilai berjalan di field sumber (tanpa keyboard OS terlibat).
   if (session.field) session.field.value = displayValue();
   if (typeof session.onInput === 'function') session.onInput(currentValue(), displayValue());
 }
 
-function displayValue() {
-  if (!session) return '';
-  if (session.mode === 'text') return session.buffer;
-  if (session.mode === 'fraction') {
-    if (!session.numerator) return '';
-    return `${session.numerator}/${session.denominator || '1'}`;
-  }
-  if (session.mode === 'surd') {
-    // Akar tanpa radikan belum sebuah jawaban — kotaknya tetap kosong,
-    // bukan menampilkan "2√" yang tampak seperti jawaban setengah jadi.
-    if (!session.radicand) return '';
-    return `${session.coef}√${session.radicand}`;
-  }
-  return session.buffer;
+/** Bagian lengkap: punya digit, atau akar yang sudah berisi. */
+function partComplete(p) {
+  return p.rad === null ? /\d/.test(p.coef) : p.rad !== '';
 }
 
-/** True kalau isian saat ini berupa variabel huruf, bukan angka. */
-function isLetterValue() {
-  return /^[A-Za-z]$/.test(session ? session.buffer : '');
+function partText(p) {
+  const coef = p.coef.endsWith('.') ? p.coef.slice(0, -1) : p.coef;
+  return p.rad === null ? coef : `${coef}√${p.rad}`;
+}
+
+/**
+ * Teks isian untuk field & pemeriksa: "2√5", "1/√5", "√5/5", "-3", "2.5".
+ * Bentuk yang belum selesai (akar kosong) menghasilkan "" — kotaknya tetap
+ * kosong, bukan menampilkan "2√" yang tampak seperti jawaban setengah jadi.
+ * Pecahan tanpa penyebut ditulis sebagai pembilangnya saja (bukan "1/1").
+ */
+function displayValue() {
+  if (!session) return '';
+  if (session.mode !== 'number') return session.buffer;
+  const { num, den } = session;
+  if (!partComplete(num)) return '';
+  const top = partText(num);
+  if (den && partComplete(den)) return `${top}/${partText(den)}`;
+  return top;
+}
+
+function partValue(p) {
+  const k = p.coef === '' || p.coef === '-' ? (p.coef === '-' ? -1 : 1) : Number(p.coef);
+  if (p.rad === null) return /\d/.test(p.coef) ? k : NaN;
+  if (p.rad === '') return NaN;
+  return k * Math.sqrt(Number(p.rad));
 }
 
 function currentValue() {
   if (!session) return NaN;
   if (session.mode === 'text') return session.buffer;   // teks: nilainya string
-  if (isLetterValue()) return NaN;     // variabel tidak punya nilai numerik
-  if (session.mode === 'fraction') {
-    const n = Number(session.numerator);
-    const d = Number(session.denominator || '1');
-    if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0) return NaN;
-    return n / d;
-  }
-  if (session.mode === 'surd') {
-    // Nilai desimal di sini HANYA untuk pemeriksa jawaban. Yang ditampilkan
-    // ke siswa tetap bentuk eksaknya lewat displayValue().
-    const k = surdCoef();
-    const r = Number(session.radicand);
-    if (!session.radicand || !Number.isFinite(k) || !Number.isFinite(r) || r < 0) return NaN;
-    return k * Math.sqrt(r);
-  }
-  const v = Number(session.buffer);
+  if (session.mode === 'letter') return NaN;            // variabel tidak punya nilai numerik
+  // Nilai desimal di sini HANYA untuk pemeriksa toleransi. Yang ditampilkan
+  // ke siswa — dan diperiksa eksak oleh simulasi — tetap teks displayValue().
+  const top = partValue(session.num);
+  const bottom = session.den && partComplete(session.den) ? partValue(session.den) : 1;
+  const v = top / bottom;
   return Number.isFinite(v) ? v : NaN;
 }
 
@@ -597,9 +641,9 @@ function commit() {
  *   · isian kosong tidak pernah dikirim — ia akan menimpa nilai lama
  *     dengan kekosongan;
  *   · isian yang TIDAK BERUBAH juga tidak dikirim — beberapa pemakai
- *     (mis. berburu kofaktor di Fase 16) menilai jawaban tepat saat
- *     `onCommit`, dan membuka pad lalu menutupnya tanpa mengetik apa pun
- *     tidak boleh dihitung sebagai jawaban yang keliru.
+ *     menilai jawaban tepat saat `onCommit`, dan membuka pad lalu
+ *     menutupnya tanpa mengetik apa pun tidak boleh dihitung sebagai
+ *     jawaban yang keliru.
  */
 function layakDisimpanOtomatis() {
   if (!session || session.committed) return false;
@@ -671,10 +715,22 @@ function position(anchor) {
   markPadEdge();
 }
 
+/** Isian awal "2√5/3", "1/√5", "-3", "2.5" → bagian pembilang & penyebut. */
+function parseInitial(text) {
+  const m = /^(-?\d*(?:\.\d*)?)(?:√(\d*))?(?:\/(\d*)(?:√(\d*))?)?$/.exec(text);
+  if (!m || text === '') return { num: emptyPart(), den: null };
+  const num = { coef: m[1] || '', rad: m[2] === undefined ? null : m[2] };
+  const hasDen = text.includes('/');
+  const den = hasDen ? { coef: m[3] || '', rad: m[4] === undefined ? null : m[4] } : null;
+  return { num, den };
+}
+
 /**
- * Buka Mathpad untuk sebuah field.
+ * Buka papan untuk sebuah field.
  * @param {HTMLElement} field  Elemen input/target (akan dibuat readonly).
- * @param {object} options     { initial, mode, allowFraction, onInput, onCommit, onClose }
+ * @param {object} options     { initial, mode, allowFraction, allowSurd, allowLetter, onInput, onCommit, onClose }
+ *   allowFraction === false → tuts a/b diredupkan (bilangan bulat saja)
+ *   allowSurd               → tuts √ aktif (bentuk akar eksak)
  */
 export function openMathpad(field, options = {}) {
   build();
@@ -686,25 +742,26 @@ export function openMathpad(field, options = {}) {
   if (session) close({ simpan: true });
 
   const initial = options.initial != null ? String(options.initial) : '';
-  const isFraction = initial.includes('/');
-  const surdMatch = /^(-?\d*)√(\d+)$/.exec(initial);
-  const isSurd = Boolean(surdMatch);
   const isLetter = /^[A-Za-z]$/.test(initial);
+  const hasRoot = initial.includes('√');
 
   // Mode teks dipilih eksplisit lewat opsi; ia tidak pernah ditebak dari isi
   // awal, karena nama seperti "7" pun harus tetap dianggap teks.
   const textMode = options.mode === 'text';
+  const parsed = parseInitial(textMode || isLetter ? '' : initial);
 
   session = {
     field,
     abcUpper: true,
-    buffer: (isFraction || isSurd) ? '' : initial,
-    numerator: isFraction ? initial.split('/')[0] : '',
-    denominator: isFraction ? initial.split('/')[1] : '',
-    coef: isSurd ? surdMatch[1] : '',
-    radicand: isSurd ? surdMatch[2] : '',
-    mode: textMode ? 'text' : (options.mode || (isFraction ? 'fraction' : isSurd ? 'surd' : isLetter ? 'letter' : 'decimal')),
-    activeSlot: isSurd ? 'rad' : 'num',
+    buffer: textMode || isLetter ? initial : '',
+    num: parsed.num,
+    den: parsed.den,
+    part: parsed.den ? 'den' : 'num',
+    allow: {
+      frac: options.allowFraction !== false,
+      root: Boolean(options.allowSurd) || hasRoot,
+    },
+    mode: textMode ? 'text' : (isLetter ? 'letter' : 'number'),
     committed: false,
     // Pembanding untuk auto-simpan: hanya yang BERUBAH yang dikirim.
     initialDisplay: initial,
@@ -720,19 +777,8 @@ export function openMathpad(field, options = {}) {
 
   if (textMode) toggleAbcCase(), toggleAbcCase();   // pulihkan huruf besar
 
-  // Toggle mode ditampilkan sesuai izin konteks.
-  // Mode akar hanya ditawarkan bila konteksnya memintanya (allowSurd), atau
-  // bila isian awalnya memang sudah berbentuk akar.
-  const fracBtn = padEl.querySelector('[data-mode-btn="fraction"]');
-  const surdBtn = padEl.querySelector('[data-mode-btn="surd"]');
-  const letterBtn = padEl.querySelector('[data-mode-btn="letter"]');
-  const allowSurd = Boolean(options.allowSurd) || isSurd;
-  if (fracBtn) fracBtn.hidden = options.allowFraction === false;
-  if (surdBtn) surdBtn.hidden = !allowSurd;
-  if (letterBtn) letterBtn.hidden = !options.allowLetter;
-
-  padEl.querySelector('[data-role="mode"]').hidden =
-    (options.allowFraction === false && !options.allowLetter && !allowSurd);
+  // Pemilih Angka/Variabel hanya tampil bila konteksnya menerima variabel.
+  padEl.querySelector('[data-role="mode"]').hidden = !options.allowLetter;
 
   setMode(session.mode);
 
@@ -800,14 +846,18 @@ function onGlobalKey(event) {
     return;
   }
   if (keyIs(event, 'Backspace')) {
+    event.preventDefault();
     if (session.mode === 'text') {
-      event.preventDefault();
       session.buffer = session.buffer.slice(0, -1);
       sync();
       return;
     }
-    event.preventDefault();
     handleKey({ key: 'backspace' });
+    return;
+  }
+  if (session.mode === 'letter' && /^[A-Za-z]$/.test(event.key)) {
+    event.preventDefault();
+    setLetter(event.key);
     return;
   }
   if (/^[0-9]$/.test(event.key)) {
@@ -815,14 +865,16 @@ function onGlobalKey(event) {
     handleKey({ value: event.key });
     return;
   }
+  // Keyboard fisik: "/" = pecahan, "r" = akar, "." atau "," = koma, "-" = tanda.
+  const map = { '/': 'frac', r: 'root', R: 'root', '-': 'sign' };
+  if (map[event.key]) {
+    event.preventDefault();
+    handleKey({ key: map[event.key] });
+    return;
+  }
   if (event.key === '.' || event.key === ',') {
     event.preventDefault();
     handleKey({ value: '.' });
-    return;
-  }
-  if (event.key === '-') {
-    event.preventDefault();
-    handleKey({ key: 'sign' });
   }
 }
 

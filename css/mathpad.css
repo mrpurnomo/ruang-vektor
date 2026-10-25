@@ -104,7 +104,7 @@
   .mathpad {
     position: fixed;
     z-index: var(--z-mathpad);
-    width: min(360px, calc(100vw - 32px));
+    width: min(380px, calc(100vw - 32px));
     padding: var(--sp-3);
     display: none;
     flex-direction: column;
@@ -137,10 +137,12 @@
     gap: var(--sp-2);
   }
 
-  /* Pratinjau adalah JANTUNG papan ini: sumur LCD, angka amber besar.
-     Skala tik di dasarnya menegaskan bahwa ini PEMBACAAN, bukan teks. */
+  /* Layar bentuk adalah JANTUNG papan ini: sumur LCD, angka amber besar,
+     dan isian ditulis seperti di buku — pecahan bertumpuk, akar beratap.
+     Tingginya TETAP di semua keadaan (revisi guru: papan yang berubah
+     ukuran saat pindah mode membingungkan). */
   .mathpad__preview {
-    min-height: 54px;
+    height: 78px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -159,11 +161,37 @@
     color: var(--value);
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
     direction: ltr;
     transition: box-shadow var(--dur-fast) var(--ease-out),
                 border-color var(--dur-fast) var(--ease-out);
   }
+  .mathpad__preview[data-frac="true"] { justify-content: center; font-size: 1.2rem; }
+
+  /* Bagian isian (pembilang / penyebut): bisa diketuk untuk dipilih.
+     Bagian aktif bergaris bawah amber — mata tahu ke mana angka berikutnya. */
+  .mp-part {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 1px;
+    padding: 0 4px;
+    border-radius: var(--r-sm);
+    border-bottom: 2px solid transparent;
+    color: var(--on-navy-2);
+    cursor: pointer;
+  }
+  .mathpad__preview[data-frac="false"] .mp-part { color: var(--value); border-bottom-color: transparent; }
+  .mp-part.is-active { color: var(--value); border-bottom-color: var(--value-deep); background: color-mix(in srgb, var(--value) 10%, transparent); }
+  .mp-ph { font-style: normal; color: var(--on-navy-3); font-weight: 400; }
+  .mp-frac {
+    display: inline-grid;
+    justify-items: center;
+    gap: 2px;
+  }
+  .mp-frac__bar { width: 100%; min-width: 64px; height: 2px; background: var(--on-navy-2); }
+  /* Akar: tanda √ dan ATAP di atas isinya. */
+  .mp-rad { display: inline-flex; align-items: stretch; margin-left: 1px; }
+  .mp-rad__sign { font-family: var(--font-body); font-weight: 400; transform: scaleY(1.15); transform-origin: bottom; }
+  .mp-rad__body { padding: 0 2px; border-top: 2px solid currentColor; line-height: 1.15; }
 
   .mathpad__preview[data-empty="true"] {
     color: var(--on-navy-3);
@@ -234,138 +262,6 @@
 
 
   /* ============================================================
-     5. MODE PECAHAN — tersusun VERTIKAL
-
-     Pembilang di atas, garis, penyebut di bawah — persis seperti ditulis
-     di buku. Menyusunnya mendatar ("3/4") memutus hubungan visual dengan
-     bentuk yang dikerjakan siswa di kertas.
-     ============================================================ */
-
-  .mathpad__fraction { display: none; }
-  .mathpad[data-mode="fraction"] .mathpad__fraction { display: block; }
-
-  .mathpad__frac-stack {
-    display: grid;
-    justify-items: center;
-    gap: 2px;
-    padding: var(--sp-2);
-    border-radius: var(--r-md);
-    background: var(--navy-900);
-    border: 1px solid var(--navy-500);
-  }
-
-  .mathpad__frac-slot {
-    min-width: 96px;
-    min-height: 40px;
-    display: grid;
-    place-items: center;
-    padding: 0 var(--sp-3);
-    border-radius: var(--r-sm);
-    border: 1px solid transparent;
-    background: transparent;
-    font-family: var(--font-value);
-    font-size: var(--fs-lg);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--on-navy-2);
-    transition: border-color var(--dur-fast) var(--ease-out),
-                background var(--dur-fast) var(--ease-out),
-                color var(--dur-fast) var(--ease-out);
-  }
-
-  .mathpad__frac-slot[data-active="true"] {
-    border-color: var(--value-deep);
-    background: color-mix(in srgb, var(--value) 12%, transparent);
-    color: var(--value);
-  }
-
-  .mathpad__frac-bar {
-    width: 104px;
-    height: 2px;
-    background: var(--on-navy-2);
-  }
-
-  .mathpad__frac-caption {
-    font-family: var(--font-ui);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase;
-    color: var(--on-navy-3);
-  }
-
-  /* ------------------------------------------------------------
-     MODE AKAR — jawaban eksak (√29, 3√5), bukan desimal.
-     Satu slot koefisien di depan, satu slot radikan di bawah akar.
-     ------------------------------------------------------------ */
-
-  .mathpad__surd { display: none; }
-  .mathpad[data-mode="surd"] .mathpad__surd { display: block; }
-
-  .mathpad__surd-stack {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--sp-1);
-    padding: var(--sp-2);
-    border-radius: var(--r-md);
-    background: var(--navy-900);
-    border: 1px solid var(--navy-500);
-  }
-
-  .mathpad__surd-slot {
-    min-width: 64px;
-    min-height: 40px;
-    display: grid;
-    place-items: center;
-    border-radius: var(--r-sm);
-    border: 1px solid transparent;
-    font-family: var(--font-value);
-    font-size: var(--fs-lg);
-    font-weight: 700;
-    color: var(--on-navy-2);
-    transition: border-color var(--dur-fast) var(--ease-out),
-                background var(--dur-fast) var(--ease-out),
-                color var(--dur-fast) var(--ease-out);
-  }
-
-  .mathpad__surd-slot[data-active="true"] {
-    border-color: var(--value-deep);
-    background: color-mix(in srgb, var(--value) 12%, transparent);
-    color: var(--value);
-  }
-
-  /* Tanda akar: "√" sebagai item flex setinggi slot, dan ATAPNYA adalah
-     garis atas slot radikan. Tanpa posisi absolut: atap pasti menempel
-     dan ikut melebar mengikuti jumlah digit. */
-  .mathpad__surd-radical {
-    display: inline-flex;
-    align-items: stretch;
-  }
-
-  .mathpad__surd-radical::before {
-    content: '√';
-    display: flex;
-    align-items: flex-end;
-    padding-right: 1px;
-    font-family: var(--font-body);
-    font-size: 2.1rem;
-    line-height: .95;
-    color: var(--on-navy-2);
-  }
-
-  .mathpad__surd-radical .mathpad__surd-slot {
-    border-top: 2px solid var(--on-navy-2);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-
-  .mathpad__surd-radical .mathpad__surd-slot[data-active="true"] {
-    border-top-color: var(--value-deep);
-  }
-
-
-  /* ============================================================
      6. TOMBOL ANGKA — kisi 4 kolom
 
      44px adalah lantai sentuh, bukan target: aplikasi ini dirancang
@@ -375,7 +271,7 @@
 
   .mathpad__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
   }
 
@@ -426,7 +322,18 @@
   }
   .mp-key--confirm:hover { background: var(--value-hi); border-color: var(--value-hi); }
 
-  .mp-key--wide { grid-column: span 2; }
+  /* Tuts BENTUK (√, a/b): pelat amber tipis — keduanya menulis bentuk
+     eksak. Menyala saat sedang dipakai (akar menunggu isi, ada penyebut). */
+  .mp-key--form {
+    background: var(--navy-700);
+    border-color: color-mix(in srgb, var(--value) 45%, transparent);
+    color: var(--value);
+    font-family: var(--font-body);
+  }
+  .mp-key--form[data-on] { background: color-mix(in srgb, var(--value) 22%, var(--navy-700)); box-shadow: 0 0 0 2px var(--value-line); }
+  /* Tuts yang tidak berlaku di isian ini: redup, tetap di tempatnya
+     (ukuran papan tidak berubah), dan menjelaskan dirinya bila ditekan. */
+  .mp-key[data-off] { opacity: .32; }
 
 
   /* ============================================================
@@ -481,10 +388,11 @@
   .mathpad--text { width: min(720px, calc(100vw - 24px)); }
   .mathpad--text .mathpad__grid,
   .mathpad--text .mathpad__mode,
-  .mathpad--text .mathpad__fraction,
   .mathpad--text .mathpad__letters { display: none; }
+  .mathpad[data-mode="letter"] .mathpad__grid { display: none; }
 
   .mathpad--text .mathpad__preview {
+    height: 54px;
     justify-content: flex-start;
     font-family: var(--font-body);
     font-size: var(--fs-md);
@@ -556,14 +464,15 @@
       border-radius: var(--r-xl) var(--r-xl) 0 0;
       padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
     }
-    .mathpad__preview { min-height: 46px; font-size: 1.4rem; }
+    .mathpad__preview { height: 66px; font-size: 1.4rem; }
     .mp-key { min-height: 44px; }
   }
 
   /* Lanskap pendek: papan harus tetap muat utuh bersama soalnya. */
   @media (orientation: landscape) and (max-height: 460px) {
     .mathpad { gap: 6px; padding: var(--sp-2); }
-    .mathpad__preview { min-height: 40px; font-size: 1.25rem; }
+    .mathpad__preview { height: 62px; font-size: 1.3rem; }
+    .mathpad__preview[data-frac="true"] { font-size: 1rem; }
     .mp-key { min-height: 40px; font-size: var(--fs-md); }
     .mathpad__mode button { min-height: 28px; }
   }

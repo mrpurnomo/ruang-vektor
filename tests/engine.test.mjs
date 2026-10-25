@@ -234,6 +234,22 @@ test('parseSurd menyederhanakan dan menerima ejaan lain: "√20", "2akar5", "sqr
   assertSurd(S.parseSurd('−√3'), -1, 1, 3);
 });
 
+test('parseSurd membaca akar di PENYEBUT dari papan angka: "1/√5", "-2/√5", "3/2√5", "√5/√2"', () => {
+  // Vektor satuan (1, −2)/√5: siswa menulis seperti di buku — tanpa wajib merasionalkan.
+  assertSurd(S.parseSurd('1/√5'), 1, 5, 5);          // = √5/5
+  assertSurd(S.parseSurd('-2/√5'), -2, 5, 5);        // = −2√5/5
+  assertSurd(S.parseSurd('3/2√5'), 3, 10, 5);        // = 3√5/10
+  assertSurd(S.parseSurd('√5/√2'), 1, 2, 10);        // = √10/2
+  assert.equal(S.equalsS(S.parseSurd('1/√5'), S.parseSurd('√5/5')), true);
+  assert.equal(S.parseSurd('1/√0'), null, 'penyebut nol ditolak');
+  assert.equal(S.parseSurd('1/'), null);
+});
+
+test('isSimplestForm: akar di penyebut belum paling sederhana (belum dirasionalkan)', () => {
+  assert.equal(S.isSimplestForm('1/√5'), false);
+  assert.equal(S.isSimplestForm('√5/5'), true);
+});
+
 test('parseSurd membaca bilangan bulat, pecahan, desimal koma, dan akar per bilangan', () => {
   assertSurd(S.parseSurd('-7'), -7, 1, 1);
   assertSurd(S.parseSurd('3/4'), 3, 4, 1);

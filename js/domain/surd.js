@@ -419,12 +419,17 @@ function tokenize(input) {
   const pieces = text.match(/[+-]?[^+-]+/g);
   if (!pieces || pieces.join('') !== text) return null;
 
-  const termPattern = /^([+-]?)(\d+(?:\.\d+)?)?(?:√(\d+(?:\.\d+)?))?(?:\/(\d+(?:\.\d+)?))?$/;
+  // Penyebut boleh berakar ("1/√5", "3/2√5"): papan angka menuliskannya
+  // seperti di buku, dan vektor satuan tidak wajib dirasionalkan.
+  const N = '(\\d+(?:\\.\\d+)?)';
+  const termPattern = new RegExp(`^([+-]?)${N}?(?:√${N})?(?:\\/${N}?(?:√${N})?)?$`);
   const terms = [];
   for (const piece of pieces) {
     const m = termPattern.exec(piece);
     if (!m || (m[2] === undefined && m[3] === undefined)) return null;
-    terms.push({ sign: m[1] === '-' ? -1 : 1, coef: m[2], rad: m[3], den: m[4] });
+    const hasSlash = piece.includes('/');
+    if (hasSlash && m[4] === undefined && m[5] === undefined) return null;
+    terms.push({ sign: m[1] === '-' ? -1 : 1, coef: m[2], rad: m[3], den: m[4], denRad: m[5] });
   }
   return terms;
 }
@@ -447,11 +452,15 @@ export function parseSurd(input) {
   const terms = tokenize(input);
   if (!terms) return null;
   try {
-    const values = terms.map(({ sign, coef, rad, den }) => {
+    const values = terms.map(({ sign, coef, rad, den, denRad }) => {
       const c = fraction(sign, 1);
       const k = coef === undefined ? c : mulQ(c, toFractionStrict(coef));
       const q = den === undefined ? k : divQ(k, toFractionStrict(den));
-      return surd(q, rad === undefined ? 1 : toFractionStrict(rad));
+      const r = rad === undefined ? fraction(1, 1) : toFractionStrict(rad);
+      if (denRad === undefined) return surd(q, r);
+      // k√r / (d√s) = k / (d·s) · √(r·s) — dirasionalkan; s = 0 dibagi nol.
+      const s = toFractionStrict(denRad);
+      return surd(divQ(q, s), mulQ(r, s));
     });
     return normalize(values.flatMap((v) => (isSum(v) ? v.terms : [v])));
   } catch (err) {
@@ -476,7 +485,8 @@ export function isSimplestForm(input) {
   if (!terms || parseSurd(input) === null) return false;
 
   const seen = new Set();
-  for (const { coef, rad, den } of terms) {
+  for (const { coef, rad, den, denRad } of terms) {
+    if (denRad !== undefined) return false;   // akar di penyebut: belum dirasionalkan
     if (coef !== undefined && Number(coef) === 0) return false;
     if (rad !== undefined) {
       const r = Number(rad);
