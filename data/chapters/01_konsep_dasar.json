@@ -442,6 +442,12 @@
     {
       "id": "notasi_penyajian",
       "title": "Bentuk Komponen Vektor",
+      "hook": {
+        "art": "baju",
+        "title": "Tiga teman, tiga tulisan",
+        "story": "Pilot drone mengirim perintah: **\"4 satuan ke kanan, 3 satuan ke bawah.\"** Raka mencatatnya $(4,\\, -3)$, Sinta menulis $4\\hat{i} - 3\\hat{j}$, dan Dimas menumpuk dua angka di dalam kurung.",
+        "question": "Siapa yang benar? Apakah ketiga catatan itu menggambar **panah yang sama**?"
+      },
       "materi": [
         {
           "t": "p",
@@ -497,67 +503,93 @@
         }
       ],
       "simulation": {
-        "engine": "notation_morph",
-        "title": "Simulasi: Ganti Baju Vektor",
-        "brief": "Satu vektor datang dengan satu baju; tulis ulang dalam baju yang diminta. Empat kuadran bergantian, jadi tandanya tidak bisa ditebak.",
+        "engine": "notation_guided",
+        "title": "Simulasi Terpandu: Satu Vektor, Tiga Baju",
+        "brief": "Perintah gerak diubah menjadi panah, lalu panah itu kamu tuliskan dengan tiga cara. Rak di atas lembar kerja terisi satu per satu — hanya dari jawabanmu.",
         "config": {
           "cases": [
             {
+              "kind": "build",
+              "guided": true,
               "v": [
-                7,
+                4,
+                -3
+              ],
+              "say": "4 satuan ke kanan, lalu 3 satuan ke bawah"
+            },
+            {
+              "kind": "shift",
+              "v": [
+                -3,
                 4
               ],
-              "from": "tuple",
-              "to": "column"
+              "start": [
+                2,
+                -4
+              ]
             },
             {
+              "kind": "tidy",
               "v": [
-                -5,
-                3
+                -2,
+                1
               ],
-              "from": "column",
-              "to": "ijk"
-            },
-            {
-              "v": [
-                -4,
-                -6
-              ],
-              "from": "ijk",
-              "to": "tuple"
-            },
-            {
-              "v": [
-                3,
-                -5
-              ],
-              "from": "tuple",
-              "to": "ijk"
-            },
-            {
-              "v": [
-                -1,
-                6
-              ],
-              "from": "ijk",
-              "to": "column"
-            },
-            {
-              "v": [
+              "w": [
                 5,
                 0
-              ],
-              "from": "column",
-              "to": "ijk"
+              ]
             }
           ]
         },
         "toasts": {
-          "komponenSalah": "Belum tepat — periksa komponen ${{sumbu}}$, yaitu angka yang menempel pada $\\hat{{{basis}}}$. Salin besarnya **beserta tandanya**, dan jangan tertukar dengan komponen sebelahnya.",
-          "koefisienSatu": "Belum tepat — huruf basis yang berdiri tanpa angka di depannya berkoefisien **$1$**, bukan $0$. Jadi $\\hat{j}$ berarti komponennya $1$, dan $-\\hat{j}$ berarti $-1$.",
-          "basisHilang": "Belum tepat — huruf basis $\\hat{{{basis}}}$ memang tidak muncul di bentuk asalnya, dan itu berarti komponennya **$0$**. Komponen nol tetap menempati posisinya.",
-          "belumLengkap": "Masih ada kotak yang kosong. Isi **semua** komponennya lebih dulu, termasuk yang bernilai $0$.",
-          "success": "Tepat! Baris, kolom, dan basis $\\hat{i}$–$\\hat{j}$ hanyalah tiga baju untuk langkah yang sama."
+          "arahTegakTerbalik": "Belum tepat — langkah **tegaknya** terbalik. Perintahnya berbunyi **{{arah}}**, sedangkan titik yang kamu ketuk ada di sisi seberangnya.",
+          "arahMendatarTerbalik": "Belum tepat — langkah **mendatarnya** terbalik. Perintahnya berbunyi **{{arah}}**, sedangkan titik yang kamu ketuk ada di sisi seberangnya.",
+          "urutanTertukar": "Belum tepat — kamu mendarat di {{titik}}. Sepertinya urutan langkahnya tertukar: hitung yang **mendatar** dulu, baru yang **tegak**.",
+          "ujungMeleset": "Belum tepat — kamu mendarat di {{titik}}. Hitung lagi kotak kisinya satu per satu dari pangkal: mendatar dulu, lalu tegak.",
+          "dariO": "Hampir! Itu ujungnya kalau berangkat dari $O$. Kali ini pangkalnya di $P$ — mulailah menghitung kotak **dari titik $P$**.",
+          "koefisienSatu": "Belum tepat — suku $\\hat{ {{basis}} }$ tanpa angka di depannya bukan berarti nol. Huruf basis yang berdiri sendiri bernilai **satu** langkah.",
+          "kolomTertukar": "Belum tepat — urutannya tertukar. Komponen **mendatar** ($x$, $\\hat{i}$) selalu di **atas**, komponen **tegak** ($y$, $\\hat{j}$) di **bawah**.",
+          "kolomSalahTanda": "Besarnya sudah benar, tandanya belum. Komponen ${{sumbu}}$ bertanda menurut arahnya: kanan/atas positif, kiri/bawah **negatif**.",
+          "kolomSalah": "Belum tepat — periksa lagi komponen ${{sumbu}}$. Hitung ulang langkah pada arah itu, lengkap dengan tandanya.",
+          "pasanganTertukar": "Belum tepat — urutan pasangan berurutan tidak boleh ditukar: angka **pertama** selalu langkah mendatar.",
+          "pasanganTanda": "Belum tepat — tanda langkah tegaknya hilang. Ke **bawah** berarti komponen $y$ negatif.",
+          "pasanganBerhuruf": "Belum tepat — pasangan berurutan hanya berisi **bilangan**. Huruf $\\hat{i}$ dan $\\hat{j}$ milik bentuk basis.",
+          "vektorBebas": "Belum tepat — coba bandingkan langkahnya: kedua panah melangkah persis sama ke arah yang sama. Vektor ditentukan oleh **panjang dan arah**, bukan oleh tempat pangkalnya.",
+          "bukanLawan": "Belum tepat — vektor lawan menunjuk ke arah **sebaliknya**. Kedua panah ini menunjuk ke arah yang sama.",
+          "belumBaku": "Nilainya benar, tetapi belum **baku**: suku yang bernilai nol tidak perlu ditulis dalam bentuk basis.",
+          "basisSumbuSalah": "Belum tepat — $\\hat{j}$ adalah langkah **tegak**. Komponen pertama yang tidak nol itu langkah **mendatar**.",
+          "kehilanganArah": "Belum tepat — bilangan saja kehilangan arahnya; itu skalar, bukan vektor. Bentuk basis wajib menyebut sumbunya.",
+          "nolWajib": "Belum tepat — di bentuk **kolom**, angka $0$ wajib tetap ditulis supaya setiap angka tetap menempati sumbunya.",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi kedua komponennya lebih dulu.",
+          "success": "Tepat! Satu perintah gerak, satu panah — tetapi tiga cara menuliskannya: kolom, basis, dan pasangan berurutan.",
+          "successBebas": "Tepat! Panah dari $P$ dan panah dari $O$ adalah vektor yang sama: vektor boleh digeser ke mana saja asal panjang dan arahnya tetap.",
+          "successBaku": "Tepat! Bentuk baku membuang suku nol dan angka satu di bentuk basis, tetapi angka nol tetap ditulis di bentuk kolom."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: satu vektor, tiga baju",
+          "definition": "Vektor yang **sama** boleh ditulis dalam tiga bentuk — isinya selalu dua komponen berurutan: **mendatar** dulu, lalu **tegak**.",
+          "formula": "\\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix} = 4\\hat{i} - 3\\hat{j} = (4,\\, -3)",
+          "columns": [
+            {
+              "title": "Aturan menulis",
+              "tone": "vector",
+              "items": [
+                "**Kolom:** $x$ di atas, $y$ di bawah",
+                "**Basis:** $\\hat{i}$ satu langkah sumbu $X$, $\\hat{j}$ satu langkah sumbu $Y$",
+                "**Pasangan:** $(x,\\, y)$ — urutannya tidak boleh ditukar"
+              ]
+            },
+            {
+              "title": "Bentuk baku",
+              "tone": "amber",
+              "items": [
+                "Suku nol tidak ditulis: $(5,\\, 0) = 5\\hat{i}$",
+                "Angka 1 tidak ditulis: $\\hat{j}$, bukan $1\\hat{j}$",
+                "Di kolom dan pasangan, $0$ **wajib** ditulis"
+              ]
+            }
+          ],
+          "remember": "Vektor itu **bebas**: panah dari $O$ dan panah dari $P(2,\\, -4)$ dengan langkah yang sama adalah vektor yang **sama**."
         }
       },
       "quiz": [
@@ -565,64 +597,244 @@
           "id": "b1_02_1",
           "input_type": "single_choice",
           "subtopic": "notasi_penyajian",
-          "prompt": "Diketahui sebuah vektor dalam bentuk basis vektor satuan.",
-          "tex": "\\vec{v} = 5\\hat{i} - \\hat{j} + 3\\hat{k}",
-          "after": "**Bentuk matriks kolom dari $\\vec{v}$ adalah ....**",
+          "prompt": "Diketahui $\\vec{p} = -2\\hat{i} + 5\\hat{j}$.",
+          "after": "**Bentuk vektor kolom dari $\\vec{p}$ adalah…**",
           "options": [
             {
-              "tex": "\\begin{pmatrix} 5 \\\\ 1 \\\\ 3 \\end{pmatrix}"
+              "label": "$\\begin{pmatrix} 5 \\\\ -2 \\end{pmatrix}$"
             },
             {
-              "tex": "\\begin{pmatrix} 5 \\\\ -1 \\\\ 3 \\end{pmatrix}"
+              "label": "$\\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$"
             },
             {
-              "tex": "\\begin{pmatrix} 5 \\\\ 0 \\\\ 3 \\end{pmatrix}"
+              "label": "$\\begin{pmatrix} -2 \\\\ 5 \\end{pmatrix}$"
             },
             {
-              "tex": "\\begin{pmatrix} 5 \\\\ -3 \\\\ 1 \\end{pmatrix}"
+              "label": "$\\begin{pmatrix} -2 \\\\ -5 \\end{pmatrix}$"
             },
             {
-              "tex": "\\begin{pmatrix} -5 \\\\ 1 \\\\ -3 \\end{pmatrix}"
+              "label": "$\\begin{pmatrix} -2\\hat{i} \\\\ 5\\hat{j} \\end{pmatrix}$"
             }
           ],
-          "answerIndex": 1,
-          "explanation": "Koefisien $\\hat{i}$, $\\hat{j}$, dan $\\hat{k}$ berturut-turut menjadi komponen $x$, $y$, dan $z$. Suku $-\\hat{j}$ berkoefisien $-1$, jadi komponen $y = -1$. **Opsi B**.",
-          "toastWrong": "Belum tepat — perhatikan suku $-\\hat{j}$. Huruf basis yang berdiri tanpa angka di depannya berkoefisien **$1$**, sehingga $-\\hat{j}$ berarti komponen $y$ bernilai $-1$, bukan $0$ dan bukan $1$."
+          "answerIndex": 2,
+          "explanation": "Koefisien $\\hat{i}$ adalah langkah mendatar, jadi menempati baris **atas**: $-2$. Koefisien $\\hat{j}$ adalah langkah tegak di baris **bawah**: $5$. Tanda ikut terbawa. **Opsi C**.",
+          "toastWrong": "Belum tepat — koefisien $\\hat{i}$ selalu menempati baris **atas**, koefisien $\\hat{j}$ baris **bawah**, dan tandanya ikut terbawa. Di dalam kolom tidak ada huruf basis.",
+          "hint": "Ingat rak tiga baju di simulasi: koefisien $\\hat{i}$ = langkah **mendatar** = baris **atas** kolom."
         },
         {
           "id": "b1_02_2",
-          "input_type": "mathpad",
+          "input_type": "plane_tap",
           "subtopic": "notasi_penyajian",
-          "prompt": "Diketahui $\\vec{w} = (0,\\, -7,\\, 2)$.",
-          "after": "**Tentukan koefisien $\\hat{j}$ ketika $\\vec{w}$ ditulis dalam bentuk basis vektor satuan.**",
-          "answer": -7,
-          "tolerance": 1e-06,
-          "explanation": "Pada pasangan terurut $(x,\\, y,\\, z)$, bilangan di posisi kedua adalah komponen $y$, dan komponen $y$ menjadi koefisien $\\hat{j}$. Jadi $\\vec{w} = -7\\hat{j} + 2\\hat{k}$, dan koefisien $\\hat{j}$ adalah $-7$.",
-          "toastWrong": "Belum tepat — hitung posisinya dari kiri: komponen **pertama** menjadi koefisien $\\hat{i}$, **kedua** menjadi $\\hat{j}$, **ketiga** menjadi $\\hat{k}$. Kalau jawabanmu $0$, kamu membaca komponen pertama; kalau jawabanmu bertanda positif, tandanya tertinggal di jalan."
+          "prompt": "Vektor $\\vec{u} = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$ akan digambar dengan **pangkal di titik $P(-1,\\, 2)$**, bukan di $O$.",
+          "after": "**Gambar $\\vec{u}$: ketuk pangkalnya, lalu ketuk titik ujungnya.**",
+          "plane": {
+            "xRange": [
+              -4,
+              5
+            ],
+            "yRange": [
+              -4,
+              4
+            ]
+          },
+          "points": {
+            "P": [
+              -1,
+              2
+            ]
+          },
+          "arrows": [],
+          "answer": {
+            "taps": [
+              [
+                -1,
+                2
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          "feedback": [
+            {
+              "taps": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  3,
+                  -2
+                ]
+              ],
+              "message": "Belum tepat — panah itu berangkat dari $O$. Soal ini meminta pangkalnya di $P$: ketuk $P$ dulu, lalu hitung langkahnya **dari $P$**."
+            },
+            {
+              "taps": [
+                [
+                  -1,
+                  2
+                ],
+                [
+                  2,
+                  4
+                ]
+              ],
+              "message": "Belum tepat — arah tegaknya terbalik. Komponen bawah bertanda **negatif**, jadi langkah tegaknya ke **bawah**."
+            },
+            {
+              "taps": [
+                [
+                  -1,
+                  2
+                ],
+                [
+                  -4,
+                  0
+                ]
+              ],
+              "message": "Belum tepat — arah mendatarnya terbalik. Komponen atas bertanda **positif**, jadi langkah mendatarnya ke **kanan**."
+            }
+          ],
+          "explanation": "Berangkat dari $P(-1,\\, 2)$: melangkah $3$ ke kanan dan $2$ ke bawah, sampai di $(2,\\, 0)$. Panahnya berbeda tempat dengan panah dari $O$, tetapi vektornya **sama** — vektor itu bebas.",
+          "toastWrong": "Belum tepat — ketuk pangkal di $P$ lebih dulu, lalu hitung langkah dari $P$: komponen atas mendatar, komponen bawah tegak, lengkap dengan tandanya.",
+          "hint": "Seperti kasus kedua simulasi: mulai menghitung kotak **dari $P$**, bukan dari $O$. Komponen bawah negatif berarti ke **bawah**.",
+          "reveal": {
+            "name": "u",
+            "label": "\\vec{u}"
+          }
         },
         {
           "id": "b1_02_3",
-          "input_type": "matrix_input",
+          "input_type": "single_choice",
           "subtopic": "notasi_penyajian",
-          "prompt": "Diketahui $\\vec{u} = -2\\hat{i} + 4\\hat{k}$.",
-          "after": "**Tuliskan $\\vec{u}$ dalam bentuk vektor kolom.**",
-          "rows": 3,
-          "cols": 1,
-          "answer": [
-            [
-              -2
-            ],
-            [
-              0
-            ],
-            [
-              4
-            ]
+          "prompt": "Vektor $\\vec{q}$ menunjuk tepat **satu satuan ke bawah**: $\\vec{q} = (0,\\, -1)$.",
+          "after": "**Bentuk basis yang baku (paling ringkas) untuk $\\vec{q}$ adalah…**",
+          "options": [
+            {
+              "label": "$0\\hat{i} - 1\\hat{j}$"
+            },
+            {
+              "label": "$-1\\hat{j}$"
+            },
+            {
+              "label": "$-\\hat{i}$"
+            },
+            {
+              "label": "$-\\hat{j}$"
+            },
+            {
+              "label": "$\\hat{j}$"
+            }
           ],
-          "explanation": "Huruf basis $\\hat{j}$ tidak muncul sama sekali, artinya komponen $y$ bernilai $0$. Maka $\\vec{u} = \\begin{pmatrix} -2 \\\\ 0 \\\\ 4 \\end{pmatrix}$.",
-          "toastWrong": "Belum tepat — periksa baris tengahnya. Huruf basis yang **tidak muncul** berarti komponennya $0$; jangan mengisinya dengan $1$ atau menggeser $4$ naik ke posisi $y$."
+          "answerIndex": 3,
+          "explanation": "Komponen mendatarnya nol, jadi suku $\\hat{i}$ tidak ditulis. Koefisien $-1$ cukup ditulis tandanya saja. Bentuk bakunya $-\\hat{j}$. Pilihan $0\\hat{i} - 1\\hat{j}$ dan $-1\\hat{j}$ bernilai sama tetapi belum baku. **Opsi D**.",
+          "toastWrong": "Belum tepat — bentuk baku membuang suku yang bernilai nol dan tidak menuliskan angka satu, tetapi **tanda** dan **sumbunya** harus tetap benar.",
+          "hint": "Dua aturan bentuk baku dari simulasi: suku nol **dibuang**, angka satu **tidak ditulis** — tanda minus tetap ada."
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Dari perintah gerak ke panah, lalu ke tiga cara menuliskannya — dan mengapa vektor boleh digambar dari pangkal mana saja.",
+        "sections": [
+          {
+            "title": "1 · Satu vektor, tiga baju",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Dari perintah menjadi vektor",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "tiga_baju",
+                "caption": "\"4 ke kanan, 3 ke bawah\": empat ubin $\\hat{i}$ lalu tiga ubin $-\\hat{j}$, disatukan panah $\\vec{a}$."
+              },
+              {
+                "t": "steps",
+                "items": [
+                  "Ubah kalimat menjadi langkah: kanan/atas **positif**, kiri/bawah **negatif**.",
+                  "Kolom: langkah mendatar di atas, tegak di bawah — $\\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix}$.",
+                  "Basis: hitung ubinnya — $4\\hat{i} - 3\\hat{j}$.",
+                  "Pasangan: urutan yang sama — $(4,\\, -3)$."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Vektor bebas",
+            "blocks": [
+              {
+                "t": "p",
+                "x": "$\\vec{v} = -3\\hat{i} + 4\\hat{j}$ boleh berangkat dari mana saja. Pangkal berbeda, langkah sama, vektor **sama**:"
+              },
+              {
+                "t": "table",
+                "headers": [
+                  "Pangkal",
+                  "Ujung",
+                  "Langkah"
+                ],
+                "rows": [
+                  [
+                    "$O(0,\\, 0)$",
+                    "$(-3,\\, 4)$",
+                    "kiri $3$, atas $4$"
+                  ],
+                  [
+                    "$P(2,\\, -4)$",
+                    "$(-1,\\, 0)$",
+                    "kiri $3$, atas $4$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "4 · Bentuk baku",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Vektor",
+                  "Baku",
+                  "Bukan"
+                ],
+                "rows": [
+                  [
+                    "$(5,\\, 0)$",
+                    "$5\\hat{i}$",
+                    "$5\\hat{i} + 0\\hat{j}$"
+                  ],
+                  [
+                    "$(0,\\, -1)$",
+                    "$-\\hat{j}$",
+                    "$-1\\hat{j}$"
+                  ],
+                  [
+                    "$-2\\hat{i} + \\hat{j}$",
+                    "$\\begin{pmatrix} -2 \\\\ 1 \\end{pmatrix}$",
+                    "$\\begin{pmatrix} -2 \\\\ 0 \\end{pmatrix}$"
+                  ]
+                ]
+              },
+              {
+                "t": "p",
+                "x": "Di bentuk basis, nol dan angka satu **dihemat**; di bentuk kolom dan pasangan, setiap angka — termasuk $0$ — **wajib** menempati sumbunya."
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Nama vektor ($\\vec{a}$, $\\mathbf{a}$) adalah **nama**, bukan komponennya.",
+          "Huruf basis tanpa angka bernilai **satu**: $\\hat{j} = 1\\hat{j}$, bukan $0$.",
+          "Menukar urutan komponen berarti menukar sumbu — panahnya menunjuk ke tempat lain.",
+          "Menggambar dari pangkal $P$: hitung kotaknya **mulai dari $P$**, bukan dari $O$."
+        ]
+      }
     },
     {
       "id": "vektor_posisi",

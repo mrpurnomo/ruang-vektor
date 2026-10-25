@@ -593,6 +593,7 @@
     text-align: center;
   }
   .conclude__formula .katex-display { margin: 4px 0; }
+  .conclude__lead { display: grid; gap: var(--sp-3); }
 
   /* ------------------------------------------------------------
      KARTU PEMANTIK — satu situasi nyata + satu pertanyaan, sekali
@@ -692,8 +693,10 @@
     .hook__title { font-size: var(--fs-lg); }
     .hook__story { font-size: var(--fs-xs); line-height: 1.4; }
     .hook__ask { font-size: var(--fs-xs); padding: 6px var(--sp-2); }
-    .conclude__formula { padding: 0 var(--sp-2); }
-    .conclude__formula .katex-display { margin: 2px 0; font-size: .92em; }
+    /* Definisi & rumus berdampingan: bertumpuk, pop-up meluap 59px di 360px. */
+    .conclude__lead { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-2); }
+    .conclude__formula { padding: 0 6px; max-width: 46vw; overflow-x: auto; }
+    .conclude__formula .katex-display { margin: 0; font-size: .8em; }
   }
 
   @media (orientation: landscape) and (max-height: 470px) {
@@ -701,10 +704,12 @@
     .modal--conclusion .modal__icon { display: none; }
     .modal--conclusion .modal__title { font-size: var(--fs-lg); }
     .modal--conclusion .modal__actions { margin-top: var(--sp-2); }
-    .conclude { gap: var(--sp-2); margin-top: var(--sp-1); }
+    .conclude { gap: 6px; margin-top: var(--sp-1); }
+    .conclude__head { margin-bottom: 1px; }
+    .conclude__col ul { gap: 1px; }
     .conclude__def { font-size: var(--fs-xs); line-height: 1.45; }
     .conclude__col { padding: 6px var(--sp-2); }
-    .conclude__col li, .conclude__remember { font-size: var(--fs-xs); line-height: 1.35; }
+    .conclude__col li, .conclude__remember { font-size: var(--fs-xs); line-height: 1.3; }
     .conclude__remember { padding: 6px var(--sp-2); }
   }
 

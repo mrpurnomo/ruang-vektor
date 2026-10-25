@@ -141,6 +141,7 @@ function probeOf(template) {
 
 /** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
 const CASE_SUCCESS = {
+  notation_guided: (c) => ({ build: 'success', shift: 'successBebas', tidy: 'successBaku' }[c.kind]),
   vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
 };
 
@@ -326,13 +327,31 @@ const PLANS = {
     ];
   },
 
-  notation_morph: (c) => {
-    const wrong = c.v.slice();
-    let expectToast = 'komponenSalah';
-    const unitIdx = c.v.findIndex((n) => Math.abs(n) === 1);
-    if (c.from === 'ijk' && unitIdx >= 0) { wrong[unitIdx] = 0; expectToast = 'koefisienSatu'; } else wrong[0] += 1;
-    return [{ wrong: { fields: comps(wrong) }, right: { fields: comps(c.v) }, expectToast }];
+  notation_guided: (c) => {
+    const [x, y] = c.v;
+    const col = (a, b) => ({ fields: { cx: txt(a), cy: txt(b) } });
+    if (c.kind === 'build') {
+      return [
+        { wrong: { pick: [x - 1, y] }, right: { pick: c.v }, expectToast: 'ujungMeleset' },
+        { wrong: col(x, -y), right: col(x, y), expectToast: 'kolomSalahTanda', leak: [`${x}, ${y}`] },
+        { wrong: col(y, x), right: col(x, y), expectToast: 'kolomTertukar' },
+        { wrong: { choice: 'swap' }, right: { choice: 'ok' }, expectToast: 'pasanganTertukar' },
+      ];
+    }
+    if (c.kind === 'shift') {
+      return [
+        { wrong: col(y, x), right: col(x, y), expectToast: 'kolomTertukar' },
+        { wrong: { pick: c.v }, right: { pick: [c.start[0] + x, c.start[1] + y] }, expectToast: 'dariO' },
+        { wrong: { choice: 'beda' }, right: { choice: 'sama' }, expectToast: 'vektorBebas' },
+      ];
+    }
+    return [
+      { wrong: col(x, 0), right: col(x, y), expectToast: 'koefisienSatu' },
+      { wrong: { choice: 'nol' }, right: { choice: 'ok' }, expectToast: 'belumBaku' },
+      { wrong: { choice: 'satu' }, right: { choice: 'ok' }, expectToast: 'nolWajib' },
+    ];
   },
+
 
   position_vector: (c) => {
     const [s, e] = [c.ask[0], c.ask[1]];

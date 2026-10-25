@@ -66,8 +66,10 @@ export function conclusionBlock(c) {
     </div>`;
   const node = el('div', 'conclude');
   node.innerHTML = `
-    <p class="conclude__def">${renderMixed(c.definition)}</p>
-    ${c.formula ? `<div class="conclude__formula">${renderToString(c.formula, { display: true })}</div>` : ''}
+    <div class="conclude__lead">
+      <p class="conclude__def">${renderMixed(c.definition)}</p>
+      ${c.formula ? `<div class="conclude__formula">${renderToString(c.formula, { display: true })}</div>` : ''}
+    </div>
     ${cols.length ? `<div class="conclude__cols" data-count="${cols.length}">${cols.map(col).join('')}</div>` : ''}
     ${c.remember ? `<p class="conclude__remember">${icon('lightbulb', { size: 15 })}<span>${renderMixed(c.remember)}</span></p>` : ''}`;
   return node;

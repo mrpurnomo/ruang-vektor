@@ -81,7 +81,7 @@ KIT_TOASTS = {
 # Sub-topik yang WAJIB memakai paket terpandu lengkap (revisi guru: pola
 # sub-topik 1): kartu pemantik, kesimpulan simulasi, rangkuman terstruktur.
 GUIDED_SUBTOPICS = {
-    "01_konsep_dasar": ["pengertian_notasi"],
+    "01_konsep_dasar": ["pengertian_notasi", "notasi_penyajian"],
 }
 CONCLUSION_TONES = {"vector", "scalar", "amber", "cyan"}
 DOC_BLOCKS = {"p", "tex", "list", "steps", "table", "figure", "conclusion", "def", "tip", "warn"}
@@ -685,8 +685,14 @@ def plane_tap_problems(q):
             out.append(f"feedback[{i}].message kosong")
     rv = q.get("reveal")
     if rv is not None:
-        if not re.fullmatch(r"[A-Z]{2}", str(rv.get("name", ""))):
-            out.append(f"reveal.name {rv.get('name')!r} harus dua huruf kapital (mis. OR)")
+        # Dua huruf kapital → \overrightarrow{OR}; vektor satu huruf wajib
+        # membawa `label` sendiri (\vec{u}, \hat{v}) — bukan \overrightarrow{u}.
+        name = str(rv.get("name", ""))
+        if rv.get("label"):
+            if not re.fullmatch(r"[a-z]", name) or not re.fullmatch(r"\\(vec|hat)\{[a-z]\}", str(rv["label"])):
+                out.append(f"reveal satu huruf: name {name!r} + label \\vec{{x}}/\\hat{{x}}, didapat {rv['label']!r}")
+        elif not re.fullmatch(r"[A-Z]{2}", name):
+            out.append(f"reveal.name {name!r} harus dua huruf kapital (mis. OR)")
         if len(taps) == 1 and rv.get("from") not in points:
             out.append(f"reveal.from {rv.get('from')!r} wajib titik yang ada untuk soal satu ketukan")
     for k in ("options", "answerIndex", "answerIndices"):

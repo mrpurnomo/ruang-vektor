@@ -133,15 +133,16 @@ QuizEngine.registerType('plane_tap', {
       if (!rv) return;
       const tone = ok ? 'blue' : 'coral';
       status.innerHTML = renderMixed(ok
-        ? `**Benar!** Inilah vektor $\\overrightarrow{${rv.name}}$ yang kamu buat.`
-        : `Inilah vektor $\\overrightarrow{${rv.name}}$ yang kamu buat — bandingkan dengan yang diminta, lalu coba lagi.`);
-      const label = `\\overrightarrow{${rv.name}}`;
+        ? `**Benar!** Inilah vektor $${rv.label || `\\overrightarrow{${rv.name}}`}$ yang kamu buat.`
+        : `Inilah vektor $${rv.label || `\\overrightarrow{${rv.name}}`}$ yang kamu buat — bandingkan dengan yang diminta, lalu coba lagi.`);
+      // Nama dua huruf = \overrightarrow; vektor satu huruf (û, v̂) memberi `label` sendiri.
+      const label = rv.label || `\\overrightarrow{${rv.name}}`;
       if (need === 1 && rv.from && q.points[rv.from]) {
         const from = q.points[rv.from];
         const to = taps[0];
         trail.forEach((m) => m.remove());
         trail = [];
-        plane.drawPoint(to, { label: ok ? rv.name.slice(-1) : null });
+        plane.drawPoint(to, { label: ok && !rv.label ? rv.name.slice(-1) : null });
         const arrow = plane.drawVector({ from, to: from, name: rv.name, tone, label });
         arrow.setVector({ from, to }, { animate: true, duration: 520 });
       } else if (studentArrow) {

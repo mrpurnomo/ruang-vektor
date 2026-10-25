@@ -2,7 +2,6 @@
  * lesson/simulations/simBasics.js — Engine simulasi Bab 1: Konsep Dasar Vektor.
  *
  *   vector_anatomy     Bedah satu tanda panah
- *   notation_morph     Ganti baju vektor (ijk ↔ kolom ↔ pasangan)
  *   position_vector    Ujung dikurangi pangkal
  *   component_builder  Susun vektor dari instruksi kalimat
  *   magnitude_builder  Bangun akar panjang vektor sendiri
@@ -285,59 +284,6 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return c.guided
       ? [originStep, findStep, traceStep, drawStep]
       : [findStep, traceStep, drawStep];
-  }
-}
-
-/* ============================================================
-   2. notation_morph — Ganti Baju Vektor
-   ============================================================ */
-const NOTATION_NAME = { ijk: 'vektor basis $\\hat{i}, \\hat{j}, \\hat{k}$', column: 'vektor kolom', tuple: 'pasangan berurutan' };
-const BASIS = ['i', 'j', 'k'];
-
-export class NotationMorphSim extends CaseSimulation {
-  usesPlane() {
-    return false;
-  }
-
-  caseLabel(c, i) {
-    return `Kasus ${i + 1}`;
-  }
-
-  setupCase(c) {
-    const v = V.fromArray(c.v);
-    this.givenEl.appendChild(givenBlock(`${tex(`\\vec{v} = ${V.toLatex(v, { style: c.from })}`)}`, 'sim-given--display'));
-  }
-
-  buildSteps(c) {
-    const dim = c.v.length;
-    const fields = AXES.slice(0, dim).map((axis, i) => ({
-      key: `c${axis}`,
-      label: c.to === 'ijk' ? null : `$${axis}$`,
-      suffix: c.to === 'ijk' ? `$\\hat{${BASIS[i]}}$` : null,
-      mode: 'integer',
-      aria: `Komponen ${axis}`,
-    }));
-    return [
-      {
-        kind: 'fields',
-        label: `Tulis sebagai ${NOTATION_NAME[c.to]}`,
-        prompt: `Tulis ulang $\\vec{v}$ sebagai **${NOTATION_NAME[c.to]}**, komponen demi komponen.`,
-        fieldsLayout: c.to === 'column' ? 'column' : 'row',
-        fields,
-        check: (values) => {
-          const s = componentValues(values, dim);
-          const i = firstWrong(s, c.v);
-          if (i < 0) return true;
-          const wrong = AXES.slice(0, dim).filter((a, j) => !same(s[j], c.v[j])).map((a) => `c${a}`);
-          const key = c.v[i];
-          const student = S.toNumber(s[i]);
-          if (c.from === 'ijk' && Math.abs(key) === 1 && student === 0) return { toast: 'koefisienSatu', wrong };
-          if (c.from === 'ijk' && key === 0 && Math.abs(student) === 1) return { toast: 'basisHilang', values: { basis: BASIS[i] }, wrong };
-          return { toast: 'komponenSalah', values: { sumbu: AXES[i], basis: BASIS[i] }, wrong };
-        },
-        summary: () => `$\\vec{v} = ${V.toLatex(V.fromArray(c.v), { style: c.to })}$`,
-      },
-    ];
   }
 }
 
@@ -643,7 +589,6 @@ export class UnitVectorSim extends CaseSimulation {
 
 export const ENGINES = {
   vector_anatomy: GuidedVectorIntroSim,
-  notation_morph: NotationMorphSim,
   position_vector: PositionVectorSim,
   component_builder: ComponentBuilderSim,
   magnitude_builder: MagnitudeBuilderSim,

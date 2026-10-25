@@ -436,6 +436,14 @@ export class CaseSimulation extends Simulation {
     if (typeof step.onEnter === 'function') step.onEnter();
     if (typeof step.onLeave === 'function') this.stepCleanups.push(step.onLeave);
     this[method](step);
+    // Isian/pilihan langkah baru harus TERLIHAT tanpa siswa mencarinya: di
+    // lanskap pendek kolom kerja lebih tinggi dari layar, dan langkah baru
+    // lahir di bawah jejak (terukur di sub-topik 2: isian basis di bawah
+    // lipatan). 'nearest' tidak menggulir bila sudah terlihat.
+    const last = this.inputsEl.lastElementChild;
+    if (last && last.scrollIntoView && this.stepIndex > 0) {
+      requestAnimationFrame(() => { if (last.isConnected) last.scrollIntoView({ block: 'nearest' }); });
+    }
   }
 
   /* ---------- umpan balik ---------- */
