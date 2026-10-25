@@ -15,11 +15,11 @@ UI berbahasa Indonesia).
 
 ## LANGKAH 0 — WAJIB SEBELUM MENYENTUH KODE
 Baca `handoff/handoff.md` dari awal sampai akhir. Itu memori inti proyek:
-kontrak arsitektur (§3), riwayat 14 tahap (§2) + adendum §6, §7, §8, misi sesi ini (§4), pohon
+kontrak arsitektur (§3), riwayat 14 tahap (§2) + adendum §6–§9, misi sesi ini (§4), pohon
 berkas (§5). Bila dokumen bertentangan dengan kode, percayai yang TERUKUR di
 peramban, lalu perbarui dokumennya.
 
-Ringkasan keadaan terakhir (commit `210a109`, 25 Oktober 2026 — rincian di handoff §7 dan §8: Bab 1 dirombak total):
+Ringkasan keadaan terakhir (commit `2adf415`, 25 Oktober 2026 — rincian di handoff §7–§9; §9 = aturan guru untuk SEMUA bab):
 - Bab 1 sudah direvisi total mengikuti skenario guided discovery.
 - Judul sub-topik sudah lugas tanpa majas.
 - Sub-topik 1 sudah menjadi SIMULASI TERPANDU: bidang kosong → ketuk O(0,0)
@@ -59,10 +59,10 @@ Ringkasan keadaan terakhir (commit `210a109`, 25 Oktober 2026 — rincian di han
 - Verifikasi dengan MENGUKUR, bukan asumsi.
 
 ## UJI WAJIB SEBELUM SETIAP COMMIT (handoff §4.3)
-- `node tests/engine.test.mjs` → 130/130
+- `node tests/engine.test.mjs` → 132/132
 - `py tests/validate_data.py` → 0 GAGAL (saat ini 799 lolos, 0 peringatan)
 - `py tests/serve.py` di port 5173, lalu `py tests/smoke.py` → 0 GAGAL
-  (saat ini 280 lolos dengan --skip-suites; plane 33/33 dan sims 26/26)
+  (saat ini 293 lolos dengan --skip-suites; plane 33/33 dan sims 26/26)
 - Perubahan tampilan diverifikasi di aplikasi pada 740×360 dan 1024×600,
   dengan tangkapan layar.
 

@@ -293,9 +293,9 @@ Aturan:
   kontras ≥4,5:1, Git).
 
 ### 4.3 Uji wajib sebelum setiap commit
-- `node tests/engine.test.mjs` → **130/130**.
+- `node tests/engine.test.mjs` → **132/132**.
 - `py tests/validate_data.py` → **0 GAGAL** (saat ini 799 lolos, 0 PERINGATAN).
-- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 280 lolos dengan `--skip-suites`,
+- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 293 lolos dengan `--skip-suites`,
   ±8 menit; sudah menjalankan `tests/plane.html` **33/33** dan `tests/sims.html` **26/26**).
   Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
 - Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
@@ -540,3 +540,33 @@ Mini Kuis **3 soal** per sub-topik; kelima sub-topik dikerjakan sekaligus lalu d
 **Uji terakhir:** Node 130/130 · data 799/0/0 · plane 33/33 · sims 26/26 · smoke `--skip-suites` **280**/0 (`210a109`).
 
 **Antrean berikutnya:** penilaian guru atas Bab 1; sesudah disetujui, pola yang sama untuk Bab 2–4.
+
+---
+
+## 9. ADENDUM 25 Okt 2026 (revisi guru atas Bab 1) — aturan baru untuk SEMUA bab
+
+Tujuh revisi guru sesudah meninjau Bab 1. Aturan 1–7 di bawah **berlaku untuk setiap bab
+berikutnya** — jangan diulangi kesalahannya.
+
+| Commit | Revisi | Isi |
+|---|---|---|
+| `23180c8` | 6 | **Papan angka baru**: SATU mode seperti kalkulator ilmiah — tuts **√** (akar pada bagian aktif) dan **a/b** (penyebut) menyusun `2√5`, `1/√5`, `√5/5`, `−3`, `2,5` tanpa pindah mode. Ukuran papan TETAP (layar bentuk bertinggi tetap, 20 tuts; tuts yang tidak berlaku diredupkan & menjelaskan diri). `parseSurd` membaca akar di penyebut. Uji mesin **132** |
+| `4402972` | 2, 3 | **Petunjuk** (`step.hint`) sesudah salah ≥ 3 kali atau diam 7 detik: kartu "Petunjuk" + sorotan kotak (`fields: 'wrong'`) + bayangan amber (`ghostHops`, `ghostCross`, `pulsePoint`, `ghostRoute3d`), dibersihkan saat langkah berganti. **Kontinuitas kasus**: kasus selesai dibuka lagi → keadaan akhir + "Ulangi kasus ini / Lanjut"; kasus berjalan dilanjutkan dari langkah terakhir (`caseProgress`, ikut disimpan sesi; diputar ulang seketika lewat `instant.js`) |
+| `0881615` | 4 | Tombol **Rangkuman** terkunci sampai simulasi selesai; layar Mini Kuis selesai punya tombol Rangkuman (juga ikon di lanskap pendek) |
+| `2adf415` | 1, 2, 5 | Bahasa **tanpa kiasan**, sudut pandang guru; panjang vektor mengikuti skenario guru (segitiga siku-siku → "apakah 7?" → Teorema Pythagoras → √20 = √4·√5 = 2√5 → tanpa gambar); vektor posisi fokus ke $\overrightarrow{AB}$ (tanpa panah O→B), titik berlabel koordinat + nama tempat; gambar Rangkuman tanpa blok hitam (`.docfig .d { fill: none }`); panduan ringkas + penjelasan guru di catatan kolom kerja (`intro`) |
+
+**Aturan mengikat (dari guru):**
+1. **Tanpa kiasan.** Formal tapi santai, bahasa sehari-hari, sudut pandang guru yang mengajar
+   siswa belajar mandiri. Dilarang: "tiga baju", "rak", "ubin", "jalan memutar", "memotong",
+   "mendarat", dsb. Tulis lugas: "satu vektor dapat ditulis dalam tiga bentuk".
+2. **Alur guru:** gambar → pertanyaan → alat yang sudah dikenal → siswa menghitung sendiri
+   langkah demi langkah → kasus yang lebih sulit → kasus tanpa gambar.
+3. **Setiap langkah punya `hint`.** Tanpa `hint`, kit memakai kalimat umum — itu tanda engine belum selesai.
+4. **Visual bersih:** gambar hanya yang dibahas langkah itu; titik berlabel koordinat
+   (`A(2, 3)`) dan nama tempat bila ada cerita.
+5. **Panduan (`.sim-guide`) = aksi singkat** (±2 baris, tinggi tetap). Penjelasan panjang
+   masuk `intro` (catatan kolom kerja). Smoke §6m mengukur SETIAP langkah keenam sub-topik.
+6. **Jawaban harus bisa diketik** dengan papan angka (uji di §6m: 1/√5).
+7. **Rangkuman** hanya terbuka sesudah simulasi selesai.
+
+**Uji terakhir (`2adf415`):** Node 132/132 · data 799/0/0 · plane 33/33 · sims 26/26 · smoke `--skip-suites` **293**/0.
