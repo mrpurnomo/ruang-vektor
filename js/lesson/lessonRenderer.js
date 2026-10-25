@@ -17,7 +17,7 @@ import './quizTypes.js';
 import { renderRangkumanDoc } from './rangkumanDoc.js';
 import { renderQuestionBody } from '../quiz/questionBody.js';
 import {
-  markSubtopicStarted, markSubtopicCompleted, recordAttempt,
+  markSubtopicStarted, markSubtopicCompleted, recordAttempt, markSimulationDone,
   setChapterCompleteIfDone, getSubtopicProgress,
 } from '../core/state/progressStore.js';
 import toast, { anchorToasts } from '../core/ui/toast.js';
@@ -265,6 +265,12 @@ export class LessonView {
       this.simulationDone = true;
       this.quizDone = true;
     }
+    // Simulasi yang pernah tuntas tercatat PERMANEN di progres — ingatan
+    // sesi di bawah hilang begitu peramban ditutup (bug revisi guru).
+    if (progress.simDone === true) this.simulationDone = true;
+    // Simulasi dibuka sebagai penutup "Simulasi tuntas" kecuali siswa sendiri
+    // menekan "Ulangi Simulasi" (lihat tombolnya).
+    this.forceReplay = false;
 
     /**
      * Ingatan sesi. Siswa yang mundur ke menu lalu masuk lagi ke sub-topik
@@ -278,7 +284,7 @@ export class LessonView {
       // Mini Kuis hanya boleh dipulihkan kalau simulasinya memang sudah
       // tuntas — kalau tidak, siswa melewati kerja yang belum ia kerjakan
       // hanya dengan keluar-masuk layar. Rangkuman selalu boleh dibuka.
-      const allowed = saved.step !== 1 || this.reviewMode || saved.simulationDone === true;
+      const allowed = saved.step !== 1 || this.simulationDone || saved.simulationDone === true;
       if (allowed) this.step = saved.step;
     }
 
@@ -506,6 +512,7 @@ export class LessonView {
 
   /** Buka Rangkuman, dan ingat dari tahap mana ia dibuka. */
   openRangkuman() {
+    sfx.page();
     this.returnStep = this.step;
     this.step = REVIEW_STEP;
     this.renderStep();
@@ -539,6 +546,7 @@ export class LessonView {
       // "Ulangi" adalah permintaan eksplisit untuk kembali ke awal, jadi
       // ingatan slide-nya memang harus dilupakan.
       this.simulationDone = this.reviewMode;
+      this.forceReplay = true;
       this.resumeSimSlide = 0;
       this.resumeSimState = null;
       this.remember({ simSlide: 0, simState: null, simulationDone: this.simulationDone });
@@ -570,6 +578,7 @@ export class LessonView {
       if (!this.simulationDone) this.celebrateSimulation();
       this.simulationDone = true;
       this.remember({ simulationDone: true });
+      markSimulationDone(this.ctx.chapter.id, this.ctx.subtopic.id);
       next.disabled = false;
       // Denyut menuntun mata siswa ke aksi berikutnya.
       next.classList.add('btn--pulse');
@@ -587,11 +596,14 @@ export class LessonView {
         this.remember({ simSlide: index });
       },
       resumeState: this.resumeSimState,
+      startComplete: this.simulationDone && !this.forceReplay,
       onStateChange: (payload) => {
         this.resumeSimState = payload;
         this.remember({ simState: payload });
       },
     });
+
+    this.forceReplay = false;
 
     // Tombol lewati baru muncul setelah siswa sempat mencoba.
     setTimeout(() => {
@@ -639,6 +651,7 @@ export class LessonView {
       // Modal ini sendiri umpan baliknya: toast "Tepat!" yang masih melayang
       // di atas scrim menutupi tombol Mini Kuis di 740×360 (terukur).
       toast.clear();
+      sfx.fanfare();
       const pending = showModal({
         title: 'Simulasi Tuntas!',
         body,
@@ -662,6 +675,7 @@ export class LessonView {
   /** Modal kesimpulan simulasi: definisi, contoh vektor vs skalar, kiat ingat. */
   showConclusion(c) {
     const body = conclusionBlock(c);
+    sfx.reveal();
     const pending = showModal({
       title: c.title,
       body,

@@ -241,6 +241,9 @@ export class CaseSimulation extends Simulation {
     if (saved && Array.isArray(saved.solved)) {
       saved.solved.filter((i) => i >= 0 && i < this.cases.length).forEach((i) => this.solved.add(i));
     }
+    // Ingatan sesi bisa sudah hilang (peramban ditutup), tetapi progres
+    // permanen mencatat simulasi ini tuntas: semua kasus dianggap selesai.
+    if (this.startComplete) this.cases.forEach((_, i) => this.solved.add(i));
     if (this.solved.size === this.cases.length && this.cases.length) {
       // Kunjungan ulang sesudah tuntas: Mini Kuis tetap terbuka, TANPA toast
       // sukses yang berbunyi lagi — dan simulasinya TIDAK terulang sendiri.

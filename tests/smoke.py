@@ -149,6 +149,12 @@ def fresh_position(page):
     page.evaluate("() => { try { sessionStorage.clear(); } catch (e) {} }")
 
 
+def fresh_progress(page):
+    """Posisi DAN pencapaian kosong (identitas tetap): simulasi belum pernah tuntas."""
+    page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
+    fresh_position(page)
+
+
 def open_mini_quiz(page, chapter_id, subtopic_id):
     """
     Mendarat langsung di Mini Kuis lewat ingatan POSISI sesi — jalur resmi
@@ -608,8 +614,9 @@ def section_celebration(page, errors):
     print("\n6f. Selebrasi simulasi tuntas + dua jalan (Rangkuman · Mini Kuis)")
     for (w, h), pick in [((740, 360), "Mulai Mini Kuis"), ((1024, 600), "Buka Rangkuman Konsep")]:
         page.set_viewport_size({"width": w, "height": h})
-        fresh_position(page)
+        fresh_progress(page)
         open_route(page, GUIDED_ROUTE, settle=700)
+        page.evaluate(SFX_SPY)
         record(f"{w}×{h}: keempat kasus tuntas lewat solveStep()", page.evaluate(SOLVE_ALL_CASES))
         page.wait_for_timeout(1500)
         # Revisi guru: KESIMPULAN "vektor = nilai + arah" muncul lebih dulu.
@@ -639,6 +646,10 @@ def section_celebration(page, errors):
         landed = page.evaluate("() => ({ quiz: !!document.querySelector('.quiz'), materi: !!document.querySelector('.doc-sheet'), modal: !!document.querySelector('.modal--celebrate') })")
         want = "quiz" if "Kuis" in pick else "materi"
         record(f"{w}×{h}: '{pick}' membawa siswa ke tujuannya", landed[want] and not landed["modal"], json.dumps(landed))
+        heard = page.evaluate("() => window.__sfx")
+        want_sfx = ["reveal", "fanfare"] + (["page"] if want == "materi" else [])
+        record(f"{w}×{h}: bunyi pop-up kesimpulan, selebrasi" + (", dan Rangkuman" if want == "materi" else ""),
+               all(k in heard for k in want_sfx), str(heard))
     # Kunjungan ulang simulasi yang sudah tuntas: TANPA selebrasi lagi.
     page.evaluate("() => { const v = window.__vektorLab.state.activeView; v.step = 0; v.renderStep(); }")
     page.wait_for_timeout(1600)
@@ -652,6 +663,16 @@ def section_celebration(page, errors):
            cov["cover"] and cov["boardHidden"], json.dumps(cov))
     record("Penutup menyediakan Ulangi · Rangkuman · Mini Kuis",
            set(cov["actions"]) == {"restart", "review", "quiz"}, json.dumps(cov))
+    # Revisi guru: peramban DITUTUP lalu dibuka lagi (ingatan sesi hilang) →
+    # tetap penutup "Simulasi tuntas", bukan simulasi yang mengulang.
+    page.evaluate("() => sessionStorage.clear()")
+    page.reload()
+    page.wait_for_timeout(600)
+    open_route(page, GUIDED_ROUTE, settle=900)
+    cov2 = page.evaluate("""() => ({ cover: !!document.querySelector('.sim-complete'),
+        step: window.__vektorLab.state.activeView.step, modal: !!document.querySelector('.modal') })""")
+    record("Peramban ditutup & dibuka lagi: simulasi tuntas tetap tampil sebagai penutup",
+           cov2["cover"] and cov2["step"] == 0 and not cov2["modal"], json.dumps(cov2))
     page.click('.sim-complete [data-sim-action="restart"]')
     page.wait_for_timeout(500)
     rs = page.evaluate("""() => { const s = window.__vektorLab.state.activeView.simulation;
@@ -682,7 +703,7 @@ def last_toast(page):
 
 
 SFX_SPY = """async () => { const m = await import('/js/core/ui/sfx.js'); window.__sfx = [];
-    for (const k of ['select', 'correct', 'oops', 'fanfare']) { const f = m.default[k];
+    for (const k of ['select', 'correct', 'oops', 'fanfare', 'reveal', 'page']) { const f = m.default[k];
         m.default[k] = (...a) => { window.__sfx.push(k); return f(...a); }; } }"""
 
 

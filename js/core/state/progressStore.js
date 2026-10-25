@@ -224,6 +224,20 @@ export function markSubtopicCompleted(chapterId, subtopicId, score = 100) {
   persist();
 }
 
+/**
+ * Simulasi sub-topik ini pernah dituntaskan. Disimpan PERMANEN (bukan di
+ * ingatan sesi): siswa yang menutup peramban lalu kembali harus mendarat di
+ * penutup "Simulasi tuntas", bukan dipaksa mengulang dari kasus pertama.
+ * Tidak mengubah `status` — sub-topik baru tuntas sesudah Mini Kuis.
+ */
+export function markSimulationDone(chapterId, subtopicId) {
+  const sub = ensureSubtopic(chapterId, subtopicId);
+  if (sub.simDone === true) return;
+  sub.simDone = true;
+  if (sub.status === 'locked') sub.status = 'in_progress';
+  persist();
+}
+
 export function recordAttempt(chapterId, subtopicId) {
   const sub = ensureSubtopic(chapterId, subtopicId);
   sub.attempts = (sub.attempts || 0) + 1;

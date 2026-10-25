@@ -8,6 +8,8 @@
  *   sfx.step(i)    blip bernada naik — langkah ke-i dari animasi lompatan
  *   sfx.success()  dua akor mayor — kasus/vektor berhasil terbentuk
  *   sfx.wrong()    dentum lembut + getar singkat (bila perangkat mendukung)
+ *   sfx.reveal()   sapuan + denting — pop-up kesimpulan muncul
+ *   sfx.page()     desir kertas — dokumen Rangkuman dibuka
  *
  * Kebijakan autoplay peramban hanya mengizinkan audio sesudah gestur
  * pengguna. Semua bunyi di sini memang dipicu ketukan, dan AudioContext
@@ -141,4 +143,18 @@ export function fanfare() {
   [523.25, 659.25, 783.99, 1046.5].forEach((f) => tone(f, { type: 'sine', at: 0.4, dur: 0.9, gain: 0.035 }));
 }
 
-export default { tap, step, success, wrong, select, correct, oops, fanfare, setEnabled, isEnabled };
+/** Pop-up gagasan penting muncul (kesimpulan): sapuan naik + denting "aha!". */
+export function reveal() {
+  tone(392, { type: 'sine', dur: 0.28, gain: 0.03, slideTo: 784 });
+  [1046.5, 1318.5, 1568].forEach((f, i) => tone(f, { type: 'triangle', at: 0.18 + i * 0.06, dur: 0.35, gain: 0.03 }));
+}
+
+/** Dokumen dibuka (Rangkuman): desir kertas pendek lalu ketuk lembut. */
+export function page() {
+  tone(1800, { type: 'triangle', dur: 0.09, gain: 0.018, slideTo: 600 });
+  tone(2600, { type: 'sine', at: 0.03, dur: 0.07, gain: 0.012, slideTo: 1200 });
+  tone(660, { type: 'sine', at: 0.1, dur: 0.12, gain: 0.035 });
+  tone(990, { type: 'sine', at: 0.16, dur: 0.16, gain: 0.025 });
+}
+
+export default { tap, step, success, wrong, select, correct, oops, fanfare, reveal, page, setEnabled, isEnabled };

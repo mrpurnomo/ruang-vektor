@@ -74,6 +74,8 @@ export function mountSimulation(container, definition, onComplete, options = {})
   sim.hintHost = options.hintHost || null;
   sim.onSlideChange = options.onSlideChange || null;
   sim.savedState = options.resumeState ?? null;
+  // Simulasi yang tercatat tuntas di progres permanen dibuka sebagai penutup.
+  sim.startComplete = options.startComplete === true;
   sim.onStateChange = options.onStateChange || null;
   // Aksi pemilik layar untuk penutup "Simulasi tuntas" (Mini Kuis, Rangkuman).
   sim.actions = options.actions || null;
