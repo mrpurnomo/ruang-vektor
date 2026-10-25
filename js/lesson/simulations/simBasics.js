@@ -1,39 +1,16 @@
 /**
- * lesson/simulations/simBasics.js — Engine simulasi Bab 1: Konsep Dasar Vektor.
+ * lesson/simulations/simBasics.js — Engine simulasi Bab 1, sub-topik 1.
  *
- *   vector_anatomy     Bedah satu tanda panah
- *   component_builder  Susun vektor dari instruksi kalimat
+ *   vector_anatomy     Membentuk vektor pertama dari bidang kosong
  *
- * Pola setiap engine: gambar DATA SOAL → langkah dengan pemeriksa yang
- * mengenali JENIS kesalahan → gambar HASIL hanya di `onSolved`.
+ * Sub-topik 2–6 hidup di simGuided.js dan memakai pola yang sama (perkakas
+ * bersama di guidedKit.js). Pola setiap engine: gambar DATA SOAL → langkah
+ * dengan pemeriksa yang mengenali JENIS kesalahan → gambar HASIL hanya di
+ * `onSolved`.
  */
 
-import { CaseSimulation, tex, texNum, texColumn, texTuple, same, givenBlock, mixed, AXES } from './simKit.js';
-import * as S from '../../domain/surd.js';
-import * as V from '../../domain/vector.js';
-import * as Val from '../../domain/validator.js';
-import { HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops } from './guidedKit.js';
-
-/* ------------------------------------------------------------
-   Pembantu bersama
-   ------------------------------------------------------------ */
-
-/** Isian satu per komponen: kx, ky, (kz). */
-function componentFields(dim, { prefix = 'c', label = (axis) => `$${axis}$`, mode = 'fraction' } = {}) {
-  return AXES.slice(0, dim).map((axis) => ({ key: `${prefix}${axis}`, label: label(axis), mode, aria: `Komponen ${axis}` }));
-}
-
-/** Nilai eksak isian komponen, urut x, y, z. */
-function componentValues(values, dim, prefix = 'c') {
-  return AXES.slice(0, dim).map((axis) => values[`${prefix}${axis}`].value);
-}
-
-/** Indeks komponen pertama yang belum sama dengan kunci, atau -1. */
-function firstWrong(student, key) {
-  return key.findIndex((k, i) => !same(student[i], k));
-}
-
-const is2D = (arr) => Array.isArray(arr) && arr.length === 2;
+import { CaseSimulation, texTuple, same, givenBlock, mixed, AXES } from './simKit.js';
+import { HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops, firstWrong } from './guidedKit.js';
 
 /* ============================================================
    1. vector_anatomy — Simulasi TERPANDU: dari bidang kosong ke vektor
@@ -284,55 +261,6 @@ export class GuidedVectorIntroSim extends CaseSimulation {
   }
 }
 
-/* ============================================================
-   4. component_builder — Susun Vektor dari Instruksinya
-   ============================================================ */
-export class ComponentBuilderSim extends CaseSimulation {
-  usesPlane(c) {
-    return is2D(c.answer);
-  }
-
-  setupCase(c) {
-    this.givenEl.appendChild(givenBlock(`<strong>Instruksi:</strong> ${c.text}`, 'sim-given--quote'));
-    if (!this.plane) {
-      this.givenEl.appendChild(givenBlock('Vektor ruang tidak digambar di bidang datar — komponen $z$-nya keluar dari layar.', 'sim-given--muted'));
-    }
-  }
-
-  buildSteps(c) {
-    const dim = c.answer.length;
-    const key = c.answer;
-    return [
-      {
-        kind: 'fields',
-        label: 'Komponen dari instruksi',
-        prompt: 'Terjemahkan instruksinya menjadi komponen. Tulis **0** untuk arah yang tidak bergerak.',
-        fields: componentFields(dim, { mode: 'integer' }),
-        check: (values) => {
-          const s = componentValues(values, dim);
-          const i = firstWrong(s, key);
-          if (i < 0) return true;
-          const wrong = AXES.slice(0, dim).filter((a, j) => !same(s[j], key[j])).map((a) => `c${a}`);
-          const student = S.toNumber(s[i]);
-          if (key[i] === 0) return { toast: 'nolBukanKosong', wrong };
-          if (student === -key[i]) {
-            return { toast: 'tandaSalah', values: { arah: DIRECTION[AXES[i]](key[i]), tanda: key[i] > 0 ? 'positif' : 'negatif', sumbu: AXES[i] }, wrong };
-          }
-          const j = key.findIndex((k, idx) => idx !== i && k !== 0 && Math.abs(k) === Math.abs(student));
-          if (j >= 0) return { toast: 'sumbuTertukar', values: { benar: AXES[j], salah: AXES[i] }, wrong };
-          return { message: `Belum tepat — baca lagi bagian instruksi untuk arah $${AXES[i]}$: berapa langkah, dan ke mana?`, wrong };
-        },
-        summary: () => `$\\vec{v} = ${texColumn(key)}$`,
-        onSolved: () => {
-          if (this.plane) return this.drawVector({ to: [0, 0], name: 'v', tone: 'amber' }, { essential: true }).setVector({ to: key }, { animate: true, duration: 420 });
-          return null;
-        },
-      },
-    ];
-  }
-}
-
 export const ENGINES = {
   vector_anatomy: GuidedVectorIntroSim,
-  component_builder: ComponentBuilderSim,
 };

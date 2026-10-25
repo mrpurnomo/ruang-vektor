@@ -1211,9 +1211,301 @@ export class GuidedUnitSim extends CaseSimulation {
   }
 }
 
+/* ============================================================
+   6. space_guided — Drone di ruang tiga dimensi (bisa diputar)
+
+   Kasus 1 (terpandu): kemudikan drone dengan tombol arah (maju/kiri/naik)
+   → balok bantu + panah OP muncul SESUDAH posisinya benar → tulis kolom
+   tiga baris → basis î ĵ k̂ → panjang lewat DUA kali Pythagoras (diagonal
+   lantai, lalu diagonal ruang). Kasus 2: komponen nol tetap di barisnya.
+   Kasus 3: AB = B − A di ruang, panjang 3√3.
+   ============================================================ */
+const PAD_BUTTONS = [
+  { key: 'x+', label: 'Maju $+X$', tone: 'x' },
+  { key: 'x-', label: 'Mundur $-X$', tone: 'x' },
+  { key: 'y+', label: 'Kanan $+Y$', tone: 'y' },
+  { key: 'y-', label: 'Kiri $-Y$', tone: 'y' },
+  { key: 'z+', label: 'Naik $+Z$', tone: 'z' },
+  { key: 'z-', label: 'Turun $-Z$', tone: 'z' },
+];
+const AXIS_NAME = ['X', 'Y', 'Z'];
+const tuple3 = (p) => `(${p.join(',\\, ')})`;
+
+export class GuidedSpaceSim extends CaseSimulation {
+  usesSpace() {
+    return true;
+  }
+
+  spaceOptions(c) {
+    return { range: c.range, ariaLabel: 'Ruang tiga dimensi — geser untuk memutar, atau pilih sudut pandang' };
+  }
+
+  caseLabel(c) {
+    return { drone: 'Drone $P$', zero: 'Drone $Q$', between: '$\\overrightarrow{AB}$' }[c.kind];
+  }
+
+  caseSuccessKey(c) {
+    return { drone: 'success', zero: 'successNol', between: 'successRuang' }[c.kind];
+  }
+
+  caseDonePrompt(c, allDone) {
+    if (c.kind === 'drone') return '**Dua kali Pythagoras = satu rumus:** $|\\vec{v}| = \\sqrt{x^2 + y^2 + z^2}$. Putar ruangnya untuk melihat kedua segitiga itu dari samping.';
+    return super.caseDonePrompt(c, allDone);
+  }
+
+  nextCaseInvite(next) {
+    if (next.kind === 'zero') return 'Hebat! Drone berikutnya **tidak bergeser** ke kanan atau kiri — bagaimana menuliskannya?';
+    return 'Terakhir: vektor di ruang yang **tidak** berangkat dari $O$.';
+  }
+
+  celebration() {
+    return {
+      ...super.celebration(),
+      badge: 'Ruang 3D Dijelajahi',
+      recap: [
+        'Sumbu $Z$ tegak lurus $X$ dan $Y$: satu titik = $(x,\\, y,\\, z)$',
+        'Basis baru $\\hat{k}$ = satu langkah **naik**',
+        '$|\\vec{v}| = \\sqrt{x^2 + y^2 + z^2}$ — Pythagoras dua kali',
+      ],
+    };
+  }
+
+  setupCase(c) {
+    this.pos = [0, 0, 0];
+    this.hops = [];
+    this.moves = 0;
+    this.mover = null;
+    if (c.kind === 'between') {
+      this.givenEl.appendChild(givenBlock(tex(`A${tuple3(c.A)} \\qquad B${tuple3(c.B)}`), 'sim-given--display'));
+      this.space.point(c.A, { label: 'A' });
+      this.space.point(c.B, { label: 'B' });
+      return;
+    }
+    // Perintahnya berdiri di panduan (langkah kemudi): di 740×360 blok
+    // perintah terpisah mendorong tombol arah ke bawah lipatan.
+    this.mover = this.space.mover([0, 0, 0], { label: 'drone' });
+  }
+
+  /** Satu tekan tombol = satu satuan, beranimasi; di luar area ditolak. */
+  async press(key) {
+    const axis = 'xyz'.indexOf(key[0]);
+    const sign = key[1] === '+' ? 1 : -1;
+    const next = this.pos.slice();
+    next[axis] += sign;
+    const r = this.cases[this.caseIndex].range;
+    const lim = [r.x, r.y, r.z][axis];
+    if (next[axis] < lim[0] - 1 || next[axis] > lim[1] + 1) {
+      toast.warn(this.msg('keluarArea'));
+      return;
+    }
+    this.hops.push(this.space.hop(this.pos, next));
+    this.moves += 1;
+    sfx.step(this.moves);
+    await this.mover.moveTo(next, stillMotion() ? 0 : 150);
+    this.pos = next;
+  }
+
+  resetDrone() {
+    this.hops.forEach((h) => h.remove());
+    this.hops = [];
+    this.moves = 0;
+    this.pos = [0, 0, 0];
+    return this.mover.moveTo([0, 0, 0], 0);
+  }
+
+  padStep(c, { prompt, onSolved }) {
+    const target = c.P;
+    return {
+      kind: 'pad',
+      label: 'Kemudikan drone',
+      prompt,
+      intro: 'Satu tekan = **satu satuan**. Geser ruangnya untuk melihat dari sisi lain.',
+      buttons: PAD_BUTTONS,
+      onPress: (key) => this.press(key),
+      onReset: () => this.resetDrone(),
+      status: () => `Posisi drone: $${tuple3(this.pos)}$ · ${this.moves} langkah`,
+      check: () => {
+        if (this.pos.every((n, i) => n === target[i])) return true;
+        if (!this.moves) return { toast: 'belumBergerak' };
+        const i = this.pos.findIndex((n, k) => n !== target[k]);
+        return { toast: 'posisiSalah', values: { sumbu: AXIS_NAME[i] } };
+      },
+      summary: () => `Drone mendarat di $P${tuple3(target)}$.`,
+      onSolved,
+    };
+  }
+
+  columnStep(key, { label, prompt, basis = false, nolCheck = false }) {
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fieldsLayout: basis ? undefined : 'column',
+      fields: basis
+        ? AXES.map((axis, i) => ({ key: `c${axis}`, label: null, suffix: `$\\hat{${'ijk'[i]}}${i < 2 ? '\\;+' : ''}$`, mode: 'integer', aria: `Koefisien ${'ijk'[i]}` }))
+        : componentFields(3),
+      check: (values) => {
+        const s = componentValues(values, 3);
+        const i = firstWrong(s, key);
+        if (i < 0) return true;
+        const wrong = wrongKeys(s, key);
+        if (nolCheck) {
+          const zero = key.indexOf(0);
+          const shifted = key.filter((n) => n !== 0).concat([0]);
+          if (zero >= 0 && firstWrong(s, shifted) < 0) return { toast: 'nolTergeser', wrong };
+        }
+        const sorted = (arr) => arr.map((n) => S.toNumber(n)).slice().sort((a, b) => a - b).join();
+        if (sorted(s) === sorted(key) && S.toNumber(s[i]) !== -key[i]) return { toast: 'urutanSumbu', wrong };
+        if (S.toNumber(s[i]) === -key[i]) return { toast: 'tandaKomponen', values: { sumbu: AXIS_NAME[i] }, wrong };
+        return { toast: 'komponenSalah', values: { sumbu: AXIS_NAME[i] }, wrong };
+      },
+      summary: () => (basis
+        ? `$\\vec{v} = ${V.toLatex(V.fromArray(key), { style: 'ijk' })}$`
+        : `$\\vec{v} = ${texColumn(key)}$`),
+    };
+  }
+
+  lengthField(sumSq, { label, prompt, plain, simplest = false, onSolved }) {
+    const length = S.fromSquare(sumSq);
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fields: [{ key: 'len', label: '$=$', mode: 'surd' }],
+      check: (values) => {
+        const verdict = Val.checkExactAnswer(values.len.raw, length, { requireSimplest: simplest });
+        if (verdict.correct) return true;
+        if (verdict.code === 'not-simplest') return { toast: 'belumDisederhanakan', values: { radikan: sumSq } };
+        if (verdict.code === 'decimal') return { toast: 'terlanjurDesimal' };
+        if (same(values.len.value, sumSq) && sumSq !== 1) return { toast: 'belumDiakar' };
+        if (plain !== undefined && same(values.len.value, plain)) return { toast: 'lupaKuadrat' };
+        return { toast: 'panjangSalah' };
+      },
+      summary: () => `$\\sqrt{${sumSq}} = ${S.toLatexS(length)}$`,
+      onSolved,
+    };
+  }
+
+  /** Panah O→P tumbuh + balok bantu + titik P; drone mendarat. */
+  async revealPoint(P, name) {
+    if (this.mover) { this.mover.remove(); this.mover = null; }
+    this.space.box(P);
+    this.space.point(P, { label: name });
+    const arrow = this.space.arrow([0, 0, 0], [0, 0, 0], { label: `\\overrightarrow{O${name}}`, tone: 'blue' });
+    await arrow.grow(P, stillMotion() ? 0 : ARROW_MS);
+  }
+
+  buildSteps(c) {
+    if (c.kind === 'drone') {
+      const P = c.P;
+      const floor = [P[0], P[1], 0];
+      const floorSq = P[0] ** 2 + P[1] ** 2;
+      const floorLen = S.fromSquare(floorSq);
+      const floorNum = S.toNumber(floorLen);
+      return [
+        this.padStep(c, {
+          prompt: `Perintah drone: **${c.say}**. Kemudikan dengan tombol arah, lalu tekan **Periksa**.`,
+          onSolved: () => this.revealPoint(P, 'P'),
+        }),
+        this.columnStep(P, {
+          label: 'Kolom tiga baris',
+          prompt: 'Tulis $\\overrightarrow{OP}$ sebagai **vektor kolom** — kini ada **tiga** baris: $x$, $y$, lalu $z$.',
+        }),
+        {
+          ...this.columnStep(P, {
+            label: 'Basis $\\hat{i},\\, \\hat{j},\\, \\hat{k}$',
+            prompt: 'Basis baru $\\hat{k}$ = satu langkah **naik** searah sumbu $Z$. Tulis $\\overrightarrow{OP}$ dengan $\\hat{i}$, $\\hat{j}$, $\\hat{k}$.',
+            basis: true,
+          }),
+          onSolved: () => {
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]].forEach((u, i) => this.space.arrow([0, 0, 0], u, { label: `\\hat{${'ijk'[i]}}`, tone: 'cyan', labelOffset: [12, -10] }));
+          },
+        },
+        this.lengthField(floorSq, {
+          label: 'Diagonal lantai',
+          prompt: `Bayangan $P$ di lantai adalah $${tuple3(floor)}$. Berapa panjang diagonal **lantai** dari $O$ ke bayangan itu?`,
+          plain: Math.abs(P[0]) + Math.abs(P[1]),
+          onSolved: () => {
+            this.space.polygon([[0, 0, 0], [P[0], 0, 0], floor], { tone: 'cyan' });
+            this.space.segment([0, 0, 0], floor, { tone: 'cyan' });
+          },
+        }),
+        this.lengthField(floorSq + P[2] ** 2, {
+          label: 'Diagonal ruang',
+          prompt: `Diagonal lantai ($${S.toLatexS(floorLen)}$) dan tinggi ($${P[2]}$) membentuk segitiga siku-siku **tegak**. Berapa $|\\overrightarrow{OP}|$?`,
+          plain: floorNum + Math.abs(P[2]),
+          onSolved: async () => {
+            this.space.polygon([[0, 0, 0], floor, P], { tone: 'amber' });
+            await this.space.setView('samping');
+          },
+        }),
+      ];
+    }
+
+    if (c.kind === 'zero') {
+      const P = c.P;
+      const sumSq = P.reduce((a, n) => a + n * n, 0);
+      return [
+        this.padStep(c, {
+          prompt: `Perintah baru: **${c.say}**. Kemudikan drone, lalu tekan **Periksa**.`,
+          onSolved: () => this.revealPoint(P, 'Q'),
+        }),
+        this.columnStep(P, {
+          label: 'Kolom (ada nolnya)',
+          prompt: 'Tulis $\\overrightarrow{OQ}$ sebagai vektor kolom. Arah yang **tidak** dilalui tetap punya barisnya sendiri.',
+          nolCheck: true,
+        }),
+        this.lengthField(sumSq, {
+          label: 'Panjang $\\overrightarrow{OQ}$',
+          prompt: 'Langsung dengan rumus temuanmu: $|\\overrightarrow{OQ}| = \\sqrt{x^2 + y^2 + z^2}$.',
+          plain: P.reduce((a, n) => a + Math.abs(n), 0),
+          simplest: true,
+        }),
+      ];
+    }
+
+    const { A, B } = c;
+    const key = B.map((b, i) => b - A[i]);
+    const sumSq = key.reduce((a, n) => a + n * n, 0);
+    return [
+      {
+        kind: 'fields',
+        label: '$\\overrightarrow{AB} = B - A$',
+        prompt: 'Rumus "ujung dikurangi pangkal" tetap berlaku — kini tiga baris. Tentukan $\\overrightarrow{AB}$.',
+        fieldsLayout: 'column',
+        fields: componentFields(3),
+        check: (values) => {
+          const s = componentValues(values, 3);
+          if (firstWrong(s, key) < 0) return true;
+          const wrong = wrongKeys(s, key);
+          if (firstWrong(s, key.map((n) => -n)) < 0) return { toast: 'tandaTerbalik', values: { nama: 'AB', kebalikan: 'BA' }, wrong };
+          return { toast: 'hasilSalah', wrong };
+        },
+        summary: () => `$\\overrightarrow{AB} = ${texColumn(key)}$`,
+        onSolved: async () => {
+          const corner1 = [B[0], A[1], A[2]];
+          const corner2 = [B[0], B[1], A[2]];
+          this.space.segment(A, corner1, { dashed: true, tone: 'amber' });
+          this.space.segment(corner1, corner2, { dashed: true, tone: 'amber' });
+          this.space.segment(corner2, B, { dashed: true, tone: 'amber' });
+          const arrow = this.space.arrow(A, A, { label: '\\overrightarrow{AB}', tone: 'blue' });
+          await arrow.grow(B, stillMotion() ? 0 : ARROW_MS);
+        },
+      },
+      this.lengthField(sumSq, {
+        label: 'Panjang $\\overrightarrow{AB}$',
+        prompt: 'Hitung $|\\overrightarrow{AB}|$ dalam bentuk akar **paling sederhana**.',
+        plain: key.reduce((a, n) => a + Math.abs(n), 0),
+        simplest: true,
+      }),
+    ];
+  }
+}
+
 export const ENGINES = {
   notation_guided: GuidedNotationSim,
   position_guided: GuidedPositionSim,
   magnitude_guided: GuidedMagnitudeSim,
   unit_guided: GuidedUnitSim,
+  space_guided: GuidedSpaceSim,
 };

@@ -12,7 +12,7 @@
  *
  *   const space = createSpaceView(host, { range: { x: [-1, 5], y: [-4, 3], z: [0, 3] } });
  *   space.point([4, -3, 2], { label: 'P' });
- *   space.arrow([0, 0, 0], [4, -3, 2], { label: '\\overrightarrow{OP}', tone: 'blue' });
+ *   space.arrow([0, 0, 0], [0, 0, 0], { label: '\\overrightarrow{OP}' }).grow([4, -3, 2]);
  *   space.box([4, -3, 2]);                         // balok bantu O–P
  *   const drone = space.mover([0, 0, 0]);  await drone.moveTo([1, 0, 0], 110);
  *   space.setView('atas');                         // iso | depan | atas | samping
@@ -133,24 +133,53 @@ class SpaceView {
     this.w = w;
     this.h = h;
     this.svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    // Skala TETAP terhadap putaran: setengah diagonal kotak rentang (plus
-    // ruang untuk huruf sumbu) selalu muat, dari sudut mana pun dilihat.
-    const { x, y, z } = this.range;
-    const mid = [(x[0] + x[1]) / 2, (y[0] + y[1]) / 2, (z[0] + z[1]) / 2];
-    this.mid = mid;
-    const half = Math.hypot(x[1] - x[0] + 1.6, y[1] - y[0] + 1.6, z[1] - z[0] + 1.6) / 2;
-    this.scale = (Math.min(w, h) / 2 - 16) / half;
+    this.fit();
     this.render();
+  }
+
+  /** Pojok kotak rentang + ujung sumbu, diproyeksikan TANPA skala/geser. */
+  extents() {
+    const { x, y, z } = this.range;
+    const xs = [x[0] - 0.4, x[1] + 1];
+    const ys = [y[0] - 0.4, y[1] + 1];
+    const zs = [Math.min(z[0], 0) - 0.4, z[1] + 1];
+    const { right, up } = this.basis();
+    const pts = [];
+    xs.forEach((a) => ys.forEach((b) => zs.forEach((c) => {
+      pts.push([a * right[0] + b * right[1] + c * right[2], a * up[0] + b * up[1] + c * up[2]]);
+    })));
+    const sx = pts.map((p) => p[0]);
+    const sy = pts.map((p) => p[1]);
+    return { minX: Math.min(...sx), maxX: Math.max(...sx), minY: Math.min(...sy), maxY: Math.max(...sy) };
+  }
+
+  /**
+   * Skala dipasang agar kotak rentang MEMENUHI layar pada sudut pandang ini
+   * (skala tetap untuk semua sudut membuat ruang tampak kecil dan jauh —
+   * terukur ±21 px/satuan). Dihitung ulang saat ukuran atau sudut pandang
+   * baku berganti, TIDAK selama digeser, supaya ruang tidak "berdenyut".
+   */
+  fit() {
+    const e = this.extents();
+    const padX = 24;
+    // Ruang untuk tombol sudut pandang — di panggung pendek (lanskap 360px)
+    // ruangnya boleh menyelinap di bawah tombol daripada mengecil.
+    const short = this.h < 230;
+    const padTop = short ? 12 : 40;
+    const padBottom = short ? 10 : 22;
+    this.scale = Math.max(4, Math.min(
+      (this.w - padX * 2) / Math.max(0.1, e.maxX - e.minX),
+      (this.h - padTop - padBottom) / Math.max(0.1, e.maxY - e.minY),
+    ));
   }
 
   render() {
     if (this.destroyed || !this.scale) return;
-    // Pusat layar = proyeksi pusat kotak rentang.
-    this.cx = 0;
-    this.cy = 0;
-    const [mx, my] = this.project(this.mid);
-    this.cx = this.w / 2 - mx;
-    this.cy = this.h / 2 - my + 6;
+    // Pusat = tengah kotak rentang yang terproyeksi, sedikit turun dari tombol.
+    const e = this.extents();
+    this.cx = this.w / 2 - ((e.minX + e.maxX) / 2) * this.scale;
+    const shift = this.h < 230 ? 1 : 9;   // = (padTop − padBottom) / 2 dari fit()
+    this.cy = this.h / 2 + shift + ((e.minY + e.maxY) / 2) * this.scale;
     this.items.forEach((item) => item.draw());
     this.viewBtns.forEach((b) => {
       const v = VIEWS[b.dataset.view];
@@ -221,6 +250,7 @@ class SpaceView {
     if (!animate || still()) {
       this.az = v.az;
       this.el = v.el;
+      this.fit();
       this.render();
       return Promise.resolve();
     }
@@ -231,6 +261,8 @@ class SpaceView {
         const ease = 1 - (1 - k) ** 3;
         this.az = from + (to - from) * ease;
         this.el = fromEl + (v.el - fromEl) * ease;
+        // Zoom ikut menyesuaikan selama perpindahan sudut pandang baku (mulus, bukan melompat).
+        this.fit();
         this.render();
         if (k < 1 && !this.destroyed) this.tween = requestAnimationFrame(tick);
         else { this.tween = 0; resolve(); }
@@ -448,8 +480,8 @@ class SpaceView {
       const base = item.remove;
       item.remove = () => { base(); item.label.remove(); };
     }
-    /** Ujung panah tumbuh dari pangkal ke `to` (beranimasi). */
-    item.grow = (ms = 520) => this.tweenPoint(from, to, ms, (p) => { item.to = p; item.draw(); });
+    /** Ujung panah tumbuh dari pangkal ke `target` (beranimasi). */
+    item.grow = (target = to, ms = 520) => this.tweenPoint(from, target, ms, (p) => { item.to = p; item.draw(); });
     return item;
   }
 

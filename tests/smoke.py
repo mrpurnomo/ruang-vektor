@@ -990,6 +990,42 @@ def section_hook(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+BAB1_SUBTOPICS = ["pengertian_notasi", "notasi_penyajian", "vektor_posisi", "panjang_vektor", "vektor_satuan", "komponen_r2_r3"]
+CONCLUSION_FIT = """() => { const v = window.__vektorLab.state.activeView; v.showConclusion(v.ctx.subtopic.simulation.conclusion); }"""
+CONCLUSION_PROBE = """() => { const m = document.querySelector('.modal--conclusion'); if (!m) return null;
+    const r = m.getBoundingClientRect(), b = m.querySelector('.modal__body');
+    return { box: [Math.round(r.top), Math.round(r.bottom)], vh: innerHeight, scrolls: b.scrollHeight > b.clientHeight + 1 }; }"""
+
+
+def section_bab1_package(page, errors):
+    print("\n6l. Bab 1: keenam sub-topik memakai paket terpandu lengkap (740×360)")
+    page.set_viewport_size({"width": 740, "height": 360})
+    for sid in BAB1_SUBTOPICS:
+        fresh_progress(page)
+        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=700, hook="keep")
+        hook = page.evaluate("() => !!document.querySelector('.hook .hook__art svg') && !!document.querySelector('[data-role=\"start-simulation\"]')")
+        page.click('[data-role="start-simulation"]')
+        page.wait_for_timeout(700)
+        sim = page.evaluate("() => { const s = window.__vektorLab.state.activeView.simulation; return s ? { cases: s.cases.length, guided: !!s.cases[0].guided } : null; }")
+        record(f"{sid}: pemantik → simulasi terpandu (kasus pertama terpandu)", hook and bool(sim) and sim["guided"] and sim["cases"] >= 3, json.dumps(sim))
+        page.evaluate(CONCLUSION_FIT)
+        page.wait_for_timeout(500)
+        k = page.evaluate(CONCLUSION_PROBE)
+        record(f"{sid}: pop-up kesimpulan muat di 740×360 tanpa menggulir",
+               bool(k) and k["box"][0] >= 0 and k["box"][1] <= k["vh"] and not k["scrolls"], json.dumps(k))
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(300)
+        fresh_position(page)
+        page.evaluate("""async (s) => { const m = await import('/js/core/state/sessionState.js');
+            m.patchResume(m.lessonKey('01_konsep_dasar', s), { step: 2 }); }""", sid)
+        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=600)
+        d = page.evaluate(DOC_PROBE)
+        record(f"{sid}: Rangkuman satu lembar A4 tanpa luapan, ada catatan kecil",
+               len(d) == 1 and not d[0]["overflow"] and d[0]["notes"], json.dumps([{k2: v for k2, v in x.items() if k2 != "text"} for x in d]))
+    record("Tanpa galat konsol selama paket Bab 1", not errors, "; ".join(errors[:2]))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1454,6 +1490,7 @@ def main():
             section_quiz_plane(page, errors)
             section_rangkuman_doc(page, errors)
             section_tooltip(page, errors)
+            section_bab1_package(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)

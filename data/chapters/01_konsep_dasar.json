@@ -1805,6 +1805,12 @@
     {
       "id": "komponen_r2_r3",
       "title": "Vektor di Ruang Tiga Dimensi ($R^3$)",
+      "hook": {
+        "art": "ruang",
+        "title": "Drone lepas landas",
+        "story": "Sebuah drone pengantar paket diprogram: **maju 4 m**, geser **ke kiri 3 m**, lalu **naik 2 m**. Bidang kartesius hanya punya dua arah — mendatar dan tegak di atas kertas.",
+        "question": "Bagaimana menuliskan posisi drone itu? Arah apa yang **belum** dimiliki bidang kartesius?"
+      },
       "materi": [
         {
           "t": "p",
@@ -1872,49 +1878,132 @@
         }
       ],
       "simulation": {
-        "engine": "component_builder",
-        "title": "Simulasi: Terjemahkan Instruksi Jadi Komponen",
-        "brief": "Bacalah instruksinya, lalu tulis komponennya. Dua kasus terakhir berada di ruang: sumbu $X$ depan–belakang, $Y$ kanan–kiri, $Z$ atas–bawah.",
+        "engine": "space_guided",
+        "title": "Simulasi Terpandu: Drone di Ruang Tiga Dimensi",
+        "brief": "Ruangnya bisa diputar: geser dengan jari atau mouse, atau pilih sudut pandang Miring, Depan, Samping, dan Atas. Kemudikan drone dengan tombol arah.",
         "config": {
           "cases": [
             {
-              "text": "Robot di lantai bergerak $4$ langkah ke kanan, lalu $3$ langkah ke bawah. Ia tidak pernah meninggalkan bidang $XY$.",
-              "answer": [
+              "kind": "drone",
+              "guided": true,
+              "P": [
                 4,
-                -3
-              ]
-            },
-            {
-              "text": "Sebuah drone maju $4$ satuan ke depan, bergeser $3$ satuan ke kanan, lalu naik $2$ satuan.",
-              "answer": [
-                4,
-                3,
+                -3,
                 2
-              ]
+              ],
+              "say": "maju 4, geser ke kiri 3, lalu naik 2",
+              "range": {
+                "x": [
+                  0,
+                  5
+                ],
+                "y": [
+                  -4,
+                  1
+                ],
+                "z": [
+                  0,
+                  3
+                ]
+              }
             },
             {
-              "text": "Drone kedua mundur $5$ satuan, tidak bergeser ke samping sama sekali, lalu turun $2$ satuan.",
-              "answer": [
-                -5,
+              "kind": "zero",
+              "P": [
+                -2,
                 0,
-                -2
-              ]
+                3
+              ],
+              "say": "mundur 2, lalu naik 3 — tanpa bergeser ke kanan atau kiri",
+              "range": {
+                "x": [
+                  -3,
+                  1
+                ],
+                "y": [
+                  -1,
+                  2
+                ],
+                "z": [
+                  0,
+                  4
+                ]
+              }
+            },
+            {
+              "kind": "between",
+              "A": [
+                1,
+                2,
+                0
+              ],
+              "B": [
+                4,
+                -1,
+                3
+              ],
+              "range": {
+                "x": [
+                  0,
+                  5
+                ],
+                "y": [
+                  -2,
+                  3
+                ],
+                "z": [
+                  0,
+                  4
+                ]
+              }
             }
-          ],
-          "xRange": [
-            -6,
-            6
-          ],
-          "yRange": [
-            -6,
-            6
           ]
         },
         "toasts": {
-          "tandaSalah": "Belum tepat — besar langkahnya sudah benar, tandanya yang belum. Instruksi menyebut gerak **{{arah}}**, dan pada sumbu ${{sumbu}}$ arah itu bernilai **{{tanda}}**.",
-          "sumbuTertukar": "Belum tepat — angka itu milik sumbu ${{benar}}$, bukan sumbu ${{salah}}$. Cocokkan dulu setiap angka dengan nama sumbunya sebelum menuliskannya.",
-          "nolBukanKosong": "Belum tepat — arah yang tidak dilalui tetap punya komponen, dan nilainya **$0$**. Kotak yang dibiarkan kosong bukan jawaban; tulis angka nolnya.",
-          "success": "Tepat! Komponen hanyalah terjemahan dari instruksi: berapa langkah, pada sumbu mana, ke arah mana."
+          "belumBergerak": "Drone masih di $O$. Tekan tombol arah sesuai perintahnya — satu tekan, satu satuan.",
+          "posisiSalah": "Belum tepat — posisi drone pada sumbu ${{sumbu}}$ belum sesuai perintah. Tekan **Ulang** lalu kemudikan lagi, atau perbaiki dengan tombol arah sumbu itu.",
+          "keluarArea": "Drone hampir keluar area terbang. Periksa lagi arah tombol yang kamu tekan.",
+          "tandaKomponen": "Besarnya sudah benar, tandanya belum. Komponen ${{sumbu}}$ bertanda menurut arahnya: maju/kanan/naik positif, mundur/kiri/turun **negatif**.",
+          "urutanSumbu": "Belum tepat — urutannya tertukar. Selalu $x$ dulu (maju–mundur), lalu $y$ (kanan–kiri), lalu $z$ (naik–turun).",
+          "komponenSalah": "Belum tepat — periksa lagi komponen ${{sumbu}}$: berapa satuan drone bergerak searah sumbu itu?",
+          "nolTergeser": "Belum tepat — arah yang tidak dilalui tetap punya **barisnya sendiri** berisi $0$. Menggeser angka naik satu baris berarti mengganti sumbunya.",
+          "lupaKuadrat": "Belum tepat — kamu menjumlahkan panjangnya langsung. Itu jalan memutar; panjang lurusnya dihitung dengan Pythagoras: kuadratkan, jumlahkan, akarkan.",
+          "belumDiakar": "Hampir! Itu masih jumlah kuadratnya. Panjang adalah **akar** dari jumlah itu.",
+          "terlanjurDesimal": "Jangan diubah ke desimal. Tulis dalam bentuk **akar eksak** lewat mode Akar di papan angka.",
+          "panjangSalah": "Belum tepat — hitung lagi: akar dari jumlah kuadrat sisi-sisi segitiga sikunya.",
+          "belumDisederhanakan": "Nilainya benar, tetapi $\\sqrt{ {{radikan}} }$ belum paling sederhana. Tarik keluar faktor kuadrat terbesarnya.",
+          "tandaTerbalik": "Semua tandamu terbalik — yang kamu hitung adalah $\\overrightarrow{ {{kebalikan}} }$, bukan $\\overrightarrow{ {{nama}} }$. Tetap **ujung** dikurangi **pangkal**.",
+          "hasilSalah": "Belum tepat — kurangkan komponen demi komponen: $x$ dengan $x$, $y$ dengan $y$, $z$ dengan $z$.",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi ketiga barisnya.",
+          "success": "Tepat! Satu sumbu baru, $Z$, cukup untuk menjangkau ruang: tiga komponen, basis $\\hat{k}$, dan panjang lewat Pythagoras dua kali.",
+          "successNol": "Tepat! Komponen nol tetap menempati barisnya — di ruang, setiap baris adalah satu sumbu.",
+          "successRuang": "Tepat! Rumus ujung − pangkal dan rumus panjang bekerja sama di ruang — cukup tambahkan baris ketiga."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: vektor di ruang tiga dimensi",
+          "definition": "Sumbu $Z$ tegak lurus $X$ **dan** $Y$. Vektor kini punya **tiga** komponen, dan semua aturan di bidang tetap berlaku.",
+          "formula": "|\\vec{v}| = \\sqrt{x^2 + y^2 + z^2}",
+          "columns": [
+            {
+              "title": "Konvensi Z-Up",
+              "tone": "vector",
+              "items": [
+                "$X$: maju (+) / mundur (−)",
+                "$Y$: kanan (+) / kiri (−)",
+                "$Z$: naik (+) / turun (−)"
+              ]
+            },
+            {
+              "title": "Tetap berlaku",
+              "tone": "amber",
+              "items": [
+                "$\\overrightarrow{AB} = B - A$, kini tiga baris",
+                "Komponen $0$ **wajib** ditulis di barisnya",
+                "Panjang: diagonal lantai dulu, lalu diagonal ruang"
+              ]
+            }
+          ],
+          "remember": "*Game engine* sering memakai **Y-Up**; rumusnya sama. Di pelajaran ini, tinggi selalu $Z$."
         }
       },
       "quiz": [
@@ -1922,79 +2011,151 @@
           "id": "b1_04_1",
           "input_type": "single_choice",
           "subtopic": "komponen_r2_r3",
-          "prompt": "Sebuah drone bergerak $5$ satuan ke depan, $3$ satuan ke kiri, lalu naik $2$ satuan. Dipakai konvensi $Z$-Up: sumbu $X$ depan–belakang, sumbu $Y$ kanan–kiri, sumbu $Z$ atas–bawah.",
-          "after": "**Vektor perpindahan drone tersebut adalah ....**",
+          "prompt": "Diketahui vektor kolom $\\vec{w} = \\begin{pmatrix} 2 \\\\ -1 \\\\ 5 \\end{pmatrix}$.",
+          "after": "**Bentuk basis $\\hat{i},\\, \\hat{j},\\, \\hat{k}$ dari $\\vec{w}$ adalah…**",
           "options": [
             {
-              "tex": "(5,\\, 3,\\, 2)"
+              "tex": "2\\hat{i} + \\hat{j} + 5\\hat{k}"
             },
             {
-              "tex": "(5,\\, -3,\\, 2)"
+              "tex": "2\\hat{i} - \\hat{j} + 5\\hat{k}"
             },
             {
-              "tex": "(-5,\\, 3,\\, 2)"
+              "tex": "-\\hat{i} + 2\\hat{j} + 5\\hat{k}"
             },
             {
-              "tex": "(5,\\, 2,\\, -3)"
+              "tex": "2\\hat{i} - \\hat{j} + 5\\hat{j}"
             },
             {
-              "tex": "(2,\\, -3,\\, 5)"
+              "tex": "2\\hat{i} - 5\\hat{k}"
             }
           ],
           "answerIndex": 1,
-          "explanation": "Maju berarti $x$ positif, sehingga $x = 5$. Ke kiri berlawanan dengan arah $y$ positif, sehingga $y = -3$. Naik searah $z$ positif, sehingga $z = 2$. Maka perpindahannya $(5,\\, -3,\\, 2)$. **Opsi B**.",
-          "toastWrong": "Belum tepat — pisahkan dua hal untuk tiap sumbu: **berapa langkah**, dan **ke arah mana**. Pada konvensi $Z$-Up, maju dan ke kanan bernilai positif, sedangkan mundur dan ke kiri negatif; urutan penulisannya tetap $(x,\\, y,\\, z)$."
+          "explanation": "Baris atas $\\to \\hat{i}$, baris tengah $\\to \\hat{j}$, baris bawah $\\to \\hat{k}$: $2\\hat{i} - \\hat{j} + 5\\hat{k}$. Koefisien $-1$ cukup ditulis tandanya. **Opsi B**.",
+          "toastWrong": "Belum tepat — baris atas milik $\\hat{i}$, baris tengah milik $\\hat{j}$, baris bawah milik $\\hat{k}$, dan tanda setiap baris ikut terbawa.",
+          "hint": "Seperti rak tiga baju, kini dengan tiga sumbu: setiap baris kolom punya huruf basisnya sendiri."
         },
         {
           "id": "b1_04_2",
-          "input_type": "mathpad",
+          "input_type": "single_choice",
           "subtopic": "komponen_r2_r3",
-          "prompt": "Sebuah drone bergerak $3$ meter ke timur, $4$ meter ke selatan, dan naik $12$ meter. Arah timur dijadikan sumbu $x$ positif, arah utara sumbu $y$ positif, dan ke atas sumbu $z$ positif.",
-          "after": "**Tentukan nilai komponen $y$ dari vektor perpindahan drone tersebut.**",
-          "answer": -4,
-          "tolerance": 1e-06,
-          "explanation": "Arah utara ditetapkan sebagai $y$ positif, maka arah **selatan** adalah $y$ negatif. Perpindahan $4$ meter ke selatan berarti komponen $y = -4$.",
-          "toastWrong": "Belum tepat — perhatikan perjanjian arah yang disebut soal: **utara** adalah $y$ positif. Karena drone bergerak ke selatan, tandanya harus berlawanan."
+          "prompt": "Diketahui $\\vec{u} = (2,\\, -1,\\, 2)$.",
+          "after": "**Panjang vektor $\\vec{u}$ adalah…**",
+          "options": [
+            {
+              "tex": "\\sqrt{3}"
+            },
+            {
+              "tex": "5"
+            },
+            {
+              "tex": "3"
+            },
+            {
+              "tex": "\\sqrt{5}"
+            },
+            {
+              "tex": "9"
+            }
+          ],
+          "answerIndex": 2,
+          "explanation": "$|\\vec{u}| = \\sqrt{2^2 + (-1)^2 + 2^2} = \\sqrt{4 + 1 + 4} = \\sqrt{9} = 3$. **Opsi C**.",
+          "toastWrong": "Belum tepat — kuadratkan ketiga komponen (tanda minus hilang), jumlahkan semuanya, baru akarkan. Jangan lupa komponen $z$.",
+          "hint": "Rumus temuan dari drone: $\\sqrt{x^2 + y^2 + z^2}$ — tiga suku di dalam akar."
         },
         {
           "id": "b1_04_3",
-          "input_type": "multi_select",
+          "input_type": "single_choice",
           "subtopic": "komponen_r2_r3",
-          "prompt": "Perhatikan pernyataan-pernyataan tentang komponen vektor berikut.",
-          "after": "**Pilih semua pernyataan yang benar.**",
+          "prompt": "Diketahui titik $A(1,\\, 0,\\, 2)$ dan $B(3,\\, -2,\\, 2)$.",
+          "after": "**Vektor $\\overrightarrow{AB}$ adalah…**",
           "options": [
             {
-              "label": "Vektor $(0,\\, 0,\\, 7)$ bergerak pada arah tegak saja, tanpa perpindahan mendatar."
+              "tex": "\\begin{pmatrix} 2 \\\\ -2 \\end{pmatrix}"
             },
             {
-              "label": "Vektor $(-3,\\, 0)$ adalah vektor nol karena salah satu komponennya $0$."
+              "tex": "\\begin{pmatrix} -2 \\\\ 2 \\\\ 0 \\end{pmatrix}"
             },
             {
-              "label": "Semua rumus vektor di $R^2$ berlaku di $R^3$ dengan menambahkan satu komponen."
+              "tex": "\\begin{pmatrix} 4 \\\\ -2 \\\\ 4 \\end{pmatrix}"
             },
             {
-              "label": "Vektor di kurikulum TKA dapat memiliki lebih dari tiga komponen."
+              "tex": "\\begin{pmatrix} 2 \\\\ -2 \\\\ 0 \\end{pmatrix}"
             },
             {
-              "label": "Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif."
+              "tex": "\\begin{pmatrix} 2 \\\\ -2 \\\\ 4 \\end{pmatrix}"
             }
           ],
-          "answerIndices": [
-            0,
-            2,
-            4
-          ],
-          "perOptionFeedback": [
-            "**Benar** — komponen $x$ dan $y$ keduanya $0$, jadi yang tersisa hanya gerak naik sepanjang sumbu $z$.",
-            "Salah — vektor nol mensyaratkan **semua** komponennya $0$. Vektor $(-3,0)$ masih punya panjang $3$.",
-            "**Benar** — inilah sebabnya R³ tidak menuntut hafalan rumus baru.",
-            "Salah — rincian Kemendikdasmen membatasi komponen vektor **maksimum tiga**.",
-            "**Benar** — panjang tidak pernah negatif; tanda selalu bicara soal arah."
-          ],
-          "explanation": "Kuncinya ada pada dua hal: vektor nol menuntut **semua** komponen nol, dan tanda negatif selalu berarti arah, bukan panjang negatif.",
-          "toastWrong": "Ada pilihan yang belum tepat — periksa terutama pernyataan tentang vektor nol: apakah cukup **satu** komponen bernilai nol, atau harus **semuanya**? Periksa juga apakah pindah ke ruang benar-benar menuntut rumus yang baru."
+          "answerIndex": 3,
+          "explanation": "$\\overrightarrow{AB} = B - A = \\begin{pmatrix} 3 - 1 \\\\ -2 - 0 \\\\ 2 - 2 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ -2 \\\\ 0 \\end{pmatrix}$. Baris $z$ bernilai $0$ tetapi tetap ditulis. **Opsi D**.",
+          "toastWrong": "Belum tepat — tetap ujung dikurangi pangkal, baris demi baris. Komponen yang bernilai nol tidak boleh dihapus: ia menandai sumbunya.",
+          "hint": "Ujung $-$ pangkal untuk ketiga baris. Hasil $0$ tetap ditulis di barisnya."
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Sumbu ketiga untuk naik–turun: titik $(x,\\, y,\\, z)$, basis $\\hat{k}$, dan panjang lewat Pythagoras dua kali.",
+        "sections": [
+          {
+            "title": "1 · Vektor di ruang",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Drone ke $P(4,\\, -3,\\, 2)$",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "balok",
+                "caption": "Maju $4$, kiri $3$, naik $2$: $P$ adalah pojok balok, $\\overrightarrow{OP}$ diagonal ruangnya."
+              },
+              {
+                "t": "steps",
+                "items": [
+                  "Kolom: $\\overrightarrow{OP} = \\begin{pmatrix} 4 \\\\ -3 \\\\ 2 \\end{pmatrix} = 4\\hat{i} - 3\\hat{j} + 2\\hat{k}$.",
+                  "Diagonal lantai: $\\sqrt{4^2 + (-3)^2} = 5$.",
+                  "Diagonal ruang: $\\sqrt{5^2 + 2^2} = \\sqrt{29}$."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Aturan lama, tiga baris",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Soal",
+                  "Hasil"
+                ],
+                "rows": [
+                  [
+                    "$Q$: mundur $2$, naik $3$",
+                    "$\\begin{pmatrix} -2 \\\\ 0 \\\\ 3 \\end{pmatrix}$, $|\\overrightarrow{OQ}| = \\sqrt{13}$"
+                  ],
+                  [
+                    "$A(1,\\, 2,\\, 0) \\to B(4,\\, -1,\\, 3)$",
+                    "$\\overrightarrow{AB} = \\begin{pmatrix} 3 \\\\ -3 \\\\ 3 \\end{pmatrix}$, panjang $3\\sqrt{3}$"
+                  ]
+                ]
+              },
+              {
+                "t": "tip",
+                "title": "Z-Up vs Y-Up",
+                "x": "Matematika, fisika, dan CAD memakai $Z$ sebagai tinggi; banyak *game engine* memakai $Y$. Rumusnya sama persis."
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Urutan baris selalu $x$, $y$, $z$ — maju–mundur, kanan–kiri, naik–turun.",
+          "$(4,\\, 0,\\, 3)$ berbeda dari $(4,\\, 3)$ maupun $(4,\\, 3,\\, 0)$.",
+          "Panjang di ruang = Pythagoras dua kali: lantai dulu, lalu tegak.",
+          "Putar gambar ruang di kepala: setiap titik adalah pojok sebuah balok dari $O$."
+        ]
+      }
     }
   ]
 }

@@ -80,53 +80,59 @@ Vektor $\overrightarrow{OR}$ berpangkal di titik asal $O$ dan dapat ditulis $\ov
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `notasi_penyajian`
 
-Diketahui sebuah vektor dalam bentuk basis vektor satuan.
+Diketahui $\vec{p} = -2\hat{i} + 5\hat{j}$.
 
-$$ \vec{v} = 5\hat{i} - \hat{j} + 3\hat{k} $$
+**Bentuk vektor kolom dari $\vec{p}$ adalah…**
 
-**Bentuk matriks kolom dari $\vec{v}$ adalah ....**
+A. $\begin{pmatrix} 5 \\ -2 \end{pmatrix}$
+B. $\begin{pmatrix} 2 \\ 5 \end{pmatrix}$
+C. $\begin{pmatrix} -2 \\ 5 \end{pmatrix}$
+D. $\begin{pmatrix} -2 \\ -5 \end{pmatrix}$
+E. $\begin{pmatrix} -2\hat{i} \\ 5\hat{j} \end{pmatrix}$
 
-A. $\begin{pmatrix} 5 \\ 1 \\ 3 \end{pmatrix}$
-B. $\begin{pmatrix} 5 \\ -1 \\ 3 \end{pmatrix}$
-C. $\begin{pmatrix} 5 \\ 0 \\ 3 \end{pmatrix}$
-D. $\begin{pmatrix} 5 \\ -3 \\ 1 \end{pmatrix}$
-E. $\begin{pmatrix} -5 \\ 1 \\ -3 \end{pmatrix}$
+> **KUNCI JAWABAN:** **C** — $\begin{pmatrix} -2 \\ 5 \end{pmatrix}$
 
-> **KUNCI JAWABAN:** **B** — $\begin{pmatrix} 5 \\ -1 \\ 3 \end{pmatrix}$
-
-**Pembahasan.** Koefisien $\hat{i}$, $\hat{j}$, dan $\hat{k}$ berturut-turut menjadi komponen $x$, $y$, dan $z$. Suku $-\hat{j}$ berkoefisien $-1$, jadi komponen $y = -1$. **Opsi B**.
+**Pembahasan.** Koefisien $\hat{i}$ adalah langkah mendatar, jadi menempati baris **atas**: $-2$. Koefisien $\hat{j}$ adalah langkah tegak di baris **bawah**: $5$. Tanda ikut terbawa. **Opsi C**.
 
 ---
 
 #### Soal 2
 
 - **ID:** `b1_02_2`
-- **Tipe:** Isian angka (papan angka)
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `notasi_penyajian`
 
-Diketahui $\vec{w} = (0,\, -7,\, 2)$.
+Vektor $\vec{u} = \begin{pmatrix} 3 \\ -2 \end{pmatrix}$ akan digambar dengan **pangkal di titik $P(-1,\, 2)$**, bukan di $O$.
 
-**Tentukan koefisien $\hat{j}$ ketika $\vec{w}$ ditulis dalam bentuk basis vektor satuan.**
+**Gambar $\vec{u}$: ketuk pangkalnya, lalu ketuk titik ujungnya.**
 
-> **KUNCI JAWABAN:** **-7**
+*Bidang:* x ∈ [-4, 5], y ∈ [-4, 4] · titik P(-1, 2)
 
-**Pembahasan.** Pada pasangan terurut $(x,\, y,\, z)$, bilangan di posisi kedua adalah komponen $y$, dan komponen $y$ menjadi koefisien $\hat{j}$. Jadi $\vec{w} = -7\hat{j} + 2\hat{k}$, dan koefisien $\hat{j}$ adalah $-7$.
+> **KUNCI JAWABAN:** **P(-1, 2) → (2, 0)**
+
+**Pembahasan.** Berangkat dari $P(-1,\, 2)$: melangkah $3$ ke kanan dan $2$ ke bawah, sampai di $(2,\, 0)$. Panahnya berbeda tempat dengan panah dari $O$, tetapi vektornya **sama** — vektor itu bebas.
 
 ---
 
 #### Soal 3
 
 - **ID:** `b1_02_3`
-- **Tipe:** Isian vektor kolom
+- **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `notasi_penyajian`
 
-Diketahui $\vec{u} = -2\hat{i} + 4\hat{k}$.
+Vektor $\vec{q}$ menunjuk tepat **satu satuan ke bawah**: $\vec{q} = (0,\, -1)$.
 
-**Tuliskan $\vec{u}$ dalam bentuk vektor kolom.**
+**Bentuk basis yang baku (paling ringkas) untuk $\vec{q}$ adalah…**
 
-> **KUNCI JAWABAN:** $\begin{pmatrix} -2 \\ 0 \\ 4 \end{pmatrix}$
+A. $0\hat{i} - 1\hat{j}$
+B. $-1\hat{j}$
+C. $-\hat{i}$
+D. $-\hat{j}$
+E. $\hat{j}$
 
-**Pembahasan.** Huruf basis $\hat{j}$ tidak muncul sama sekali, artinya komponen $y$ bernilai $0$. Maka $\vec{u} = \begin{pmatrix} -2 \\ 0 \\ 4 \end{pmatrix}$.
+> **KUNCI JAWABAN:** **D** — $-\hat{j}$
+
+**Pembahasan.** Komponen mendatarnya nol, jadi suku $\hat{i}$ tidak ditulis. Koefisien $-1$ cukup ditulis tandanya saja. Bentuk bakunya $-\hat{j}$. Pilihan $0\hat{i} - 1\hat{j}$ dan $-1\hat{j}$ bernilai sama tetapi belum baku. **Opsi D**.
 
 ---
 
@@ -135,32 +141,40 @@ Diketahui $\vec{u} = -2\hat{i} + 4\hat{k}$.
 #### Soal 1
 
 - **ID:** `b1_03_1`
-- **Tipe:** Isian angka (papan angka)
+- **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_posisi`
 
-Diketahui titik $A(3,\, -2)$ dan $B(7,\, 5)$.
+Diketahui titik $A(3,\, -1)$ dan $B(-2,\, 4)$.
 
-**Tentukan komponen $x$ dari vektor $\overrightarrow{AB}$.**
+**Vektor $\overrightarrow{AB}$ adalah…**
 
-> **KUNCI JAWABAN:** **4**
+A. $\begin{pmatrix} 5 \\ -5 \end{pmatrix}$
+B. $\begin{pmatrix} 1 \\ 3 \end{pmatrix}$
+C. $\begin{pmatrix} -5 \\ 5 \end{pmatrix}$
+D. $\begin{pmatrix} -5 \\ 3 \end{pmatrix}$
+E. $\begin{pmatrix} -1 \\ 5 \end{pmatrix}$
 
-**Pembahasan.** $\overrightarrow{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.
+> **KUNCI JAWABAN:** **C** — $\begin{pmatrix} -5 \\ 5 \end{pmatrix}$
+
+**Pembahasan.** $\overrightarrow{AB} = B - A = \begin{pmatrix} -2 - 3 \\ 4 - (-1) \end{pmatrix} = \begin{pmatrix} -5 \\ 5 \end{pmatrix}$. Ujung dikurangi pangkal. **Opsi C**.
 
 ---
 
 #### Soal 2
 
 - **ID:** `b1_03_2`
-- **Tipe:** Isian vektor kolom
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `vektor_posisi`
 
-Diketahui titik $A(1,\, 4,\, -2)$ dan $B(5,\, 2,\, 3)$ di ruang.
+Diketahui $\overrightarrow{CD} = \begin{pmatrix} 4 \\ -3 \end{pmatrix}$ dan titik pangkal $C(-2,\, 2)$.
 
-**Tentukan $\overrightarrow{AB}$ dalam bentuk vektor kolom.**
+**Ketuk letak titik ujungnya, $D$, pada bidang.**
 
-> **KUNCI JAWABAN:** $\begin{pmatrix} 4 \\ -2 \\ 5 \end{pmatrix}$
+*Bidang:* x ∈ [-7, 4], y ∈ [-3, 6] · titik C(-2, 2)
 
-**Pembahasan.** $\overrightarrow{AB} = B - A = \begin{pmatrix} 5-1 \\ 2-4 \\ 3-(-2) \end{pmatrix} = \begin{pmatrix} 4 \\ -2 \\ 5 \end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.
+> **KUNCI JAWABAN:** **(2, -1)**
+
+**Pembahasan.** $D = C + \overrightarrow{CD} = (-2 + 4,\, 2 + (-3)) = (2,\, -1)$: dari $C$ melangkah $4$ ke kanan dan $3$ ke bawah.
 
 ---
 
@@ -170,41 +184,19 @@ Diketahui titik $A(1,\, 4,\, -2)$ dan $B(5,\, 2,\, 3)$ di ruang.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_posisi`
 
-Diketahui vektor posisi $\overrightarrow{OA} = (2,\, 5)$ dan $\overrightarrow{OB} = (-1,\, 3)$.
+Diketahui $\overrightarrow{PQ} = \begin{pmatrix} -3 \\ 4 \end{pmatrix}$ dan titik ujung $Q(1,\, 1)$.
 
-**Tentukan $\overrightarrow{AB}$.**
+**Koordinat titik pangkal $P$ adalah…**
 
-A. $(3,\, 2)$
-B. $(-3,\, -2)$
-C. $(1,\, 8)$
-D. $(-3,\, 2)$
-E. $(3,\, -2)$
+A. $(-2,\, 5)$
+B. $(4,\, -3)$
+C. $(-4,\, 3)$
+D. $(3,\, -4)$
+E. $(2,\, -5)$
 
-> **KUNCI JAWABAN:** **B** — $(-3,\, -2)$
+> **KUNCI JAWABAN:** **B** — $(4,\, -3)$
 
-**Pembahasan.** Vektor posisi $\overrightarrow{OA}$ dan $\overrightarrow{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\overrightarrow{AB} = B - A = (-1-2,\; 3-5) = (-3,\, -2)$. **Opsi B**.
-
----
-
-#### Soal 4
-
-- **ID:** `b1_03_4`
-- **Tipe:** Pilihan ganda (satu jawaban benar)
-- **Sub-topik:** `vektor_posisi`
-
-Diketahui $\overrightarrow{PQ} = (6,\, -4)$ dan koordinat titik $P(2,\, 1)$.
-
-**Tentukan koordinat titik $Q$.**
-
-A. $Q(4,\, -5)$
-B. $Q(8,\, -3)$
-C. $Q(-4,\, 5)$
-D. $Q(12,\, -4)$
-E. $Q(3,\, -2)$
-
-> **KUNCI JAWABAN:** **B** — $Q(8,\, -3)$
-
-**Pembahasan.** Dari $\overrightarrow{PQ} = Q - P$ diperoleh $Q = P + \overrightarrow{PQ} = (2+6,\; 1+(-4)) = (8,\, -3)$. **Opsi B**.
+**Pembahasan.** $\overrightarrow{PQ} = Q - P$, jadi $P = Q - \overrightarrow{PQ} = (1 - (-3),\, 1 - 4) = (4,\, -3)$. Cek: dari $(4,\, -3)$ melangkah $3$ ke kiri dan $4$ ke atas, tiba di $Q(1,\, 1)$. **Opsi B**.
 
 ---
 
@@ -216,13 +208,13 @@ E. $Q(3,\, -2)$
 - **Tipe:** Isian angka (papan angka)
 - **Sub-topik:** `panjang_vektor`
 
-Diketahui vektor $\vec{v} = (6,\, 8)$.
+Diketahui vektor $\vec{v} = (-5,\, 12)$.
 
 **Tentukan panjang vektor $\vec{v}$.**
 
-> **KUNCI JAWABAN:** **10**
+> **KUNCI JAWABAN:** **13**
 
-**Pembahasan.** $|\vec{v}| = \sqrt{6^2 + 8^2} = \sqrt{36 + 64} = \sqrt{100} = 10$. Ini kelipatan dari tripel Pythagoras $(3,4,5)$.
+**Pembahasan.** $|\vec{v}| = \sqrt{(-5)^2 + 12^2} = \sqrt{25 + 144} = \sqrt{169} = 13$. Tanda minus hilang begitu dikuadratkan.
 
 ---
 
@@ -232,19 +224,19 @@ Diketahui vektor $\vec{v} = (6,\, 8)$.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `panjang_vektor`
 
-Diketahui vektor $\vec{a} = (2,\, 4)$.
+Diketahui vektor $\vec{a} = (4,\, -2)$.
 
-**Panjang vektor $\vec{a}$ dalam bentuk akar paling sederhana adalah ....**
+**Panjang vektor $\vec{a}$ dalam bentuk akar paling sederhana adalah…**
 
-A. $2\sqrt{5}$
-B. $4\sqrt{5}$
-C. $5\sqrt{2}$
-D. $2\sqrt{10}$
-E. $6$
+A. $\sqrt{20}$
+B. $2\sqrt{3}$
+C. $2$
+D. $2\sqrt{5}$
+E. $4{,}47$
 
-> **KUNCI JAWABAN:** **A** — $2\sqrt{5}$
+> **KUNCI JAWABAN:** **D** — $2\sqrt{5}$
 
-**Pembahasan.** $|\vec{a}| = \sqrt{2^2 + 4^2} = \sqrt{4 + 16} = \sqrt{20}$. Faktor kuadrat terbesar dari $20$ adalah $4$, sehingga $\sqrt{20} = \sqrt{4 \cdot 5} = 2\sqrt{5}$. **Opsi A**.
+**Pembahasan.** $|\vec{a}| = \sqrt{4^2 + (-2)^2} = \sqrt{16 + 4} = \sqrt{20} = \sqrt{4 \cdot 5} = 2\sqrt{5}$. $\sqrt{20}$ bernilai sama tetapi belum paling sederhana, dan $4{,}47$ hanya pembulatan. **Opsi D**.
 
 ---
 
@@ -254,41 +246,19 @@ E. $6$
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `panjang_vektor`
 
-Diketahui vektor di ruang $\vec{p} = (1,\, -2,\, 2)$.
+Tiga vektor: $\vec{p} = (5,\, 1)$, $\vec{q} = (3,\, 4)$, dan $\vec{r} = (-4,\, -3)$.
 
-**Tentukan $|\vec{p}|$.**
+**Vektor manakah yang paling panjang?**
 
-A. $1$
-B. $3$
-C. $\sqrt{5}$
-D. $\sqrt{7}$
-E. $5$
+A. $\vec{q}$
+B. $\vec{r}$
+C. $\vec{q}$ dan $\vec{r}$, sama panjang
+D. $\vec{p}$
+E. Ketiganya sama panjang
 
-> **KUNCI JAWABAN:** **B** — $3$
+> **KUNCI JAWABAN:** **D** — $\vec{p}$
 
-**Pembahasan.** $|\vec{p}| = \sqrt{1^2 + (-2)^2 + 2^2} = \sqrt{1 + 4 + 4} = \sqrt{9} = 3$. Perhatikan $(-2)^2 = 4$, bukan $-4$. **Opsi B**.
-
----
-
-#### Soal 4
-
-- **ID:** `b1_05_4`
-- **Tipe:** Pilihan ganda (satu jawaban benar)
-- **Sub-topik:** `panjang_vektor`
-
-Diketahui $\vec{u} = (3,\, 4)$ dan $\vec{v} = (1,\, 6)$.
-
-**Tanpa menghitung akarnya, tentukan pernyataan yang benar.**
-
-A. $|\vec{u}| > |\vec{v}|$
-B. $|\vec{u}| < |\vec{v}|$
-C. $|\vec{u}| = |\vec{v}|$
-D. $|\vec{u}| = 2|\vec{v}|$
-E. Tidak dapat dibandingkan tanpa menghitung akarnya.
-
-> **KUNCI JAWABAN:** **B** — $|\vec{u}| < |\vec{v}|$
-
-**Pembahasan.** $|\vec{u}|^2 = 9 + 16 = 25$ dan $|\vec{v}|^2 = 1 + 36 = 37$. Karena $25 < 37$, maka $|\vec{u}| < |\vec{v}|$. Membandingkan kuadratnya sudah cukup — akar kuadrat adalah fungsi naik, sehingga urutannya tidak berubah. **Opsi B**.
+**Pembahasan.** Bandingkan kuadrat panjangnya saja — akar tidak membalik urutan: $|\vec{p}|^2 = 25 + 1 = 26$, $|\vec{q}|^2 = 9 + 16 = 25$, $|\vec{r}|^2 = 16 + 9 = 25$. Jadi $\vec{p}$ paling panjang. **Opsi D**.
 
 ---
 
@@ -300,35 +270,37 @@ E. Tidak dapat dibandingkan tanpa menghitung akarnya.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_satuan`
 
-Diketahui vektor $\vec{a} = (6,\, 8)$.
+Diketahui $\vec{a} = (-5,\, 12)$, dengan $|\vec{a}| = 13$.
 
-**Vektor satuan dari $\vec{a}$ adalah ....**
+**Vektor satuan yang searah dengan $\vec{a}$ adalah…**
 
-A. $\left(\tfrac{3}{5},\, \tfrac{4}{5}\right)$
-B. $\left(\tfrac{6}{5},\, \tfrac{8}{5}\right)$
-C. $\left(\tfrac{1}{6},\, \tfrac{1}{8}\right)$
-D. $(6,\, 8)$
-E. $\left(\tfrac{8}{10},\, \tfrac{6}{10}\right)$
+A. $\left(-\tfrac{5}{17},\ \tfrac{12}{17}\right)$
+B. $\left(\tfrac{5}{13},\ \tfrac{12}{13}\right)$
+C. $\left(-\tfrac{5}{13},\ \tfrac{12}{13}\right)$
+D. $(-1,\ 1)$
+E. $\left(-\tfrac{5}{13},\ 12\right)$
 
-> **KUNCI JAWABAN:** **A** — $\left(\tfrac{3}{5},\, \tfrac{4}{5}\right)$
+> **KUNCI JAWABAN:** **C** — $\left(-\tfrac{5}{13},\ \tfrac{12}{13}\right)$
 
-**Pembahasan.** $|\vec{a}| = \sqrt{36+64} = 10$, sehingga $\hat{e} = \left(\tfrac{6}{10},\, \tfrac{8}{10}\right) = \left(\tfrac{3}{5},\, \tfrac{4}{5}\right)$. Periksa: $\tfrac{9}{25} + \tfrac{16}{25} = 1$. **Opsi A**.
+**Pembahasan.** $\hat{a} = \dfrac{\vec{a}}{|\vec{a}|} = \left(\dfrac{-5}{13},\, \dfrac{12}{13}\right)$. Setiap komponen dibagi $13$, dan tanda minus tetap. **Opsi C**.
 
 ---
 
 #### Soal 2
 
 - **ID:** `b1_06_2`
-- **Tipe:** Isian angka (papan angka)
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `vektor_satuan`
 
-Vektor $\hat{e}$ adalah vektor satuan dari sebuah vektor $\vec{w}$ yang panjangnya $13$ satuan.
+Diketahui $\vec{v} = \begin{pmatrix} 0 \\ -7 \end{pmatrix}$, berpangkal di titik asal $O$.
 
-**Tentukan panjang vektor $\hat{e}$.**
+**Ketuk letak ujung vektor satuan $\hat{v}$ pada bidang.**
 
-> **KUNCI JAWABAN:** **1**
+*Bidang:* x ∈ [-4, 4], y ∈ [-8, 2] · titik O(0, 0)
 
-**Pembahasan.** Menurut definisinya, panjang vektor satuan **selalu** $1$ — berapa pun panjang vektor asalnya. Angka $13$ di soal tidak memengaruhi jawaban sama sekali.
+> **KUNCI JAWABAN:** **(0, -1)**
+
+**Pembahasan.** $|\vec{v}| = 7$, jadi $\hat{v} = \dfrac{1}{7}(0,\, -7) = (0,\, -1)$: satu satuan ke bawah dari $O$, tepat di lingkaran satuan.
 
 ---
 
@@ -338,19 +310,19 @@ Vektor $\hat{e}$ adalah vektor satuan dari sebuah vektor $\vec{w}$ yang panjangn
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `vektor_satuan`
 
-Seorang siswa mencoba menghitung vektor satuan dari $\vec{0} = (0,\, 0)$.
+Diketahui $\vec{a} = (4,\, 3)$. Sebuah vektor $\vec{b}$ **searah** dengan $\vec{a}$ dan panjangnya $10$.
 
-**Manakah alasan yang paling tepat mengapa hal itu tidak dapat dilakukan?**
+**Vektor $\vec{b}$ adalah…**
 
-A. Karena komponen vektor nol terlalu kecil untuk dibagi.
-B. Karena $|\vec{0}| = 0$, sehingga rumus $\hat{e} = \tfrac{\vec{v}}{|\vec{v}|}$ membagi dengan nol — dan vektor nol memang tidak menunjuk ke arah mana pun.
-C. Karena vektor satuan hanya berlaku untuk vektor di R³.
-D. Karena hasilnya adalah $(0,\, 0)$, dan itu sudah merupakan vektor satuan.
-E. Karena vektor nol tidak boleh ditulis dalam bentuk kolom.
+A. $(40,\, 30)$
+B. $(6,\, 8)$
+C. $(14,\, 13)$
+D. $(8,\, 6)$
+E. $\left(\tfrac{4}{5},\, \tfrac{3}{5}\right)$
 
-> **KUNCI JAWABAN:** **B** — Karena $|\vec{0}| = 0$, sehingga rumus $\hat{e} = \tfrac{\vec{v}}{|\vec{v}|}$ membagi dengan nol — dan vektor nol memang tidak menunjuk ke arah mana pun.
+> **KUNCI JAWABAN:** **D** — $(8,\, 6)$
 
-**Pembahasan.** Dua alasan yang saling menguatkan: secara aljabar, pembagian dengan nol tidak terdefinisi; secara makna, vektor nol tidak punya arah untuk diwakili. **Opsi B**.
+**Pembahasan.** Vektor satuan $\vec{a}$: $|\vec{a}| = 5$, $\hat{a} = \left(\tfrac{4}{5},\, \tfrac{3}{5}\right)$. Panjang $10$ searah: $\vec{b} = 10\,\hat{a} = (8,\, 6)$. Pilihan $(6,\, 8)$ sama panjang tetapi arahnya lain. **Opsi D**.
 
 ---
 
@@ -362,65 +334,63 @@ E. Karena vektor nol tidak boleh ditulis dalam bentuk kolom.
 - **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `komponen_r2_r3`
 
-Sebuah drone bergerak $5$ satuan ke depan, $3$ satuan ke kiri, lalu naik $2$ satuan. Dipakai konvensi $Z$-Up: sumbu $X$ depan–belakang, sumbu $Y$ kanan–kiri, sumbu $Z$ atas–bawah.
+Diketahui vektor kolom $\vec{w} = \begin{pmatrix} 2 \\ -1 \\ 5 \end{pmatrix}$.
 
-**Vektor perpindahan drone tersebut adalah ....**
+**Bentuk basis $\hat{i},\, \hat{j},\, \hat{k}$ dari $\vec{w}$ adalah…**
 
-A. $(5,\, 3,\, 2)$
-B. $(5,\, -3,\, 2)$
-C. $(-5,\, 3,\, 2)$
-D. $(5,\, 2,\, -3)$
-E. $(2,\, -3,\, 5)$
+A. $2\hat{i} + \hat{j} + 5\hat{k}$
+B. $2\hat{i} - \hat{j} + 5\hat{k}$
+C. $-\hat{i} + 2\hat{j} + 5\hat{k}$
+D. $2\hat{i} - \hat{j} + 5\hat{j}$
+E. $2\hat{i} - 5\hat{k}$
 
-> **KUNCI JAWABAN:** **B** — $(5,\, -3,\, 2)$
+> **KUNCI JAWABAN:** **B** — $2\hat{i} - \hat{j} + 5\hat{k}$
 
-**Pembahasan.** Maju berarti $x$ positif, sehingga $x = 5$. Ke kiri berlawanan dengan arah $y$ positif, sehingga $y = -3$. Naik searah $z$ positif, sehingga $z = 2$. Maka perpindahannya $(5,\, -3,\, 2)$. **Opsi B**.
+**Pembahasan.** Baris atas $\to \hat{i}$, baris tengah $\to \hat{j}$, baris bawah $\to \hat{k}$: $2\hat{i} - \hat{j} + 5\hat{k}$. Koefisien $-1$ cukup ditulis tandanya. **Opsi B**.
 
 ---
 
 #### Soal 2
 
 - **ID:** `b1_04_2`
-- **Tipe:** Isian angka (papan angka)
+- **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `komponen_r2_r3`
 
-Sebuah drone bergerak $3$ meter ke timur, $4$ meter ke selatan, dan naik $12$ meter. Arah timur dijadikan sumbu $x$ positif, arah utara sumbu $y$ positif, dan ke atas sumbu $z$ positif.
+Diketahui $\vec{u} = (2,\, -1,\, 2)$.
 
-**Tentukan nilai komponen $y$ dari vektor perpindahan drone tersebut.**
+**Panjang vektor $\vec{u}$ adalah…**
 
-> **KUNCI JAWABAN:** **-4**
+A. $\sqrt{3}$
+B. $5$
+C. $3$
+D. $\sqrt{5}$
+E. $9$
 
-**Pembahasan.** Arah utara ditetapkan sebagai $y$ positif, maka arah **selatan** adalah $y$ negatif. Perpindahan $4$ meter ke selatan berarti komponen $y = -4$.
+> **KUNCI JAWABAN:** **C** — $3$
+
+**Pembahasan.** $|\vec{u}| = \sqrt{2^2 + (-1)^2 + 2^2} = \sqrt{4 + 1 + 4} = \sqrt{9} = 3$. **Opsi C**.
 
 ---
 
 #### Soal 3
 
 - **ID:** `b1_04_3`
-- **Tipe:** Pilih semua jawaban benar
+- **Tipe:** Pilihan ganda (satu jawaban benar)
 - **Sub-topik:** `komponen_r2_r3`
 
-Perhatikan pernyataan-pernyataan tentang komponen vektor berikut.
+Diketahui titik $A(1,\, 0,\, 2)$ dan $B(3,\, -2,\, 2)$.
 
-**Pilih semua pernyataan yang benar.**
+**Vektor $\overrightarrow{AB}$ adalah…**
 
-A. Vektor $(0,\, 0,\, 7)$ bergerak pada arah tegak saja, tanpa perpindahan mendatar.
-B. Vektor $(-3,\, 0)$ adalah vektor nol karena salah satu komponennya $0$.
-C. Semua rumus vektor di $R^2$ berlaku di $R^3$ dengan menambahkan satu komponen.
-D. Vektor di kurikulum TKA dapat memiliki lebih dari tiga komponen.
-E. Komponen bertanda negatif menunjukkan **arah**, bukan panjang yang negatif.
+A. $\begin{pmatrix} 2 \\ -2 \end{pmatrix}$
+B. $\begin{pmatrix} -2 \\ 2 \\ 0 \end{pmatrix}$
+C. $\begin{pmatrix} 4 \\ -2 \\ 4 \end{pmatrix}$
+D. $\begin{pmatrix} 2 \\ -2 \\ 0 \end{pmatrix}$
+E. $\begin{pmatrix} 2 \\ -2 \\ 4 \end{pmatrix}$
 
-> **KUNCI JAWABAN:** **A, C, E**
+> **KUNCI JAWABAN:** **D** — $\begin{pmatrix} 2 \\ -2 \\ 0 \end{pmatrix}$
 
-**Pembahasan.** Kuncinya ada pada dua hal: vektor nol menuntut **semua** komponen nol, dan tanda negatif selalu berarti arah, bukan panjang negatif.
-
-**Penjelasan per opsi:**
-
-- **A.** **Benar** — komponen $x$ dan $y$ keduanya $0$, jadi yang tersisa hanya gerak naik sepanjang sumbu $z$.
-- **B.** Salah — vektor nol mensyaratkan **semua** komponennya $0$. Vektor $(-3,0)$ masih punya panjang $3$.
-- **C.** **Benar** — inilah sebabnya R³ tidak menuntut hafalan rumus baru.
-- **D.** Salah — rincian Kemendikdasmen membatasi komponen vektor **maksimum tiga**.
-- **E.** **Benar** — panjang tidak pernah negatif; tanda selalu bicara soal arah.
+**Pembahasan.** $\overrightarrow{AB} = B - A = \begin{pmatrix} 3 - 1 \\ -2 - 0 \\ 2 - 2 \end{pmatrix} = \begin{pmatrix} 2 \\ -2 \\ 0 \end{pmatrix}$. Baris $z$ bernilai $0$ tetapi tetap ditulis. **Opsi D**.
 
 ---
 
@@ -1663,4 +1633,4 @@ E. $\vec{p} \cdot \vec{q} = 0$, dengan dua komponen $\vec{q}$ memuat $k$.
 
 ---
 
-*Total 78 soal Mini Kuis.*
+*Total 76 soal Mini Kuis.*

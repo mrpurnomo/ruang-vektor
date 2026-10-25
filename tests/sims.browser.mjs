@@ -119,6 +119,19 @@ async function act(sim, action) {
     const [sx, sy] = plane.toScreen(action.pick);
     const pt = new DOMPoint(sx, sy).matrixTransform(plane.svg.getScreenCTM());
     rect.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: pt.x, clientY: pt.y }));
+  } else if (action.pad) {
+    // Papan kemudi: (Ulang dulu bila diminta) → tekan tombol arah → Periksa.
+    // Tekanan diantrekan engine, Periksa menunggu antrean habis.
+    if (action.reset) host.querySelector('[data-sim-action="reset"]').click();
+    for (const key of action.pad) {
+      const btn = host.querySelector(`[data-sim-pad="${key}"]`);
+      assert(btn, `tombol kemudi "${key}" tidak ditemukan`);
+      btn.click();
+    }
+    await sim.padChain;
+    host.querySelector('[data-sim-action="check"]').click();
+    await sim.padChain;
+    await sleep(30);
   } else if (action.tap) {
     const node = host.querySelector(`[data-sim-tap="${action.tap}"]`);
     assert(node, `target ketuk "${action.tap}" tidak ditemukan`);
@@ -141,6 +154,7 @@ function probeOf(template) {
 
 /** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
 const CASE_SUCCESS = {
+  space_guided: (c) => ({ drone: 'success', zero: 'successNol', between: 'successRuang' }[c.kind]),
   unit_guided: (c) => ({ shrink: 'success', same: 'successSearah', surd: 'successAkar', zero: 'vektorNol' }[c.kind]),
   magnitude_guided: (c) => ({ pythagoras: 'success', simplify: 'successAkar', negative: 'successNegatif' }[c.kind]),
   position_guided: (c) => ({ discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind]),
@@ -394,11 +408,37 @@ const PLANS = {
     ];
   },
 
-  component_builder: (c) => {
-    const i = c.answer.findIndex((n) => n !== 0);
-    const wrong = c.answer.slice();
-    wrong[i] = -wrong[i];
-    return [{ wrong: { fields: comps(wrong) }, right: { fields: comps(c.answer) }, expectToast: 'tandaSalah' }];
+  space_guided: (c) => {
+    const pad = (P) => P.flatMap((n, i) => Array(Math.abs(n)).fill(`${'xyz'[i]}${n > 0 ? '+' : '-'}`));
+    if (c.kind === 'between') {
+      const key = vsub(c.B, c.A);
+      const sumSq = key.reduce((a, n) => a + n * n, 0);
+      return [
+        { wrong: { fields: comps(vmul(-1, key)) }, right: { fields: comps(key) }, expectToast: 'tandaTerbalik', leak: [key.join(', ')] },
+        { wrong: { fields: { len: `√${sumSq}` } }, right: { fields: { len: S.toText(S.fromSquare(sumSq)) } }, expectToast: 'belumDisederhanakan' },
+      ];
+    }
+    const P = c.P;
+    // Salah: tombol sumbu Y ditekan ke arah sebaliknya (atau, bila Y = 0, lupa satu langkah naik).
+    const wrongPad = P[1] !== 0 ? pad([P[0], -P[1], P[2]]) : pad([P[0], 0, P[2] - 1]);
+    const padStep = { wrong: { pad: wrongPad }, right: { pad: pad(P), reset: true }, expectToast: 'posisiSalah' };
+    const sumSq = P.reduce((a, n) => a + n * n, 0);
+    if (c.kind === 'zero') {
+      const shifted = P.filter((n) => n !== 0).concat([0]);
+      return [
+        padStep,
+        { wrong: { fields: comps(shifted) }, right: { fields: comps(P) }, expectToast: 'nolTergeser' },
+        { wrong: { fields: { len: String(sumSq) } }, right: { fields: { len: S.toText(S.fromSquare(sumSq)) } }, expectToast: 'belumDiakar' },
+      ];
+    }
+    const floorSq = P[0] ** 2 + P[1] ** 2;
+    return [
+      padStep,
+      { wrong: { fields: comps([P[0], -P[1], P[2]]) }, right: { fields: comps(P) }, expectToast: 'tandaKomponen' },
+      { wrong: { fields: comps([P[1], P[0], P[2]]) }, right: { fields: comps(P) }, expectToast: 'urutanSumbu' },
+      { wrong: { fields: { len: String(Math.abs(P[0]) + Math.abs(P[1])) } }, right: { fields: { len: S.toText(S.fromSquare(floorSq)) } }, expectToast: 'lupaKuadrat' },
+      { wrong: { fields: { len: String(sumSq) } }, right: { fields: { len: S.toText(S.fromSquare(sumSq)) } }, expectToast: 'belumDiakar' },
+    ];
   },
 
   magnitude_guided: (c) => {
