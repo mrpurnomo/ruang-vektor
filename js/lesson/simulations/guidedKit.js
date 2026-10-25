@@ -15,6 +15,7 @@
  */
 
 import sfx from '../../core/ui/sfx.js';
+import { isInstant } from './instant.js';
 import { texTuple, same, AXES } from './simKit.js';
 
 export const HOP_MS = 110;
@@ -28,7 +29,8 @@ export const DIRECTION = {
 
 /** Pengguna meminta gerak dikurangi: animasi diganti keadaan akhirnya. */
 export function stillMotion() {
-  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Pemulihan kasus (instant.js) juga tanpa gerak: langsung keadaan akhir.
+  return isInstant() || (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
 /** Goresan yang "ditulis" dari pangkal ke ujung (WAAPI pada stroke-dashoffset). */
@@ -86,7 +88,7 @@ export async function animateHops(sim, from, delta, { hopMs = HOP_MS, finalTags 
       const b = [start[0] + step[0] * k, start[1] + step[1] * k];
       const hop = plane.drawHop(a, b, { side });
       count += 1;
-      sfx.step(count);
+      if (!isInstant()) sfx.step(count);
       drawStroke(hop.path, Math.max(60, delay - 20));
       badge.setPosition(b).setText(signedStep(k, sign));
       springPop(badge.inner);
@@ -182,4 +184,93 @@ export function firstWrong(student, key) {
 /** Kunci isian yang salah (untuk menandai kotaknya). */
 export function wrongKeys(student, key, prefix = 'c') {
   return key.map((k, i) => (same(student[i], k) ? null : `${prefix}${AXES[i]}`)).filter(Boolean);
+}
+
+/* ------------------------------------------------------------
+   Visual PETUNJUK (revisi guru: siswa yang salah ≥ 3 kali atau diam
+   ±7 detik dibantu secara visual). Setiap fungsi menggambar bayangan
+   amber putus-putus dan MENGEMBALIKAN fungsi pembersih — simKit
+   memanggilnya saat langkah berganti, supaya petunjuk tidak pernah
+   tertinggal sebagai "jawaban" di bidang.
+   ------------------------------------------------------------ */
+
+/**
+ * Lompatan BAYANGAN satu satuan dari `from` sejauh `delta` (mendatar lalu
+ * tegak), diulang pelan supaya siswa bisa menghitung bersama, dengan
+ * lencana hitungan. Mengembalikan pembersih.
+ */
+export function ghostHops(sim, from, delta) {
+  const plane = sim.plane;
+  if (!plane) return () => {};
+  const marks = [];
+  let alive = true;
+  const [tx, ty] = delta;
+  const sx = Math.sign(tx) || 1;
+  const sy = Math.sign(ty) || 1;
+  const arcY = ty >= 0 ? 1 : -1;
+  const arcX = tx >= 0 ? 1 : -1;
+  const clear = () => { marks.splice(0).forEach((m) => m.remove()); };
+  const run = async () => {
+    while (alive && sim.plane === plane) {
+      clear();
+      let count = 0;
+      const phase = async (n, start, step, side, offset, sign) => {
+        for (let k = 1; k <= n && alive; k += 1) {
+          const a = [start[0] + step[0] * (k - 1), start[1] + step[1] * (k - 1)];
+          const b = [start[0] + step[0] * k, start[1] + step[1] * k];
+          const hop = plane.drawHop(a, b, { side });
+          hop.path.classList.add('plane__hop--ghost');
+          marks.push(hop);
+          count += 1;
+          const tag = plane.drawTag(b, signedStep(k, sign), { offset, tone: 'amber' });
+          tag.inner.classList.add('plane__tag--ghost');
+          marks.push(tag);
+          drawStroke(hop.path, 260);
+          await sim.wait(stillMotion() ? 0 : 380);
+          if (k < n) { tag.remove(); marks.splice(marks.indexOf(tag), 1); }
+        }
+      };
+      await phase(Math.abs(tx), [from[0], from[1]], [sx, 0], [0, arcY], [0, -20 * arcY], sx);
+      await phase(Math.abs(ty), [from[0] + tx, from[1]], [0, sy], [arcX, 0], [22 * arcX, 0], sy);
+      await sim.wait(stillMotion() ? 0 : 1600);
+      if (stillMotion()) return;
+    }
+  };
+  run();
+  return () => { alive = false; clear(); };
+}
+
+/** Garis bantu bayangan dari kedua sumbu menuju titik `p` + titik berdenyut. */
+export function ghostCross(sim, p) {
+  const plane = sim.plane;
+  if (!plane) return () => {};
+  const a = plane.drawSegment([p[0], 0], p, { dashed: true });
+  const b = plane.drawSegment([0, p[1]], p, { dashed: true });
+  [a, b].forEach((m) => m.el.classList.add('plane__segment--hint'));
+  const dot = plane.drawPoint(p, { ghost: true });
+  dot.el.classList.add('is-armed', 'plane__point-mark--hint');
+  return () => [a, b, dot].forEach((m) => m.remove());
+}
+
+/** Titik bayangan berdenyut di `p` (mis. pangkal panah yang harus diketuk). */
+export function pulsePoint(sim, p) {
+  const plane = sim.plane;
+  if (!plane) return () => {};
+  const dot = plane.drawPoint(p, { ghost: true });
+  dot.el.classList.add('is-armed', 'plane__point-mark--hint');
+  return () => dot.remove();
+}
+
+/** Rute bayangan di ruang 3D: maju/mundur, lalu kanan/kiri, lalu naik/turun. */
+export function ghostRoute3d(space, target) {
+  if (!space) return () => {};
+  const [x, y, z] = target;
+  const pts = [[0, 0, 0], [x, 0, 0], [x, y, 0], [x, y, z]];
+  const segs = [];
+  for (let i = 0; i < 3; i += 1) {
+    if (pts[i].some((v, k) => v !== pts[i + 1][k])) segs.push(space.segment(pts[i], pts[i + 1], { dashed: true, tone: 'amber' }));
+  }
+  const end = space.point(target, { tone: 'amber' });
+  end.el.classList.add('space__point--hint');
+  return () => [...segs, end].forEach((m) => m.remove());
 }

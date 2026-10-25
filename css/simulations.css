@@ -757,4 +757,55 @@
     .notation-shelf__value { min-height: 28px; font-size: var(--fs-sm); }
     .notation-shelf__title { font-size: 9.5px; }
   }
+
+  /* ============================================================
+     PETUNJUK (salah 3 kali atau diam 7 detik) — kartu amber di puncak
+     lembar kerja + kotak isian yang perlu diperiksa ikut disorot.
+     ============================================================ */
+  .sim-hint {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: flex-start;
+    margin-bottom: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--value-line);
+    border-left: 3px solid var(--yellow-deep);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    background: var(--value-soft);
+    animation: simHintIn var(--dur-slow) var(--pop) both;
+  }
+  .sim-hint__icon { flex: none; margin-top: 2px; color: var(--accent-amber); }
+  .sim-hint__title {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-amber-dark);
+  }
+  .sim-hint__text { margin: 2px 0 0; font-size: var(--fs-sm); line-height: 1.45; color: var(--ink-900); }
+  @keyframes simHintIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .numfield--hint {
+    border-color: var(--value-deep);
+    box-shadow: 0 0 0 3px var(--value-line);
+    animation: simFieldHint 1.4s var(--ease) infinite;
+  }
+  @keyframes simFieldHint {
+    0%, 100% { box-shadow: 0 0 0 2px var(--value-line); }
+    50% { box-shadow: 0 0 0 6px var(--value-line); }
+  }
+
+  /* Kasus yang sudah selesai dibuka lagi: Ulangi · Lanjut. */
+  .case-review { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sim-hint, .numfield--hint { animation: none; }
+  }
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-hint { padding: 6px var(--sp-2); }
+    .sim-hint__text { font-size: var(--fs-xs); line-height: 1.35; }
+  }
 }

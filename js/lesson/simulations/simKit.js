@@ -36,16 +36,25 @@ import { icon } from '../../core/ui/icons.js';
 import toast from '../../core/ui/toast.js';
 import { rejectShake } from '../../core/interactions/flyToAnimation.js';
 import sfx from '../../core/ui/sfx.js';
+import { withInstant } from './instant.js';
 import * as S from '../../domain/surd.js';
 import * as V from '../../domain/vector.js';
 
 /** Di bawah skala ini (px per satuan) label non-esensial disembunyikan. */
 export const COMPACT_SCALE = 26;
 
+/**
+ * Petunjuk muncul sesudah salah sebanyak ini pada satu langkah, ATAU sesudah
+ * siswa diam selama HINT_IDLE_MS (revisi guru: "salah 3 kali atau idle 7 detik").
+ */
+export const HINT_AFTER_WRONG = 3;
+export const HINT_IDLE_MS = 7000;
+
 const DEFAULTS = {
   empty: 'Masih ada kotak yang kosong. Isi semuanya lebih dulu, baru periksa.',
   unreadable: 'Isian itu belum berupa bilangan yang utuh. Bentuk akar ditulis lengkap, misalnya $3\\sqrt{2}$.',
   wrong: 'Belum tepat — telusuri lagi langkahmu satu per satu.',
+  hint: 'Baca lagi perintah di atas pelan-pelan, lalu kerjakan satu bagian dulu. Perhatikan kotak yang disorot.',
   pickFirst: 'Pilih salah satu jawaban lebih dulu, baru periksa.',
 };
 
@@ -112,6 +121,9 @@ export class CaseSimulation extends Simulation {
     this.caseCleanups = [];
     this.stepCleanups = [];
     this.labelled = [];
+    // Langkah terakhir yang dicapai per kasus yang BELUM selesai — supaya
+    // kembali ke kasus itu melanjutkan, bukan mengulang dari awal.
+    this.caseProgress = {};
   }
 
   /* ---------- untuk ditimpa engine ---------- */
@@ -254,6 +266,11 @@ export class CaseSimulation extends Simulation {
     if (saved && Array.isArray(saved.solved)) {
       saved.solved.filter((i) => i >= 0 && i < this.cases.length).forEach((i) => this.solved.add(i));
     }
+    if (saved && saved.progress && typeof saved.progress === 'object') {
+      Object.entries(saved.progress).forEach(([i, n]) => {
+        if (Number.isInteger(n) && n > 0 && !this.solved.has(Number(i))) this.caseProgress[i] = n;
+      });
+    }
     // Ingatan sesi bisa sudah hilang (peramban ditutup), tetapi progres
     // permanen mencatat simulasi ini tuntas: semua kasus dianggap selesai.
     if (this.startComplete) this.cases.forEach((_, i) => this.solved.add(i));
@@ -346,12 +363,29 @@ export class CaseSimulation extends Simulation {
     this.stepCleanups = [];
   }
 
-  goToCase(index) {
+  /** Keadaan yang disimpan pemilik layar (sesi): kasus selesai, kasus aktif, progres. */
+  persist() {
+    this.saveState({ solved: [...this.solved], caseIndex: this.caseIndex, progress: { ...this.caseProgress } });
+  }
+
+  /**
+   * Buka kasus `index`.
+   *   · kasus yang SUDAH selesai → keadaan akhirnya + "Ulangi kasus ini /
+   *     Lanjut" (revisi guru: tidak pernah terulang sendiri);
+   *   · kasus yang sedang berjalan → langkah yang sudah dikerjakan diputar
+   *     ulang seketika, lalu siswa lanjut dari langkah terakhirnya;
+   *   · `{ fresh: true }` → mulai dari langkah pertama (pilihan sadar siswa).
+   */
+  goToCase(index, { fresh = false } = {}) {
     if (this.destroyed || index < 0 || index >= this.cases.length) return;
+    // Pemulihan kasus sebelumnya yang masih berjalan dibatalkan.
+    this.restoreToken = null;
+    this.restoring = false;
     this.disposeCase();
     this.caseIndex = index;
     this.setStep(index);
-    this.saveState({ solved: [...this.solved], caseIndex: index });
+    if (fresh) delete this.caseProgress[index];
+    this.persist();
 
     const c = this.cases[index];
     this.givenEl.innerHTML = '';
@@ -386,7 +420,84 @@ export class CaseSimulation extends Simulation {
     this.renderChecklist();
     this.syncCaseBar();
     this.stepIndex = 0;
-    this.renderStep();
+
+    const done = !fresh && this.solved.has(index);
+    const resumeAt = fresh || done ? 0 : Math.min(this.caseProgress[index] || 0, this.steps.length - 1);
+    if (!done && resumeAt === 0) {
+      this.renderStep();
+      return;
+    }
+    // Putar ulang langkah yang sudah dikerjakan — seketika, tanpa bunyi.
+    this.restoring = true;
+    const token = {};
+    this.restoreToken = token;
+    this.inputsEl.innerHTML = '';
+    this.replaySteps(done ? this.steps.length : resumeAt, token).then(() => {
+      if (this.destroyed || this.restoreToken !== token) return;
+      this.restoring = false;
+      if (done) this.showSolvedReview();
+      else this.renderStep();
+    });
+  }
+
+  /** Jalankan ulang ringkasan + gambar `n` langkah pertama dalam mode seketika. */
+  async replaySteps(n, token) {
+    const steps = this.steps;
+    await withInstant(async () => {
+      for (let i = 0; i < n; i += 1) {
+        // Siswa berpindah kasus di tengah pemulihan: hentikan, jangan
+        // menggambar langkah kasus lama di bidang kasus baru.
+        if (this.destroyed || this.restoreToken !== token) return;
+        const step = steps[i];
+        if (!step) break;
+        this.stepIndex = i;
+        try {
+          if (typeof step.onEnter === 'function') step.onEnter();
+          if (step.summary) this.trailEl.appendChild(el('li', 'sim-board__trail-item', mixed(step.summary())));
+          if (typeof step.onSolved === 'function') await step.onSolved();
+          if (typeof step.onLeave === 'function') step.onLeave();
+        } catch (err) {
+          console.error('[sim] pemulihan langkah gagal:', err);
+        }
+      }
+    });
+    if (this.destroyed || this.restoreToken !== token) return;
+    this.stepIndex = n;
+    this.trailEl.scrollTop = this.trailEl.scrollHeight;
+  }
+
+  /**
+   * Kasus yang sudah selesai dibuka lagi: keadaan akhirnya tampil, lalu dua
+   * pilihan — mengulang kasus ini, atau lanjut ke kasus yang sedang aktif.
+   */
+  showSolvedReview() {
+    this.syncChecklist();
+    const c = this.cases[this.caseIndex];
+    this.setPromptText(this.caseDonePrompt(c, this.solved.size === this.cases.length), 'Selesai');
+    this.inputsEl.innerHTML = '';
+    this.inputsEl.appendChild(el('div', 'slide-solved', `${icon('check-circle', { size: 18 })}<span>${mixed(this.caseLabel(c, this.caseIndex))} sudah selesai.</span>`));
+    const row = el('div', 'case-review');
+    const again = el('button', 'btn btn--ghost');
+    again.type = 'button';
+    again.dataset.simAction = 'replay-case';
+    again.innerHTML = `${icon('rotate', { size: 15 })}<span>Ulangi kasus ini</span>`;
+    const onAgain = () => this.goToCase(this.caseIndex, { fresh: true });
+    again.addEventListener('click', onAgain);
+    this.caseCleanups.push(() => again.removeEventListener('click', onAgain));
+    row.appendChild(again);
+    const next = this.firstUnsolved();
+    if (!this.solved.has(next)) {
+      const go = el('button', 'btn btn--primary btn--pulse');
+      go.type = 'button';
+      go.dataset.simAction = 'resume-case';
+      go.innerHTML = `<span>Lanjut ke ${mixed(this.caseLabel(this.cases[next], next))}</span>${icon('arrow-right', { size: 15 })}`;
+      const onGo = () => this.goToCase(next);
+      go.addEventListener('click', onGo);
+      this.caseCleanups.push(() => go.removeEventListener('click', onGo));
+      row.appendChild(go);
+    }
+    this.inputsEl.appendChild(row);
+    row.scrollIntoView({ block: 'nearest' });
   }
 
   renderChecklist() {
@@ -436,6 +547,7 @@ export class CaseSimulation extends Simulation {
     if (typeof step.onEnter === 'function') step.onEnter();
     if (typeof step.onLeave === 'function') this.stepCleanups.push(step.onLeave);
     this[method](step);
+    this.armHint(step);
     // Isian/pilihan langkah baru harus TERLIHAT tanpa siswa mencarinya: di
     // lanskap pendek kolom kerja lebih tinggi dari layar, dan langkah baru
     // lahir di bawah jejak (terukur di sub-topik 2: isian basis di bawah
@@ -458,6 +570,72 @@ export class CaseSimulation extends Simulation {
     if (element) rejectShake(element);
     sfx.wrong();
     toast.error(this.message(result, DEFAULTS.wrong));
+    const h = this.hintState;
+    if (h) {
+      h.wrong += 1;
+      if (result && Array.isArray(result.wrong)) h.lastWrong = result.wrong;
+      if (h.wrong >= HINT_AFTER_WRONG) this.showHint();
+    }
+  }
+
+  /* ---------- petunjuk visual ---------- */
+
+  /**
+   * Pasang pemicu petunjuk untuk langkah ini: salah ≥ HINT_AFTER_WRONG kali,
+   * atau diam HINT_IDLE_MS (setiap ketukan/tombol di simulasi mengulang
+   * hitungan diam). Petunjuk langkah dideklarasikan engine:
+   *   step.hint = () => ({ text, show?: () => pembersih, fields?: ['cx'] | 'wrong' })
+   * Semua yang digambar petunjuk dibersihkan saat langkah berganti.
+   */
+  armHint(step) {
+    const h = { step, wrong: 0, lastWrong: [], shown: false, cleanup: null, card: null, timer: 0 };
+    this.hintState = h;
+    const restart = () => {
+      clearTimeout(h.timer);
+      if (!h.shown) h.timer = setTimeout(() => this.showHint(), HINT_IDLE_MS);
+    };
+    restart();
+    const onActivity = () => restart();
+    this.root.addEventListener('pointerdown', onActivity, true);
+    this.root.addEventListener('keydown', onActivity, true);
+    this.stepCleanups.push(() => {
+      clearTimeout(h.timer);
+      this.root.removeEventListener('pointerdown', onActivity, true);
+      this.root.removeEventListener('keydown', onActivity, true);
+      if (h.cleanup) { try { h.cleanup(); } catch (err) { console.warn('[sim] petunjuk:', err); } }
+      if (h.card) h.card.remove();
+      if (this.hintState === h) this.hintState = null;
+    });
+  }
+
+  showHint() {
+    const h = this.hintState;
+    if (!h || h.shown || this.destroyed || this.completeCover || this.restoring || h.step !== this.currentStep) return;
+    h.shown = true;
+    clearTimeout(h.timer);
+    let spec = null;
+    try {
+      spec = typeof h.step.hint === 'function' ? h.step.hint() : null;
+    } catch (err) {
+      console.error('[sim] petunjuk gagal dibuat:', err);
+    }
+    spec = spec || { text: DEFAULTS.hint, fields: 'wrong' };
+    const card = el('div', 'sim-hint', `<span class="sim-hint__icon">${icon('lightbulb', { size: 16 })}</span><div><b class="sim-hint__title">Petunjuk</b><p class="sim-hint__text">${mixed(spec.text || DEFAULTS.hint)}</p></div>`);
+    card.setAttribute('role', 'status');
+    this.inputsEl.insertBefore(card, this.inputsEl.firstChild);
+    h.card = card;
+    if (typeof spec.show === 'function') {
+      try { h.cleanup = spec.show(); } catch (err) { console.error('[sim] gambar petunjuk gagal:', err); }
+    }
+    const keys = spec.fields === 'wrong'
+      ? (h.lastWrong.length ? h.lastWrong : (h.step.fields || []).map((f) => f.key))
+      : (spec.fields || []);
+    keys.forEach((k) => {
+      const input = this.inputsEl.querySelector(`[data-sim-field="${k}"]`);
+      if (input && !input.disabled) input.classList.add('numfield--hint');
+    });
+    sfx.select();
+    card.scrollIntoView({ block: 'nearest' });
   }
 
   /**
@@ -492,6 +670,10 @@ export class CaseSimulation extends Simulation {
       // dan layar harus tetap menunjuk langkah yang sama.
       if (this.stepIndex + 1 < this.steps.length) await this.wait(180);
       this.stepIndex += 1;
+      if (!this.solved.has(this.caseIndex) && this.stepIndex < this.steps.length) {
+        this.caseProgress[this.caseIndex] = this.stepIndex;
+        this.persist();
+      }
       this.renderStep();
     } finally {
       this.release('solve');
@@ -504,7 +686,8 @@ export class CaseSimulation extends Simulation {
     this.solved.add(this.caseIndex);
     // Jumlah langkah kasus ini, untuk statistik selebrasi yang bisa ditelusuri.
     this.caseStepCounts = { ...(this.caseStepCounts || {}), [this.caseIndex]: this.steps.length };
-    this.saveState({ solved: [...this.solved], caseIndex: this.caseIndex });
+    delete this.caseProgress[this.caseIndex];
+    this.persist();
     this.syncCaseBar();
 
     const c = this.cases[this.caseIndex];
@@ -618,9 +801,10 @@ export class CaseSimulation extends Simulation {
     this.toggleBrief(true);
     this.solved.clear();
     this.caseStepCounts = {};
+    this.caseProgress = {};
     this.finished = false;
     sfx.tap();
-    this.goToCase(0);
+    this.goToCase(0, { fresh: true });
   }
 
   markAllDone(text) {

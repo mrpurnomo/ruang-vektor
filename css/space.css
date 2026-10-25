@@ -119,6 +119,7 @@
 
   .space__point { fill: var(--plane-point); stroke: var(--plane-point-rim); stroke-width: 2; }
   .space__point--blue { fill: var(--plane-vector); stroke: var(--brand-primary-dark); }
+  .space__point--hint { fill: color-mix(in srgb, var(--yellow) 60%, transparent); stroke: var(--plane-amber); stroke-dasharray: 3 2; }
 
   .space__mover-ring {
     fill: color-mix(in srgb, var(--royal) 14%, transparent);

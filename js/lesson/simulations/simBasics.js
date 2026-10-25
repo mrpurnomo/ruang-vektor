@@ -10,7 +10,9 @@
  */
 
 import { CaseSimulation, texTuple, same, givenBlock, mixed, AXES } from './simKit.js';
-import { HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops, firstWrong } from './guidedKit.js';
+import {
+  HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops, firstWrong, ghostHops, ghostCross, pulsePoint,
+} from './guidedKit.js';
 
 /* ============================================================
    1. vector_anatomy — Simulasi TERPANDU: dari bidang kosong ke vektor
@@ -158,6 +160,10 @@ export class GuidedVectorIntroSim extends CaseSimulation {
       intro: 'Ketuk langsung pada **bidang koordinat** di sebelah kiri.',
       check: (p) => (p[0] === 0 && p[1] === 0)
         || { toast: 'pusatSalah', values: { titik: this.tapped(p) } },
+      hint: () => ({
+        text: 'Titik pusat ada di **perpotongan** garis sumbu $X$ (mendatar) dan sumbu $Y$ (tegak). Titik bayangan menunjukkan tempatnya.',
+        show: () => pulsePoint(this, [0, 0]),
+      }),
       summary: () => '$O(0,\\, 0)$ ditandai.',
       onSolved: () => {
         this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
@@ -186,9 +192,13 @@ export class GuidedVectorIntroSim extends CaseSimulation {
         }
         return { toast: 'titikMeleset', values: { titik: this.tapped(p) } };
       },
+      hint: () => ({
+        text: `Dari $O$, hitung $${Math.abs(tx)}$ kotak ${DIRECTION.x(tx)}, lalu $${Math.abs(ty)}$ kotak ${DIRECTION.y(ty)}. Garis putus-putus menunjukkan tempat keduanya bertemu.`,
+        show: () => ghostCross(this, target),
+      }),
       summary: () => `$${label}${texTuple(target)}$ ditandai.`,
       onSolved: () => {
-        this.marks[label] = this.drawPoint(target, { label, essential: true });
+        this.marks[label] = this.drawPoint(target, { label: `${label}${texTuple(target)}`, essential: true });
         // Garis proyeksi putus-putus: menautkan titik ke kedua sumbunya,
         // supaya "7 ke kanan, 4 ke atas" terbaca dari gambar.
         if (tx !== 0) this.plane.drawSegment([tx, 0], target, { dashed: true });
@@ -221,6 +231,11 @@ export class GuidedVectorIntroSim extends CaseSimulation {
         }
         return { toast: 'langkahSalahBesar', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong };
       },
+      hint: () => ({
+        text: 'Ikuti lompatan bayangan dari $O$: hitung berapa lompatan mendatar, lalu berapa lompatan tegak. Ke kiri atau ke bawah ditulis dengan tanda **minus**.',
+        show: () => ghostHops(this, [0, 0], target),
+        fields: 'wrong',
+      }),
       summary: () => `Langkah: $${tx}$ ${DIRECTION.x(tx)}, $${ty}$ ${DIRECTION.y(ty)}.`,
       // Jejak langkah digambar SESUDAH siswa menghitungnya sendiri.
       onSolved: () => this.animateSteps(target, { hopMs: HOP_MS }),
@@ -239,6 +254,10 @@ export class GuidedVectorIntroSim extends CaseSimulation {
       onEnter: () => this.disarm(),
       onLeave: () => this.disarm(),
       check: (p) => this.checkDraw(p, c),
+      hint: () => ({
+        text: `Nama $\\overrightarrow{${name}}$ dibaca dari huruf pertama ke huruf kedua: ketuk dulu **pangkalnya** $O$ (berdenyut), lalu ketuk **ujungnya** $${label}$.`,
+        show: () => pulsePoint(this, [0, 0]),
+      }),
       summary: () => (c.guided
         ? `$\\overrightarrow{${name}} = \\vec{a} = ${texTuple(target)}$`
         : `$\\overrightarrow{${name}} = ${texTuple(target)}$`),

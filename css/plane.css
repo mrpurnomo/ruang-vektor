@@ -297,6 +297,13 @@
     vector-effect: non-scaling-stroke;
   }
 
+  /* Petunjuk: lompatan & garis BAYANGAN amber putus-putus — beda jelas
+     dari jejak jawaban siswa yang kobalt. */
+  .plane__hop--ghost { stroke: var(--plane-amber); stroke-dasharray: 4 3; opacity: .9; }
+  .plane__segment--hint { stroke: var(--plane-amber); stroke-width: 1.8; }
+  .plane__point-mark--hint .plane__point { fill: color-mix(in srgb, var(--yellow) 55%, transparent); stroke: var(--plane-amber); }
+  .plane__tag .plane__tag--ghost { border-style: dashed; border-color: var(--plane-amber-line); color: var(--accent-amber); }
+
   /* Lencana langkah "+1 … +7": pelat kobalt kecil di atas kertas. */
   .plane__tag .plane__label-inner {
     min-width: 0;
