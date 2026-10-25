@@ -141,6 +141,7 @@ function probeOf(template) {
 
 /** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
 const CASE_SUCCESS = {
+  unit_guided: (c) => ({ shrink: 'success', same: 'successSearah', surd: 'successAkar', zero: 'vektorNol' }[c.kind]),
   magnitude_guided: (c) => ({ pythagoras: 'success', simplify: 'successAkar', negative: 'successNegatif' }[c.kind]),
   position_guided: (c) => ({ discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind]),
   notation_guided: (c) => ({ build: 'success', shift: 'successBebas', tidy: 'successBaku' }[c.kind]),
@@ -425,16 +426,39 @@ const PLANS = {
     return [squaresStep, sumStep, simplest];
   },
 
-  unit_vector: (c) => {
-    const n = V.normExact(V.fromArray(c.v));
-    const lenStep = { wrong: { fields: { len: String(V.normSquared(V.fromArray(c.v)) + 1) } }, right: { fields: { len: S.toText(n) } }, leak: [S.toText(n)] };
-    if (c.isZero) {
-      return [lenStep, { wrong: { choice: 'nol' }, right: { choice: 'none' }, expectToast: 'memaksaVektorNol' }];
+  unit_guided: (c) => {
+    const vec = V.fromArray(c.v);
+    const n = V.normExact(vec);
+    const sumSq = V.normSquared(vec);
+    const lenText = S.toText(n);
+    if (c.kind === 'zero') {
+      return [
+        { wrong: { fields: { len: '1' } }, right: { fields: { len: '0' } }, expectToast: 'panjangSalah' },
+        { wrong: { choice: 'nol' }, right: { choice: 'none' }, expectToast: 'memaksaVektorNol' },
+      ];
     }
     const unit = c.v.map((x) => S.toText(S.divS(x, n)));
-    const wrong = unit.slice();
-    wrong[0] = String(c.v[0]);
-    return [lenStep, { wrong: { fields: comps(wrong) }, right: { fields: Object.fromEntries(unit.map((u, i) => [`c${AX[i]}`, u])) }, expectToast: 'hanyaSatuKomponen', leak: [unit[0]] }];
+    const lenStep = c.kind === 'surd'
+      ? { wrong: { fields: { len: String(sumSq) } }, right: { fields: { len: lenText } }, expectToast: 'belumDiakar', leak: [lenText] }
+      : { wrong: { fields: { len: String(Math.abs(c.v[0]) + Math.abs(c.v[1])) } }, right: { fields: { len: lenText } }, expectToast: 'lupaKuadrat', leak: [lenText] };
+    const half = unit.slice();
+    half[0] = String(c.v[0]);
+    const unitStep = c.kind === 'surd'
+      ? { wrong: { fields: { cx: unit[0], cy: unit[1].replace('-', '') } }, right: { fields: { cx: unit[0], cy: unit[1] } }, expectToast: 'tandaHilang' }
+      : { wrong: { fields: { cx: half[0], cy: half[1] } }, right: { fields: { cx: unit[0], cy: unit[1] } }, expectToast: 'hanyaSatuKomponen', leak: [unit[0]] };
+    if (c.kind === 'shrink') {
+      const plainSum = S.toText(S.addS(S.parseSurd(unit[0]), S.parseSurd(unit[1])));
+      return [
+        lenStep,
+        { wrong: { choice: 'kurang' }, right: { choice: 'bagi' }, expectToast: 'arahBerubah' },
+        unitStep,
+        { wrong: { fields: { chk: plainSum } }, right: { fields: { chk: '1' } }, expectToast: 'lupaKuadrat' },
+      ];
+    }
+    if (c.kind === 'same') {
+      return [lenStep, unitStep, { wrong: { choice: 'panjang' }, right: { choice: 'searah' }, expectToast: 'panjangBeda' }];
+    }
+    return [lenStep, unitStep];
   },
 };
 

@@ -81,7 +81,7 @@ KIT_TOASTS = {
 # Sub-topik yang WAJIB memakai paket terpandu lengkap (revisi guru: pola
 # sub-topik 1): kartu pemantik, kesimpulan simulasi, rangkuman terstruktur.
 GUIDED_SUBTOPICS = {
-    "01_konsep_dasar": ["pengertian_notasi", "panjang_vektor", "vektor_posisi", "notasi_penyajian"],
+    "01_konsep_dasar": ["pengertian_notasi", "vektor_satuan", "panjang_vektor", "vektor_posisi", "notasi_penyajian"],
 }
 CONCLUSION_TONES = {"vector", "scalar", "amber", "cyan"}
 DOC_BLOCKS = {"p", "tex", "list", "steps", "table", "figure", "conclusion", "def", "tip", "warn"}

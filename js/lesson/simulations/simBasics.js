@@ -3,7 +3,6 @@
  *
  *   vector_anatomy     Bedah satu tanda panah
  *   component_builder  Susun vektor dari instruksi kalimat
- *   unit_vector        Buang panjang, sisakan arah
  *
  * Pola setiap engine: gambar DATA SOAL → langkah dengan pemeriksa yang
  * mengenali JENIS kesalahan → gambar HASIL hanya di `onSolved`.
@@ -333,97 +332,7 @@ export class ComponentBuilderSim extends CaseSimulation {
   }
 }
 
-/* ============================================================
-   6. unit_vector — Buang Panjang, Sisakan Arah
-   ============================================================ */
-export class UnitVectorSim extends CaseSimulation {
-  usesPlane(c) {
-    return is2D(c.v);
-  }
-
-  caseLabel(c) {
-    return c.isZero ? 'Vektor nol' : `$${texTuple(c.v)}$`;
-  }
-
-  caseSuccessKey(c) {
-    return c.isZero ? 'vektorNol' : 'success';
-  }
-
-  setupCase(c) {
-    this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
-    if (this.plane) this.drawVector({ to: c.v, name: 'v' }, { essential: true });
-  }
-
-  buildSteps(c) {
-    const vector = V.fromArray(c.v);
-    const length = V.normExact(vector);
-    const dim = c.v.length;
-
-    const lengthStep = {
-      kind: 'fields',
-      label: 'Panjang $|\\vec{v}|$',
-      prompt: 'Hitung panjang $\\vec{v}$ lebih dulu — ia akan menjadi pembagi.',
-      fields: [{ key: 'len', label: '$|\\vec{v}| =$', mode: 'surd' }],
-      check: (values) => {
-        const verdict = Val.checkExactAnswer(values.len.raw, length);
-        return verdict.correct || { message: verdict.reason };
-      },
-      summary: () => `$|\\vec{v}| = ${S.toLatexS(length)}$`,
-    };
-
-    if (c.isZero) {
-      return [
-        lengthStep,
-        {
-          kind: 'choice',
-          label: 'Vektor satuan',
-          prompt: 'Jadi, apa vektor satuan dari $\\vec{v}$?',
-          options: [
-            { key: 'nol', label: '$\\hat{v} = (0, 0)$' },
-            { key: 'none', label: 'Tidak ada — $\\frac{\\vec{0}}{0}$ tidak terdefinisi' },
-            { key: 'satu', label: '$\\hat{v} = (1, 1)$' },
-          ],
-          check: (key) => {
-            if (key === 'none') return true;
-            if (key === 'nol') return { toast: 'memaksaVektorNol' };
-            return { message: 'Belum tepat — $(1, 1)$ tidak punya hubungan apa pun dengan $\\vec{0}$, dan panjangnya pun $\\sqrt{2}$, bukan $1$. Periksa dulu apakah pembaginya boleh dipakai.' };
-          },
-        },
-      ];
-    }
-
-    const unit = c.v.map((n) => S.divS(n, length));
-    return [
-      lengthStep,
-      {
-        kind: 'fields',
-        label: 'Bagi setiap komponen',
-        prompt: 'Bagi **setiap** komponen dengan $|\\vec{v}|$. Pecahan dan akar boleh dipakai.',
-        fields: componentFields(dim, { mode: 'surd' }),
-        check: (values) => {
-          const s = componentValues(values, dim);
-          if (firstWrong(s, unit) < 0) return true;
-          const wrong = AXES.slice(0, dim).filter((a, i) => !same(s[i], unit[i])).map((a) => `c${a}`);
-          const correctCount = dim - wrong.length;
-          const undivided = s.findIndex((x, i) => !same(x, unit[i]) && same(x, c.v[i]));
-          if (undivided >= 0 && correctCount > 0) return { toast: 'hanyaSatuKomponen', wrong };
-          const byComponent = s.some((x, i) => c.v.some((d) => d !== 0 && !same(x, unit[i]) && same(x, S.divS(c.v[i], d))));
-          if (byComponent) return { toast: 'dibagiKomponen', wrong };
-          return { toast: 'panjangBukanSatu', values: { x: c.v[0], y: c.v[1], n: S.toLatexS(length) }, wrong };
-        },
-        summary: () => `$\\hat{v} = \\left(${unit.map((u) => S.toLatexS(u)).join(',\\ ')}\\right)$`,
-        onSolved: () => {
-          if (!this.plane) return null;
-          return this.drawVector({ to: [0, 0], name: 'e', label: '\\hat{v}', tone: 'amber' }, { essential: true })
-            .setVector({ to: unit.map((u) => S.toNumber(u)) }, { animate: true, duration: 420 });
-        },
-      },
-    ];
-  }
-}
-
 export const ENGINES = {
   vector_anatomy: GuidedVectorIntroSim,
   component_builder: ComponentBuilderSim,
-  unit_vector: UnitVectorSim,
 };

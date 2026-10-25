@@ -1478,6 +1478,12 @@
     {
       "id": "vektor_satuan",
       "title": "Vektor Satuan",
+      "hook": {
+        "art": "kompas",
+        "title": "Penunjuk arah di layar game",
+        "story": "Di peta mini sebuah game, ada panah kecil yang menunjuk ke target. Target dekat atau jauh, panah itu **panjangnya selalu sama** — hanya arahnya yang berubah.",
+        "question": "Bagaimana membuat vektor yang **arahnya tetap**, tetapi panjangnya dipaksa menjadi **tepat 1**?"
+      },
       "materi": [
         {
           "t": "p",
@@ -1517,54 +1523,92 @@
         }
       ],
       "simulation": {
-        "engine": "unit_vector",
-        "title": "Simulasi: Buang Panjang, Sisakan Arah",
-        "brief": "Hitung panjangnya lebih dulu, baru bagikan ke setiap komponen. Kasus terakhir sengaja tidak punya jawaban — putuskan sendiri kenapa.",
+        "engine": "unit_guided",
+        "title": "Simulasi Terpandu: Memotong Panah Menjadi Satu Satuan",
+        "brief": "Lingkaran biru muda berjari-jari 1. Vektor satuan yang benar selalu mendarat tepat di garis lingkaran itu — itulah buktinya.",
         "config": {
           "cases": [
             {
+              "kind": "shrink",
+              "guided": true,
               "v": [
                 3,
                 4
               ]
             },
             {
+              "kind": "same",
               "v": [
-                -6,
+                6,
                 8
+              ],
+              "ref": [
+                3,
+                4
               ]
             },
             {
+              "kind": "surd",
               "v": [
-                2,
-                -1,
-                2
+                1,
+                -2
               ]
             },
             {
+              "kind": "zero",
               "v": [
                 0,
                 0
-              ],
-              "isZero": true
+              ]
             }
-          ],
-          "xRange": [
-            -9,
-            9
-          ],
-          "yRange": [
-            -9,
-            9
           ]
         },
         "toasts": {
-          "hanyaSatuKomponen": "Belum tepat — ada komponen yang masih utuh, belum ikut dibagi. Pembagian harus mengenai **setiap** komponen, kalau tidak arahnya justru berubah.",
-          "dibagiKomponen": "Belum tepat — pembaginya bukan salah satu komponen, melainkan **panjang** vektornya. Hitung dulu $|\\vec{v}|$, baru pakai angka itu untuk membagi.",
-          "panjangBukanSatu": "Belum tepat — hasil bagimu belum berpanjang $1$. Uji sendiri: $\\left(\\tfrac{{{x}}}{{{n}}}\\right)^2 + \\left(\\tfrac{{{y}}}{{{n}}}\\right)^2$ seharusnya bernilai tepat $1$.",
-          "vektorNol": "Tepat — dan ini satu-satunya pengecualian di seluruh bab: vektor nol tidak punya vektor satuan, karena pembaginya nol dan arahnya memang tidak ada.",
-          "memaksaVektorNol": "Belum tepat — $(0,\\, 0)$ panjangnya $0$, padahal vektor satuan wajib berpanjang $1$. Jadi ia justru tidak memenuhi definisinya sendiri.",
-          "success": "Tepat! Bagi dengan panjangnya sendiri, dan yang tersisa hanyalah arah — persis sejarum kompas."
+          "lupaKuadrat": "Belum tepat — kamu menjumlahkan tanpa mengkuadratkan. Ingat sub-topik sebelumnya: kuadratkan, jumlahkan, baru akarkan.",
+          "belumDiakar": "Hampir! Itu jumlah kuadratnya. Panjang adalah **akar** dari jumlah itu.",
+          "panjangSalah": "Belum tepat — hitung lagi panjangnya: akar dari jumlah kuadrat komponen.",
+          "arahBerubah": "Belum tepat — mengurangi komponen mengubah **arah** panah, bukan sekadar panjangnya. Kita butuh arah yang sama persis.",
+          "dibagiKomponen": "Belum tepat — membagi tiap komponen dengan dirinya sendiri menghasilkan $(1,\\, 1)$: arahnya bergeser dan panjangnya pun bukan $1$. Semua komponen harus dibagi dengan bilangan yang **sama**.",
+          "komponenTetap": "Belum tepat — panjang ditentukan oleh komponennya. Kalau komponennya tidak berubah, panahnya tetap sepanjang semula.",
+          "hanyaSatuKomponen": "Belum tepat — sebagian komponen belum dibagi. Bagi **setiap** komponen dengan panjang vektornya, bukan hanya satu.",
+          "tandaHilang": "Besarnya sudah benar, tetapi ada tanda minus yang hilang. Membagi dengan panjang (positif) tidak mengubah tanda komponen.",
+          "satuanSalah": "Belum tepat — bagi setiap komponen dengan panjang vektornya, ${{panjang}}$, lalu sederhanakan pecahannya.",
+          "verifikasiSalah": "Belum tepat — kuadratkan pembilang **dan** penyebut setiap pecahan, lalu jumlahkan. Kalau vektor satuanmu benar, hasilnya tepat satu.",
+          "panjangBeda": "Belum tepat — panjangnya justru berbeda: satu vektor dua kali lebih panjang dari yang lain. Yang sama adalah **arahnya**.",
+          "bukanKebetulan": "Bukan kebetulan — perhatikan: komponen yang satu tepat dua kali komponen yang lain. Apa artinya bagi arah panahnya?",
+          "memaksaVektorNol": "Belum tepat — panjang $(0,\\, 0)$ adalah $0$, bukan $1$. Tidak ada cara membagi vektor nol supaya panjangnya menjadi $1$.",
+          "satuSembarang": "Belum tepat — $(1,\\, 1)$ tidak ada hubungannya dengan vektor nol, dan panjangnya pun bukan $1$. Periksa dulu: bolehkah membagi dengan pembagi itu?",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi semuanya lebih dulu.",
+          "success": "Tepat! Vektor dibagi dengan panjangnya sendiri: arahnya tetap, panjangnya menjadi tepat 1 — ujungnya mendarat di lingkaran satuan.",
+          "successSearah": "Tepat! Vektor yang searah punya vektor satuan yang sama, berapa pun panjang aslinya.",
+          "successAkar": "Tepat! Panjang berakar pun bisa jadi pembagi — vektor satuannya tetap mendarat di lingkaran berjari-jari 1.",
+          "vektorNol": "Tepat! Vektor nol tidak punya arah, jadi tidak punya vektor satuan: membagi dengan nol tidak terdefinisi."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: vektor satuan",
+          "definition": "**Vektor satuan** searah dengan $\\vec{v}$, tetapi panjangnya tepat **1**: bagi $\\vec{v}$ dengan panjangnya sendiri.",
+          "formula": "\\hat{e} = \\frac{\\vec{v}}{|\\vec{v}|}",
+          "columns": [
+            {
+              "title": "Langkahnya",
+              "tone": "vector",
+              "items": [
+                "Hitung $|\\vec{v}|$ lebih dulu",
+                "Bagi **setiap** komponen dengan $|\\vec{v}|$",
+                "Uji: jumlah kuadrat komponennya harus $1$"
+              ]
+            },
+            {
+              "title": "Perhatikan",
+              "tone": "amber",
+              "items": [
+                "$(6,\\, 8)$ dan $(3,\\, 4)$ searah → vektor satuannya sama",
+                "Akar di penyebut boleh dirasionalkan: $\\tfrac{1}{\\sqrt{5}} = \\tfrac{\\sqrt{5}}{5}$",
+                "$\\vec{0}$ tidak punya vektor satuan — ia tidak berarah"
+              ]
+            }
+          ],
+          "remember": "Ujung vektor satuan yang berpangkal di $O$ **selalu** jatuh di lingkaran berjari-jari $1$."
         }
       },
       "quiz": [
@@ -1572,68 +1616,191 @@
           "id": "b1_06_1",
           "input_type": "single_choice",
           "subtopic": "vektor_satuan",
-          "prompt": "Diketahui vektor $\\vec{a} = (6,\\, 8)$.",
-          "after": "**Vektor satuan dari $\\vec{a}$ adalah ....**",
+          "prompt": "Diketahui $\\vec{a} = (-5,\\, 12)$, dengan $|\\vec{a}| = 13$.",
+          "after": "**Vektor satuan yang searah dengan $\\vec{a}$ adalah…**",
           "options": [
             {
-              "tex": "\\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)"
+              "tex": "\\left(-\\tfrac{5}{17},\\ \\tfrac{12}{17}\\right)"
             },
             {
-              "tex": "\\left(\\tfrac{6}{5},\\, \\tfrac{8}{5}\\right)"
+              "tex": "\\left(\\tfrac{5}{13},\\ \\tfrac{12}{13}\\right)"
             },
             {
-              "tex": "\\left(\\tfrac{1}{6},\\, \\tfrac{1}{8}\\right)"
+              "tex": "\\left(-\\tfrac{5}{13},\\ \\tfrac{12}{13}\\right)"
             },
             {
-              "tex": "(6,\\, 8)"
+              "tex": "(-1,\\ 1)"
             },
             {
-              "tex": "\\left(\\tfrac{8}{10},\\, \\tfrac{6}{10}\\right)"
+              "tex": "\\left(-\\tfrac{5}{13},\\ 12\\right)"
             }
           ],
-          "answerIndex": 0,
-          "explanation": "$|\\vec{a}| = \\sqrt{36+64} = 10$, sehingga $\\hat{e} = \\left(\\tfrac{6}{10},\\, \\tfrac{8}{10}\\right) = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$. Periksa: $\\tfrac{9}{25} + \\tfrac{16}{25} = 1$. **Opsi A**.",
-          "toastWrong": "Belum tepat — hitung dulu $|\\vec{a}|$, dan pastikan yang kamu pakai sebagai pembagi adalah **panjangnya** ($10$), bukan salah satu komponennya. Kalau pembagimu $5$, kamu memakai setengah panjangnya."
+          "answerIndex": 2,
+          "explanation": "$\\hat{a} = \\dfrac{\\vec{a}}{|\\vec{a}|} = \\left(\\dfrac{-5}{13},\\, \\dfrac{12}{13}\\right)$. Setiap komponen dibagi $13$, dan tanda minus tetap. **Opsi C**.",
+          "toastWrong": "Belum tepat — bagi **setiap** komponen dengan panjang vektornya, dan biarkan tandanya: membagi dengan bilangan positif tidak mengubah arah.",
+          "hint": "Seperti di simulasi: semua komponen dibagi dengan bilangan yang **sama**, yaitu panjang vektornya."
         },
         {
           "id": "b1_06_2",
-          "input_type": "mathpad",
+          "input_type": "plane_tap",
           "subtopic": "vektor_satuan",
-          "prompt": "Vektor $\\hat{e}$ adalah vektor satuan dari sebuah vektor $\\vec{w}$ yang panjangnya $13$ satuan.",
-          "after": "**Tentukan panjang vektor $\\hat{e}$.**",
-          "answer": 1,
-          "tolerance": 1e-06,
-          "explanation": "Menurut definisinya, panjang vektor satuan **selalu** $1$ — berapa pun panjang vektor asalnya. Angka $13$ di soal tidak memengaruhi jawaban sama sekali.",
-          "toastWrong": "Belum tepat — perhatikan definisinya, bukan angkanya. Vektor satuan dibuat justru supaya panjangnya **selalu** sama, berapa pun panjang vektor asalnya. Angka $13$ di soal adalah pengecoh."
+          "prompt": "Diketahui $\\vec{v} = \\begin{pmatrix} 0 \\\\ -7 \\end{pmatrix}$, berpangkal di titik asal $O$.",
+          "after": "**Ketuk letak ujung vektor satuan $\\hat{v}$ pada bidang.**",
+          "plane": {
+            "xRange": [
+              -4,
+              4
+            ],
+            "yRange": [
+              -8,
+              2
+            ]
+          },
+          "points": {
+            "O": [
+              0,
+              0
+            ]
+          },
+          "arrows": [],
+          "answer": {
+            "taps": [
+              [
+                0,
+                -1
+              ]
+            ]
+          },
+          "feedback": [
+            {
+              "taps": [
+                [
+                  0,
+                  -7
+                ]
+              ],
+              "message": "Belum tepat — itu ujung $\\vec{v}$ sendiri. Vektor satuan searah dengannya tetapi panjangnya hanya **satu** satuan."
+            },
+            {
+              "taps": [
+                [
+                  0,
+                  1
+                ]
+              ],
+              "message": "Belum tepat — panjangnya sudah satu, tetapi arahnya terbalik. Vektor satuan **searah** dengan $\\vec{v}$, yaitu ke **bawah**."
+            }
+          ],
+          "explanation": "$|\\vec{v}| = 7$, jadi $\\hat{v} = \\dfrac{1}{7}(0,\\, -7) = (0,\\, -1)$: satu satuan ke bawah dari $O$, tepat di lingkaran satuan.",
+          "toastWrong": "Belum tepat — vektor satuan menunjuk ke arah yang **sama** dengan $\\vec{v}$, tetapi panjangnya tepat satu satuan dari $O$.",
+          "hint": "Bagi setiap komponen dengan panjangnya. Ujung vektor satuan selalu jatuh di lingkaran berjari-jari $1$.",
+          "reveal": {
+            "from": "O",
+            "name": "e",
+            "label": "\\hat{v}"
+          }
         },
         {
           "id": "b1_06_3",
           "input_type": "single_choice",
           "subtopic": "vektor_satuan",
-          "prompt": "Seorang siswa mencoba menghitung vektor satuan dari $\\vec{0} = (0,\\, 0)$.",
-          "after": "**Manakah alasan yang paling tepat mengapa hal itu tidak dapat dilakukan?**",
+          "prompt": "Diketahui $\\vec{a} = (4,\\, 3)$. Sebuah vektor $\\vec{b}$ **searah** dengan $\\vec{a}$ dan panjangnya $10$.",
+          "after": "**Vektor $\\vec{b}$ adalah…**",
           "options": [
             {
-              "label": "Karena komponen vektor nol terlalu kecil untuk dibagi."
+              "label": "$(40,\\, 30)$"
             },
             {
-              "label": "Karena $|\\vec{0}| = 0$, sehingga rumus $\\hat{e} = \\tfrac{\\vec{v}}{|\\vec{v}|}$ membagi dengan nol — dan vektor nol memang tidak menunjuk ke arah mana pun."
+              "label": "$(6,\\, 8)$"
             },
             {
-              "label": "Karena vektor satuan hanya berlaku untuk vektor di R³."
+              "label": "$(14,\\, 13)$"
             },
             {
-              "label": "Karena hasilnya adalah $(0,\\, 0)$, dan itu sudah merupakan vektor satuan."
+              "label": "$(8,\\, 6)$"
             },
             {
-              "label": "Karena vektor nol tidak boleh ditulis dalam bentuk kolom."
+              "label": "$\\left(\\tfrac{4}{5},\\, \\tfrac{3}{5}\\right)$"
             }
           ],
-          "answerIndex": 1,
-          "explanation": "Dua alasan yang saling menguatkan: secara aljabar, pembagian dengan nol tidak terdefinisi; secara makna, vektor nol tidak punya arah untuk diwakili. **Opsi B**.",
-          "toastWrong": "Belum tepat — kalau kamu memilih opsi D, periksa lagi: panjang $(0,0)$ adalah $0$, sedangkan vektor satuan **harus** berpanjang $1$. Jadi $(0,0)$ justru tidak memenuhi definisinya."
+          "answerIndex": 3,
+          "explanation": "Vektor satuan $\\vec{a}$: $|\\vec{a}| = 5$, $\\hat{a} = \\left(\\tfrac{4}{5},\\, \\tfrac{3}{5}\\right)$. Panjang $10$ searah: $\\vec{b} = 10\\,\\hat{a} = (8,\\, 6)$. Pilihan $(6,\\, 8)$ sama panjang tetapi arahnya lain. **Opsi D**.",
+          "toastWrong": "Belum tepat — cari dulu vektor satuannya (panjang $1$, searah), baru kalikan dengan panjang yang diminta. Perhatikan urutan komponennya.",
+          "hint": "Vektor satuan adalah \"penunjuk arah sepanjang $1$\". Kalikan penunjuk itu dengan panjang yang kamu mau."
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Membagi vektor dengan panjangnya sendiri: arah tetap, panjang tepat satu — dibuktikan oleh lingkaran satuan.",
+        "sections": [
+          {
+            "title": "1 · Vektor satuan",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Memotong panah menjadi satu satuan",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "satuan",
+                "caption": "$\\vec{v} = (3,\\, 4)$ dipotong menjadi $5$ bagian sama panjang; potongan pertama $\\hat{v} = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$ mendarat di lingkaran satuan."
+              },
+              {
+                "t": "steps",
+                "items": [
+                  "Panjang: $|\\vec{v}| = \\sqrt{9 + 16} = 5$.",
+                  "Bagi setiap komponen: $\\hat{v} = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$.",
+                  "Uji: $\\tfrac{9}{25} + \\tfrac{16}{25} = 1$ ✓"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Kasus-kasus penting",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Vektor",
+                  "Panjang",
+                  "Vektor satuan"
+                ],
+                "rows": [
+                  [
+                    "$(6,\\, 8)$",
+                    "$10$",
+                    "$\\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$ — sama, karena searah"
+                  ],
+                  [
+                    "$(1,\\, -2)$",
+                    "$\\sqrt{5}$",
+                    "$\\left(\\tfrac{\\sqrt{5}}{5},\\, -\\tfrac{2\\sqrt{5}}{5}\\right)$"
+                  ],
+                  [
+                    "$(0,\\, 0)$",
+                    "$0$",
+                    "tidak ada — $\\tfrac{\\vec{0}}{0}$ tak terdefinisi"
+                  ]
+                ]
+              },
+              {
+                "t": "tip",
+                "title": "Vektor sepanjang $k$",
+                "x": "Searah $\\vec{v}$ dengan panjang $k$: kalikan vektor satuannya, $k\\,\\hat{v}$."
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Bagi **setiap** komponen — membagi satu komponen saja mengubah arah.",
+          "Membagi dengan panjang (selalu positif) tidak pernah mengubah tanda komponen.",
+          "Selalu uji jawaban: jumlah kuadrat komponen vektor satuan = $1$.",
+          "Vektor nol tidak berarah, jadi tidak punya vektor satuan."
+        ]
+      }
     },
     {
       "id": "komponen_r2_r3",

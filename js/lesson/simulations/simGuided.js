@@ -981,8 +981,239 @@ export class GuidedMagnitudeSim extends CaseSimulation {
   }
 }
 
+/* ============================================================
+   5. unit_guided — Vektor satuan: "potong" panahnya menjadi 1 satuan
+
+   Kasus 1 (terpandu): |v| = 5 → pilih caranya (dibagi 5) → titik-titik
+   membagi panah menjadi 5 potong sama panjang → hitung v̂ → ujungnya
+   MENDARAT di lingkaran satuan → verifikasi (3/5)² + (4/5)² = 1.
+   Kasus 2: (6, 8) — searah, vektor satuannya SAMA. Kasus 3: hasil berakar.
+   Kasus 4: vektor nol — satu-satunya tanpa vektor satuan.
+   ============================================================ */
+export class GuidedUnitSim extends CaseSimulation {
+  usesPlane(c) {
+    return c.kind !== 'zero';
+  }
+
+  planeOptions(c) {
+    const [x, y] = c.v;
+    return {
+      xRange: [Math.min(0, x) - 2, Math.max(0, x) + 2],
+      yRange: [Math.min(0, y) - 2, Math.max(0, y) + 2],
+    };
+  }
+
+  caseLabel(c) {
+    return c.kind === 'zero' ? 'Vektor nol' : `$${texTuple(c.v)}$`;
+  }
+
+  caseSuccessKey(c) {
+    return { shrink: 'success', same: 'successSearah', surd: 'successAkar', zero: 'vektorNol' }[c.kind];
+  }
+
+  caseDonePrompt(c, allDone) {
+    if (c.kind === 'shrink') return '**Ujung vektor satuan jatuh tepat di lingkaran berjari-jari 1.** Itu bukti panjangnya tepat 1 — arahnya tetap arah $\\vec{v}$.';
+    if (c.kind === 'same') return 'Panah $(6,\\, 8)$ dua kali lebih panjang, tetapi **searah** — maka vektor satuannya **sama persis**.';
+    return super.caseDonePrompt(c, allDone);
+  }
+
+  nextCaseInvite(next) {
+    if (next.kind === 'same') return 'Hebat! Sekarang vektor yang **dua kali lebih panjang** — apakah vektor satuannya ikut berubah?';
+    if (next.kind === 'surd') return 'Tidak semua panjang bilangan bulat. Coba yang panjangnya **berakar**.';
+    return 'Terakhir: bagaimana dengan vektor yang **panjangnya nol**?';
+  }
+
+  celebration() {
+    return {
+      ...super.celebration(),
+      badge: 'Vektor Satuan Dikuasai',
+      recap: [
+        'Vektor satuan: **searah** $\\vec{v}$, panjangnya tepat **1**',
+        '$\\hat{e} = \\dfrac{\\vec{v}}{|\\vec{v}|}$ — bagi **setiap** komponen dengan panjangnya',
+        'Vektor searah punya vektor satuan yang sama; $\\vec{0}$ tidak punya',
+      ],
+    };
+  }
+
+  setupCase(c) {
+    this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
+    if (!this.plane) {
+      this.givenEl.appendChild(givenBlock('Vektor ini tidak bisa digambar sebagai panah: pangkal dan ujungnya berimpit.', 'sim-given--muted'));
+      return;
+    }
+    this.plane.drawCircle([0, 0], 1, { tone: 'cyan' });
+    this.drawPoint([0, 0], { label: 'O', essential: true });
+    this.drawVector({ from: [0, 0], to: c.v, name: 'v', tone: 'blue' }, { essential: true });
+  }
+
+  /** Panjang eksak + vektor satuan; vektor nol tidak punya vektor satuan (null). */
+  unitOf(v) {
+    const length = V.normExact(V.fromArray(v));
+    return { length, unit: S.isZeroS(length) ? null : v.map((n) => S.divS(n, length)) };
+  }
+
+  lengthStep(c, { prompt }) {
+    const { length } = this.unitOf(c.v);
+    const sumSq = c.v.reduce((a, n) => a + n * n, 0);
+    return {
+      kind: 'fields',
+      label: 'Panjang $|\\vec{v}|$',
+      prompt,
+      fields: [{ key: 'len', label: '$|\\vec{v}| =$', mode: c.kind === 'zero' ? 'integer' : 'surd' }],
+      check: (values) => {
+        if (same(values.len.value, length)) return true;
+        if (sumSq !== 0 && same(values.len.value, c.v.reduce((a, n) => a + Math.abs(n), 0))) return { toast: 'lupaKuadrat' };
+        if (sumSq !== 0 && same(values.len.value, sumSq) && sumSq !== 1) return { toast: 'belumDiakar' };
+        return { toast: 'panjangSalah' };
+      },
+      summary: () => `$|\\vec{v}| = ${S.toLatexS(length)}$`,
+      onSolved: () => {
+        if (!this.plane) return;
+        springPop(this.plane.drawTag([c.v[0] / 2, c.v[1] / 2], `|\\vec{v}| = ${S.toLatexS(length)}`, { offset: [26, 10], tone: 'blue' }).inner);
+      },
+    };
+  }
+
+  unitStep(c, { prompt, mode = 'fraction' }) {
+    const { length, unit } = this.unitOf(c.v);
+    const dim = c.v.length;
+    return {
+      kind: 'fields',
+      label: 'Bagi setiap komponen',
+      prompt,
+      fields: componentFields(dim, { mode }),
+      check: (values) => {
+        const s = componentValues(values, dim);
+        if (firstWrong(s, unit) < 0) return true;
+        const wrong = wrongKeys(s, unit);
+        const right = dim - wrong.length;
+        if (right > 0 && s.some((x, i) => !same(x, unit[i]) && same(x, c.v[i]))) return { toast: 'hanyaSatuKomponen', wrong };
+        if (s.every((x, i) => c.v[i] === 0 || same(x, Math.sign(c.v[i])))) return { toast: 'dibagiKomponen', wrong };
+        if (firstWrong(s, unit.map((u) => S.toNumber(u) < 0 ? S.negS(u) : u)) < 0) return { toast: 'tandaHilang', wrong };
+        return { toast: 'satuanSalah', values: { panjang: S.toLatexS(length) }, wrong };
+      },
+      summary: () => `$\\hat{v} = \\left(${unit.map((u) => S.toLatexS(u)).join(',\\ ')}\\right)$`,
+      onSolved: async () => {
+        const tip = unit.map((u) => S.toNumber(u));
+        const arrow = this.drawVector({ from: [0, 0], to: [0, 0], name: 'e', tone: 'amber', label: '\\hat{v}' }, { essential: true });
+        await arrow.setVector({ to: tip }, { animate: !stillMotion(), duration: ARROW_MS });
+        if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);
+        const ring = this.plane.drawPoint(tip, { ghost: true });
+        ring.el.classList.add('is-armed');
+      },
+    };
+  }
+
+  buildSteps(c) {
+    const [x, y] = c.v;
+    if (c.kind === 'shrink') {
+      const { length, unit } = this.unitOf(c.v);
+      const n = S.toNumber(length);
+      return [
+        this.lengthStep(c, { prompt: 'Lingkaran biru muda berjari-jari **1**. Hitung dulu panjang $\\vec{v}$ — ingat sub-topik sebelumnya.' }),
+        {
+          kind: 'choice',
+          label: 'Pilih caranya',
+          prompt: `Kita ingin vektor yang **searah** $\\vec{v}$ tetapi panjangnya **tepat 1**. Apa yang harus dilakukan pada $\\vec{v}$?`,
+          options: [
+            { key: 'kurang', label: `Mengurangi setiap komponen dengan $${n - 1}$` },
+            { key: 'komponen', label: `Membagi komponen pertama dengan $${x}$ dan komponen kedua dengan $${y}$` },
+            { key: 'bagi', label: `Membagi **setiap** komponen dengan $${n}$` },
+            { key: 'tetap', label: 'Menulis panjangnya $1$, komponennya dibiarkan' },
+          ],
+          check: (key) => {
+            if (key === 'bagi') return true;
+            if (key === 'kurang') return { toast: 'arahBerubah' };
+            if (key === 'komponen') return { toast: 'dibagiKomponen' };
+            return { toast: 'komponenTetap' };
+          },
+          summary: () => `Bagi $\\vec{v}$ dengan panjangnya sendiri: $\\dfrac{\\vec{v}}{${n}}$.`,
+          onSolved: async () => {
+            // Panah dipotong menjadi n bagian sama panjang — potongan pertama
+            // adalah vektor satuannya (komponennya tetap dihitung siswa).
+            for (let k = 1; k < n; k += 1) {
+              const dot = this.plane.drawPoint([(x * k) / n, (y * k) / n], { ghost: true });
+              springPop(dot.el);
+              await this.wait(stillMotion() ? 0 : 90);
+            }
+          },
+        },
+        this.unitStep(c, { prompt: `Bagi **setiap** komponen $\\vec{v}$ dengan $${n}$. Pecahan boleh dipakai.` }),
+        {
+          kind: 'fields',
+          label: 'Uji panjangnya',
+          prompt: 'Buktikan tanpa bertanya siapa pun: kuadratkan dan jumlahkan komponen $\\hat{v}$. Hasilnya harus…',
+          fields: [{ key: 'chk', label: `$\\left(${S.toLatexS(unit[0])}\\right)^2 + \\left(${S.toLatexS(unit[1])}\\right)^2 =$`, mode: 'fraction' }],
+          check: (values) => {
+            if (same(values.chk.value, 1)) return true;
+            if (same(values.chk.value, S.addS(unit[0], unit[1]))) return { toast: 'lupaKuadrat' };
+            return { toast: 'verifikasiSalah' };
+          },
+          summary: () => '$|\\hat{v}| = \\sqrt{1} = 1$ ✓',
+          onSolved: () => {
+            springPop(this.plane.drawTag(unit.map((u) => S.toNumber(u)), '|\\hat{v}| = 1', { offset: [34, -14], tone: 'amber' }).inner);
+          },
+        },
+      ];
+    }
+
+    if (c.kind === 'same') {
+      const ref = this.unitOf(c.ref).unit.map((u) => S.toLatexS(u)).join(',\\, ');
+      const k = c.v[0] / c.ref[0];
+      return [
+        this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$.' }),
+        this.unitStep(c, { prompt: 'Bagi **setiap** komponen dengan panjangnya. Sederhanakan pecahannya kalau bisa.' }),
+        {
+          kind: 'choice',
+          label: 'Mengapa sama?',
+          prompt: `Vektor satuannya mendarat di titik yang **sama** dengan kasus sebelumnya, $\\left(${ref}\\right)$. Mengapa?`,
+          options: [
+            { key: 'panjang', label: 'Karena kedua vektor sama panjang' },
+            { key: 'searah', label: `Karena $${texTuple(c.v)} = ${k} \\times ${texTuple(c.ref)}$: kedua vektor **searah**` },
+            { key: 'kebetulan', label: 'Kebetulan angkanya cocok' },
+          ],
+          check: (key) => {
+            if (key === 'searah') return true;
+            if (key === 'panjang') return { toast: 'panjangBeda' };
+            return { toast: 'bukanKebetulan' };
+          },
+          summary: () => 'Searah ⇒ vektor satuannya **sama**.',
+        },
+      ];
+    }
+
+    if (c.kind === 'surd') {
+      return [
+        this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$. Hasilnya berakar — tulis dalam mode **Akar**.' }),
+        this.unitStep(c, { prompt: 'Bagi **setiap** komponen dengan panjangnya. Bentuk akar di penyebut boleh, bentuk yang dirasionalkan juga boleh.', mode: 'surd' }),
+      ];
+    }
+
+    return [
+      this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$ lebih dulu — ia akan menjadi pembagi.' }),
+      {
+        kind: 'choice',
+        label: 'Vektor satuan?',
+        prompt: 'Jadi, apa vektor satuan dari $\\vec{v}$?',
+        options: [
+          { key: 'nol', label: '$\\hat{v} = (0,\\, 0)$' },
+          { key: 'satu', label: '$\\hat{v} = (1,\\, 1)$' },
+          { key: 'none', label: 'Tidak ada — $\\dfrac{\\vec{0}}{0}$ tidak terdefinisi' },
+        ],
+        check: (key) => {
+          if (key === 'none') return true;
+          if (key === 'nol') return { toast: 'memaksaVektorNol' };
+          return { toast: 'satuSembarang' };
+        },
+        summary: () => '$\\vec{0}$ tidak punya arah, jadi tidak punya vektor satuan.',
+      },
+    ];
+  }
+}
+
 export const ENGINES = {
   notation_guided: GuidedNotationSim,
   position_guided: GuidedPositionSim,
   magnitude_guided: GuidedMagnitudeSim,
+  unit_guided: GuidedUnitSim,
 };
