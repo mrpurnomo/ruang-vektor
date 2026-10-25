@@ -3,7 +3,6 @@
  *
  *   vector_anatomy     Bedah satu tanda panah
  *   component_builder  Susun vektor dari instruksi kalimat
- *   magnitude_builder  Bangun akar panjang vektor sendiri
  *   unit_vector        Buang panjang, sisakan arah
  *
  * Pola setiap engine: gambar DATA SOAL → langkah dengan pemeriksa yang
@@ -335,97 +334,6 @@ export class ComponentBuilderSim extends CaseSimulation {
 }
 
 /* ============================================================
-   5. magnitude_builder — Bangun Akarnya Sendiri
-   ============================================================ */
-export class MagnitudeBuilderSim extends CaseSimulation {
-  usesPlane(c) {
-    return is2D(c.v);
-  }
-
-  caseLabel(c) {
-    return `$${texTuple(c.v)}$`;
-  }
-
-  setupCase(c) {
-    this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
-    if (this.plane) {
-      const arrow = this.drawVector({ to: c.v, name: 'v' }, { essential: true });
-      if (this.config.showGuides) this.plane.drawGuides(arrow);
-    }
-  }
-
-  buildSteps(c) {
-    const dim = c.v.length;
-    const squares = c.v.map((n) => n * n);
-    const sum = squares.reduce((a, b) => a + b, 0);
-    const length = S.fromSquare(sum);
-
-    const decimalOr = (raw, fallback) => (/\d[.,]\d/.test(raw) ? { toast: 'terlanjurDesimal' } : fallback);
-
-    return [
-      {
-        kind: 'fields',
-        label: 'Kuadratkan',
-        prompt: 'Kuadratkan **setiap** komponen.',
-        fields: c.v.map((n, i) => ({ key: `q${AXES[i]}`, label: `$(${n})^2 =$`, mode: 'integer' })),
-        check: (values) => {
-          const s = c.v.map((n, i) => values[`q${AXES[i]}`].value);
-          const i = firstWrong(s, squares);
-          if (i < 0) return true;
-          const wrong = c.v.map((n, j) => (same(s[j], squares[j]) ? null : `q${AXES[j]}`)).filter(Boolean);
-          const student = S.toNumber(s[i]);
-          if (student === c.v[i] && c.v[i] !== squares[i]) return { toast: 'lupaKuadrat', wrong };
-          if (student === -squares[i]) return { toast: 'tandaIkutMasuk', values: { nilai: c.v[i] }, wrong };
-          return { message: `Belum tepat — kuadrat berarti bilangan dikalikan dengan **dirinya sendiri**: $(${c.v[i]}) \\times (${c.v[i]})$.`, wrong };
-        },
-        summary: () => c.v.map((n, i) => `$(${n})^2 = ${squares[i]}$`).join(' · '),
-      },
-      {
-        kind: 'fields',
-        label: 'Jumlahkan',
-        prompt: 'Jumlahkan seluruh hasil kuadratnya.',
-        fields: [{ key: 'sum', label: `$${squares.join(' + ')} =$`, mode: 'integer' }],
-        check: (values) => {
-          if (same(values.sum.value, sum)) return true;
-          const plain = c.v.reduce((a, b) => a + b, 0);
-          if (same(values.sum.value, plain)) return { toast: 'lupaKuadrat' };
-          return { toast: 'jumlahSalah' };
-        },
-        summary: () => `$${squares.join(' + ')} = ${sum}$`,
-      },
-      {
-        kind: 'fields',
-        label: 'Akarkan',
-        prompt: 'Panjang vektor adalah **akar** dari jumlah itu. Tulis dalam bentuk akar (mode Akar di papan angka).',
-        fields: [{ key: 'root', label: '$|\\vec{v}| =$', mode: 'surd' }],
-        check: (values) => {
-          if (same(values.root.value, length)) return true;
-          return decimalOr(values.root.raw, { message: `Belum tepat — panjangnya adalah akar dari jumlah kuadrat yang baru saja kamu hitung, bukan jumlahnya sendiri.` });
-        },
-        summary: () => `$|\\vec{v}| = \\sqrt{${sum}}$`,
-      },
-      {
-        kind: 'fields',
-        label: 'Sederhanakan',
-        prompt: 'Tulis panjangnya dalam bentuk **paling sederhana**.',
-        fields: [{ key: 'simple', label: '$|\\vec{v}| =$', mode: 'surd' }],
-        check: (values) => {
-          const verdict = Val.checkExactAnswer(values.simple.raw, length, { requireSimplest: true });
-          if (verdict.correct) return true;
-          if (verdict.code === 'not-simplest') return { toast: 'belumDisederhanakan', values: { radikan: sum } };
-          if (verdict.code === 'decimal') return { toast: 'terlanjurDesimal' };
-          return { message: verdict.reason };
-        },
-        summary: () => `$|\\vec{v}| = \\sqrt{${sum}} = ${S.toLatexS(length)}$`,
-        onSolved: () => {
-          if (this.plane) this.plane.highlight('v');
-        },
-      },
-    ];
-  }
-}
-
-/* ============================================================
    6. unit_vector — Buang Panjang, Sisakan Arah
    ============================================================ */
 export class UnitVectorSim extends CaseSimulation {
@@ -517,6 +425,5 @@ export class UnitVectorSim extends CaseSimulation {
 export const ENGINES = {
   vector_anatomy: GuidedVectorIntroSim,
   component_builder: ComponentBuilderSim,
-  magnitude_builder: MagnitudeBuilderSim,
   unit_vector: UnitVectorSim,
 };

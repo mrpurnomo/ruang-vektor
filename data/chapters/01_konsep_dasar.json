@@ -1202,6 +1202,12 @@
     {
       "id": "panjang_vektor",
       "title": "Panjang Vektor (Modulus)",
+      "hook": {
+        "art": "jarak",
+        "title": "Terbang lurus atau jalan memutar?",
+        "story": "Kurir bermotor berangkat dari gudang: **3 blok ke timur**, lalu **4 blok ke utara** — total 7 blok. Sebuah drone berangkat dari gudang yang sama menuju alamat yang sama, tetapi terbang **lurus**.",
+        "question": "Berapa blok jarak terbang drone itu? Tetap 7 — atau kurang? Bagaimana menghitungnya **tepat**, bukan kira-kira?"
+      },
       "materi": [
         {
           "t": "p",
@@ -1254,70 +1260,80 @@
         }
       ],
       "simulation": {
-        "engine": "magnitude_builder",
-        "title": "Simulasi: Bangun Akarnya Sendiri",
-        "brief": "Empat langkah terpisah: kuadratkan, jumlahkan, akarkan, sederhanakan. Setiap langkah menunggu langkah sebelumnya benar.",
+        "engine": "magnitude_guided",
+        "title": "Simulasi Terpandu: Panjang Vektor dari Persegi Pythagoras",
+        "brief": "Panah vektor selalu menjadi sisi miring sebuah segitiga siku-siku. Persegi-persegi di sisinya baru tumbuh setelah kamu menghitung luasnya sendiri.",
         "config": {
           "cases": [
             {
+              "kind": "pythagoras",
+              "guided": true,
               "v": [
                 3,
                 4
-              ],
-              "expect": {
-                "k": 5,
-                "r": 1
-              }
+              ]
             },
             {
+              "kind": "simplify",
               "v": [
                 2,
                 4
-              ],
-              "expect": {
-                "k": 2,
-                "r": 5
-              }
+              ]
             },
             {
+              "kind": "negative",
               "v": [
-                2,
-                5
-              ],
-              "expect": {
-                "k": 1,
-                "r": 29
-              }
-            },
-            {
-              "v": [
-                1,
-                -2,
-                2
-              ],
-              "expect": {
-                "k": 3,
-                "r": 1
-              }
+                -3,
+                -6
+              ]
             }
-          ],
-          "xRange": [
-            -6,
-            6
-          ],
-          "yRange": [
-            -6,
-            6
-          ],
-          "showGuides": true
+          ]
         },
         "toasts": {
-          "lupaKuadrat": "Belum tepat — angka itu masih komponen aslinya, belum dikuadratkan. Kuadrat berarti bilangan dikalikan **dirinya sendiri**, bukan dikalikan dua.",
-          "tandaIkutMasuk": "Belum tepat — hasil kuadrat tidak pernah negatif. Tanda minus pada ${{nilai}}$ ikut dikalikan dengan dirinya sendiri, sehingga lenyap.",
-          "belumDisederhanakan": "Nilainya benar, bentuknya belum paling sederhana. Di dalam $\\sqrt{{{radikan}}}$ masih tersimpan faktor kuadrat — tarik keluar faktor kuadrat **terbesarnya**.",
-          "terlanjurDesimal": "Belum tepat — itu hasil pembulatan, dan pembulatan membuang sebagian nilainya. Tuliskan sebagai bentuk akar eksak lewat mode **Akar** di papan angka.",
-          "jumlahSalah": "Belum tepat — jumlahkan **seluruh** hasil kuadrat yang barusan kamu tulis, satu pun tidak boleh terlewat.",
-          "success": "Tepat! Kuadratkan, jumlahkan, akarkan, sederhanakan — empat langkah itu berlaku untuk vektor bidang maupun ruang."
+          "sikuTegakDulu": "Segitiga itu juga sah — tetapi kita sepakat seperti sub-topik sebelumnya: langkah **mendatar** dulu, baru tegak. Ketuk titik siku di **sumbu $X$**.",
+          "sikuMeleset": "Belum tepat — kamu mengetuk {{titik}}. Titik siku adalah tempat langkah mendatar berhenti: tepat di bawah (atau di atas) mata panah, pada sumbu $X$.",
+          "jalanMemutar": "Belum tepat — bandingkan dengan jalan kaki: memotong lurus selalu lebih **pendek** daripada berbelok di sudut. Panah adalah jalan lurusnya.",
+          "lupaKuadrat": "Belum tepat — kamu memakai panjang sisinya apa adanya. **Kuadratkan** dulu: bilangan dikalikan dengan **dirinya sendiri**.",
+          "kaliDua": "Belum tepat — kuadrat bukan dikali dua. Luas persegi = sisi **×** sisi.",
+          "tandaIkutMasuk": "Hati-hati — $({{nilai}})^2$ berarti $({{nilai}}) \\times ({{nilai}})$. Negatif kali negatif hasilnya **positif**.",
+          "luasSalah": "Belum tepat — luas persegi adalah sisi dikali sisi. Hitung ulang untuk setiap kaki.",
+          "jumlahSalah": "Belum tepat — jumlahkan lagi kedua hasil kuadrat yang sudah kamu dapat.",
+          "belumDiakar": "Hampir! Itu masih **luas** perseginya. Panjang panah adalah **sisi** persegi itu — akar dari luasnya.",
+          "terlanjurDesimal": "Jangan diubah ke desimal — desimal hanya pembulatan. Tulis dalam bentuk **akar eksak** lewat mode Akar di papan angka.",
+          "panjangSalah": "Belum tepat — panjangnya adalah akar dari jumlah kuadrat yang sudah kamu hitung. Periksa lagi akarnya.",
+          "faktorBukanKuadrat": "Belum tepat — bilangan itu bukan bilangan **kuadrat** (hasil suatu bilangan dikali dirinya sendiri). Cari faktor seperti $4$, $9$, $16$, $25$, …",
+          "faktorBukanTerbesar": "$1$ memang kuadrat, tetapi tidak menyederhanakan apa pun. Cari faktor kuadrat yang **terbesar**.",
+          "belumDisederhanakan": "Nilainya benar, tetapi $\\sqrt{ {{radikan}} }$ belum paling sederhana. Tarik keluar faktor kuadrat terbesarnya dari dalam akar.",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi semuanya lebih dulu.",
+          "success": "Tepat! Persegi di sisi miring sama luasnya dengan dua persegi di kakinya, jadi panjang panah = akar dari jumlah kuadrat komponennya.",
+          "successAkar": "Tepat! Akar disederhanakan dengan menarik keluar faktor kuadrat terbesarnya — hasilnya akar eksak, bukan desimal.",
+          "successNegatif": "Tepat! Tanda minus hilang setelah dikuadratkan, jadi panjang vektor tidak pernah negatif."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: panjang vektor",
+          "definition": "Panjang (modulus) $|\\vec{v}|$ adalah **sisi miring** segitiga siku-siku yang dibentuk komponennya — Pythagoras langsung bekerja.",
+          "formula": "|\\vec{v}| = \\sqrt{x^2 + y^2}",
+          "columns": [
+            {
+              "title": "Tiga langkah",
+              "tone": "vector",
+              "items": [
+                "**Kuadratkan** tiap komponen — tanda minus ikut hilang",
+                "**Jumlahkan** hasil kuadratnya",
+                "**Akarkan**, lalu sederhanakan akarnya"
+              ]
+            },
+            {
+              "title": "Jangan sampai",
+              "tone": "amber",
+              "items": [
+                "$3 + 4 = 7$ itu jalan memutar, bukan panjang panah",
+                "$(-3)^2 = 9$, bukan $-9$",
+                "$\\sqrt{20}$ ditulis $2\\sqrt{5}$, bukan $4{,}47$"
+              ]
+            }
+          ],
+          "remember": "Panjang vektor **tidak pernah negatif** — yang bertanda hanya komponennya."
         }
       },
       "quiz": [
@@ -1325,95 +1341,139 @@
           "id": "b1_05_1",
           "input_type": "mathpad",
           "subtopic": "panjang_vektor",
-          "prompt": "Diketahui vektor $\\vec{v} = (6,\\, 8)$.",
+          "prompt": "Diketahui vektor $\\vec{v} = (-5,\\, 12)$.",
           "after": "**Tentukan panjang vektor $\\vec{v}$.**",
-          "answer": 10,
+          "answer": 13,
           "tolerance": 1e-06,
-          "explanation": "$|\\vec{v}| = \\sqrt{6^2 + 8^2} = \\sqrt{36 + 64} = \\sqrt{100} = 10$. Ini kelipatan dari tripel Pythagoras $(3,4,5)$.",
-          "toastWrong": "Belum tepat — kuadratkan dulu **setiap** komponennya, baru dijumlahkan, baru diakarkan. Kalau hasilmu $14$, kamu menjumlahkan $6+8$ tanpa mengkuadratkan."
+          "explanation": "$|\\vec{v}| = \\sqrt{(-5)^2 + 12^2} = \\sqrt{25 + 144} = \\sqrt{169} = 13$. Tanda minus hilang begitu dikuadratkan.",
+          "toastWrong": "Belum tepat — kuadratkan **setiap** komponen (negatif kali negatif positif), jumlahkan, baru akarkan. Menjumlahkan komponennya langsung memberi jalan memutar, bukan panjang panah.",
+          "hint": "Seperti persegi Pythagoras di simulasi: kuadratkan, jumlahkan, akarkan. $(-5)^2$ bernilai positif."
         },
         {
           "id": "b1_05_2",
           "input_type": "single_choice",
           "subtopic": "panjang_vektor",
-          "prompt": "Diketahui vektor $\\vec{a} = (2,\\, 4)$.",
-          "after": "**Panjang vektor $\\vec{a}$ dalam bentuk akar paling sederhana adalah ....**",
+          "prompt": "Diketahui vektor $\\vec{a} = (4,\\, -2)$.",
+          "after": "**Panjang vektor $\\vec{a}$ dalam bentuk akar paling sederhana adalah…**",
           "options": [
+            {
+              "tex": "\\sqrt{20}"
+            },
+            {
+              "tex": "2\\sqrt{3}"
+            },
+            {
+              "tex": "2"
+            },
             {
               "tex": "2\\sqrt{5}"
             },
             {
-              "tex": "4\\sqrt{5}"
-            },
-            {
-              "tex": "5\\sqrt{2}"
-            },
-            {
-              "tex": "2\\sqrt{10}"
-            },
-            {
-              "tex": "6"
+              "tex": "4{,}47"
             }
           ],
-          "answerIndex": 0,
-          "explanation": "$|\\vec{a}| = \\sqrt{2^2 + 4^2} = \\sqrt{4 + 16} = \\sqrt{20}$. Faktor kuadrat terbesar dari $20$ adalah $4$, sehingga $\\sqrt{20} = \\sqrt{4 \\cdot 5} = 2\\sqrt{5}$. **Opsi A**.",
-          "toastWrong": "Belum tepat — kalau kamu memilih $6$, kamu menjumlahkan $2+4$ tanpa mengkuadratkan. Kalau kamu memilih $2\\sqrt{10}$, kamu menarik keluar $2$ dari $\\sqrt{20}$ padahal $20 = 4 \\times 5$, bukan $4 \\times 10$."
+          "answerIndex": 3,
+          "explanation": "$|\\vec{a}| = \\sqrt{4^2 + (-2)^2} = \\sqrt{16 + 4} = \\sqrt{20} = \\sqrt{4 \\cdot 5} = 2\\sqrt{5}$. $\\sqrt{20}$ bernilai sama tetapi belum paling sederhana, dan $4{,}47$ hanya pembulatan. **Opsi D**.",
+          "toastWrong": "Belum tepat — kalau kamu memilih bilangan bulat kecil, kamu menjumlahkan komponennya tanpa mengkuadratkan. Kalau memilih bentuk yang nilainya benar, periksa: sudah paling sederhana dan eksak?",
+          "hint": "Kuadratkan dulu — $(-2)^2$ positif. Lalu tarik keluar faktor kuadrat terbesar dari dalam akar, seperti kasus kedua simulasi."
         },
         {
           "id": "b1_05_3",
           "input_type": "single_choice",
           "subtopic": "panjang_vektor",
-          "prompt": "Diketahui vektor di ruang $\\vec{p} = (1,\\, -2,\\, 2)$.",
-          "after": "**Tentukan $|\\vec{p}|$.**",
+          "prompt": "Tiga vektor: $\\vec{p} = (5,\\, 1)$, $\\vec{q} = (3,\\, 4)$, dan $\\vec{r} = (-4,\\, -3)$.",
+          "after": "**Vektor manakah yang paling panjang?**",
           "options": [
             {
-              "tex": "1"
+              "label": "$\\vec{q}$"
             },
             {
-              "tex": "3"
+              "label": "$\\vec{r}$"
             },
             {
-              "tex": "\\sqrt{5}"
+              "label": "$\\vec{q}$ dan $\\vec{r}$, sama panjang"
             },
             {
-              "tex": "\\sqrt{7}"
+              "label": "$\\vec{p}$"
             },
             {
-              "tex": "5"
+              "label": "Ketiganya sama panjang"
             }
           ],
-          "answerIndex": 1,
-          "explanation": "$|\\vec{p}| = \\sqrt{1^2 + (-2)^2 + 2^2} = \\sqrt{1 + 4 + 4} = \\sqrt{9} = 3$. Perhatikan $(-2)^2 = 4$, bukan $-4$. **Opsi B**.",
-          "toastWrong": "Belum tepat — periksa komponen keduanya. $(-2)^2 = 4$, **bukan** $-4$: tanda minus ikut terkuadratkan sehingga hilang. Kalau kamu mendapat $\\sqrt{1}$, kemungkinan kamu mengurangkan alih-alih menjumlahkan."
-        },
-        {
-          "id": "b1_05_4",
-          "input_type": "single_choice",
-          "subtopic": "panjang_vektor",
-          "prompt": "Diketahui $\\vec{u} = (3,\\, 4)$ dan $\\vec{v} = (1,\\, 6)$.",
-          "after": "**Tanpa menghitung akarnya, tentukan pernyataan yang benar.**",
-          "options": [
-            {
-              "tex": "|\\vec{u}| > |\\vec{v}|"
-            },
-            {
-              "tex": "|\\vec{u}| < |\\vec{v}|"
-            },
-            {
-              "tex": "|\\vec{u}| = |\\vec{v}|"
-            },
-            {
-              "tex": "|\\vec{u}| = 2|\\vec{v}|"
-            },
-            {
-              "label": "Tidak dapat dibandingkan tanpa menghitung akarnya."
-            }
-          ],
-          "answerIndex": 1,
-          "explanation": "$|\\vec{u}|^2 = 9 + 16 = 25$ dan $|\\vec{v}|^2 = 1 + 36 = 37$. Karena $25 < 37$, maka $|\\vec{u}| < |\\vec{v}|$. Membandingkan kuadratnya sudah cukup — akar kuadrat adalah fungsi naik, sehingga urutannya tidak berubah. **Opsi B**.",
-          "toastWrong": "Belum tepat — kamu tidak perlu mengakarkan sama sekali. Bandingkan saja $x^2+y^2$ keduanya: $25$ lawan $37$. Yang kuadratnya lebih besar, vektornya lebih panjang."
+          "answerIndex": 3,
+          "explanation": "Bandingkan kuadrat panjangnya saja — akar tidak membalik urutan: $|\\vec{p}|^2 = 25 + 1 = 26$, $|\\vec{q}|^2 = 9 + 16 = 25$, $|\\vec{r}|^2 = 16 + 9 = 25$. Jadi $\\vec{p}$ paling panjang. **Opsi D**.",
+          "toastWrong": "Belum tepat — jumlah komponen yang besar tidak menjamin panah yang panjang. Bandingkan $x^2 + y^2$ masing-masing vektor; tanda minus tidak memperpendek apa pun.",
+          "hint": "Taktik cepat: tidak perlu mengakarkan. Bandingkan saja $x^2 + y^2$ ketiganya."
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Panah vektor sebagai sisi miring: persegi Pythagoras, akar eksak paling sederhana, dan tanda minus yang hilang saat dikuadratkan.",
+        "sections": [
+          {
+            "title": "1 · Panjang vektor",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Persegi Pythagoras di bawah panah",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "pythagoras",
+                "caption": "Persegi di sisi miring ($25$) = jumlah persegi di kedua kaki ($9 + 16$), jadi $|\\vec{v}| = 5$."
+              },
+              {
+                "t": "steps",
+                "items": [
+                  "Jalan memutar $3 + 4 = 7$ selalu lebih panjang dari panah lurusnya.",
+                  "Luas persegi di kaki: $3^2 = 9$ dan $4^2 = 16$.",
+                  "Luas persegi di sisi miring: $9 + 16 = 25$.",
+                  "Panjang panah = sisi persegi itu: $\\sqrt{25} = 5$."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Akar eksak & tanda minus",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Vektor",
+                  "Jumlah kuadrat",
+                  "Panjang"
+                ],
+                "rows": [
+                  [
+                    "$(2,\\, 4)$",
+                    "$4 + 16 = 20$",
+                    "$\\sqrt{4 \\cdot 5} = 2\\sqrt{5}$"
+                  ],
+                  [
+                    "$(-3,\\, -6)$",
+                    "$9 + 36 = 45$",
+                    "$\\sqrt{9 \\cdot 5} = 3\\sqrt{5}$"
+                  ]
+                ]
+              },
+              {
+                "t": "tip",
+                "title": "Taktik cepat",
+                "x": "Membandingkan panjang? Bandingkan $x^2 + y^2$ saja — akar tidak pernah membalik urutan."
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Sederhanakan akar dengan faktor kuadrat **terbesar**: $\\sqrt{72} = \\sqrt{36 \\cdot 2} = 6\\sqrt{2}$.",
+          "$(-3)^2 = 9$, tetapi $-3^2 = -9$ — tanda kurung menentukan.",
+          "Jawaban desimal ($4{,}47$) dinilai salah: tulis akar eksaknya.",
+          "Panjang vektor nol hanya untuk $\\vec{0}$; vektor lain selalu positif."
+        ]
+      }
     },
     {
       "id": "vektor_satuan",

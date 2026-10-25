@@ -141,6 +141,7 @@ function probeOf(template) {
 
 /** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
 const CASE_SUCCESS = {
+  magnitude_guided: (c) => ({ pythagoras: 'success', simplify: 'successAkar', negative: 'successNegatif' }[c.kind]),
   position_guided: (c) => ({ discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind]),
   notation_guided: (c) => ({ build: 'success', shift: 'successBebas', tidy: 'successBaku' }[c.kind]),
   vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
@@ -399,19 +400,29 @@ const PLANS = {
     return [{ wrong: { fields: comps(wrong) }, right: { fields: comps(c.answer) }, expectToast: 'tandaSalah' }];
   },
 
-  magnitude_builder: (c) => {
-    const squares = c.v.map((n) => n * n);
+  magnitude_guided: (c) => {
+    const v = c.v;
+    const squares = v.map((n) => n * n);
     const sum = squares.reduce((a, b) => a + b, 0);
     const simple = S.toText(S.fromSquare(sum));
-    const simpleIsRoot = simple !== `√${sum}`;
-    return [
-      { wrong: { fields: comps(c.v, 'q') }, right: { fields: comps(squares, 'q') }, leak: [] },
-      { wrong: { fields: { sum: txt(c.v.reduce((a, b) => a + b, 0) || 1) } }, right: { fields: { sum: String(sum) } } },
-      { wrong: { fields: { root: String(sum) } }, right: { fields: { root: `√${sum}` } }, leak: [simple] },
-      simpleIsRoot
-        ? { wrong: { fields: { simple: `√${sum}` } }, right: { fields: { simple } }, expectToast: 'belumDisederhanakan', leak: [simple] }
-        : { wrong: { fields: { simple: String(Math.sqrt(sum).toFixed(2)).replace('.', ',') } }, right: { fields: { simple } }, expectToast: 'terlanjurDesimal', leak: [simple] },
-    ];
+    if (c.kind === 'pythagoras') {
+      return [
+        { wrong: { pick: [0, v[1]] }, right: { pick: [v[0], 0] }, expectToast: 'sikuTegakDulu' },
+        { wrong: { choice: 'sama' }, right: { choice: 'pendek' }, expectToast: 'jalanMemutar' },
+        { wrong: { fields: comps(v.map(Math.abs), 'q') }, right: { fields: comps(squares, 'q') }, expectToast: 'lupaKuadrat' },
+        { wrong: { fields: { sum: txt(Math.abs(v[0]) + Math.abs(v[1])) } }, right: { fields: { sum: String(sum) } }, expectToast: 'lupaKuadrat' },
+        { wrong: { fields: { len: String(sum) } }, right: { fields: { len: simple } }, expectToast: 'belumDiakar', leak: [simple] },
+      ];
+    }
+    const squaresStep = c.kind === 'negative'
+      ? { wrong: { fields: comps([-squares[0], squares[1]], 'q') }, right: { fields: comps(squares, 'q') }, expectToast: 'tandaIkutMasuk' }
+      : { wrong: { fields: comps(v.map(Math.abs), 'q') }, right: { fields: comps(squares, 'q') }, expectToast: 'lupaKuadrat' };
+    const sumStep = { wrong: { fields: { sum: String(sum + 1) } }, right: { fields: { sum: String(sum) } }, expectToast: 'jumlahSalah' };
+    const simplest = { wrong: { fields: { len: `√${sum}` } }, right: { fields: { len: simple } }, expectToast: 'belumDisederhanakan', leak: [simple] };
+    if (c.kind === 'simplify') {
+      return [squaresStep, sumStep, { wrong: { choice: 'dua' }, right: { choice: 'ok' }, expectToast: 'faktorBukanKuadrat' }, simplest];
+    }
+    return [squaresStep, sumStep, simplest];
   },
 
   unit_vector: (c) => {

@@ -21,7 +21,7 @@ Yang diperiksa:
   4. Tidak ada karakter kendali di JSON (jebakan nyata: `\\vec` yang ditulis
      `\vec` menjadi tab vertikal + "ec").
   5. Soal: bentuk per tipe, `answerIndex`/`answerIndices` di dalam rentang,
-     opsi hanya berkunci `label` atau `tex`, id unik, jumlah 77 Mini Kuis +
+     opsi hanya berkunci `label` atau `tex`, id unik, jumlah 76 Mini Kuis +
      34 bank ujian, `tkaSimulation.questionOrder` valid.
   6. LaTeX: kurung kurawal seimbang, `$` berpasangan, `\\left`/`\\right` dan
      `\\begin`/`\\end` berpasangan.
@@ -45,7 +45,7 @@ ENGINE_FILES = ["simBasics.js", "simGuided.js", "simOperations.js", "simProducts
 EXPECTED_CHAPTERS = 4
 EXPECTED_SUBTOPICS = 25
 EXPECTED_ENGINES = 25
-EXPECTED_MINI_QUIZ = 77
+EXPECTED_MINI_QUIZ = 76
 EXPECTED_BANK_TOTAL = 34
 EXPECTED_BANK_SIZES = {
     "01_konsep_dasar": 6,
@@ -81,7 +81,7 @@ KIT_TOASTS = {
 # Sub-topik yang WAJIB memakai paket terpandu lengkap (revisi guru: pola
 # sub-topik 1): kartu pemantik, kesimpulan simulasi, rangkuman terstruktur.
 GUIDED_SUBTOPICS = {
-    "01_konsep_dasar": ["pengertian_notasi", "vektor_posisi", "notasi_penyajian"],
+    "01_konsep_dasar": ["pengertian_notasi", "panjang_vektor", "vektor_posisi", "notasi_penyajian"],
 }
 CONCLUSION_TONES = {"vector", "scalar", "amber", "cyan"}
 DOC_BLOCKS = {"p", "tex", "list", "steps", "table", "figure", "conclusion", "def", "tip", "warn"}

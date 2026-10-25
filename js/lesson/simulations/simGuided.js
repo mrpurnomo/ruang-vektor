@@ -692,7 +692,297 @@ export class GuidedPositionSim extends CaseSimulation {
   }
 }
 
+/* ============================================================
+   4. magnitude_guided — Panjang vektor dari persegi Pythagoras
+
+   Kasus 1 (terpandu): ketuk titik siku → garis bantu & tanda siku →
+   "lebih pendek dari 3 + 4?" → luas persegi di kedua sisi siku (persegi
+   TUMBUH sesudah benar) → persegi di sisi miring → sisinya = |v|.
+   Kasus 2: √20 → faktor kuadrat terbesar → 2√5 (akar eksak paling
+   sederhana). Kasus 3: komponen negatif — tanda minus ikut terkuadratkan.
+   ============================================================ */
+
+/** Persegi di sisi a→b, tumbuh ke sisi kiri (dir +1) atau kanan (dir −1). */
+function squareCorners(a, b, dir, k = 1) {
+  const n = dir > 0 ? [-(b[1] - a[1]), b[0] - a[0]] : [b[1] - a[1], -(b[0] - a[0])];
+  return [a, b, [b[0] + n[0] * k, b[1] + n[1] * k], [a[0] + n[0] * k, a[1] + n[1] * k]];
+}
+
+export class GuidedMagnitudeSim extends CaseSimulation {
+  usesPlane() {
+    return true;
+  }
+
+  planeOptions(c) {
+    const [x, y] = c.v;
+    if (c.guided) {
+      // Ruang untuk ketiga persegi: di bawah sumbu X, di kanan kaki tegak,
+      // dan di kiri atas sisi miring.
+      const pts = [[0, 0], [x, y], [x + y, 0], [0, -x], [-y, x], [x - y, y + x]];
+      const xs = pts.map((p) => p[0]);
+      const ys = pts.map((p) => p[1]);
+      return { xRange: [Math.min(...xs) - 1, Math.max(...xs) + 1], yRange: [Math.min(...ys) - 1, Math.max(...ys) + 1] };
+    }
+    return {
+      xRange: [Math.min(0, x) - 2, Math.max(0, x) + 2],
+      yRange: [Math.min(0, y) - 1, Math.max(0, y) + 2],
+    };
+  }
+
+  caseLabel(c) {
+    return `$${texTuple(c.v)}$`;
+  }
+
+  caseSuccessKey(c) {
+    return { pythagoras: 'success', simplify: 'successAkar', negative: 'successNegatif' }[c.kind];
+  }
+
+  caseDonePrompt(c, allDone) {
+    if (c.kind === 'pythagoras') {
+      return '**Panjang panah = sisi persegi di sisi miring.** Jadi $|\\vec{v}| = \\sqrt{x^2 + y^2}$: kuadratkan, jumlahkan, akarkan.';
+    }
+    return super.caseDonePrompt(c, allDone);
+  }
+
+  nextCaseInvite(next) {
+    if (next.kind === 'simplify') return 'Hebat! Tidak semua hasil sebulat itu — coba vektor yang akarnya **harus disederhanakan**.';
+    return 'Terakhir: komponennya **negatif**. Apa yang terjadi pada tanda minus saat dikuadratkan?';
+  }
+
+  celebration() {
+    return {
+      ...super.celebration(),
+      badge: 'Panjang Vektor Dikuasai',
+      recap: [
+        'Panah = **sisi miring** segitiga siku-siku dari komponennya',
+        '$|\\vec{v}| = \\sqrt{x^2 + y^2}$ — kuadratkan, jumlahkan, akarkan',
+        'Akar **eksak** paling sederhana: $\\sqrt{20} = 2\\sqrt{5}$, bukan desimal',
+      ],
+    };
+  }
+
+  setupCase(c) {
+    this.marks = { O: this.drawPoint([0, 0], { label: 'O', essential: true }) };
+    this.drawVector({ from: [0, 0], to: c.v, name: 'v', tone: 'blue' }, { essential: true });
+    this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
+  }
+
+  /** Garis bantu: kaki mendatar & tegak + tanda siku + lencana panjang kaki. */
+  drawLegs(v) {
+    const [x, y] = v;
+    const corner = [x, 0];
+    this.plane.drawSegment([0, 0], corner, { dashed: true });
+    this.plane.drawSegment(corner, v, { dashed: true });
+    this.plane.drawAngleArc([-x, 0], [0, y], { origin: corner });
+    springPop(this.plane.drawTag([x / 2, 0], String(Math.abs(x)), { offset: [0, y >= 0 ? 15 : -15], tone: 'amber' }).inner);
+    springPop(this.plane.drawTag([x, y / 2], String(Math.abs(y)), { offset: [x >= 0 ? 16 : -16, 0], tone: 'amber' }).inner);
+  }
+
+  /** Persegi tumbuh dari sisinya ke luar (rAF, 320 ms), lalu lencana luasnya. */
+  async growSquare(a, b, dir, tone, area) {
+    const poly = this.plane.drawPolygon(squareCorners(a, b, dir, 0.001), { tone });
+    const ms = stillMotion() ? 0 : 320;
+    const t0 = performance.now();
+    await new Promise((resolve) => {
+      const tick = (now) => {
+        if (this.destroyed || !this.plane) { resolve(); return; }
+        const k = ms ? Math.min(1, (now - t0) / ms) : 1;
+        poly.setPoints(squareCorners(a, b, dir, Math.max(0.001, 1 - (1 - k) ** 3)));
+        if (k < 1) requestAnimationFrame(tick); else resolve();
+      };
+      requestAnimationFrame(tick);
+    });
+    if (this.destroyed || !this.plane) return;
+    const pts = squareCorners(a, b, dir);
+    const center = [(pts[0][0] + pts[2][0]) / 2, (pts[0][1] + pts[2][1]) / 2];
+    springPop(this.plane.drawTag(center, String(area), { tone: tone === 'amber' ? 'amber' : 'blue' }).inner);
+  }
+
+  /** Langkah kuadrat tiap komponen dengan pengenal kesalahan khas. */
+  squaresStep(v, { label, prompt, fieldLabel, onSolved }) {
+    const squares = v.map((n) => n * n);
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fields: v.map((n, i) => ({ key: `q${AXES[i]}`, label: fieldLabel(n, i), mode: 'integer', aria: `Kuadrat komponen ${AXES[i]}` })),
+      check: (values) => {
+        const s = v.map((n, i) => values[`q${AXES[i]}`].value);
+        const i = firstWrong(s, squares);
+        if (i < 0) return true;
+        const wrong = wrongKeys(s, squares, 'q');
+        const student = S.toNumber(s[i]);
+        if (student === -squares[i]) return { toast: 'tandaIkutMasuk', values: { nilai: v[i] }, wrong };
+        if (Math.abs(student) === Math.abs(v[i]) && squares[i] !== Math.abs(v[i])) return { toast: 'lupaKuadrat', wrong };
+        if (Math.abs(student) === 2 * Math.abs(v[i])) return { toast: 'kaliDua', wrong };
+        return { toast: 'luasSalah', wrong };
+      },
+      summary: () => v.map((n, i) => `$${n < 0 ? `(${n})` : n}^2 = ${squares[i]}$`).join(' dan '),
+      onSolved,
+    };
+  }
+
+  sumStep(v, { label, prompt, onSolved }) {
+    const squares = v.map((n) => n * n);
+    const sum = squares.reduce((a, b) => a + b, 0);
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fields: [{ key: 'sum', label: `$${squares.join(' + ')} =$`, mode: 'integer' }],
+      check: (values) => {
+        if (same(values.sum.value, sum)) return true;
+        if (same(values.sum.value, Math.abs(v[0]) + Math.abs(v[1]))) return { toast: 'lupaKuadrat' };
+        return { toast: 'jumlahSalah' };
+      },
+      summary: () => `$${squares.join(' + ')} = ${sum}$`,
+      onSolved,
+    };
+  }
+
+  simplestStep(v, { label, prompt }) {
+    const sum = v.reduce((a, n) => a + n * n, 0);
+    const length = S.fromSquare(sum);
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fields: [{ key: 'len', label: '$|\\vec{v}| =$', mode: 'surd' }],
+      check: (values) => {
+        const verdict = Val.checkExactAnswer(values.len.raw, length, { requireSimplest: true });
+        if (verdict.correct) return true;
+        if (verdict.code === 'not-simplest') return { toast: 'belumDisederhanakan', values: { radikan: sum } };
+        if (verdict.code === 'decimal') return { toast: 'terlanjurDesimal' };
+        if (same(values.len.value, sum)) return { toast: 'belumDiakar' };
+        return { toast: 'panjangSalah' };
+      },
+      summary: () => `$|\\vec{v}| = \\sqrt{${sum}} = ${S.toLatexS(length)}$`,
+      onSolved: () => {
+        springPop(this.plane.drawTag([v[0] / 2, v[1] / 2], `|\\vec{v}| = ${S.toLatexS(length)}`, { offset: [-30, -12], tone: 'amber' }).inner);
+        this.plane.highlight('v');
+      },
+    };
+  }
+
+  buildSteps(c) {
+    const v = c.v;
+    const [x, y] = v;
+    if (c.kind === 'pythagoras') {
+      const corner = [x, 0];
+      return [
+        {
+          kind: 'pick',
+          label: 'Titik siku',
+          prompt: 'Di bawah panah $\\vec{v}$ selalu ada segitiga siku-siku. **Ketuk titik sikunya** — tempat langkah **mendatar** $\\vec{v}$ berakhir dan langkah tegaknya dimulai.',
+          check: (p) => {
+            if (samePoint(p, corner)) return true;
+            if (samePoint(p, [0, y])) return { toast: 'sikuTegakDulu' };
+            return { toast: 'sikuMeleset', values: { titik: tapped(p) } };
+          },
+          summary: () => `Titik siku di $${texTuple(corner)}$: kaki $${Math.abs(x)}$ dan $${Math.abs(y)}$.`,
+          onSolved: () => this.drawLegs(v),
+        },
+        {
+          kind: 'choice',
+          label: 'Tebak dulu',
+          prompt: `Jalan memutar — mendatar lalu tegak — panjangnya $${Math.abs(x)} + ${Math.abs(y)} = ${Math.abs(x) + Math.abs(y)}$. Panah $\\vec{v}$ yang **lurus** itu…`,
+          options: [
+            { key: 'sama', label: `tepat $${Math.abs(x) + Math.abs(y)}$ satuan` },
+            { key: 'pendek', label: `**lebih pendek** dari $${Math.abs(x) + Math.abs(y)}$ satuan` },
+            { key: 'panjang', label: `lebih panjang dari $${Math.abs(x) + Math.abs(y)}$ satuan` },
+          ],
+          check: (key) => (key === 'pendek' ? true : { toast: 'jalanMemutar' }),
+          summary: () => 'Jalan lurus selalu **lebih pendek** daripada jalan memutar.',
+        },
+        this.squaresStep(v, {
+          label: 'Persegi di kaki',
+          prompt: 'Bangun sebuah **persegi** di setiap kaki segitiga. Berapa **luas** masing-masing persegi?',
+          fieldLabel: (n, i) => `Sisi $${Math.abs(n)}$ (${i === 0 ? 'mendatar' : 'tegak'}): luas`,
+          onSolved: async () => {
+            await this.growSquare([0, 0], corner, -1, 'amber', x * x);
+            await this.growSquare(corner, v, -1, 'amber', y * y);
+          },
+        }),
+        this.sumStep(v, {
+          label: 'Persegi di sisi miring',
+          prompt: 'Teorema Pythagoras: persegi pada **sisi miring** — panah $\\vec{v}$ — luasnya sama dengan **jumlah** kedua persegi itu. Berapa?',
+          onSolved: () => this.growSquare([0, 0], v, 1, 'blue', x * x + y * y),
+        }),
+        {
+          kind: 'fields',
+          label: 'Sisi = panjang $\\vec{v}$',
+          prompt: 'Panjang $\\vec{v}$ adalah **sisi** persegi biru itu. Sisi persegi yang luasnya sudah kamu tahu = …',
+          fields: [{ key: 'len', label: '$|\\vec{v}| =$', mode: 'surd' }],
+          check: (values) => {
+            const sum = x * x + y * y;
+            const verdict = Val.checkExactAnswer(values.len.raw, S.fromSquare(sum), { requireSimplest: true });
+            if (verdict.correct) return true;
+            if (verdict.code === 'decimal') return { toast: 'terlanjurDesimal' };
+            if (same(values.len.value, sum)) return { toast: 'belumDiakar' };
+            return { toast: 'panjangSalah' };
+          },
+          summary: () => `$|\\vec{v}| = \\sqrt{${x * x + y * y}} = ${S.toLatexS(S.fromSquare(x * x + y * y))}$`,
+          onSolved: () => {
+            springPop(this.plane.drawTag([x / 2, y / 2], `|\\vec{v}| = ${S.toLatexS(S.fromSquare(x * x + y * y))}`, { offset: [24, 14], tone: 'amber' }).inner);
+            this.plane.highlight('v');
+          },
+        },
+      ];
+    }
+
+    if (c.kind === 'simplify') {
+      const sum = x * x + y * y;
+      const factor = S.squareFreeSplit(sum);
+      return [
+        this.squaresStep(v, {
+          label: 'Kuadratkan',
+          prompt: 'Kuadratkan **setiap** komponen $\\vec{v}$.',
+          fieldLabel: (n) => `$(${n})^2 =$`,
+          onSolved: () => this.drawLegs(v),
+        }),
+        this.sumStep(v, { label: 'Jumlahkan', prompt: 'Jumlahkan kedua hasil kuadrat itu.' }),
+        {
+          kind: 'choice',
+          label: 'Faktor kuadrat',
+          prompt: `$\\sqrt{${sum}}$ belum sederhana. Faktor **bilangan kuadrat** terbesar dari $${sum}$ adalah…`,
+          options: [
+            { key: 'dua', label: '$2$' },
+            { key: 'ok', label: `$${factor.outside * factor.outside}$` },
+            { key: 'sepuluh', label: `$${sum / 2}$` },
+            { key: 'satu', label: '$1$' },
+          ],
+          check: (key) => {
+            if (key === 'ok') return true;
+            if (key === 'satu') return { toast: 'faktorBukanTerbesar' };
+            return { toast: 'faktorBukanKuadrat' };
+          },
+          summary: () => `$${sum} = ${factor.outside * factor.outside} \\times ${factor.inside}$`,
+        },
+        this.simplestStep(v, {
+          label: 'Sederhanakan',
+          prompt: 'Tarik akar faktor kuadratnya keluar. Tulis $|\\vec{v}|$ dalam bentuk akar **paling sederhana**.',
+        }),
+      ];
+    }
+
+    return [
+      this.squaresStep(v, {
+        label: 'Kuadratkan',
+        prompt: 'Kuadratkan **setiap** komponen — termasuk tandanya.',
+        fieldLabel: (n) => `$(${n})^2 =$`,
+        onSolved: () => this.drawLegs(v),
+      }),
+      this.sumStep(v, { label: 'Jumlahkan', prompt: 'Jumlahkan kedua hasil kuadrat itu.' }),
+      this.simplestStep(v, {
+        label: 'Akar paling sederhana',
+        prompt: 'Akarkan, lalu sederhanakan. Tulis $|\\vec{v}|$ dalam bentuk akar **paling sederhana**.',
+      }),
+    ];
+  }
+}
+
 export const ENGINES = {
   notation_guided: GuidedNotationSim,
   position_guided: GuidedPositionSim,
+  magnitude_guided: GuidedMagnitudeSim,
 };
