@@ -163,7 +163,7 @@ const FIGURES = {
 
   /** Balok O–P(4, −3, 2) dengan diagonal lantai dan diagonal ruang. */
   balok() {
-    const P = (x, y, z) => [118 + y * 30 - x * 17, 140 + x * 11 - z * 30];
+    const P = (x, y, z) => [180 + y * 30 - x * 17, 116 + x * 11 - z * 30];
     const s = (p) => p.map((n) => n.toFixed(1)).join(' ');
     const L = (a, b, cls) => `<path class="${cls}" d="M${s(P(...a))}L${s(P(...b))}"/>`;
     const c = [[0, 0, 0], [4, 0, 0], [4, -3, 0], [0, -3, 0], [0, 0, 2], [4, 0, 2], [4, -3, 2], [0, -3, 2]];
@@ -171,7 +171,7 @@ const FIGURES = {
     const [ox, oy] = P(0, 0, 0);
     const [px, py] = P(4, -3, 2);
     const [fx, fy] = P(4, -3, 0);
-    return `<svg class="docfig" viewBox="0 0 250 180" role="img" aria-label="Balok dari O ke P(4, −3, 2)">
+    return `<svg class="docfig" viewBox="0 0 280 202" role="img" aria-label="Balok dari O ke P(4, −3, 2)">
       ${L([0, 0, 0], [6, 0, 0], 'ax axx')}${L([0, -4.5, 0], [0, 2, 0], 'ax axy')}${L([0, 0, 0], [0, 0, 3.3], 'ax axz')}
       ${edges.map(([i, j]) => L(c[i], c[j], 'd')).join('')}
       <polygon class="sqc" points="${s(P(0, 0, 0))} ${s(P(4, 0, 0))} ${s(P(4, -3, 0))}"/>
