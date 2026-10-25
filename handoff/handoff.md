@@ -294,8 +294,8 @@ Aturan:
 
 ### 4.3 Uji wajib sebelum setiap commit
 - `node tests/engine.test.mjs` → **130/130**.
-- `py tests/validate_data.py` → **0 GAGAL** (saat ini 755 lolos, 0 PERINGATAN).
-- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 250 lolos dengan `--skip-suites`,
+- `py tests/validate_data.py` → **0 GAGAL** (saat ini 799 lolos, 0 PERINGATAN).
+- `py tests/serve.py`, lalu `py tests/smoke.py` → **0 GAGAL** (saat ini 280 lolos dengan `--skip-suites`,
   ±8 menit; sudah menjalankan `tests/plane.html` **33/33** dan `tests/sims.html` **26/26**).
   Versi cepat tanpa kedua suite: `--skip-suites`. Server belum hidup: `--serve`.
 - Suite peramban juga bisa dibuka manual: `/tests/plane.html` → `window.__planeTest`,
@@ -504,3 +504,39 @@ smoke `--skip-suites` **250**/0 (1 CATATAN = jumlah lembar Rangkuman per sub-top
 **Antrean berikutnya:** tunggu penilaian guru atas tujuh revisi ini, lalu §4.1 butir 2
 (lima sub-topik Bab 1 lain ke pola terpandu, masing-masing dengan `conclusion`,
 `rangkuman` terstruktur, dan Mini Kuis ber-`hint`).
+
+---
+
+## 8. ADENDUM 25 Okt 2026 (lanjutan) — Bab 1 dirombak total ke pola sub-topik 1
+
+Keputusan guru (mengikat): ruang 3D **bisa diputar**; **kartu pemantik** di setiap sub-topik;
+Mini Kuis **3 soal** per sub-topik; kelima sub-topik dikerjakan sekaligus lalu dinilai.
+
+| Commit | Isi |
+|---|---|
+| `91aa183` | Bug: simulasi tuntas terulang sesudah peramban ditutup — status tuntas kini PERMANEN (`progressStore.markSimulationDone`, `startComplete`). Bunyi `sfx.reveal` (kesimpulan), `sfx.fanfare` (selebrasi), `sfx.page` (Rangkuman) |
+| `d9a1ba2` | Infrastruktur: kartu pemantik (`subtopic.hook` + `lesson/hookArt.js`, sekali, `progress.hookSeen`), kesimpulan generik (`columns`, `formula`), `domain/space/spaceView.js` (ruang 3D SVG bisa diputar, Z-Up, 4 sudut pandang baku), langkah `pad` di simKit, `guidedKit.js` (lompatan, panah dua ketukan), `plane.drawPolygon/drawCircle`; validator §4b paket terpandu |
+| `a3dffa0` | Sub-topik 2 `notation_guided` — satu vektor, tiga baju; vektor bebas dari pangkal $P(2,-4)$ (LKPD); bentuk baku. Rangkuman terstruktur kini dua kolom berurutan dengan bagian UTUH (`layoutColumns`) |
+| `f69001b` | Sub-topik 3 `position_guided` — siswa MENEMUKAN $\overrightarrow{AB} = B - A$ dari denah; koordinat ratusan; mencari titik pangkal $R$ (LKPD) |
+| `6877b46` | Sub-topik 4 `magnitude_guided` — persegi Pythagoras tumbuh (9 + 16 = 25); $\sqrt{20} = 2\sqrt5$; tanda minus terkuadratkan |
+| `2c4d1d8` | Sub-topik 5 `unit_guided` — panah dipotong 5 bagian, $\hat v$ mendarat di lingkaran satuan; searah ⇒ satuan sama; vektor nol |
+| `210a109` | `space_guided` — drone dikemudikan di ruang 3D (papan kemudi), balok bantu, Pythagoras dua kali ($5$ lalu $\sqrt{29}$); komponen nol; $\overrightarrow{AB}$ di ruang = $3\sqrt3$. Smoke §6l: keenam sub-topik (pemantik → simulasi terpandu, kesimpulan muat 740×360, Rangkuman 1 lembar) |
+
+**Peta engine Bab 1:** `vector_anatomy` (simBasics.js) · `notation_guided` · `position_guided` ·
+`magnitude_guided` · `unit_guided` · `space_guided` (simGuided.js). Engine lama
+`notation_morph`, `position_vector`, `component_builder`, `magnitude_builder`, `unit_vector` dihapus.
+
+**Kontrak baru yang mengikat:**
+- Setiap sub-topik terpandu WAJIB punya paket: `hook` (art dari `hookArt.js`), `simulation.conclusion`
+  (definisi ≤ ±130 karakter, ≤ 3 kolom), `rangkuman` terstruktur (≥ 2 catatan), Mini Kuis 3 soal ber-`hint`.
+  Validator §4b (`GUIDED_SUBTOPICS`) dan smoke §6l menegakkannya; kesimpulan wajib muat 740×360 tanpa gulir.
+- Engine terpandu memakai `guidedKit.js`: `animateHops`, `createArrowDrawer` (toast
+  `pangkalBukanTitik`/`ujungBukanTitik` {titik}, `arahPanahTerbalik` {nama, balik} — validator `KIT_TOASTS`).
+- Data soal tidak memakai `&nbsp;` di dalam `mixed()`; pakai `tex('… \\qquad …')`.
+- Panggung 3D: `usesSpace(c)` + `spaceOptions(c)` → `this.space`; langkah `pad`
+  `{buttons, onPress, onReset, status, check}`; harness `{ pad: [...], reset: true }`.
+- `plane_tap.reveal` satu huruf wajib membawa `label` (`\\vec{u}`, `\\hat{v}`).
+
+**Uji terakhir:** Node 130/130 · data 799/0/0 · plane 33/33 · sims 26/26 · smoke `--skip-suites` **280**/0 (`210a109`).
+
+**Antrean berikutnya:** penilaian guru atas Bab 1; sesudah disetujui, pola yang sama untuk Bab 2–4.
