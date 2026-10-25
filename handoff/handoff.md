@@ -1,8 +1,10 @@
 # HANDOFF — Ruang Vektor
 
 > **Memori inti untuk sesi baru.** Baca dokumen ini SEBELUM menyentuh kode apa pun.
-> Ditulis 17 September 2026; diperbarui 12 Oktober 2026 sesudah revisi Bab 1,
-> purwarupa simulasi terpandu (commit `54455b8`), dan QA purwarupa (commit `2debdf2`).
+> Ditulis 17 September 2026; diperbarui terakhir **25 Oktober 2026** sesudah Bab 1 dirombak
+> total dan dinyatakan **"bagus dan sempurna"** oleh guru (commit `827e15e`).
+> Urutan baca yang disarankan: §4 (misi sesi baru) → §9 (aturan guru untuk SEMUA bab) →
+> §8 (peta engine & kontrak paket terpandu) → §3 (kontrak arsitektur) → §5 (pohon berkas).
 > Dokumen rujukan yang tetap berlaku: `PRD.md` (kontrak produk) dan
 > `docs/EDTECH_BLUEPRINT.md` (kerangka arsitektur + 40 jebakan yang sudah dibayar).
 
@@ -94,7 +96,7 @@ membuat peramban menjalankan modul JS basi).
 - Di 740×360, toast sukses ("Jawabanmu tepat!") menutupi tombol papan coret selama toast tampil
   (sementara, lalu hilang sendiri). Masih berlaku sesudah perbaikan lebar toast (toast 239–689px).
 
-### Temuan terbuka dari QA purwarupa (terukur, MENUNGGU keputusan pengguna — belum diubah)
+### Temuan terbuka dari QA purwarupa — SUDAH DISELESAIKAN (lihat §6–§9); dibiarkan sebagai riwayat
 - **Tombol "Kasus berikutnya" tak terlihat di 740×360.** Ia hidup di panel kiri (`addHint`), di bawah
   pemilih kasus yang membungkus jadi dua baris; panduan di panggung berkata "Lanjut ke kasus
   berikutnya" tetapi tombolnya ada di luar pandangan. Chip kasus berikutnya memang terbuka dan bisa
@@ -247,32 +249,60 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### 🎯 MISI: REVISI PURWARUPA TERPANDU, LALU LANJUTKAN
+> ### 🎯 MISI: STANDBY — MENULIS BAB 2 SETELAH DIPERINTAH GURU
 >
-> Pengguna sudah melihat purwarupa sub-topik 1 (baris 13 di §2) dan **punya revisi**.
-> QA purwarupa (baris 14) sudah membereskan 5 bug terukur; revisi dari guru BELUM diterima.
-> Sesi baru dimulai dengan MENANYAKAN/MEMBACA revisi itu (plus keputusan atas "Temuan terbuka"
-> di §2), mengerjakannya, lalu baru melanjutkan daftar di §4.1. Jangan merombak ulang baris
-> 1–14 tanpa diminta.
+> **Bab 1 SELESAI** dan dinyatakan "bagus dan sempurna" oleh guru (25 Okt 2026). Sesi baru
+> **TIDAK langsung bekerja**: baca handoff ini, verifikasi keadaan repo & uji, laporkan
+> kesiapan singkat dalam Bahasa Indonesia, lalu **TUNGGU perintah guru** untuk memulai Bab 2.
+> Jangan menyentuh kode Bab 2 sebelum ada perintah eksplisit.
 
-### 4.1 Antrean pekerjaan yang sudah disetujui pengguna
+### 4.1 Antrean yang sudah disetujui
 
-1. **Revisi purwarupa sub-topik 1** (menunggu arahan pengguna di sesi baru).
-2. **Lima sub-topik Bab 1 sisanya** diubah ke pola terpandu yang sama:
-   `notasi_penyajian` · `vektor_posisi` · `panjang_vektor` · `vektor_satuan` ·
-   `komponen_r2_r3`. Pola: perintah di panggung, langkah `pick`/`fields`/`choice`,
-   visual konfirmasi hanya di `onSolved`, latihan mandiri sebagai kasus tambahan.
-3. **UI premium** (belum disentuh sama sekali):
-   - Beranda: tipografi & kerning rusak pada skor TKA ("Belum   ada"), tata letak Hero
-     + panel pencapaian dibuat lebih lega, aksen kobalt untuk Belajar dan amber untuk capaian.
-   - Menu bab & menu kuis: ganti daftar putih polos dengan **kartu bab premium**
-     (lencana nomor, bilah progres elegan, sketsa ikonik konsep bab, hover/active).
-4. Mini Kuis dibuat lebih kontekstual dengan simulasi yang baru dipelajari.
+1. **Bab 2 — Operasi & Bangun Datar** (`data/chapters/02_operasi_bangun_datar.json`,
+   engine di `js/lesson/simulations/simOperations.js`), 8 sub-topik:
+   | # | id | Judul | Engine lama |
+   |---|---|---|---|
+   | 1 | `penjumlahan_segitiga` | Aturan Segitiga & Poligon | `triangle_rule` |
+   | 2 | `penjumlahan_jajargenjang` | Aturan Jajar Genjang | `parallelogram_rule` |
+   | 3 | `operasi_komponen` | Jumlah & Selisih Komponen | `component_add` |
+   | 4 | `perkalian_skalar` | Perkalian Skalar dengan Vektor | `scalar_sweep` |
+   | 5 | `kombinasi_operasi` | Kombinasi Operasi | `combo_vector_op` |
+   | 6 | `kesamaan_vektor` | Kesamaan Dua Vektor | `equality_link` |
+   | 7 | `titik_segaris` | Titik-Titik Segaris (Kolinier) | `collinear_check` |
+   | 8 | `pembagian_ruas_garis` | Pembagian Ruas Garis | `section_point` |
+2. Sesudah Bab 2 dinilai: Bab 3 (Perkalian & Proyeksi, 6 sub-topik), lalu Bab 4 (Pemodelan TKA, 5).
+
+### 4.1a Cara mengerjakan Bab 2 (SETELAH diperintah) — pola yang sudah terbukti di Bab 1
+
+1. **Tanyakan dulu** keputusan yang memang milik guru (pakai pertanyaan pilihan, maks. 4):
+   mis. skenario/konteks cerita per sub-topik, apakah ada referensi LKPD Bab 2
+   (`../LKPD-1.html`, `../LKPD-2.html`, `../LKPD/`, `../XI/LKPD Vektor 1 - SMA YPVDP - XI.pdf`), dan cara pemeriksaan
+   (satu bab sekaligus vs per sub-topik — di Bab 1 guru memilih **sekaligus**).
+2. Baca dulu: engine lama Bab 2, data JSON-nya, `content/02_operasi_bangun_datar.md`,
+   `docs/Rancangan_Materi_Vektor_TKA.md` (Fase 3–5), dan LKPD guru.
+3. Untuk SETIAP sub-topik, paket lengkap (validator §4b + smoke §6l/§6m menegakkannya —
+   tambahkan id sub-topik Bab 2 ke `GUIDED_SUBTOPICS` dan `BAB1_SUBTOPICS`-padanannya):
+   `hook` (+ ilustrasi baru di `lesson/hookArt.js`) · simulasi terpandu (engine baru di
+   berkas `simGuided*.js`/`simOperations.js` memakai `guidedKit.js`) · **`hint` di SETIAP
+   langkah** · `simulation.conclusion` (definisi ≤ ±130 karakter, ≤ 3 kolom, muat 740×360) ·
+   selebrasi (`celebration()`, `nextCaseInvite`, `caseDonePrompt`) · `rangkuman` terstruktur
+   satu lembar A4 (+ gambar baru di `FIGURES` rangkumanDoc.js, `fill: none` untuk path) ·
+   Mini Kuis **3 soal** ber-`hint` (boleh `plane_tap`) · rencana uji di `tests/sims.browser.mjs`.
+4. Draf engine di scratchpad lalu dirakit (pola `assemble.py` sesi lalu) — JANGAN menyunting
+   berkas yang dimuat server selama gerbang uji berjalan.
+5. Verifikasi dengan MENGUKUR: tur visual tiap sub-topik di 740×360 & 1024×600, ukur luapan
+   panduan di SETIAP langkah, jalankan setiap kasus sebagai siswa yang macet (3 salah + diam
+   7 detik), pastikan setiap jawaban bisa diketik dengan papan angka.
+6. Commit per sub-topik sesudah gerbang LULUS; laporan akhir berbahasa Indonesia + tangkapan
+   layar, lalu tanyakan revisi.
 
 ### 4.1b Keputusan pengguna yang sudah mengikat (jangan ditawar ulang)
-- Materi teks **tidak dihapus**: ia jadi **Rangkuman opsional**, bukan layar pertama.
-- Pengerjaan **bertahap**: purwarupa dulu, dinilai, baru sisanya.
-- Simulasi terpandu didahulukan daripada UI premium.
+- Materi teks **tidak dihapus**: ia jadi **Rangkuman**, bukan layar pertama.
+- Alur sub-topik: **pemantik → simulasi terpandu → kesimpulan → selebrasi → Rangkuman (terbuka
+  sesudah simulasi selesai) → Mini Kuis 3 soal**.
+- Ruang 3D dipakai bila perlu (sudah ada `domain/space/spaceView.js` + langkah `pad`).
+- **Semua aturan §9** (tanpa kiasan, sudut pandang guru, petunjuk 3 salah/7 dtk, visual bersih,
+  panduan ringkas, jawaban bisa diketik, Rangkuman terkunci) berlaku untuk setiap bab.
 
 ### 4.2 Kontrak yang tetap mengikat selama polish
 - **Aksioma** (§1): aplikasi tidak pernah menghitung untuk siswa; kalimat toast tidak
