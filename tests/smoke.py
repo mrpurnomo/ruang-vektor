@@ -121,9 +121,13 @@ def reset_storage(page, identity=True):
     )
 
 
-def open_route(page, route, settle=900):
+def open_route(page, route, settle=900, hook="skip"):
     """
     Buka rute dari muat ulang penuh: navigasi hash tidak memuat ulang modul.
+
+    Kartu PEMANTIK (sekali per sub-topik, sebelum simulasi) dilewati lewat
+    tombolnya sendiri — seperti siswa — kecuali `hook="keep"`; bagian 6k
+    yang menguji kartunya sendiri.
 
     `net::ERR_NETWORK_CHANGED` dicoba ulang: di Windows, adaptor jaringan yang
     berganti status membuat Chromium membatalkan pemuatan — bahkan ke
@@ -142,6 +146,9 @@ def open_route(page, route, settle=900):
             print(f"  [ULANG] {route}: {str(err).splitlines()[0][:90]}")
             page.wait_for_timeout(1500)
     page.wait_for_timeout(settle)
+    if hook == "skip" and page.query_selector('[data-role="start-simulation"]'):
+        page.click('[data-role="start-simulation"]')
+        page.wait_for_timeout(settle)
 
 
 def fresh_position(page):
@@ -953,6 +960,36 @@ def section_tooltip(page, errors):
     record("Sentuhan tidak memunculkan tooltip", page.evaluate(TIP_PROBE) is None)
 
 
+HOOK_PROBE = """() => { const c = document.querySelector('.hook'); if (!c) return null;
+    const r = c.getBoundingClientRect(), b = document.querySelector('[data-role="start-simulation"]').getBoundingClientRect();
+    return { title: c.querySelector('.hook__title').innerText, ask: c.querySelector('.hook__ask').innerText.slice(0, 60),
+             art: !!c.querySelector('.hook__art svg'), btnInView: b.top >= 0 && b.bottom <= innerHeight && b.right <= innerWidth,
+             overflowX: c.scrollWidth > c.clientWidth + 1, sim: !!document.querySelector('.sim-kit') }; }"""
+
+
+def section_hook(page, errors):
+    print("\n6k. Kartu pemantik: sekali per sub-topik, sebelum simulasi")
+    for w, h in [(740, 360), (1024, 600)]:
+        page.set_viewport_size({"width": w, "height": h})
+        fresh_progress(page)
+        open_route(page, GUIDED_ROUTE, settle=700, hook="keep")
+        k = page.evaluate(HOOK_PROBE)
+        record(f"{w}×{h}: kunjungan pertama membuka kartu pemantik (gambar + pertanyaan), belum simulasi",
+               bool(k) and k["art"] and k["ask"] and not k["sim"], json.dumps(k, ensure_ascii=False))
+        if k:
+            record(f"{w}×{h}: tombol Mulai Simulasi terlihat tanpa menggulir, kartu tanpa luapan",
+                   k["btnInView"] and not k["overflowX"], json.dumps(k))
+        page.click('[data-role="start-simulation"]')
+        page.wait_for_timeout(700)
+        record(f"{w}×{h}: Mulai Simulasi membuka simulasinya", page.evaluate("() => !!document.querySelector('.sim-kit') && !document.querySelector('.hook')"))
+    # Kunjungan ulang (posisi sesi dibuang, seperti peramban ditutup): tidak ada pemantik lagi.
+    fresh_position(page)
+    open_route(page, GUIDED_ROUTE, settle=700, hook="keep")
+    record("Kunjungan ulang: pemantik tidak muncul lagi", page.evaluate("() => !document.querySelector('.hook') && !!document.querySelector('.sim-kit')"))
+    record("Tanpa galat konsol selama pemantik", not errors, "; ".join(errors[:2]))
+    page.set_viewport_size({"width": 1024, "height": 600})
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1411,6 +1448,7 @@ def main():
             section_guided_stage(page, errors)
             section_quiz_sticky(page, errors)
             section_sound_toggle(page, errors)
+            section_hook(page, errors)
             section_celebration(page, errors)
             section_quiz_retry(page, errors)
             section_quiz_plane(page, errors)

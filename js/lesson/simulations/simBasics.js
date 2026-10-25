@@ -16,7 +16,7 @@ import { CaseSimulation, tex, texNum, texColumn, texTuple, same, givenBlock, mix
 import * as S from '../../domain/surd.js';
 import * as V from '../../domain/vector.js';
 import * as Val from '../../domain/validator.js';
-import sfx from '../../core/ui/sfx.js';
+import { HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops } from './guidedKit.js';
 
 /* ------------------------------------------------------------
    Pembantu bersama
@@ -37,46 +37,7 @@ function firstWrong(student, key) {
   return key.findIndex((k, i) => !same(student[i], k));
 }
 
-const DIRECTION = {
-  x: (sign) => (sign > 0 ? 'ke kanan' : 'ke kiri'),
-  y: (sign) => (sign > 0 ? 'ke atas' : 'ke bawah'),
-  z: (sign) => (sign > 0 ? 'keluar bidang' : 'masuk bidang'),
-};
-
 const is2D = (arr) => Array.isArray(arr) && arr.length === 2;
-
-/** Pengguna meminta gerak dikurangi: animasi diganti keadaan akhirnya. */
-function stillMotion() {
-  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-/** Goresan yang "ditulis" dari pangkal ke ujung (WAAPI pada stroke-dashoffset). */
-function drawStroke(path, ms) {
-  if (stillMotion() || !path.animate || !path.getTotalLength) return;
-  const len = path.getTotalLength();
-  if (!(len > 0)) return;
-  path.style.strokeDasharray = `${len}`;
-  const anim = path.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: ms, easing: 'ease-out' });
-  anim.onfinish = () => { path.style.strokeDasharray = ''; };
-}
-
-/** Muncul memantul (spring): label & lencana yang baru lahir. */
-function springPop(node) {
-  if (!node || stillMotion() || !node.animate) return;
-  node.animate([
-    { transform: 'scale(.35)', opacity: 0 },
-    { transform: 'scale(1.18)', opacity: 1, offset: 0.6 },
-    { transform: 'scale(1)', opacity: 1 },
-  ], { duration: 300, easing: 'cubic-bezier(.3, 1.3, .5, 1)' });
-}
-
-/** Tempo animasi KONSTAN di semua kasus: irama yang berubah antar kasus
-    terasa seperti aplikasi "tidak sabar" dan mengacaukan hitungan siswa. */
-const HOP_MS = 110;
-const ARROW_MS = 520;
-
-/** "+7" / "−5": langkah bertanda, sebagaimana siswa menuliskannya. */
-const signedStep = (n, sign) => (sign < 0 ? `-${n}` : `+${n}`);
 
 /* ============================================================
    1. vector_anatomy — Simulasi TERPANDU: dari bidang kosong ke vektor
@@ -201,47 +162,9 @@ export class GuidedVectorIntroSim extends CaseSimulation {
     return { toast: 'ujungBukanTitik', values: { titik: this.tapped(p) } };
   }
 
-  /**
-   * Animasi langkah ala Manim — diputar di `onSolved`, SESUDAH siswa sendiri
-   * menuliskan jumlah langkahnya. Lompat satu satuan demi satuan sepanjang
-   * sumbu X, lalu sepanjang sumbu Y; lencana hitungan ikut berjalan dan
-   * nadanya naik. Hasil akhirnya menetap: "+7" di bawah, "+4" di samping.
-   */
+  /** Animasi langkah ala Manim (guidedKit) — diputar SESUDAH siswa menulis langkahnya. */
   async animateSteps(target, { hopMs }) {
-    const [tx, ty] = target;
-    const plane = this.plane;
-    const sx = Math.sign(tx) || 1;
-    const sy = Math.sign(ty) || 1;
-    // Busur mendatar menonjol KE ARAH tujuan; busur tegak menonjol KE LUAR.
-    const arcY = ty >= 0 ? 1 : -1;
-    const arcX = tx >= 0 ? 1 : -1;
-    const delay = stillMotion() ? 0 : hopMs;
-    let count = 0;
-
-    const phase = async (n, from, step, side, badgeOffset, sign) => {
-      if (!n) return;
-      const badge = plane.drawTag(from, '', { offset: badgeOffset });
-      for (let k = 1; k <= n; k += 1) {
-        const a = [from[0] + step[0] * (k - 1), from[1] + step[1] * (k - 1)];
-        const b = [from[0] + step[0] * k, from[1] + step[1] * k];
-        const hop = plane.drawHop(a, b, { side });
-        count += 1;
-        sfx.step(count);
-        drawStroke(hop.path, Math.max(60, delay - 20));
-        badge.setPosition(b).setText(signedStep(k, sign));
-        springPop(badge.inner);
-        await this.wait(delay);
-      }
-      badge.remove();
-    };
-
-    await phase(Math.abs(tx), [0, 0], [sx, 0], [0, arcY], [0, -20 * arcY], sx);
-    if (tx && ty) await this.wait(delay);
-    await phase(Math.abs(ty), [tx, 0], [0, sy], [arcX, 0], [22 * arcX, 0], sy);
-
-    // Lencana akhir di sisi SEBERANG busurnya, supaya tidak saling tindih.
-    if (tx) springPop(plane.drawTag([tx / 2, 0], signedStep(Math.abs(tx), sx), { offset: [0, 15 * arcY] }).inner);
-    if (ty) springPop(plane.drawTag([tx, ty / 2], signedStep(Math.abs(ty), sy), { offset: [-24 * arcX, 0] }).inner);
+    return animateHops(this, [0, 0], target, { hopMs });
   }
 
   /** Titik yang diketuk, apa adanya — dipakai kalimat umpan balik. */

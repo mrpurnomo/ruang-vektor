@@ -333,6 +333,29 @@
     vector-effect: non-scaling-stroke;
   }
 
+  /* Poligon bantu (persegi Pythagoras, segitiga panjang) & lingkaran satuan. */
+  .plane__poly {
+    --tone: var(--plane-vector);
+    fill: color-mix(in srgb, var(--tone) 13%, transparent);
+    stroke: var(--tone);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .plane__poly--amber { --tone: var(--plane-amber); }
+  .plane__poly--cyan  { --tone: var(--plane-cyan); }
+  .plane__poly--coral { --tone: var(--accent-coral); }
+  .plane__poly--dashed { stroke-dasharray: 5 4; fill-opacity: .6; }
+  .plane__circle {
+    --tone: var(--plane-cyan);
+    fill: color-mix(in srgb, var(--tone) 6%, transparent);
+    stroke: var(--tone);
+    stroke-width: 1.8;
+    stroke-dasharray: 3 3;
+    vector-effect: non-scaling-stroke;
+  }
+  .plane__circle--amber { --tone: var(--plane-amber); }
+
   .plane__parallelogram {
     fill: color-mix(in srgb, var(--plane-vector) 9%, transparent);
     stroke: var(--plane-vector);

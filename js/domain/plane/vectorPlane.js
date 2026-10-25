@@ -618,6 +618,34 @@ export class VectorPlane {
     });
   }
 
+  /**
+   * Poligon tertutup berwarna lembut, mis. persegi Pythagoras di sisi
+   * segitiga panjang vektor. `tone`: blue | amber | cyan | coral.
+   * `setPoints(pts)` memindahkannya (animasi tumbuh dikerjakan pemanggil).
+   */
+  drawPolygon(points, { tone = 'blue', dashed = false } = {}) {
+    let pts = points.map(toPlanePoint);
+    const polygon = svgEl('polygon', {}, `plane__poly plane__poly--${tone}${dashed ? ' plane__poly--dashed' : ''}`);
+    const mark = this.addMark('shape', polygon, (vp) => {
+      polygon.setAttribute('points', pts.map((c) => vp.toScreen(c).map(fmt).join(',')).join(' '));
+    });
+    mark.setPoints = (next) => { pts = next.map(toPlanePoint); mark.layout(); return mark; };
+    return mark;
+  }
+
+  /** Lingkaran berpusat `center` berjari-jari `r` SATUAN (mis. lingkaran satuan). */
+  drawCircle(center, r, { tone = 'cyan' } = {}) {
+    const c = toPlanePoint(center);
+    const circle = svgEl('circle', {}, `plane__circle plane__circle--${tone}`);
+    return this.addMark('shape', circle, (vp) => {
+      const [cx, cy] = vp.toScreen(c);
+      const [ex] = vp.toScreen([c[0] + r, c[1]]);
+      circle.setAttribute('cx', fmt(cx));
+      circle.setAttribute('cy', fmt(cy));
+      circle.setAttribute('r', fmt(Math.abs(ex - cx)));
+    });
+  }
+
   /** Jajargenjang O, O+u, O+u+v, O+v — aturan jajargenjang. */
   drawParallelogram(u, v, { origin = [0, 0] } = {}) {
     const polygon = svgEl('polygon', {}, 'plane__parallelogram');

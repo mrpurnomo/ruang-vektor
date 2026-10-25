@@ -578,6 +578,123 @@
     color: var(--ink-900);
   }
   .conclude__remember svg { flex: none; margin-top: 2px; color: var(--accent-amber); }
+  .conclude__cols[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
+  .conclude__cols[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .conclude__col--amber { border-left-color: var(--yellow-deep); background: var(--value-soft); }
+  .conclude__col--amber .conclude__head { color: var(--accent-amber-dark); }
+  .conclude__col--amber li::before { background: var(--yellow-deep); }
+  .conclude__col--cyan { border-left-color: var(--plane-cyan); background: color-mix(in srgb, var(--cyan) 10%, var(--white)); }
+  .conclude__col--cyan .conclude__head { color: var(--plane-cyan); }
+  .conclude__col--cyan li::before { background: var(--plane-cyan); }
+  .conclude__formula {
+    padding: 4px var(--sp-3);
+    border-radius: var(--r-md);
+    background: var(--bg-sunken);
+    text-align: center;
+  }
+  .conclude__formula .katex-display { margin: 4px 0; }
+
+  /* ------------------------------------------------------------
+     KARTU PEMANTIK — satu situasi nyata + satu pertanyaan, sekali
+     sebelum simulasi. Gambar mengajukan soal, simulasi menjawabnya.
+     ------------------------------------------------------------ */
+  .hook {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.9fr) minmax(0, 1.25fr);
+    gap: var(--sp-5);
+    align-items: center;
+    padding: var(--sp-5);
+    border-top: 3px solid var(--royal);
+  }
+  .hook__art {
+    border-radius: var(--r-lg);
+    border: 1px solid var(--plane-edge);
+    background: var(--plane-bg);
+    box-shadow: var(--plane-inset);
+    padding: var(--sp-2);
+  }
+  .hook__art svg { display: block; width: 100%; height: auto; }
+  .hook__text { display: grid; gap: var(--sp-3); justify-items: start; }
+  .hook__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-ui);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--royal);
+  }
+  .hook__eyebrow svg { color: var(--accent-amber); }
+  .hook__title {
+    margin: 0;
+    font-family: var(--display);
+    font-size: var(--fs-xl);
+    line-height: 1.05;
+    letter-spacing: var(--tracking-display);
+    color: var(--ink-900);
+  }
+  .hook__story { margin: 0; font-size: var(--fs-base); line-height: 1.55; color: var(--ink-700); }
+  .hook__ask {
+    margin: 0;
+    padding: var(--sp-2) var(--sp-3);
+    border-left: 3px solid var(--yellow-deep);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    background: var(--value-soft);
+    font-size: var(--fs-base);
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--ink-900);
+  }
+  .hook__go { margin-top: var(--sp-1); }
+
+  /* Warna ilustrasi pemantik (hookArt.js) — semuanya token. */
+  .ha-grid { stroke: var(--scope-grid-major); stroke-width: .8; }
+  .ha-axis { stroke: var(--plane-ink); stroke-width: 1.4; opacity: .55; }
+  .ha-axis--x { stroke: var(--accent-coral); opacity: .9; }
+  .ha-axis--y { stroke: var(--success); opacity: .9; }
+  .ha-axis--z { stroke: var(--royal); opacity: .9; }
+  .ha-vec { stroke: var(--plane-vector); stroke-width: 3; stroke-linecap: round; }
+  .ha-head { fill: var(--plane-vector); }
+  .ha-vec--amber { stroke: var(--plane-amber); }
+  .ha-head--amber { fill: var(--plane-amber); }
+  .ha-dash, .ha-pos { fill: none; stroke: var(--graphite-3); stroke-width: 1.3; stroke-dasharray: 4 3; }
+  .ha-pos { stroke: var(--plane-cyan); stroke-width: 1.6; }
+  .ha-route { fill: none; stroke: var(--plane-amber); stroke-width: 2.4; stroke-dasharray: 6 4; stroke-linejoin: round; }
+  .ha-ring { fill: color-mix(in srgb, var(--cyan) 8%, transparent); stroke: var(--plane-cyan); stroke-width: 1.6; stroke-dasharray: 4 4; }
+  .ha-radius { stroke: var(--plane-amber); stroke-width: 1.6; }
+  .ha-map { fill: var(--white); stroke: var(--border-strong); stroke-width: 1.4; }
+  .ha-dot { fill: var(--plane-point); stroke: var(--plane-point-rim); stroke-width: 1.5; }
+  .ha-dot--amber { fill: var(--yellow); }
+  .ha-house { fill: var(--royal); }
+  .ha-pin circle { fill: var(--white); stroke: var(--accent-coral); stroke-width: 1.6; }
+  .ha-pin text { font: 700 9px var(--font-ui); fill: var(--accent-coral); text-anchor: middle; }
+  .ha-label { font: 700 11px var(--font-ui); fill: var(--ink-700); text-anchor: middle; letter-spacing: .02em; }
+  .ha-label--blue { fill: var(--plane-vector); font-size: 13px; }
+  .ha-label--amber { fill: var(--accent-amber); }
+  .ha-label--x { fill: var(--accent-coral); }
+  .ha-label--y { fill: var(--success); }
+  .ha-label--z { fill: var(--royal); }
+  .ha-tag rect { fill: var(--white); stroke: var(--brand-primary-line); stroke-width: 1.2; }
+  .ha-tag text { font: 700 12px var(--font-mono); fill: var(--brand-primary-dark); text-anchor: middle; }
+  .ha-bracket { fill: none; stroke: var(--brand-primary-dark); stroke-width: 1.4; }
+  .ha-link { fill: none; stroke: var(--brand-primary-line); stroke-width: 1.2; }
+  .ha-bldg { fill: color-mix(in srgb, var(--royal) 10%, var(--white)); stroke: var(--royal); stroke-width: 1.2; }
+  .ha-bldg--amber { fill: var(--value-soft); stroke: var(--yellow-deep); }
+  .ha-bldg-t { font: 700 9px var(--font-ui); fill: var(--ink-900); text-anchor: middle; }
+  .ha-drone circle { fill: var(--royal); stroke: var(--white); stroke-width: 1.5; }
+  .ha-drone path { stroke: var(--graphite); stroke-width: 2; stroke-linecap: round; }
+
+  @media (orientation: landscape) and (max-height: 470px) {
+    .hook { gap: var(--sp-3); padding: var(--sp-3); grid-template-columns: minmax(120px, 0.7fr) minmax(0, 1.3fr); }
+    .hook__text { gap: var(--sp-2); }
+    .hook__title { font-size: var(--fs-lg); }
+    .hook__story { font-size: var(--fs-xs); line-height: 1.4; }
+    .hook__ask { font-size: var(--fs-xs); padding: 6px var(--sp-2); }
+    .conclude__formula { padding: 0 var(--sp-2); }
+    .conclude__formula .katex-display { margin: 2px 0; font-size: .92em; }
+  }
 
   @media (orientation: landscape) and (max-height: 470px) {
     .modal--conclusion { padding: var(--sp-3) var(--sp-4); }

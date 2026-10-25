@@ -40,7 +40,7 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 SIM_DIR = ROOT / "js" / "lesson" / "simulations"
-ENGINE_FILES = ["simBasics.js", "simOperations.js", "simProducts.js", "simModeling.js"]
+ENGINE_FILES = ["simBasics.js", "simGuided.js", "simOperations.js", "simProducts.js", "simModeling.js"]
 
 EXPECTED_CHAPTERS = 4
 EXPECTED_SUBTOPICS = 25
@@ -67,6 +67,24 @@ HURUF = "ABCDEFGHIJ"
 # Kunci toast yang dipakai kerangka bersama (simKit.js / simCore.js), bukan
 # oleh kelas engine. Boleh ada di JSON tanpa disebut kelasnya.
 FRAMEWORK_TOAST_KEYS = {"success", "belumLengkap"}
+
+# Kunci toast yang dikirim PERKAKAS bersama (guidedKit.js) atas nama engine
+# yang memakainya: penanda di sumber kelas → (kunci, nilai yang dikirim).
+KIT_TOASTS = {
+    "createArrowDrawer(": [
+        ("pangkalBukanTitik", {"titik"}),
+        ("ujungBukanTitik", {"titik"}),
+        ("arahPanahTerbalik", {"nama", "balik"}),
+    ],
+}
+
+# Sub-topik yang WAJIB memakai paket terpandu lengkap (revisi guru: pola
+# sub-topik 1): kartu pemantik, kesimpulan simulasi, rangkuman terstruktur.
+GUIDED_SUBTOPICS = {
+    "01_konsep_dasar": ["pengertian_notasi"],
+}
+CONCLUSION_TONES = {"vector", "scalar", "amber", "cyan"}
+DOC_BLOCKS = {"p", "tex", "list", "steps", "table", "figure", "conclusion", "def", "tip", "warn"}
 
 PLACEHOLDER_RE = re.compile(r"\{\{\s*([a-zA-Z0-9_]+)\s*\}\}")
 MALFORMED_RE = re.compile(r"\{\{(?!\s*[a-zA-Z0-9_]+\s*\}\})")
@@ -456,6 +474,9 @@ def toast_uses(class_src):
             vals = set()
         for name in names[:1]:
             uses.append((name, vals))
+    for marker, kit_uses in KIT_TOASTS.items():
+        if marker in class_src:
+            uses.extend((name, set(vals)) for name, vals in kit_uses)
     cm = re.search(r"caseSuccessKey\([^)]*\)\s*\{", class_src)
     if cm:
         body = class_src[cm.end():find_matching(class_src, cm.end() - 1)]
@@ -543,6 +564,66 @@ def check_engines_and_toasts(chapter_data, rep):
             malformed = sorted(k for k, t in toasts.items()
                                if isinstance(t, str) and MALFORMED_RE.search(PLACEHOLDER_RE.sub("", t)))
             rep.check(not malformed, f"{label}: tidak ada placeholder cacat", str(malformed))
+
+
+# ============================================================
+# 4b. Paket terpandu: pemantik · kesimpulan · rangkuman terstruktur
+# ============================================================
+
+def object_keys_in(path, const_name):
+    """Nama metode tingkat atas di objek `const NAME = { key() {...}, ... }`."""
+    src = path.read_text(encoding="utf-8")
+    m = re.search(r"const " + const_name + r"\s*=\s*\{", src)
+    if not m:
+        return set()
+    body = src[m.end():find_matching(src, m.end() - 1)]
+    return set(re.findall(r"^  (\w+)\(\)\s*\{", body, re.M))
+
+
+def check_guided_package(chapter_data, rep):
+    rep.start("4b. Paket terpandu: pemantik, kesimpulan, rangkuman")
+    arts = object_keys_in(ROOT / "js" / "lesson" / "hookArt.js", "ART")
+    figures = object_keys_in(ROOT / "js" / "lesson" / "rangkumanDoc.js", "FIGURES")
+    rep.check(bool(arts), "hookArt.js: daftar ilustrasi terbaca", str(sorted(arts)))
+    for cid, data in chapter_data.items():
+        required = set(GUIDED_SUBTOPICS.get(cid, []))
+        for s in data.get("subtopics", []):
+            sid = s.get("id")
+            where = f"{cid}/{sid}"
+            hook = s.get("hook")
+            conclusion = (s.get("simulation") or {}).get("conclusion")
+            doc = s.get("rangkuman")
+            if sid in required:
+                rep.check(bool(hook), f"{where}: punya kartu pemantik")
+                rep.check(bool(conclusion), f"{where}: punya kesimpulan simulasi")
+                rep.check(bool(doc), f"{where}: punya rangkuman terstruktur")
+            if hook:
+                bad = [k for k in ("title", "story", "question", "art") if not isinstance(hook.get(k), str) or not hook.get(k).strip()]
+                rep.check(not bad, f"{where}: pemantik lengkap", f"kosong: {bad}")
+                rep.check(hook.get("art") in arts, f"{where}: ilustrasi pemantik dikenal", str(hook.get("art")))
+            if conclusion:
+                ok = bool(conclusion.get("title")) and bool(conclusion.get("definition"))
+                cols = conclusion.get("columns")
+                if cols is None:
+                    cols = [c for c in (conclusion.get("vector"), conclusion.get("scalar")) if c]
+                    cols = [dict(c, tone="vector") for c in cols]
+                bad = [i for i, c in enumerate(cols) if not c.get("title") or not c.get("items") or c.get("tone", "vector") not in CONCLUSION_TONES]
+                rep.check(ok and cols and not bad and len(cols) <= 3, f"{where}: kesimpulan sah (judul, definisi, 1–3 kolom)", f"kolom cacat: {bad}")
+            if doc:
+                problems = []
+                for i, sec in enumerate(doc.get("sections") or []):
+                    if not sec.get("title"):
+                        problems.append(f"bagian {i} tanpa judul")
+                    for j, b in enumerate(sec.get("blocks") or []):
+                        t = b.get("t")
+                        if t not in DOC_BLOCKS:
+                            problems.append(f"bagian {i} blok {j}: tipe {t!r}")
+                        elif t == "figure" and b.get("key") not in figures:
+                            problems.append(f"bagian {i} blok {j}: gambar {b.get('key')!r} tak dikenal")
+                        elif t == "conclusion" and not conclusion:
+                            problems.append(f"bagian {i} blok {j}: kesimpulan dirujuk tapi tidak ada")
+                rep.check(bool(doc.get("sections")) and not problems, f"{where}: rangkuman terstruktur sah", "; ".join(problems))
+                rep.check(isinstance(doc.get("notes"), list) and len(doc.get("notes")) >= 2, f"{where}: rangkuman punya catatan kecil (≥ 2)")
 
 
 # ============================================================
@@ -789,6 +870,7 @@ def main():
     print("Validasi data Ruang Vektor")
     lessons, chapter_data = check_manifest(rep)
     check_engines_and_toasts(chapter_data, rep)
+    check_guided_package(chapter_data, rep)
     check_questions(lessons, chapter_data, rep)
 
     print("\n" + "=" * 60)

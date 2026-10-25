@@ -98,8 +98,13 @@ function block(b, ctx) {
       const c = ctx.subtopic.simulation && ctx.subtopic.simulation.conclusion;
       if (!c) return el('div');
       const node = el('div', 'doc-conclude');
-      const col = (side, cls) => `<div class="doc-conclude__col doc-conclude__col--${cls}"><b>${renderMixed(side.title)}</b><ul>${side.items.map((i) => `<li>${renderMixed(i)}</li>`).join('')}</ul></div>`;
-      node.innerHTML = `<p class="doc-p">${renderMixed(c.definition)}</p><div class="doc-conclude__cols">${col(c.vector, 'vector')}${col(c.scalar, 'scalar')}</div>`;
+      // Kolom bebas (`columns`) atau bentuk lama vektor/skalar (sub-topik 1).
+      const cols = Array.isArray(c.columns) ? c.columns
+        : [c.vector && { ...c.vector, tone: 'vector' }, c.scalar && { ...c.scalar, tone: 'scalar' }].filter(Boolean);
+      const col = (side) => `<div class="doc-conclude__col doc-conclude__col--${side.tone || 'vector'}"><b>${renderMixed(side.title)}</b><ul>${side.items.map((i) => `<li>${renderMixed(i)}</li>`).join('')}</ul></div>`;
+      node.innerHTML = `<p class="doc-p">${renderMixed(c.definition)}</p>`
+        + (c.formula ? `<div class="doc-tex">${renderToString(c.formula, { display: true })}</div>` : '')
+        + (cols.length ? `<div class="doc-conclude__cols" data-count="${cols.length}">${cols.map(col).join('')}</div>` : '');
       return node;
     }
     case 'def': case 'tip': case 'warn': {

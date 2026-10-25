@@ -15,9 +15,10 @@ import { QuizEngine } from '../quiz/quizEngine.js';
 // Efek samping: mendaftarkan tipe soal bidang kartesius (plane_tap).
 import './quizTypes.js';
 import { renderRangkumanDoc } from './rangkumanDoc.js';
+import { hookArt } from './hookArt.js';
 import { renderQuestionBody } from '../quiz/questionBody.js';
 import {
-  markSubtopicStarted, markSubtopicCompleted, recordAttempt, markSimulationDone,
+  markSubtopicStarted, markSubtopicCompleted, recordAttempt, markSimulationDone, markHookSeen,
   setChapterCompleteIfDone, getSubtopicProgress,
 } from '../core/state/progressStore.js';
 import toast, { anchorToasts } from '../core/ui/toast.js';
@@ -47,15 +48,27 @@ const REVIEW_STEP = STEPS.length;
  * Blok kesimpulan (definisi · vektor vs skalar · kiat) — dipakai pop-up
  * kesimpulan simulasi DAN dokumen Rangkuman, supaya isinya satu sumber.
  */
+/**
+ * Kolom kesimpulan. Bentuk umum `columns: [{ title, tone, items }]`
+ * (tone: vector | scalar | amber | cyan); bentuk lama `vector` + `scalar`
+ * (sub-topik 1) tetap dikenali.
+ */
+export function conclusionColumns(c) {
+  if (Array.isArray(c.columns)) return c.columns;
+  return [c.vector && { ...c.vector, tone: 'vector' }, c.scalar && { ...c.scalar, tone: 'scalar' }].filter(Boolean);
+}
+
 export function conclusionBlock(c) {
-  const col = (side, cls) => `<div class="conclude__col conclude__col--${cls}">
+  const cols = conclusionColumns(c);
+  const col = (side) => `<div class="conclude__col conclude__col--${side.tone || 'vector'}">
       <div class="conclude__head">${renderMixed(side.title)}</div>
       <ul>${side.items.map((it) => `<li>${renderMixed(it)}</li>`).join('')}</ul>
     </div>`;
   const node = el('div', 'conclude');
   node.innerHTML = `
     <p class="conclude__def">${renderMixed(c.definition)}</p>
-    <div class="conclude__cols">${col(c.vector, 'vector')}${col(c.scalar, 'scalar')}</div>
+    ${c.formula ? `<div class="conclude__formula">${renderToString(c.formula, { display: true })}</div>` : ''}
+    ${cols.length ? `<div class="conclude__cols" data-count="${cols.length}">${cols.map(col).join('')}</div>` : ''}
     ${c.remember ? `<p class="conclude__remember">${icon('lightbulb', { size: 15 })}<span>${renderMixed(c.remember)}</span></p>` : ''}`;
   return node;
 }
@@ -518,9 +531,57 @@ export class LessonView {
     this.renderStep();
   }
 
+  /**
+   * Kartu pemantik tampil SEKALI: sebelum simulasi pertama kali dimulai.
+   * Tidak tampil lagi bila simulasi sudah berjalan/tuntas, saat siswa
+   * menekan Ulangi, atau sesudah tombol "Mulai Simulasi" ditekan.
+   */
+  shouldShowHook() {
+    const { chapter, subtopic } = this.ctx;
+    if (!subtopic.hook || this.simulationDone || this.forceReplay || this.hookDismissed) return false;
+    const started = this.resumeSimState && Array.isArray(this.resumeSimState.solved)
+      && (this.resumeSimState.solved.length > 0 || this.resumeSimState.caseIndex > 0);
+    if (started || this.resumeSimSlide > 0) return false;
+    return getSubtopicProgress(chapter.id, subtopic.id).hookSeen !== true;
+  }
+
+  /** Pemantik: satu situasi nyata + satu pertanyaan, lalu "Mulai Simulasi". */
+  renderHook() {
+    const { chapter, subtopic, subtopicOrder } = this.ctx;
+    const h = subtopic.hook;
+    const number = (subtopicOrder || []).indexOf(subtopic.id) + 1;
+    this.setHint('Pemantik', 'Pikirkan pertanyaannya sejenak — **simulasi** akan menjawabnya.');
+
+    const card = el('section', 'content-card hook anim-rise');
+    card.setAttribute('aria-labelledby', 'hook-title');
+    card.innerHTML = `
+      <div class="hook__art">${hookArt(h.art)}</div>
+      <div class="hook__text">
+        <div class="hook__eyebrow">${icon('lightbulb', { size: 14 })}<span>Pemantik · Sub-topik ${number}</span></div>
+        <h2 class="hook__title" id="hook-title">${renderMixed(h.title)}</h2>
+        <p class="hook__story">${renderMixed(h.story)}</p>
+        <p class="hook__ask">${renderMixed(h.question)}</p>
+        <div class="hook__go"></div>
+      </div>`;
+    const go = el('button', 'btn btn--primary btn--pulse hook__start');
+    go.type = 'button';
+    go.dataset.role = 'start-simulation';
+    go.innerHTML = `<span>Mulai Simulasi</span>${icon('arrow-right', { size: 17 })}`;
+    go.addEventListener('click', () => {
+      markHookSeen(chapter.id, subtopic.id);
+      this.hookDismissed = true;
+      sfx.tap();
+      this.renderStep();
+    });
+    card.querySelector('.hook__go').appendChild(go);
+    this.body.appendChild(card);
+    go.focus({ preventScroll: true });
+  }
+
   /* ---------------- B. Simulasi ---------------- */
   renderSimulation() {
     const { subtopic } = this.ctx;
+    if (this.shouldShowHook()) return this.renderHook();
 
     const card = el('div', 'content-card content-card--tight anim-rise');
     // Pembungkus simulasi diberi kelas supaya CSS bisa membuatnya ikut

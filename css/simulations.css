@@ -657,4 +657,52 @@
     .sim__prompt { min-height: 62px; padding: var(--sp-2); }
     .workstrip-row { min-height: 52px; }
   }
+
+  /* ============================================================
+     PAPAN KEMUDI (langkah `pad`) — tombol arah per sumbu
+     Warna sumbu sama dengan ruang 3D: X beri, Y hijau, Z kobalt.
+     ============================================================ */
+  .sim-pad {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .sim-pad__btn {
+    --axis: var(--royal);
+    position: relative;
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1.5px solid color-mix(in srgb, var(--axis) 45%, transparent);
+    border-radius: var(--r-md);
+    background: color-mix(in srgb, var(--axis) 8%, var(--white));
+    color: var(--axis);
+    font-family: var(--font-ui);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
+    cursor: pointer;
+    transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  }
+  .sim-pad__btn::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-min)) / 2));
+  }
+  .sim-pad__btn:hover { background: color-mix(in srgb, var(--axis) 16%, var(--white)); }
+  .sim-pad__btn:active { transform: scale(.96); }
+  .sim-pad__btn:focus-visible { box-shadow: var(--ring-focus); outline: none; }
+  .sim-pad__btn:disabled { opacity: .5; cursor: default; }
+  .sim-pad__btn--x { --axis: var(--accent-coral); }
+  .sim-pad__btn--y { --axis: var(--success); }
+  .sim-pad__btn--z { --axis: var(--royal); }
+  .sim-pad__btn .katex { color: inherit; }
+  .sim-pad__status {
+    margin: 6px 0 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-700);
+  }
+  @media (orientation: landscape) and (max-height: 470px) {
+    .sim-pad { gap: 4px; }
+    .sim-pad__btn { min-height: 34px; font-size: 12.5px; }
+  }
 }

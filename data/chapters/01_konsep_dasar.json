@@ -5,6 +5,12 @@
     {
       "id": "pengertian_notasi",
       "title": "Konsep Dasar Vektor",
+      "hook": {
+        "art": "peta",
+        "title": "\"Rumahmu jauh, nggak?\"",
+        "story": "Temanmu ingin berkunjung dan bertanya seberapa jauh rumahmu. Kamu menjawab singkat: **\"3 kilometer.\"** Ia pun berangkat sendirian, hanya berbekal jawaban itu.",
+        "question": "Apakah temanmu pasti sampai? Informasi apa yang masih **kurang** dari jawaban \"3 kilometer\"?"
+      },
       "materi": [
         {
           "t": "p",

@@ -17,6 +17,7 @@ import { el } from './simCore.js';
 import { icon } from '../../core/ui/icons.js';
 import { renderMixed } from '../../core/render/katexRenderer.js';
 import { ENGINES as BAB_1 } from './simBasics.js';
+import { ENGINES as BAB_1_GUIDED } from './simGuided.js';
 import { ENGINES as BAB_2 } from './simOperations.js';
 import { ENGINES as BAB_3 } from './simProducts.js';
 import { ENGINES as BAB_4 } from './simModeling.js';
@@ -24,7 +25,7 @@ import { ENGINES as BAB_4 } from './simModeling.js';
 /**
  * string engine → kelas turunan `Simulation`.
  *
- *   Bab 1 → simBasics.js   · Bab 2 → simOperations.js
+ *   Bab 1 → simBasics.js + simGuided.js · Bab 2 → simOperations.js
  *   Bab 3 → simProducts.js · Bab 4 → simModeling.js
  *
  * Berkas bab MENGEKSPOR peta `ENGINES`; berkas inilah yang mendaftarkannya.
@@ -41,7 +42,7 @@ export function registerSimulation(key, EngineClass) {
   SIMULATION_REGISTRY[key] = EngineClass;
 }
 
-for (const chapter of [BAB_1, BAB_2, BAB_3, BAB_4]) {
+for (const chapter of [BAB_1, BAB_1_GUIDED, BAB_2, BAB_3, BAB_4]) {
   for (const [key, EngineClass] of Object.entries(chapter)) registerSimulation(key, EngineClass);
 }
 

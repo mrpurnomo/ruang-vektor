@@ -28,6 +28,7 @@
 
 import { Simulation, el, makeTappable } from './simCore.js';
 import { createVectorPlane } from '../../domain/plane/vectorPlane.js';
+import { createSpaceView } from '../../domain/space/spaceView.js';
 import { attachMathpad, closeMathpad, isMathpadOpen } from '../../core/ui/mathpad.js';
 import { renderMixed, renderToString } from '../../core/render/katexRenderer.js';
 import { fillTemplate } from '../../core/text.js';
@@ -131,6 +132,18 @@ export class CaseSimulation extends Simulation {
 
   planeOptions() {
     return { xRange: this.config.xRange || [-6, 6], yRange: this.config.yRange || [-4, 4] };
+  }
+
+  /**
+   * Apakah kasus ini memakai RUANG 3D yang bisa diputar (domain/space)?
+   * Ruang menempati kolom yang sama dengan bidang; `this.space` hidup per kasus.
+   */
+  usesSpace() {
+    return false;
+  }
+
+  spaceOptions() {
+    return { range: this.config.range };
   }
 
   /** Tampilkan data soal (bidang, teks). Dipanggil sekali per kasus. */
@@ -318,6 +331,11 @@ export class CaseSimulation extends Simulation {
       this.plane.destroy();
       this.plane = null;
     }
+    if (this.space) {
+      this.space.destroy();
+      this.space = null;
+    }
+    this.padChain = Promise.resolve();
     this.labelled = [];
     this.clearTimers();
     this.releaseAllClaims();
@@ -347,8 +365,14 @@ export class CaseSimulation extends Simulation {
       if (n.scrollTop) n.scrollTop = 0;
     }
 
-    const withPlane = this.usesPlane(c, index);
-    this.board.classList.toggle('sim-board--plane', withPlane);
+    const withSpace = this.usesSpace(c, index);
+    const withPlane = !withSpace && this.usesPlane(c, index);
+    this.board.classList.toggle('sim-board--plane', withPlane || withSpace);
+    if (withSpace) {
+      const host = el('div', 'plane-host space-stage');
+      this.planeCol.appendChild(host);
+      this.space = createSpaceView(host, this.spaceOptions(c, index));
+    }
     if (withPlane) {
       const host = el('div', 'plane-host');
       this.planeCol.appendChild(host);
@@ -404,7 +428,7 @@ export class CaseSimulation extends Simulation {
       : `Langkah ${this.stepIndex + 1}/${total}`;
     this.setPromptText(step.prompt || '', chip);
 
-    const renderers = { fields: 'renderFields', choice: 'renderChoice', multi: 'renderMulti', tap: 'renderTap', pick: 'renderPick' };
+    const renderers = { fields: 'renderFields', choice: 'renderChoice', multi: 'renderMulti', tap: 'renderTap', pick: 'renderPick', pad: 'renderPad' };
     const method = renderers[step.kind];
     if (!method) throw new Error(`Jenis langkah "${step.kind}" tidak dikenal`);
     // Kait penanda: onEnter menyiapkan sorotan langkah (mis. komponen sumber
@@ -809,6 +833,79 @@ export class CaseSimulation extends Simulation {
       this.fail(result, null);
     }, { step: step.snap || 1 });
     this.stepCleanups.push(release);
+  }
+
+  /**
+   * PAPAN KEMUDI: tombol arah yang menggerakkan sesuatu langkah demi langkah
+   * (mis. drone di ruang 3D), lalu "Periksa". Setiap tekan diantrekan
+   * (`padChain`) supaya animasi satu langkah selesai sebelum langkah berikut,
+   * dan Periksa menunggu antrean itu habis. Jejak yang tergambar adalah jejak
+   * MILIK SISWA — seperti titik ketukan — bukan jawaban.
+   *
+   *   { kind: 'pad', buttons: [{ key, label, tone }], onPress(key), onReset(),
+   *     status(): teks bermarkdown, check(): true | { toast|message } }
+   */
+  renderPad(step) {
+    if (step.intro) this.inputsEl.appendChild(el('div', 'sim-note', mixed(step.intro)));
+    const pad = el('div', 'sim-pad');
+    const status = el('p', 'sim-pad__status');
+    const say = () => { status.innerHTML = step.status ? mixed(step.status()) : ''; };
+    step.buttons.forEach((b) => {
+      const btn = el('button', `sim-pad__btn${b.tone ? ` sim-pad__btn--${b.tone}` : ''}`);
+      btn.type = 'button';
+      btn.dataset.simPad = b.key;
+      btn.innerHTML = mixed(b.label);
+      if (b.aria) btn.setAttribute('aria-label', b.aria);
+      const onClick = () => {
+        if (this.busy) return;
+        this.padChain = (this.padChain || Promise.resolve())
+          .then(() => (this.destroyed ? null : step.onPress(b.key)))
+          .then(say)
+          .catch((err) => console.error('[sim] papan kemudi:', err));
+      };
+      btn.addEventListener('click', onClick);
+      this.stepCleanups.push(() => btn.removeEventListener('click', onClick));
+      pad.appendChild(btn);
+    });
+    this.inputsEl.appendChild(pad);
+    this.inputsEl.appendChild(status);
+    say();
+
+    const actions = el('div', 'sim-board__actions');
+    const reset = el('button', 'btn btn--ghost');
+    reset.type = 'button';
+    reset.dataset.simAction = 'reset';
+    reset.innerHTML = `${icon('rotate', { size: 15 })}<span>Ulang</span>`;
+    const check = el('button', 'btn btn--primary');
+    check.type = 'button';
+    check.dataset.simAction = 'check';
+    check.innerHTML = `${icon('check', { size: 16 })}<span>Periksa</span>`;
+    actions.append(reset, check);
+    this.inputsEl.appendChild(actions);
+
+    const onReset = () => {
+      this.padChain = (this.padChain || Promise.resolve()).then(() => step.onReset && step.onReset()).then(say);
+    };
+    const onCheck = async () => {
+      if (this.busy) return;
+      await this.padChain;
+      if (this.destroyed || this.currentStep !== step) return;
+      const result = step.check();
+      if (result === true) {
+        check.disabled = true;
+        reset.disabled = true;
+        pad.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+        this.solveStep(step);
+        return;
+      }
+      this.fail(result, check);
+    };
+    reset.addEventListener('click', onReset);
+    check.addEventListener('click', onCheck);
+    this.stepCleanups.push(() => {
+      reset.removeEventListener('click', onReset);
+      check.removeEventListener('click', onCheck);
+    });
   }
 
   renderTap(step) {

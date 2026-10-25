@@ -238,6 +238,15 @@ export function markSimulationDone(chapterId, subtopicId) {
   persist();
 }
 
+/** Kartu pemantik sub-topik ini sudah dibaca — tidak ditampilkan lagi. */
+export function markHookSeen(chapterId, subtopicId) {
+  const sub = ensureSubtopic(chapterId, subtopicId);
+  if (sub.hookSeen === true) return;
+  sub.hookSeen = true;
+  if (sub.status === 'locked') sub.status = 'in_progress';
+  persist();
+}
+
 export function recordAttempt(chapterId, subtopicId) {
   const sub = ensureSubtopic(chapterId, subtopicId);
   sub.attempts = (sub.attempts || 0) + 1;
