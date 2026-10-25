@@ -443,7 +443,7 @@
       "id": "notasi_penyajian",
       "title": "Bentuk Komponen Vektor",
       "hook": {
-        "art": "baju",
+        "art": "bentuk",
         "title": "Tiga teman, tiga tulisan",
         "story": "Pilot drone mengirim perintah: **\"4 satuan ke kanan, 3 satuan ke bawah.\"** Raka mencatatnya $(4,\\, -3)$, Sinta menulis $4\\hat{i} - 3\\hat{j}$, dan Dimas menumpuk dua angka di dalam kurung.",
         "question": "Siapa yang benar? Apakah ketiga catatan itu menggambar **panah yang sama**?"
@@ -504,8 +504,8 @@
       ],
       "simulation": {
         "engine": "notation_guided",
-        "title": "Simulasi Terpandu: Satu Vektor, Tiga Baju",
-        "brief": "Perintah gerak diubah menjadi panah, lalu panah itu kamu tuliskan dengan tiga cara. Rak di atas lembar kerja terisi satu per satu — hanya dari jawabanmu.",
+        "title": "Simulasi Terpandu: Tiga Bentuk Penulisan Vektor",
+        "brief": "Perintah gerak diubah menjadi panah, lalu panah itu kamu tulis dalam tiga bentuk. Kotak di atas lembar kerja terisi satu per satu dari jawabanmu.",
         "config": {
           "cases": [
             {
@@ -544,8 +544,8 @@
         "toasts": {
           "arahTegakTerbalik": "Belum tepat — langkah **tegaknya** terbalik. Perintahnya berbunyi **{{arah}}**, sedangkan titik yang kamu ketuk ada di sisi seberangnya.",
           "arahMendatarTerbalik": "Belum tepat — langkah **mendatarnya** terbalik. Perintahnya berbunyi **{{arah}}**, sedangkan titik yang kamu ketuk ada di sisi seberangnya.",
-          "urutanTertukar": "Belum tepat — kamu mendarat di {{titik}}. Sepertinya urutan langkahnya tertukar: hitung yang **mendatar** dulu, baru yang **tegak**.",
-          "ujungMeleset": "Belum tepat — kamu mendarat di {{titik}}. Hitung lagi kotak kisinya satu per satu dari pangkal: mendatar dulu, lalu tegak.",
+          "urutanTertukar": "Belum tepat — kamu mengetuk {{titik}}. Sepertinya urutan langkahnya tertukar: hitung yang **mendatar** dulu, baru yang **tegak**.",
+          "ujungMeleset": "Belum tepat — kamu mengetuk {{titik}}. Hitung lagi kotak kisinya satu per satu dari pangkal: mendatar dulu, lalu tegak.",
           "dariO": "Hampir! Itu ujungnya kalau berangkat dari $O$. Kali ini pangkalnya di $P$ — mulailah menghitung kotak **dari titik $P$**.",
           "koefisienSatu": "Belum tepat — suku $\\hat{ {{basis}} }$ tanpa angka di depannya bukan berarti nol. Huruf basis yang berdiri sendiri bernilai **satu** langkah.",
           "kolomTertukar": "Belum tepat — urutannya tertukar. Komponen **mendatar** ($x$, $\\hat{i}$) selalu di **atas**, komponen **tegak** ($y$, $\\hat{j}$) di **bawah**.",
@@ -566,7 +566,7 @@
           "successBaku": "Tepat! Bentuk baku membuang suku nol dan angka satu di bentuk basis, tetapi angka nol tetap ditulis di bentuk kolom."
         },
         "conclusion": {
-          "title": "Kesimpulan: satu vektor, tiga baju",
+          "title": "Kesimpulan: satu vektor, tiga bentuk penulisan",
           "definition": "Vektor yang **sama** boleh ditulis dalam tiga bentuk — isinya selalu dua komponen berurutan: **mendatar** dulu, lalu **tegak**.",
           "formula": "\\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix} = 4\\hat{i} - 3\\hat{j} = (4,\\, -3)",
           "columns": [
@@ -619,7 +619,7 @@
           "answerIndex": 2,
           "explanation": "Koefisien $\\hat{i}$ adalah langkah mendatar, jadi menempati baris **atas**: $-2$. Koefisien $\\hat{j}$ adalah langkah tegak di baris **bawah**: $5$. Tanda ikut terbawa. **Opsi C**.",
           "toastWrong": "Belum tepat — koefisien $\\hat{i}$ selalu menempati baris **atas**, koefisien $\\hat{j}$ baris **bawah**, dan tandanya ikut terbawa. Di dalam kolom tidak ada huruf basis.",
-          "hint": "Ingat rak tiga baju di simulasi: koefisien $\\hat{i}$ = langkah **mendatar** = baris **atas** kolom."
+          "hint": "Ingat kotak tiga bentuk penulisan di simulasi: koefisien $\\hat{i}$ = langkah **mendatar** = baris **atas** kolom."
         },
         {
           "id": "b1_02_2",
@@ -738,7 +738,7 @@
         "subtitle": "Dari perintah gerak ke panah, lalu ke tiga cara menuliskannya — dan mengapa vektor boleh digambar dari pangkal mana saja.",
         "sections": [
           {
-            "title": "1 · Satu vektor, tiga baju",
+            "title": "1 · Tiga bentuk penulisan vektor",
             "blocks": [
               {
                 "t": "conclusion"
@@ -750,15 +750,15 @@
             "blocks": [
               {
                 "t": "figure",
-                "key": "tiga_baju",
-                "caption": "\"4 ke kanan, 3 ke bawah\": empat ubin $\\hat{i}$ lalu tiga ubin $-\\hat{j}$, disatukan panah $\\vec{a}$."
+                "key": "tiga_bentuk",
+                "caption": "\"4 ke kanan, 3 ke bawah\": empat vektor satuan $\\hat{i}$ lalu tiga vektor satuan $-\\hat{j}$ membentuk $\\vec{a}$."
               },
               {
                 "t": "steps",
                 "items": [
                   "Ubah kalimat menjadi langkah: kanan/atas **positif**, kiri/bawah **negatif**.",
                   "Kolom: langkah mendatar di atas, tegak di bawah — $\\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix}$.",
-                  "Basis: hitung ubinnya — $4\\hat{i} - 3\\hat{j}$.",
+                  "Basis: hitung banyaknya vektor satuan — $4\\hat{i} - 3\\hat{j}$.",
                   "Pasangan: urutan yang sama — $(4,\\, -3)$."
                 ]
               }
@@ -994,7 +994,7 @@
               ]
             }
           ],
-          "remember": "Ingat denahnya: gerbang → kelas → kantin, jadi $\\vec{a} + \\overrightarrow{AB} = \\vec{b}$."
+          "remember": "Selalu cek jawabanmu: berangkat dari titik pangkal, lakukan perpindahannya — kamu harus tiba tepat di titik ujung."
         }
       },
       "quiz": [
@@ -1024,7 +1024,7 @@
           "answerIndex": 2,
           "explanation": "$\\overrightarrow{AB} = B - A = \\begin{pmatrix} -2 - 3 \\\\ 4 - (-1) \\end{pmatrix} = \\begin{pmatrix} -5 \\\\ 5 \\end{pmatrix}$. Ujung dikurangi pangkal. **Opsi C**.",
           "toastWrong": "Belum tepat — kalau semua tanda jawabanmu terbalik, kamu menghitung pangkal dikurangi ujung. Kalau ada angka yang sama sekali lain, periksa pengurangan dengan bilangan negatif.",
-          "hint": "Rumus temuanmu di simulasi: $\\overrightarrow{AB} = B - A$. Hati-hati: mengurangi bilangan negatif sama dengan menambah."
+          "hint": "Rumus yang kamu temukan di simulasi: $\\overrightarrow{AB} = B - A$. Hati-hati: mengurangi bilangan negatif sama dengan menambah."
         },
         {
           "id": "b1_03_2",
@@ -1131,7 +1131,7 @@
               {
                 "t": "figure",
                 "key": "selisih_titik",
-                "caption": "$\\vec{a}$ dan $\\vec{b}$ berpangkal di $O$; $\\overrightarrow{AB}$ melangkah $6$ ke kanan dan $4$ ke atas."
+                "caption": "Dari kelas $A(2,\\, 3)$ ke kantin $B(8,\\, 7)$: $\\overrightarrow{AB}$ melangkah $6$ ke kanan dan $4$ ke atas."
               },
               {
                 "t": "table",
@@ -1204,7 +1204,7 @@
       "title": "Panjang Vektor (Modulus)",
       "hook": {
         "art": "jarak",
-        "title": "Terbang lurus atau jalan memutar?",
+        "title": "Berapa jarak terbang drone?",
         "story": "Kurir bermotor berangkat dari gudang: **3 blok ke timur**, lalu **4 blok ke utara** — total 7 blok. Sebuah drone berangkat dari gudang yang sama menuju alamat yang sama, tetapi terbang **lurus**.",
         "question": "Berapa blok jarak terbang drone itu? Tetap 7 — atau kurang? Bagaimana menghitungnya **tepat**, bukan kira-kira?"
       },
@@ -1261,8 +1261,8 @@
       ],
       "simulation": {
         "engine": "magnitude_guided",
-        "title": "Simulasi Terpandu: Panjang Vektor dari Persegi Pythagoras",
-        "brief": "Panah vektor selalu menjadi sisi miring sebuah segitiga siku-siku. Persegi-persegi di sisinya baru tumbuh setelah kamu menghitung luasnya sendiri.",
+        "title": "Simulasi Terpandu: Panjang Vektor dengan Teorema Pythagoras",
+        "brief": "Langkah mendatar dan tegak sebuah vektor selalu membentuk segitiga siku-siku. Dengan Teorema Pythagoras, kamu menghitung panjangnya sendiri.",
         "config": {
           "cases": [
             {
@@ -1281,7 +1281,7 @@
               ]
             },
             {
-              "kind": "negative",
+              "kind": "formula",
               "v": [
                 -3,
                 -6
@@ -1290,24 +1290,25 @@
           ]
         },
         "toasts": {
-          "sikuTegakDulu": "Segitiga itu juga sah — tetapi kita sepakat seperti sub-topik sebelumnya: langkah **mendatar** dulu, baru tegak. Ketuk titik siku di **sumbu $X$**.",
-          "sikuMeleset": "Belum tepat — kamu mengetuk {{titik}}. Titik siku adalah tempat langkah mendatar berhenti: tepat di bawah (atau di atas) mata panah, pada sumbu $X$.",
-          "jalanMemutar": "Belum tepat — bandingkan dengan jalan kaki: memotong lurus selalu lebih **pendek** daripada berbelok di sudut. Panah adalah jalan lurusnya.",
-          "lupaKuadrat": "Belum tepat — kamu memakai panjang sisinya apa adanya. **Kuadratkan** dulu: bilangan dikalikan dengan **dirinya sendiri**.",
-          "kaliDua": "Belum tepat — kuadrat bukan dikali dua. Luas persegi = sisi **×** sisi.",
+          "sikuTegakDulu": "Segitiga itu juga benar, tetapi kita sepakat seperti sub-topik sebelumnya: langkah **mendatar** dulu, baru tegak. Ketuk sudut siku-siku yang ada di **sumbu $X$**.",
+          "sikuMeleset": "Belum tepat — kamu mengetuk {{titik}}. Sudut siku-siku ada di tempat langkah mendatar berhenti, tepat di bawah (atau di atas) ujung panah, pada sumbu $X$.",
+          "lupaKuadrat": "Belum tepat — bilangannya belum dikuadratkan. **Kuadrat** artinya bilangan dikali **dirinya sendiri**.",
+          "kaliDua": "Belum tepat — kuadrat bukan dikali dua. Kuadrat artinya bilangan dikali **dirinya sendiri**.",
           "tandaIkutMasuk": "Hati-hati — $({{nilai}})^2$ berarti $({{nilai}}) \\times ({{nilai}})$. Negatif kali negatif hasilnya **positif**.",
-          "luasSalah": "Belum tepat — luas persegi adalah sisi dikali sisi. Hitung ulang untuk setiap kaki.",
           "jumlahSalah": "Belum tepat — jumlahkan lagi kedua hasil kuadrat yang sudah kamu dapat.",
-          "belumDiakar": "Hampir! Itu masih **luas** perseginya. Panjang panah adalah **sisi** persegi itu — akar dari luasnya.",
+          "belumDiakar": "Hampir! Itu masih **kuadrat** panjangnya. Panjang vektor adalah **akar** dari bilangan itu.",
           "terlanjurDesimal": "Jangan diubah ke desimal — desimal hanya pembulatan. Tulis dalam bentuk **akar eksak** lewat mode Akar di papan angka.",
           "panjangSalah": "Belum tepat — panjangnya adalah akar dari jumlah kuadrat yang sudah kamu hitung. Periksa lagi akarnya.",
-          "faktorBukanKuadrat": "Belum tepat — bilangan itu bukan bilangan **kuadrat** (hasil suatu bilangan dikali dirinya sendiri). Cari faktor seperti $4$, $9$, $16$, $25$, …",
-          "faktorBukanTerbesar": "$1$ memang kuadrat, tetapi tidak menyederhanakan apa pun. Cari faktor kuadrat yang **terbesar**.",
+          "faktorBukanKuadrat": "Belum tepat — bilangan itu bukan **kuadrat sempurna** (hasil suatu bilangan dikali dirinya sendiri). Pilih dari $4$, $9$, $16$, …",
           "belumDisederhanakan": "Nilainya benar, tetapi $\\sqrt{ {{radikan}} }$ belum paling sederhana. Tarik keluar faktor kuadrat terbesarnya dari dalam akar.",
           "belumLengkap": "Masih ada kotak yang kosong. Isi semuanya lebih dulu.",
-          "success": "Tepat! Persegi di sisi miring sama luasnya dengan dua persegi di kakinya, jadi panjang panah = akar dari jumlah kuadrat komponennya.",
-          "successAkar": "Tepat! Akar disederhanakan dengan menarik keluar faktor kuadrat terbesarnya — hasilnya akar eksak, bukan desimal.",
-          "successNegatif": "Tepat! Tanda minus hilang setelah dikuadratkan, jadi panjang vektor tidak pernah negatif."
+          "success": "Tepat! Panjang vektor adalah sisi miring segitiga siku-siku, jadi dihitung dengan Teorema Pythagoras: akar dari jumlah kuadrat komponennya.",
+          "successAkar": "Tepat! Akar disederhanakan dengan memecahnya menjadi kuadrat sempurna × sisanya, lalu mengakarkan kuadrat sempurnanya.",
+          "lurusLebihPendek": "Belum tepat — bayangkan berjalan dari $O$ ke ujung panah: berbelok di sudut, atau langsung lurus. Jalan yang langsung lurus selalu lebih **pendek**.",
+          "kuadratSalah": "Belum tepat — hitung ulang kuadratnya: bilangan dikali dirinya sendiri, untuk setiap sisi.",
+          "faktorTidakMembagi": "Belum tepat — bilangan itu memang kuadrat sempurna, tetapi tidak membagi habis bilangan di dalam akar. Coba yang lain.",
+          "akarKuadratSalah": "Belum tepat — cari bilangan yang jika dikali dirinya sendiri hasilnya sama dengan bilangan di dalam akar itu.",
+          "successRumus": "Tepat! Tanpa gambar pun bisa: kuadratkan setiap komponen (tanda minus hilang), jumlahkan, akarkan, lalu sederhanakan."
         },
         "conclusion": {
           "title": "Kesimpulan: panjang vektor",
@@ -1327,7 +1328,7 @@
               "title": "Jangan sampai",
               "tone": "amber",
               "items": [
-                "$3 + 4 = 7$ itu jalan memutar, bukan panjang panah",
+                "$3 + 4 = 7$ adalah jumlah langkah, bukan panjang vektor",
                 "$(-3)^2 = 9$, bukan $-9$",
                 "$\\sqrt{20}$ ditulis $2\\sqrt{5}$, bukan $4{,}47$"
               ]
@@ -1346,8 +1347,8 @@
           "answer": 13,
           "tolerance": 1e-06,
           "explanation": "$|\\vec{v}| = \\sqrt{(-5)^2 + 12^2} = \\sqrt{25 + 144} = \\sqrt{169} = 13$. Tanda minus hilang begitu dikuadratkan.",
-          "toastWrong": "Belum tepat — kuadratkan **setiap** komponen (negatif kali negatif positif), jumlahkan, baru akarkan. Menjumlahkan komponennya langsung memberi jalan memutar, bukan panjang panah.",
-          "hint": "Seperti persegi Pythagoras di simulasi: kuadratkan, jumlahkan, akarkan. $(-5)^2$ bernilai positif."
+          "toastWrong": "Belum tepat — kuadratkan **setiap** komponen (negatif kali negatif positif), jumlahkan, baru akarkan. Menjumlahkan komponennya langsung hanya memberi jumlah langkah, bukan panjang vektor.",
+          "hint": "Seperti di simulasi: kuadratkan, jumlahkan, lalu akarkan. $(-5)^2$ bernilai positif."
         },
         {
           "id": "b1_05_2",
@@ -1418,7 +1419,7 @@
             ]
           },
           {
-            "title": "2 · Persegi Pythagoras di bawah panah",
+            "title": "2 · Teorema Pythagoras pada vektor",
             "blocks": [
               {
                 "t": "figure",
@@ -1428,7 +1429,7 @@
               {
                 "t": "steps",
                 "items": [
-                  "Jalan memutar $3 + 4 = 7$ selalu lebih panjang dari panah lurusnya.",
+                  "Jumlah langkah $3 + 4 = 7$ lebih panjang dari vektornya — jalan lurus lebih pendek.",
                   "Luas persegi di kaki: $3^2 = 9$ dan $4^2 = 16$.",
                   "Luas persegi di sisi miring: $9 + 16 = 25$.",
                   "Panjang panah = sisi persegi itu: $\\sqrt{25} = 5$."
@@ -1524,8 +1525,8 @@
       ],
       "simulation": {
         "engine": "unit_guided",
-        "title": "Simulasi Terpandu: Memotong Panah Menjadi Satu Satuan",
-        "brief": "Lingkaran biru muda berjari-jari 1. Vektor satuan yang benar selalu mendarat tepat di garis lingkaran itu — itulah buktinya.",
+        "title": "Simulasi Terpandu: Vektor yang Panjangnya Satu",
+        "brief": "Lingkaran biru muda berjari-jari 1. Ujung vektor satuan yang benar selalu tepat berada di lingkaran itu — itulah cara memeriksanya.",
         "config": {
           "cases": [
             {
@@ -1579,9 +1580,9 @@
           "memaksaVektorNol": "Belum tepat — panjang $(0,\\, 0)$ adalah $0$, bukan $1$. Tidak ada cara membagi vektor nol supaya panjangnya menjadi $1$.",
           "satuSembarang": "Belum tepat — $(1,\\, 1)$ tidak ada hubungannya dengan vektor nol, dan panjangnya pun bukan $1$. Periksa dulu: bolehkah membagi dengan pembagi itu?",
           "belumLengkap": "Masih ada kotak yang kosong. Isi semuanya lebih dulu.",
-          "success": "Tepat! Vektor dibagi dengan panjangnya sendiri: arahnya tetap, panjangnya menjadi tepat 1 — ujungnya mendarat di lingkaran satuan.",
+          "success": "Tepat! Vektor dibagi dengan panjangnya sendiri: arahnya tetap, panjangnya menjadi tepat 1 — ujungnya tepat berada di lingkaran berjari-jari 1.",
           "successSearah": "Tepat! Vektor yang searah punya vektor satuan yang sama, berapa pun panjang aslinya.",
-          "successAkar": "Tepat! Panjang berakar pun bisa jadi pembagi — vektor satuannya tetap mendarat di lingkaran berjari-jari 1.",
+          "successAkar": "Tepat! Panjang berbentuk akar pun bisa menjadi pembagi — ujung vektor satuannya tetap berada di lingkaran berjari-jari 1.",
           "vektorNol": "Tepat! Vektor nol tidak punya arah, jadi tidak punya vektor satuan: membagi dengan nol tidak terdefinisi."
         },
         "conclusion": {
@@ -1726,11 +1727,11 @@
           "answerIndex": 3,
           "explanation": "Vektor satuan $\\vec{a}$: $|\\vec{a}| = 5$, $\\hat{a} = \\left(\\tfrac{4}{5},\\, \\tfrac{3}{5}\\right)$. Panjang $10$ searah: $\\vec{b} = 10\\,\\hat{a} = (8,\\, 6)$. Pilihan $(6,\\, 8)$ sama panjang tetapi arahnya lain. **Opsi D**.",
           "toastWrong": "Belum tepat — cari dulu vektor satuannya (panjang $1$, searah), baru kalikan dengan panjang yang diminta. Perhatikan urutan komponennya.",
-          "hint": "Vektor satuan adalah \"penunjuk arah sepanjang $1$\". Kalikan penunjuk itu dengan panjang yang kamu mau."
+          "hint": "Vektor satuan adalah vektor yang arahnya sama dan panjangnya $1$. Kalikan penunjuk itu dengan panjang yang kamu mau."
         }
       ],
       "rangkuman": {
-        "subtitle": "Membagi vektor dengan panjangnya sendiri: arah tetap, panjang tepat satu — dibuktikan oleh lingkaran satuan.",
+        "subtitle": "Membagi vektor dengan panjangnya sendiri: arahnya tetap, panjangnya tepat satu — diperiksa dengan lingkaran satuan.",
         "sections": [
           {
             "title": "1 · Vektor satuan",
@@ -1741,12 +1742,12 @@
             ]
           },
           {
-            "title": "2 · Memotong panah menjadi satu satuan",
+            "title": "2 · Membagi vektor dengan panjangnya",
             "blocks": [
               {
                 "t": "figure",
                 "key": "satuan",
-                "caption": "$\\vec{v} = (3,\\, 4)$ dipotong menjadi $5$ bagian sama panjang; potongan pertama $\\hat{v} = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$ mendarat di lingkaran satuan."
+                "caption": "$\\vec{v} = (3,\\, 4)$ dibagi menjadi $5$ bagian sama panjang; bagian pertama $\\hat{v} = \\left(\\tfrac{3}{5},\\, \\tfrac{4}{5}\\right)$ berada di lingkaran satuan."
               },
               {
                 "t": "steps",
@@ -1967,7 +1968,7 @@
           "urutanSumbu": "Belum tepat — urutannya tertukar. Selalu $x$ dulu (maju–mundur), lalu $y$ (kanan–kiri), lalu $z$ (naik–turun).",
           "komponenSalah": "Belum tepat — periksa lagi komponen ${{sumbu}}$: berapa satuan drone bergerak searah sumbu itu?",
           "nolTergeser": "Belum tepat — arah yang tidak dilalui tetap punya **barisnya sendiri** berisi $0$. Menggeser angka naik satu baris berarti mengganti sumbunya.",
-          "lupaKuadrat": "Belum tepat — kamu menjumlahkan panjangnya langsung. Itu jalan memutar; panjang lurusnya dihitung dengan Pythagoras: kuadratkan, jumlahkan, akarkan.",
+          "lupaKuadrat": "Belum tepat — kamu menjumlahkan panjangnya langsung. Itu jumlah langkahnya, bukan panjang garis lurusnya. Panjangnya dihitung dengan Pythagoras: kuadratkan, jumlahkan, akarkan.",
           "belumDiakar": "Hampir! Itu masih jumlah kuadratnya. Panjang adalah **akar** dari jumlah itu.",
           "terlanjurDesimal": "Jangan diubah ke desimal. Tulis dalam bentuk **akar eksak** lewat mode Akar di papan angka.",
           "panjangSalah": "Belum tepat — hitung lagi: akar dari jumlah kuadrat sisi-sisi segitiga sikunya.",
@@ -2033,7 +2034,7 @@
           "answerIndex": 1,
           "explanation": "Baris atas $\\to \\hat{i}$, baris tengah $\\to \\hat{j}$, baris bawah $\\to \\hat{k}$: $2\\hat{i} - \\hat{j} + 5\\hat{k}$. Koefisien $-1$ cukup ditulis tandanya. **Opsi B**.",
           "toastWrong": "Belum tepat — baris atas milik $\\hat{i}$, baris tengah milik $\\hat{j}$, baris bawah milik $\\hat{k}$, dan tanda setiap baris ikut terbawa.",
-          "hint": "Seperti rak tiga baju, kini dengan tiga sumbu: setiap baris kolom punya huruf basisnya sendiri."
+          "hint": "Seperti bentuk penulisan di sub-topik 2, kini dengan tiga sumbu: setiap baris kolom punya huruf basisnya sendiri."
         },
         {
           "id": "b1_04_2",
@@ -2061,7 +2062,7 @@
           "answerIndex": 2,
           "explanation": "$|\\vec{u}| = \\sqrt{2^2 + (-1)^2 + 2^2} = \\sqrt{4 + 1 + 4} = \\sqrt{9} = 3$. **Opsi C**.",
           "toastWrong": "Belum tepat — kuadratkan ketiga komponen (tanda minus hilang), jumlahkan semuanya, baru akarkan. Jangan lupa komponen $z$.",
-          "hint": "Rumus temuan dari drone: $\\sqrt{x^2 + y^2 + z^2}$ — tiga suku di dalam akar."
+          "hint": "Rumus dari simulasi drone: $\\sqrt{x^2 + y^2 + z^2}$ — tiga suku di dalam akar."
         },
         {
           "id": "b1_04_3",

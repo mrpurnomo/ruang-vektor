@@ -90,7 +90,7 @@ const FIGURES = {
     </svg>`;
   },
   /** "4 ke kanan, 3 ke bawah": ubin î lalu −ĵ, panah a. */
-  tiga_baju() {
+  tiga_bentuk() {
     const { w, h, X, Y, grid } = gridFig([-1, 6], [-4, 1], 28);
     let tiles = '';
     for (let k = 0; k < 4; k += 1) tiles += docArrow(X(k), Y(0), X(k + 1), Y(0), 'c', 'ch');
@@ -108,21 +108,22 @@ const FIGURES = {
 
   /** Vektor posisi a, b dan AB = b − a. */
   selisih_titik() {
-    const { w, h, X, Y, grid } = gridFig([-1, 9], [-1, 8], 20);
-    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Vektor posisi a dan b, serta vektor AB">
+    const { w, h, X, Y, grid } = gridFig([-1, 10], [-1, 8], 20);
+    // Revisi guru: fokus ke AB — tanpa panah O→B; setiap titik berlabel
+    // koordinat dan nama tempatnya.
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Vektor posisi a dan vektor AB dari kelas ke kantin">
       ${grid}
       ${docArrow(X(0), Y(0), X(2), Y(3), 'c', 'ch')}
-      ${docArrow(X(0), Y(0), X(8), Y(7), 'c', 'ch')}
       <path class="d" d="M${X(2)} ${Y(3)}H${X(8)}V${Y(7)}"/>
       ${docArrow(X(2), Y(3), X(8), Y(7))}
+      <circle class="p" cx="${X(0)}" cy="${Y(0)}" r="3.5"/>
       <circle class="p" cx="${X(2)}" cy="${Y(3)}" r="4"/><circle class="p" cx="${X(8)}" cy="${Y(7)}" r="4"/>
-      <text class="t" x="${X(0) - 12}" y="${Y(0) + 13}">O</text>
-      <text class="t" x="${X(2) - 34}" y="${Y(3) - 4}">A(2, 3)</text>
-      <text class="t" x="${X(8) - 18}" y="${Y(7) - 8}">B(8, 7)</text>
-      <text class="o o--c" x="${X(0.4)}" y="${Y(2)}">a</text>
-      <text class="o o--c" x="${X(4.6)}" y="${Y(3.6)}">b</text>
-      <text class="o" x="${X(4.4)}" y="${Y(5.6)}">AB</text>
-      <text class="n" x="${X(4.6)}" y="${Y(3) + 13}">+6</text>
+      <text class="t" x="${X(0) + 5}" y="${Y(0) + 13}">O · Gerbang</text>
+      <text class="t" x="${X(2) - 4}" y="${Y(3) + 16}">A(2, 3) · Kelas</text>
+      <text class="t" x="${X(8) - 64}" y="${Y(7) - 8}">B(8, 7) · Kantin</text>
+      <text class="o o--c" x="${X(0.3)}" y="${Y(2)}">a</text>
+      <text class="o" x="${X(4.1)}" y="${Y(5.8)}">AB</text>
+      <text class="n" x="${X(4.6)}" y="${Y(3) - 5}">+6</text>
       <text class="n" x="${X(8) + 5}" y="${Y(5)}">+4</text>
     </svg>`;
   },

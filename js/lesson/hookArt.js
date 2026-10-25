@@ -53,7 +53,7 @@ const ART = {
   },
 
   /** Sub-topik 2: satu panah, tiga "baju" penulisan. */
-  baju() {
+  bentuk() {
     return `<svg viewBox="0 0 220 160" aria-hidden="true">
       ${grid(10, 22, 9, 11, 10)}
       <line class="ha-axis" x1="10" y1="62" x2="100" y2="62"/><line class="ha-axis" x1="30" y1="22" x2="30" y2="132"/>

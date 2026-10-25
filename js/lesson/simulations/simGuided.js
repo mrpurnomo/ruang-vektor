@@ -12,7 +12,7 @@
  *   - Gambar hasil (lompatan, panah, persegi, balok) HANYA di `onSolved`.
  *   - Tempo animasi konstan (guidedKit), label dirapikan declutter().
  *
- *   notation_guided   Satu vektor, tiga baju (kolom · basis · pasangan)
+ *   notation_guided   Satu vektor dalam tiga bentuk penulisan (kolom · basis · pasangan)
  *   position_guided   Vektor posisi & menemukan "ujung − pangkal"
  *   magnitude_guided  Panjang vektor dari persegi Pythagoras
  *   unit_guided       Vektor satuan di lingkaran satuan
@@ -29,17 +29,18 @@ import sfx from '../../core/ui/sfx.js';
 import {
   HOP_MS, ARROW_MS, DIRECTION, stillMotion, springPop, animateHops, createArrowDrawer,
   tapped, samePoint, componentFields, componentValues, firstWrong, wrongKeys,
+  ghostHops, ghostCross, pulsePoint, ghostRoute3d,
 } from './guidedKit.js';
 
 /* ============================================================
-   2. notation_guided — Satu vektor, tiga "baju"
+   2. notation_guided — Satu vektor dapat ditulis dalam tiga bentuk
 
-   Kasus 1 (terpandu): perintah kalimat "4 ke kanan, 3 ke bawah" → siswa
-   mengetuk ujungnya → lompatan + panah → menulis kolom → basis (ubin î, ĵ
-   baru muncul sesudah benar) → memilih pasangan. Rak "tiga baju" terisi
-   satu per satu. Kasus 2 (LKPD): vektor yang sama digambar dari pangkal
-   P(2, −4) → penemuan VEKTOR BEBAS. Kasus 3: bentuk baku (koefisien 1,
-   komponen nol).
+   Kasus 1 (terpandu): perintah "4 satuan ke kanan, 3 satuan ke bawah" →
+   siswa mengetuk ujungnya → lompatan + panah → menulis bentuk kolom →
+   bentuk basis (panah satuan î dan ĵ digambar sesudah benar) → memilih
+   pasangan berurutan. Kotak "tiga bentuk penulisan" terisi dari jawaban
+   siswa. Kasus 2 (LKPD): vektor yang sama digambar dari pangkal P(2, −4)
+   → vektor boleh digambar dari pangkal mana saja. Kasus 3: bentuk baku.
    ============================================================ */
 const BASIS = ['i', 'j', 'k'];
 
@@ -55,11 +56,11 @@ function basisTex(v) {
   return parts.length ? parts.join(' ').trim() : '\\vec{0}';
 }
 
-/** Rak "tiga baju": slot kolom · basis · pasangan, terisi sesudah benar. */
-function notationShelf() {
+/** Kotak "tiga bentuk penulisan": kolom · basis · pasangan, terisi sesudah benar. */
+function notationForms() {
   const root = el('div', 'notation-shelf');
   const slots = {};
-  [['kolom', 'Kolom'], ['basis', 'Basis $\\hat{i},\\, \\hat{j}$'], ['pasangan', 'Pasangan']].forEach(([key, title]) => {
+  [['kolom', 'Vektor kolom'], ['basis', 'Vektor basis'], ['pasangan', 'Pasangan berurutan']].forEach(([key, title]) => {
     const slot = el('div', 'notation-shelf__slot');
     slot.innerHTML = `<span class="notation-shelf__title">${mixed(title)}</span><span class="notation-shelf__value">?</span>`;
     root.appendChild(slot);
@@ -94,7 +95,7 @@ export class GuidedNotationSim extends CaseSimulation {
   }
 
   caseLabel(c) {
-    return { build: 'Tiga baju', shift: 'Pangkal P', tidy: 'Bentuk baku' }[c.kind];
+    return { build: 'Tiga bentuk', shift: 'Pangkal P', tidy: 'Bentuk baku' }[c.kind];
   }
 
   caseSuccessKey(c) {
@@ -103,17 +104,17 @@ export class GuidedNotationSim extends CaseSimulation {
 
   caseDonePrompt(c, allDone) {
     if (c.kind === 'build') {
-      return `**Satu vektor, tiga baju**: $${texColumn(c.v)} = ${basisTex(c.v)} = ${texTuple(c.v)}$. Ketiganya menggambar panah yang **sama**.`;
+      return 'Jadi **satu vektor dapat ditulis dalam tiga bentuk** (lihat kotak di lembar kerja), dan ketiganya menunjuk panah yang **sama**.';
     }
     if (c.kind === 'shift') {
-      return '**Vektor itu bebas**: panah dari $O$ dan panah dari $P$ punya langkah yang sama, jadi keduanya vektor yang **sama**.';
+      return 'Panah dari $O$ dan panah dari $P$ punya langkah yang sama, jadi keduanya vektor yang **sama**. Vektor boleh digambar dari pangkal mana saja.';
     }
     return super.caseDonePrompt(c, allDone);
   }
 
   nextCaseInvite(next) {
-    if (next.kind === 'shift') return 'Hebat! Sekarang gambar vektor yang **tidak** berangkat dari $O$.';
-    return 'Terakhir: rapikan penulisannya menjadi **bentuk baku**.';
+    if (next.kind === 'shift') return 'Bagus! Sekarang kita gambar vektor yang **tidak** berangkat dari $O$.';
+    return 'Terakhir, kita pelajari cara menulis yang **baku**.';
   }
 
   celebration() {
@@ -121,9 +122,9 @@ export class GuidedNotationSim extends CaseSimulation {
       ...super.celebration(),
       badge: '3 Bentuk Penulisan Dikuasai',
       recap: [
-        'Satu vektor, tiga baju: **kolom**, **basis** $\\hat{i},\\, \\hat{j}$, dan **pasangan**',
-        'Komponen **pertama** mendatar ($x$, $\\hat{i}$), **kedua** tegak ($y$, $\\hat{j}$)',
-        'Vektor **bebas**: boleh digambar dari pangkal mana pun',
+        'Satu vektor dapat ditulis sebagai **vektor kolom**, **vektor basis** $\\hat{i},\\, \\hat{j}$, atau **pasangan berurutan**',
+        'Komponen **pertama** adalah langkah mendatar ($x$, $\\hat{i}$), komponen **kedua** langkah tegak ($y$, $\\hat{j}$)',
+        'Vektor boleh digambar dari pangkal mana saja asal langkahnya sama',
       ],
     };
   }
@@ -132,13 +133,14 @@ export class GuidedNotationSim extends CaseSimulation {
     this.ghostFromO = null;
     this.marks = { O: this.drawPoint([0, 0], { label: 'O', essential: true }) };
     if (c.kind === 'build') {
-      // Perintahnya sudah berdiri di panduan; kolom kerja cukup memuat rak
-      // "tiga baju" (di 740×360 blok perintah mendorong isian ke bawah lipatan).
-      this.shelf = notationShelf();
-      this.givenEl.appendChild(this.shelf.root);
+      // Perintahnya sudah ada di panduan; kolom kerja cukup memuat kotak
+      // tiga bentuk penulisan (di 740×360 blok perintah mendorong isian ke
+      // bawah layar).
+      this.forms = notationForms();
+      this.givenEl.appendChild(this.forms.root);
     } else if (c.kind === 'shift') {
       this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${basisTex(c.v)} \\qquad P${texTuple(c.start)}`), 'sim-given--display'));
-      this.marks.P = this.drawPoint(c.start, { label: 'P', essential: true });
+      this.marks.P = this.drawPoint(c.start, { label: `P${texTuple(c.start)}`, essential: true });
     } else {
       this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${basisTex(c.v)} \\qquad \\vec{w} = ${texTuple(c.w)}`), 'sim-given--display'));
     }
@@ -169,7 +171,7 @@ export class GuidedNotationSim extends CaseSimulation {
     return { toast: 'kolomSalah', values: { sumbu: AXES[i] }, wrong };
   }
 
-  /** Ubin vektor satuan: v₁ salinan î mendatar, lalu v₂ salinan ĵ tegak. */
+  /** Panah satuan: |x| buah î mendatar, lalu |y| buah ĵ tegak. */
   async drawBasisTiles(v, from = [0, 0]) {
     const [x, y] = v;
     const sx = Math.sign(x);
@@ -201,6 +203,11 @@ export class GuidedNotationSim extends CaseSimulation {
     ];
   }
 
+  /** Petunjuk isian komponen: lompatan bayangan + kotak yang salah disorot. */
+  componentHint(from, v, text) {
+    return () => ({ text, show: () => ghostHops(this, from, v), fields: 'wrong' });
+  }
+
   buildSteps(c) {
     if (c.kind === 'build') return this.buildSteps1(c);
     if (c.kind === 'shift') return this.buildSteps2(c);
@@ -213,9 +220,13 @@ export class GuidedNotationSim extends CaseSimulation {
       {
         kind: 'pick',
         label: 'Ketuk ujungnya',
-        prompt: `Vektor $\\vec{a}$ berpangkal di $O$ dan bergerak **${c.say}**. **Ketuk titik ujungnya.**`,
+        prompt: `Perhatikan perintah ini: vektor $\\vec{a}$ berangkat dari $O$, lalu bergerak **${c.say}**. Coba ketuk titik **ujungnya**.`,
         intro: 'Hitung kotak kisinya dari $O$: **mendatar** dulu, baru **tegak**.',
         check: (p) => this.checkTip(p, [0, 0], v),
+        hint: () => ({
+          text: 'Ikuti lompatan bayangan dari $O$: setiap lompatan satu kotak. Ujungnya ada di lompatan terakhir.',
+          show: () => ghostHops(this, [0, 0], v),
+        }),
         summary: () => `Ujung $\\vec{a}$ di $${texTuple(v)}$.`,
         onSolved: async () => {
           this.drawPoint(v, { ghost: true });
@@ -225,33 +236,37 @@ export class GuidedNotationSim extends CaseSimulation {
       },
       {
         kind: 'fields',
-        label: 'Baju 1: kolom',
-        prompt: 'Tulis $\\vec{a}$ sebagai **vektor kolom**: langkah **mendatar** di atas, langkah **tegak** di bawah — lengkap dengan tandanya.',
+        label: 'Bentuk kolom',
+        prompt: 'Tepat! Sekarang tulis $\\vec{a}$ sebagai **vektor kolom**.',
+        intro: 'Langkah **mendatar** di baris atas, langkah **tegak** di baris bawah — lengkap dengan tandanya: ke kanan dan ke atas positif, ke kiri dan ke bawah negatif.',
         fieldsLayout: 'column',
         fields: this.columnFields(),
         check: (values) => this.checkColumn(values, v),
-        summary: () => `Kolom: $\\vec{a} = ${texColumn(v)}$`,
-        onSolved: () => this.shelf.fill('kolom', texColumn(v)),
+        hint: this.componentHint([0, 0], v, 'Hitung lompatan mendatar untuk baris atas, lalu lompatan tegak untuk baris bawah. Lompatan ke **bawah** ditulis dengan tanda **minus**.'),
+        summary: () => `Bentuk kolom: $\\vec{a} = ${texColumn(v)}$`,
+        onSolved: () => this.forms.fill('kolom', texColumn(v)),
       },
       {
         kind: 'fields',
-        label: 'Baju 2: basis',
-        prompt: 'Sekarang dengan **vektor basis**: $\\hat{i}$ = satu langkah searah sumbu $X$, $\\hat{j}$ = satu langkah searah sumbu $Y$. Berapa $\\hat{i}$ dan berapa $\\hat{j}$?',
+        label: 'Bentuk basis',
+        prompt: 'Bentuk kedua memakai **vektor basis**. Berapa banyak $\\hat{i}$ dan $\\hat{j}$ pada $\\vec{a}$?',
+        intro: '$\\hat{i}$ adalah satu langkah searah sumbu $X$, dan $\\hat{j}$ satu langkah searah sumbu $Y$.',
         fields: [
           { key: 'cx', label: null, suffix: '$\\hat{i}\\;+$', mode: 'integer', aria: 'Koefisien i' },
           { key: 'cy', label: null, suffix: '$\\hat{j}$', mode: 'integer', aria: 'Koefisien j' },
         ],
         check: (values) => this.checkColumn(values, v),
-        summary: () => `Basis: $\\vec{a} = ${basisTex(v)}$`,
+        hint: () => ({ text: 'Angkanya sama dengan bentuk kolom yang baru kamu tulis: baris atas untuk $\\hat{i}$, baris bawah untuk $\\hat{j}$.', fields: 'wrong' }),
+        summary: () => `Bentuk basis: $\\vec{a} = ${basisTex(v)}$`,
         onSolved: async () => {
           await this.drawBasisTiles(v);
-          this.shelf.fill('basis', basisTex(v));
+          this.forms.fill('basis', basisTex(v));
         },
       },
       {
         kind: 'choice',
-        label: 'Baju 3: pasangan',
-        prompt: 'Terakhir, pilih penulisan **pasangan berurutan** yang tepat untuk $\\vec{a}$.',
+        label: 'Pasangan berurutan',
+        prompt: 'Lihat gambarnya: $\\vec{a}$ tersusun dari panah-panah satuan $\\hat{i}$ dan $\\hat{j}$. Bentuk ketiga adalah **pasangan berurutan**. Pilih penulisan yang tepat untuk $\\vec{a}$.',
         options: [
           { key: 'swap', label: `$${texTuple([v[1], v[0]])}$` },
           { key: 'ok', label: `$${texTuple(v)}$` },
@@ -264,9 +279,10 @@ export class GuidedNotationSim extends CaseSimulation {
           if (key === 'sign') return { toast: 'pasanganTanda' };
           return { toast: 'pasanganBerhuruf' };
         },
-        summary: () => `Pasangan: $\\vec{a} = ${texTuple(v)}$`,
+        hint: () => ({ text: 'Urutannya sama dengan bentuk kolom: angka mendatar dulu, lalu angka tegak — hanya bilangan, tanpa huruf $\\hat{i}$ dan $\\hat{j}$.' }),
+        summary: () => `Pasangan berurutan: $\\vec{a} = ${texTuple(v)}$`,
         onSolved: () => {
-          this.shelf.fill('pasangan', texTuple(v));
+          this.forms.fill('pasangan', texTuple(v));
           this.plane.highlight('a');
         },
       },
@@ -279,20 +295,25 @@ export class GuidedNotationSim extends CaseSimulation {
     return [
       {
         kind: 'fields',
-        label: 'Kolom dari basis',
-        prompt: `Tulis $\\vec{v} = ${basisTex(v)}$ sebagai **vektor kolom** lebih dulu.`,
+        label: 'Bentuk kolom',
+        prompt: `Diketahui $\\vec{v} = ${basisTex(v)}$. Tulis dulu sebagai **vektor kolom**.`,
         fieldsLayout: 'column',
         fields: this.columnFields(),
         check: (values) => this.checkColumn(values, v, { fromBasis: true }),
+        hint: () => ({ text: 'Koefisien $\\hat{i}$ masuk baris atas, koefisien $\\hat{j}$ masuk baris bawah. Huruf basis tanpa angka berarti **1**.', fields: 'wrong' }),
         summary: () => `$\\vec{v} = ${texColumn(v)}$`,
       },
       {
         kind: 'pick',
         label: 'Gambar dari $P$',
-        prompt: `Gambar $\\vec{v}$ dengan **pangkal di $P${texTuple(start)}$** — bukan di $O$. **Ketuk titik ujungnya.**`,
+        prompt: `Sekarang gambar $\\vec{v}$ dengan **pangkal di $P${texTuple(start)}$**, bukan di $O$. Coba ketuk titik **ujungnya**.`,
         intro: 'Mulai menghitung kotak dari **$P$**: mendatar dulu, baru tegak.',
         check: (p) => this.checkTip(p, start, v, { fromOrigin: true }),
-        summary: () => `Dari $P$, ujung $\\vec{v}$ jatuh di $${texTuple(end)}$.`,
+        hint: () => ({
+          text: 'Ikuti lompatan bayangan yang berangkat dari **$P$**, bukan dari $O$.',
+          show: () => ghostHops(this, start, v),
+        }),
+        summary: () => `Dari $P$, ujung $\\vec{v}$ berada di $${texTuple(end)}$.`,
         onSolved: async () => {
           this.drawPoint(end, { ghost: true });
           await animateHops(this, start, v);
@@ -302,7 +323,7 @@ export class GuidedNotationSim extends CaseSimulation {
       {
         kind: 'choice',
         label: 'Bandingkan',
-        prompt: 'Panah yang sama kini digambar **dari $O$** (biru muda). Apa hubungan panah dari $O$ dan panah dari $P$?',
+        prompt: 'Panah yang sama kini juga digambar **dari $O$** (biru muda). Apa hubungan panah dari $O$ dan panah dari $P$?',
         onEnter: () => {
           if (this.ghostFromO) return;
           this.ghostFromO = this.drawVector({ from: [0, 0], to: v, name: 'vO', tone: 'cyan', label: '\\vec{v}' });
@@ -317,7 +338,8 @@ export class GuidedNotationSim extends CaseSimulation {
           if (key === 'beda') return { toast: 'vektorBebas' };
           return { toast: 'bukanLawan' };
         },
-        summary: () => 'Vektor **bebas**: pangkal boleh di mana saja.',
+        hint: () => ({ text: 'Bandingkan langkah kedua panah: berapa kotak mendatar dan berapa kotak tegak? Apakah arahnya sama?' }),
+        summary: () => 'Vektor boleh digambar dari pangkal mana saja.',
         onSolved: () => {
           this.plane.highlight('v');
           this.plane.highlight('vO');
@@ -332,17 +354,18 @@ export class GuidedNotationSim extends CaseSimulation {
       {
         kind: 'fields',
         label: 'Kolom $\\vec{v}$',
-        prompt: `Tulis $\\vec{v} = ${basisTex(v)}$ sebagai **vektor kolom**. Perhatikan suku yang **tidak** bertuliskan angka.`,
+        prompt: `Tulis $\\vec{v} = ${basisTex(v)}$ sebagai **vektor kolom**. Perhatikan suku yang **tidak** memakai angka.`,
         fieldsLayout: 'column',
         fields: this.columnFields(),
         check: (values) => this.checkColumn(values, v, { fromBasis: true }),
+        hint: () => ({ text: '$\\hat{j}$ tanpa angka di depannya artinya $1\\hat{j}$ — satu langkah ke atas, bukan nol.', fields: 'wrong' }),
         summary: () => `$\\vec{v} = ${texColumn(v)}$`,
         onSolved: () => this.drawResult([0, 0], v, 'v'),
       },
       {
         kind: 'choice',
         label: 'Basis baku $\\vec{w}$',
-        prompt: `Tulis $\\vec{w} = ${texTuple(w)}$ dalam **bentuk basis yang baku** — paling ringkas tanpa mengubah nilainya.`,
+        prompt: `Sekarang tulis $\\vec{w} = ${texTuple(w)}$ dalam **bentuk basis yang baku**, yaitu bentuk paling ringkas tanpa mengubah nilainya.`,
         options: [
           { key: 'nol', label: `$${w[0]}\\hat{i} + 0\\hat{j}$` },
           { key: 'ok', label: `$${basisTex(w)}$` },
@@ -355,6 +378,7 @@ export class GuidedNotationSim extends CaseSimulation {
           if (key === 'sumbu') return { toast: 'basisSumbuSalah' };
           return { toast: 'kehilanganArah' };
         },
+        hint: () => ({ text: 'Dalam bentuk basis, suku yang bernilai **nol** tidak perlu ditulis. Tetapi huruf basisnya harus tetap ada.' }),
         summary: () => `$\\vec{w} = ${basisTex(w)}$`,
         onSolved: () => this.drawResult([0, 0], w, 'w'),
       },
@@ -372,6 +396,7 @@ export class GuidedNotationSim extends CaseSimulation {
           if (key === 'satu') return { toast: 'nolWajib' };
           return { toast: 'kolomTertukar' };
         },
+        hint: () => ({ text: 'Bentuk kolom selalu punya **dua baris** di bidang: $x$ di atas, $y$ di bawah — angka $0$ tetap ditulis.' }),
         summary: () => `$\\vec{w} = ${texColumn(w)}$ — angka $0$ tetap ditulis.`,
       },
     ];
@@ -379,14 +404,16 @@ export class GuidedNotationSim extends CaseSimulation {
 }
 
 /* ============================================================
-   3. position_guided — Vektor posisi & "ujung dikurangi pangkal"
+   3. position_guided — Vektor posisi & rumus "ujung dikurangi pangkal"
 
-   Kasus 1 (terpandu, inkuiri): tandai A dan B → gambar vektor posisi
-   a = OA → gambar AB → hitung langkahnya di kisi (lompatan dari A) →
-   lengkapi pola "6 = 8 − 2" → siswa MENEMUKAN AB = B − A sendiri.
-   Kasus 2: hitung dulu, buktikan di kisi (LKPD 5) + vektor lawan.
-   Kasus 3: koordinat ratusan — tanpa kisi, rumus menyelamatkan.
-   Kasus 4: rumus dibalik — mencari titik PANGKAL (LKPD 6).
+   Kasus 1 (terpandu): tandai kelas A dan kantin B di denah → gambar
+   vektor posisi a = OA → gambar AB → hitung sendiri langkahnya di kisi
+   → lengkapi pola "6 = 8 − 2" → siswa menemukan AB = B − A sendiri.
+   Revisi guru: fokus ke AB (tanpa panah O→B), setiap titik berlabel
+   koordinat dan nama tempatnya.
+   Kasus 2: hitung dulu dengan rumus, buktikan di kisi (LKPD 5) + vektor
+   lawan. Kasus 3: koordinat ratusan tanpa kisi. Kasus 4: rumus dibalik
+   untuk mencari titik pangkal R (LKPD 6).
    ============================================================ */
 const pointName = (name, p) => `$${name}${texTuple(p)}$`;
 
@@ -403,7 +430,7 @@ export class GuidedPositionSim extends CaseSimulation {
     const xs = pts.map((p) => p[0]);
     const ys = pts.map((p) => p[1]);
     return {
-      xRange: [Math.min(...xs) - 2, Math.max(...xs) + 2],
+      xRange: [Math.min(...xs) - 2, Math.max(...xs) + 3],
       yRange: [Math.min(...ys) - 1, Math.max(...ys) + 2],
     };
   }
@@ -418,18 +445,18 @@ export class GuidedPositionSim extends CaseSimulation {
 
   caseDonePrompt(c, allDone) {
     if (c.kind === 'discover') {
-      return '**Kamu menemukan rumusnya sendiri:** $\\overrightarrow{AB} = \\vec{b} - \\vec{a}$ — koordinat **ujung** dikurangi koordinat **pangkal**.';
+      return 'Kamu menemukan rumusnya sendiri: $\\overrightarrow{AB} = B - A$, yaitu koordinat **ujung** dikurangi koordinat **pangkal**.';
     }
     if (c.kind === 'nogrid') {
-      return 'Tanpa kertas berpetak pun beres: **ujung − pangkal** untuk vektor, **pangkal + vektor** untuk titik ujung.';
+      return 'Tanpa kertas berpetak pun bisa: **ujung − pangkal** untuk mencari vektor, dan **pangkal + vektor** untuk mencari titik ujung.';
     }
     return super.caseDonePrompt(c, allDone);
   }
 
   nextCaseInvite(next) {
-    if (next.kind === 'formula') return 'Hebat! Sekarang **hitung dulu** dengan rumusmu, baru buktikan di kisi.';
+    if (next.kind === 'formula') return 'Bagus! Sekarang kita **hitung dulu** dengan rumus tadi, lalu buktikan di kisi.';
     if (next.kind === 'nogrid') return 'Bagaimana kalau koordinatnya **ratusan**? Kertas berpetak tidak cukup lagi.';
-    return 'Terakhir: rumusnya **dibalik** — cari titik pangkalnya.';
+    return 'Terakhir, kita pakai rumusnya untuk mencari **titik pangkal**.';
   }
 
   celebration() {
@@ -437,46 +464,59 @@ export class GuidedPositionSim extends CaseSimulation {
       ...super.celebration(),
       badge: 'Rumus Ujung − Pangkal Ditemukan',
       recap: [
-        '**Vektor posisi** titik $A$: $\\vec{a} = \\overrightarrow{OA}$, pangkalnya di $O$',
-        '$\\overrightarrow{AB} = \\vec{b} - \\vec{a}$: koordinat **ujung** dikurangi **pangkal**',
-        'Dibalik: ujung $= A + \\overrightarrow{AB}$, pangkal $= B - \\overrightarrow{AB}$',
+        '**Vektor posisi** titik $A$ adalah $\\vec{a} = \\overrightarrow{OA}$, pangkalnya di $O$',
+        '$\\overrightarrow{AB} = B - A$: koordinat **ujung** dikurangi koordinat **pangkal**',
+        'Titik ujung $= A + \\overrightarrow{AB}$, titik pangkal $= B - \\overrightarrow{AB}$',
       ],
     };
   }
 
+  /** Titik berlabel "A(2, 3)" + nama tempat di bawahnya (bila ada). */
+  markPoint(name, p, place = null) {
+    this.marks[name] = this.drawPoint(p, { label: `${name}${texTuple(p)}`, essential: true });
+    if (place && this.plane) this.plane.drawTag(p, `\\text{${place}}`, { offset: [0, 22], tone: 'muted' });
+    return this.marks[name];
+  }
+
   setupCase(c) {
     this.marks = {};
-    if (this.plane) this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
+    this.posA = null;
+    if (this.plane) {
+      this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
+      if (c.kind === 'discover') this.plane.drawTag([0, 0], '\\text{Gerbang}', { offset: [-36, 18], tone: 'muted' });
+    }
     if (c.kind === 'discover') {
       this.givenEl.appendChild(givenBlock(mixed(`Denah sekolah: gerbang $O(0,\\, 0)$, kelas ${pointName('A', c.A)}, kantin ${pointName('B', c.B)}.`)));
     } else if (c.kind === 'formula') {
       this.givenEl.appendChild(givenBlock(tex(`P${texTuple(c.P)} \\qquad Q${texTuple(c.Q)}`), 'sim-given--display'));
-      this.marks.P = this.drawPoint(c.P, { label: 'P', essential: true });
-      this.marks.Q = this.drawPoint(c.Q, { label: 'Q', essential: true });
+      this.markPoint('P', c.P);
+      this.markPoint('Q', c.Q);
     } else if (c.kind === 'nogrid') {
       this.givenEl.appendChild(givenBlock(tex(`K${texTuple(c.K)} \\qquad L${texTuple(c.L)}`), 'sim-given--display'));
-      this.givenEl.appendChild(givenBlock('Koordinat sebesar ini tidak muat di kertas berpetak — hanya rumus yang bisa menolongmu.', 'sim-given--muted'));
+      this.givenEl.appendChild(givenBlock('Koordinat sebesar ini tidak muat di kertas berpetak, jadi kita hitung dengan rumus.', 'sim-given--muted'));
     } else {
       this.givenEl.appendChild(givenBlock(tex(`\\overrightarrow{RS} = ${texColumn(c.RS)} \\qquad S${texTuple(c.S)}`), 'sim-given--display'));
-      this.marks.S = this.drawPoint(c.S, { label: 'S', essential: true });
+      this.markPoint('S', c.S);
     }
   }
 
   /** Ketuk letak titik bernama; kesalahan "tertukar" dikenali. */
-  pickPoint(name, target) {
+  pickPoint(name, target, place, prompt) {
     return {
       kind: 'pick',
       label: `Titik $${name}$`,
-      prompt: `Ketuk letak titik ${pointName(name, target)} pada denah.`,
+      prompt,
       check: (p) => {
         if (samePoint(p, target)) return true;
         if (samePoint(p, [target[1], target[0]])) return { toast: 'koordinatTertukar', values: { titik: tapped(p) } };
         return { toast: 'titikMeleset', values: { titik: tapped(p) } };
       },
-      summary: () => `${pointName(name, target)} ditandai.`,
-      onSolved: () => {
-        this.marks[name] = this.drawPoint(target, { label: name, essential: true });
-      },
+      hint: () => ({
+        text: `Dari $O$, hitung $${target[0]}$ kotak **mendatar**, lalu $${target[1]}$ kotak **tegak**. Garis putus-putus menunjukkan di mana keduanya bertemu.`,
+        show: () => ghostCross(this, target),
+      }),
+      summary: () => `${pointName(name, target)} — ${place} — ditandai.`,
+      onSolved: () => this.markPoint(name, target, place),
     };
   }
 
@@ -491,6 +531,10 @@ export class GuidedPositionSim extends CaseSimulation {
       onEnter: () => drawer.disarm(),
       onLeave: () => drawer.disarm(),
       check: (p) => drawer.check(p),
+      hint: () => ({
+        text: `Huruf **pertama** pada nama $\\overrightarrow{${from}${to}}$ adalah pangkal. Ketuk titik $${from}$ dulu (berdenyut), lalu titik $${to}$.`,
+        show: () => pulsePoint(this, points()[from]),
+      }),
       summary,
       onSolved: async () => {
         const P = points()[from];
@@ -499,7 +543,7 @@ export class GuidedPositionSim extends CaseSimulation {
         const arrow = this.drawVector({ from: P, to: P, name, tone }, { essential: true });
         await arrow.setVector({ from: P, to: Q }, { animate: !stillMotion(), duration: ARROW_MS });
         if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);
-        if (after) await after();
+        if (after) await after(arrow);
       },
     };
   }
@@ -520,6 +564,10 @@ export class GuidedPositionSim extends CaseSimulation {
         if (same(s[0], Q[0] - P[1]) || same(s[1], Q[1] - P[0])) return { toast: 'komponenTidakSeletak', wrong };
         return { toast: 'hasilSalah', wrong };
       },
+      hint: () => ({
+        text: `Tulis seperti ini: $x = ${Q[0] < 0 ? `(${Q[0]})` : Q[0]} - ${P[0] < 0 ? `(${P[0]})` : P[0]}$ dan $y = ${Q[1] < 0 ? `(${Q[1]})` : Q[1]} - ${P[1] < 0 ? `(${P[1]})` : P[1]}$ — koordinat $${end}$ dikurangi koordinat $${start}$. Ingat: mengurangi bilangan negatif sama dengan menambah.`,
+        fields: 'wrong',
+      }),
       summary: () => `$\\overrightarrow{${start}${end}} = ${end} - ${start} = ${texColumn(key)}$`,
     };
   }
@@ -536,29 +584,30 @@ export class GuidedPositionSim extends CaseSimulation {
     const key = [B[0] - A[0], B[1] - A[1]];
     const points = () => ({ O: [0, 0], A, B });
     return [
-      this.pickPoint('A', A),
-      this.pickPoint('B', B),
+      this.pickPoint('A', A, 'Kelas', `Perhatikan denah sekolah ini. Gerbang ada di $O(0,\\, 0)$. Coba tandai **kelasmu** di ${pointName('A', A)}: ketuk letaknya.`),
+      this.pickPoint('B', B, 'Kantin', `Bagus! Sekarang tandai **kantin** di ${pointName('B', B)}.`),
       this.drawStep('O', 'A', {
         label: 'Vektor posisi $\\vec{a}$',
-        prompt: 'Vektor yang **pangkalnya di $O$** disebut **vektor posisi**. Gambar vektor posisi titik $A$: ketuk $O$, lalu $A$.',
-        summary: () => 'Vektor posisi $\\vec{a} = \\overrightarrow{OA}$.',
+        prompt: 'Vektor yang **pangkalnya di $O$** disebut **vektor posisi**. Gambar vektor posisi kelas: ketuk $O$, lalu $A$.',
+        summary: () => 'Vektor posisi kelas: $\\vec{a} = \\overrightarrow{OA}$.',
         tone: 'cyan',
         points,
+        after: (arrow) => { this.posA = arrow; },
       }),
       this.drawStep('A', 'B', {
         label: 'Gambar $\\overrightarrow{AB}$',
-        prompt: 'Kamu berangkat dari **kelas**, bukan dari gerbang. Gambar $\\overrightarrow{AB}$: dari $A$ menuju $B$.',
-        summary: () => '$\\overrightarrow{AB}$ tergambar — dan vektor posisi $\\vec{b}$ ikut muncul.',
+        prompt: 'Saat istirahat, kamu berangkat dari **kelas**, bukan dari gerbang. Gambar $\\overrightarrow{AB}$: dari $A$ menuju $B$.',
+        summary: () => '$\\overrightarrow{AB}$ tergambar: dari kelas ke kantin.',
         points,
-        after: async () => {
-          const b = this.drawVector({ from: [0, 0], to: [0, 0], name: 'b', tone: 'cyan' }, { essential: true });
-          await b.setVector({ to: B }, { animate: !stillMotion(), duration: ARROW_MS });
+        after: () => {
+          // Fokus ke AB: vektor posisi a diredupkan.
+          if (this.posA) this.posA.setTone('muted');
         },
       }),
       {
         kind: 'fields',
         label: 'Hitung di kisi',
-        prompt: 'Hitung kotak kisinya: dari $A$ ke $B$, **berapa satuan mendatar** dan **berapa satuan tegak**?',
+        prompt: 'Sekarang hitung sendiri di kisi: dari $A$ ke $B$, **berapa satuan mendatar** dan **berapa satuan tegak**?',
         fields: [
           { key: 'dx', label: 'Mendatar', mode: 'integer', aria: 'Langkah mendatar' },
           { key: 'dy', label: 'Tegak', mode: 'integer', aria: 'Langkah tegak' },
@@ -573,13 +622,18 @@ export class GuidedPositionSim extends CaseSimulation {
           }
           return { toast: 'langkahSalahBesar', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong };
         },
+        hint: () => ({
+          text: 'Ikuti lompatan bayangan dari $A$: hitung lompatan mendatarnya, lalu lompatan tegaknya.',
+          show: () => ghostHops(this, A, key),
+          fields: 'wrong',
+        }),
         summary: () => `Dari $A$ ke $B$: $${key[0]}$ ${DIRECTION.x(key[0])}, $${key[1]}$ ${DIRECTION.y(key[1])}.`,
         onSolved: () => animateHops(this, A, key),
       },
       {
         kind: 'fields',
         label: 'Temukan polanya',
-        prompt: `Dari mana angka $${key[0]}$ dan $${key[1]}$ itu muncul? Lengkapi dengan **koordinat** $A$ dan $B$.`,
+        prompt: `Dari mana angka $${key[0]}$ dan $${key[1]}$ itu? Lihat koordinat $A$ dan $B$ pada label titiknya, lalu lengkapi.`,
         fields: [
           { key: 'xb', label: `$${key[0]} =$`, mode: 'integer', aria: 'Bilangan pertama baris x' },
           { key: 'xa', label: '$-$', mode: 'integer', aria: 'Bilangan kedua baris x' },
@@ -594,6 +648,16 @@ export class GuidedPositionSim extends CaseSimulation {
           if (firstWrong(s, flipped) < 0) return { toast: 'urutanUjungPangkal' };
           return { toast: 'polaSalah', wrong: ['xb', 'xa', 'yb', 'ya'].filter((k, i) => !same(s[i], want[i])) };
         },
+        hint: () => ({
+          text: `Baris pertama memakai koordinat **$x$** kedua titik, baris kedua memakai koordinat **$y$**. Yang lebih besar (milik $B$, ujung) ditulis lebih dulu.`,
+          show: () => {
+            const a = this.marks.A && this.marks.A.el;
+            const b = this.marks.B && this.marks.B.el;
+            [a, b].forEach((n) => n && n.classList.add('is-armed'));
+            return () => [a, b].forEach((n) => n && n.classList.remove('is-armed'));
+          },
+          fields: 'wrong',
+        }),
         summary: () => '$\\overrightarrow{AB} = B - A$: **ujung dikurangi pangkal**.',
         onSolved: () => this.plane.highlight('AB'),
       },
@@ -607,7 +671,7 @@ export class GuidedPositionSim extends CaseSimulation {
       {
         ...this.differenceStep('P', 'Q', P, Q, {
           label: 'Hitung $\\overrightarrow{PQ}$',
-          prompt: 'Pakai rumus temuanmu: $\\overrightarrow{PQ} = Q - P$, komponen demi komponen.',
+          prompt: 'Pakai rumus tadi, $\\overrightarrow{PQ} = Q - P$, untuk setiap komponen.',
         }),
         onSolved: async () => {
           await animateHops(this, P, key);
@@ -618,7 +682,8 @@ export class GuidedPositionSim extends CaseSimulation {
       {
         kind: 'fields',
         label: 'Vektor lawan $\\overrightarrow{QP}$',
-        prompt: 'Sekarang $\\overrightarrow{QP}$ — berangkat dari $Q$ menuju $P$.',
+        prompt: 'Sekarang $\\overrightarrow{QP}$: berangkat dari $Q$ menuju $P$.',
+        intro: 'Lompatan di bidang cocok dengan hitunganmu. Perhatikan: pangkal dan ujungnya kini bertukar.',
         fields: componentFields(2),
         check: (values) => {
           const s = componentValues(values, 2);
@@ -627,6 +692,7 @@ export class GuidedPositionSim extends CaseSimulation {
           if (firstWrong(s, key) < 0) return { toast: 'lawanSama', wrong: ['cx', 'cy'] };
           return { toast: 'hasilSalah', wrong: wrongKeys(s, want) };
         },
+        hint: () => ({ text: '$\\overrightarrow{QP}$ berarti pangkal $Q$, ujung $P$, jadi $P - Q$. Hasilnya sama dengan $\\overrightarrow{PQ}$ tetapi semua tandanya berlawanan.', fields: 'wrong' }),
         summary: () => `$\\overrightarrow{QP} = P - Q = ${texColumn(key.map((n) => -n))} = -\\overrightarrow{PQ}$`,
       },
     ];
@@ -638,7 +704,7 @@ export class GuidedPositionSim extends CaseSimulation {
     return [
       this.differenceStep('K', 'L', K, L, {
         label: 'Hitung $\\overrightarrow{KL}$',
-        prompt: 'Tentukan $\\overrightarrow{KL}$ tanpa menggambar.',
+        prompt: 'Tentukan $\\overrightarrow{KL}$ tanpa menggambar — cukup dengan rumus.',
       }),
       {
         kind: 'fields',
@@ -652,6 +718,7 @@ export class GuidedPositionSim extends CaseSimulation {
           if (firstWrong(s, minus) < 0) return { toast: 'ujungBukanPangkal', wrong: ['cx', 'cy'] };
           return { toast: 'hasilSalah', wrong: wrongKeys(s, M) };
         },
+        hint: () => ({ text: `Titik ujung = titik pangkal + perpindahan: $x_M = ${K[0]} + ${KM[0]}$ dan $y_M = ${K[1]} + ${KM[1]}$.`, fields: 'wrong' }),
         summary: () => `$M = K + \\overrightarrow{KM} = ${texTuple(M)}$`,
       },
     ];
@@ -664,7 +731,8 @@ export class GuidedPositionSim extends CaseSimulation {
       {
         kind: 'fields',
         label: 'Hitung $R$',
-        prompt: '$R$ adalah **pangkal** dan $S$ **ujung**, jadi $\\overrightarrow{RS} = S - R$. Balik rumusnya: tentukan koordinat $R$.',
+        prompt: 'Tentukan koordinat titik pangkal $R$.',
+        intro: '$R$ adalah **pangkal** dan $S$ adalah **ujung**, jadi $\\overrightarrow{RS} = S - R$. Kalau rumusnya dibalik: $R = S - \\overrightarrow{RS}$.',
         fields: componentFields(2, { label: (a) => `$${a}_R$` }),
         check: (values) => {
           const s = componentValues(values, 2);
@@ -673,16 +741,18 @@ export class GuidedPositionSim extends CaseSimulation {
           if (firstWrong(s, plus) < 0) return { toast: 'pangkalBukanUjung', wrong: ['cx', 'cy'] };
           return { toast: 'hasilSalah', wrong: wrongKeys(s, R) };
         },
+        hint: () => ({ text: `$x_R = ${S[0]} - ${RS[0]}$ dan $y_R = ${S[1]} - (${RS[1]})$. Ingat: mengurangi bilangan negatif sama dengan menambah.`, fields: 'wrong' }),
         summary: () => `$R = S - \\overrightarrow{RS} = ${texTuple(R)}$`,
       },
       {
         kind: 'pick',
         label: 'Buktikan di bidang',
-        prompt: 'Buktikan jawabanmu: **ketuk titik $R$** pada bidang. Dari sana, $\\overrightarrow{RS}$ harus tiba tepat di $S$.',
+        prompt: 'Sekarang buktikan jawabanmu: **ketuk titik $R$** pada bidang. Dari sana, $\\overrightarrow{RS}$ harus tiba tepat di $S$.',
         check: (p) => (samePoint(p, R) ? true : { toast: 'titikMeleset', values: { titik: tapped(p) } }),
-        summary: () => `Dari $R$, langkah $\\overrightarrow{RS}$ tiba tepat di $S$.`,
+        hint: () => ({ text: `Ketuk titik yang koordinatnya baru saja kamu hitung, $R${texTuple(R)}$.`, show: () => ghostCross(this, R) }),
+        summary: () => 'Dari $R$, perpindahan $\\overrightarrow{RS}$ tiba tepat di $S$.',
         onSolved: async () => {
-          this.marks.R = this.drawPoint(R, { label: 'R', essential: true });
+          this.markPoint('R', R);
           await animateHops(this, R, RS);
           const arrow = this.drawVector({ from: R, to: R, name: 'RS', tone: 'blue' }, { essential: true });
           await arrow.setVector({ from: R, to: S }, { animate: !stillMotion(), duration: ARROW_MS });
@@ -693,30 +763,33 @@ export class GuidedPositionSim extends CaseSimulation {
 }
 
 /* ============================================================
-   4. magnitude_guided — Panjang vektor dari persegi Pythagoras
+   4. magnitude_guided — Panjang vektor dengan Teorema Pythagoras
 
-   Kasus 1 (terpandu): ketuk titik siku → garis bantu & tanda siku →
-   "lebih pendek dari 3 + 4?" → luas persegi di kedua sisi siku (persegi
-   TUMBUH sesudah benar) → persegi di sisi miring → sisinya = |v|.
-   Kasus 2: √20 → faktor kuadrat terbesar → 2√5 (akar eksak paling
-   sederhana). Kasus 3: komponen negatif — tanda minus ikut terkuadratkan.
+   Alur guru (revisi): perhatikan vektor → langkah mendatar & tegaknya
+   membentuk segitiga siku-siku (ketuk sudut sikunya) → apakah panjangnya
+   sama dengan 3 + 4 = 7? (tidak, lebih pendek) → ingat Teorema Pythagoras
+   dari SMP → siswa menghitung kuadrat, jumlah, dan akar sendiri.
+   Kasus 2: hasilnya bukan kuadrat sempurna → √20 = √4 × √5 = 2√5.
+   Kasus 3: tanpa gambar, langsung dengan rumus — komponen negatif.
    ============================================================ */
 
-/** Persegi di sisi a→b, tumbuh ke sisi kiri (dir +1) atau kanan (dir −1). */
+/** Persegi pada sisi a→b, ke kiri (dir +1) atau ke kanan (dir −1) arah a→b. */
 function squareCorners(a, b, dir, k = 1) {
   const n = dir > 0 ? [-(b[1] - a[1]), b[0] - a[0]] : [b[1] - a[1], -(b[0] - a[0])];
   return [a, b, [b[0] + n[0] * k, b[1] + n[1] * k], [a[0] + n[0] * k, a[1] + n[1] * k]];
 }
 
+const sq = (n) => (n < 0 ? `(${n})^2` : `${n}^2`);
+
 export class GuidedMagnitudeSim extends CaseSimulation {
-  usesPlane() {
-    return true;
+  usesPlane(c) {
+    return c.kind !== 'formula';
   }
 
   planeOptions(c) {
     const [x, y] = c.v;
-    if (c.guided) {
-      // Ruang untuk ketiga persegi: di bawah sumbu X, di kanan kaki tegak,
+    if (c.kind === 'pythagoras') {
+      // Ruang untuk ketiga persegi: di bawah sumbu X, di kanan sisi tegak,
       // dan di kiri atas sisi miring.
       const pts = [[0, 0], [x, y], [x + y, 0], [0, -x], [-y, x], [x - y, y + x]];
       const xs = pts.map((p) => p[0]);
@@ -734,19 +807,22 @@ export class GuidedMagnitudeSim extends CaseSimulation {
   }
 
   caseSuccessKey(c) {
-    return { pythagoras: 'success', simplify: 'successAkar', negative: 'successNegatif' }[c.kind];
+    return { pythagoras: 'success', simplify: 'successAkar', formula: 'successRumus' }[c.kind];
   }
 
   caseDonePrompt(c, allDone) {
     if (c.kind === 'pythagoras') {
-      return '**Panjang panah = sisi persegi di sisi miring.** Jadi $|\\vec{v}| = \\sqrt{x^2 + y^2}$: kuadratkan, jumlahkan, akarkan.';
+      return 'Mudah, bukan? Panjang vektor dihitung dengan **Teorema Pythagoras**: $|\\vec{v}| = \\sqrt{x^2 + y^2}$.';
+    }
+    if (c.kind === 'simplify') {
+      return 'Begitu cara menyederhanakan akar: pecah menjadi **kuadrat sempurna × sisanya**, lalu akarkan kuadrat sempurnanya.';
     }
     return super.caseDonePrompt(c, allDone);
   }
 
   nextCaseInvite(next) {
-    if (next.kind === 'simplify') return 'Hebat! Tidak semua hasil sebulat itu — coba vektor yang akarnya **harus disederhanakan**.';
-    return 'Terakhir: komponennya **negatif**. Apa yang terjadi pada tanda minus saat dikuadratkan?';
+    if (next.kind === 'simplify') return 'Sekarang kita coba vektor yang hasilnya **bukan kuadrat sempurna**.';
+    return 'Terakhir, kita hitung **tanpa gambar** — langsung dengan rumusnya.';
   }
 
   celebration() {
@@ -754,20 +830,27 @@ export class GuidedMagnitudeSim extends CaseSimulation {
       ...super.celebration(),
       badge: 'Panjang Vektor Dikuasai',
       recap: [
-        'Panah = **sisi miring** segitiga siku-siku dari komponennya',
-        '$|\\vec{v}| = \\sqrt{x^2 + y^2}$ — kuadratkan, jumlahkan, akarkan',
-        'Akar **eksak** paling sederhana: $\\sqrt{20} = 2\\sqrt{5}$, bukan desimal',
+        'Langkah mendatar dan tegak membentuk **segitiga siku-siku**; vektornya adalah sisi miring',
+        '$|\\vec{v}| = \\sqrt{x^2 + y^2}$ — kuadratkan, jumlahkan, lalu akarkan',
+        'Akar yang bukan kuadrat sempurna disederhanakan: $\\sqrt{20} = \\sqrt{4}\\sqrt{5} = 2\\sqrt{5}$',
       ],
     };
   }
 
   setupCase(c) {
+    if (c.kind === 'formula') {
+      this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
+      this.givenEl.appendChild(givenBlock(mixed('Rumus: $|\\vec{v}| = \\sqrt{x^2 + y^2}$ — akar dari jumlah kuadrat **semua** komponennya.'), 'sim-given--muted'));
+      return;
+    }
     this.marks = { O: this.drawPoint([0, 0], { label: 'O', essential: true }) };
     this.drawVector({ from: [0, 0], to: c.v, name: 'v', tone: 'blue' }, { essential: true });
     this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
+    // Kasus 2: segitiganya langsung tampak (siswa sudah mengenalnya di kasus 1).
+    if (c.kind === 'simplify') this.drawLegs(c.v);
   }
 
-  /** Garis bantu: kaki mendatar & tegak + tanda siku + lencana panjang kaki. */
+  /** Sisi mendatar & tegak + tanda siku + panjang kedua sisi. */
   drawLegs(v) {
     const [x, y] = v;
     const corner = [x, 0];
@@ -778,7 +861,7 @@ export class GuidedMagnitudeSim extends CaseSimulation {
     springPop(this.plane.drawTag([x, y / 2], String(Math.abs(y)), { offset: [x >= 0 ? 16 : -16, 0], tone: 'amber' }).inner);
   }
 
-  /** Persegi tumbuh dari sisinya ke luar (rAF, 320 ms), lalu lencana luasnya. */
+  /** Persegi muncul dari sisinya ke luar (320 ms), lalu angka luasnya. */
   async growSquare(a, b, dir, tone, area) {
     const poly = this.plane.drawPolygon(squareCorners(a, b, dir, 0.001), { tone });
     const ms = stillMotion() ? 0 : 320;
@@ -798,14 +881,14 @@ export class GuidedMagnitudeSim extends CaseSimulation {
     springPop(this.plane.drawTag(center, String(area), { tone: tone === 'amber' ? 'amber' : 'blue' }).inner);
   }
 
-  /** Langkah kuadrat tiap komponen dengan pengenal kesalahan khas. */
-  squaresStep(v, { label, prompt, fieldLabel, onSolved }) {
+  /** Kuadrat setiap komponen, dengan pengenal kesalahan khas. */
+  squaresStep(v, { label, prompt, onSolved, summary }) {
     const squares = v.map((n) => n * n);
     return {
       kind: 'fields',
       label,
       prompt,
-      fields: v.map((n, i) => ({ key: `q${AXES[i]}`, label: fieldLabel(n, i), mode: 'integer', aria: `Kuadrat komponen ${AXES[i]}` })),
+      fields: v.map((n, i) => ({ key: `q${AXES[i]}`, label: `$${sq(n)} =$`, mode: 'integer', aria: `Kuadrat dari ${n}` })),
       check: (values) => {
         const s = v.map((n, i) => values[`q${AXES[i]}`].value);
         const i = firstWrong(s, squares);
@@ -815,9 +898,12 @@ export class GuidedMagnitudeSim extends CaseSimulation {
         if (student === -squares[i]) return { toast: 'tandaIkutMasuk', values: { nilai: v[i] }, wrong };
         if (Math.abs(student) === Math.abs(v[i]) && squares[i] !== Math.abs(v[i])) return { toast: 'lupaKuadrat', wrong };
         if (Math.abs(student) === 2 * Math.abs(v[i])) return { toast: 'kaliDua', wrong };
-        return { toast: 'luasSalah', wrong };
+        return { toast: 'kuadratSalah', wrong };
       },
-      summary: () => v.map((n, i) => `$${n < 0 ? `(${n})` : n}^2 = ${squares[i]}$`).join(' dan '),
+      hint: () => ({
+        text: `Kuadrat artinya bilangan dikali **dirinya sendiri**: $${sq(v[0])} = (${v[0]}) \\times (${v[0]})$. Negatif × negatif hasilnya **positif**.`,
+      }),
+      summary: summary || (() => `$|\\vec{v}|^2 = ${v.map(sq).join(' + ')} = ${squares.join(' + ')}$`),
       onSolved,
     };
   }
@@ -835,14 +921,17 @@ export class GuidedMagnitudeSim extends CaseSimulation {
         if (same(values.sum.value, Math.abs(v[0]) + Math.abs(v[1]))) return { toast: 'lupaKuadrat' };
         return { toast: 'jumlahSalah' };
       },
-      summary: () => `$${squares.join(' + ')} = ${sum}$`,
+      hint: () => ({ text: `Jumlahkan dua bilangan yang baru kamu dapat: $${squares[0]}$ ditambah $${squares[1]}$.`, fields: ['sum'] }),
+      summary: () => `$|\\vec{v}|^2 = ${sum}$`,
       onSolved,
     };
   }
 
+  /** Tulis panjang dalam akar paling sederhana. */
   simplestStep(v, { label, prompt }) {
     const sum = v.reduce((a, n) => a + n * n, 0);
     const length = S.fromSquare(sum);
+    const split = S.squareFreeSplit(sum);
     return {
       kind: 'fields',
       label,
@@ -856,8 +945,15 @@ export class GuidedMagnitudeSim extends CaseSimulation {
         if (same(values.len.value, sum)) return { toast: 'belumDiakar' };
         return { toast: 'panjangSalah' };
       },
+      hint: () => ({
+        text: split.outside > 1
+          ? `Pecah $${sum}$ menjadi **kuadrat sempurna × sisanya**: $${sum} = ${split.outside ** 2} \\times ${split.inside}$. Akar dari $${split.outside ** 2}$ adalah $${split.outside}$. Cara mengetik: angka depan, lalu **√**, lalu angka di dalam akar.`
+          : `Panjangnya akar dari $${sum}$. Cara mengetik: tekan **√**, lalu $${sum}$.`,
+        fields: ['len'],
+      }),
       summary: () => `$|\\vec{v}| = \\sqrt{${sum}} = ${S.toLatexS(length)}$`,
       onSolved: () => {
+        if (!this.plane) return;
         springPop(this.plane.drawTag([v[0] / 2, v[1] / 2], `|\\vec{v}| = ${S.toLatexS(length)}`, { offset: [-30, -12], tone: 'amber' }).inner);
         this.plane.highlight('v');
       },
@@ -867,63 +963,69 @@ export class GuidedMagnitudeSim extends CaseSimulation {
   buildSteps(c) {
     const v = c.v;
     const [x, y] = v;
+    const sum = x * x + y * y;
     if (c.kind === 'pythagoras') {
       const corner = [x, 0];
       return [
         {
           kind: 'pick',
-          label: 'Titik siku',
-          prompt: 'Di bawah panah $\\vec{v}$ selalu ada segitiga siku-siku. **Ketuk titik sikunya** — tempat langkah **mendatar** $\\vec{v}$ berakhir dan langkah tegaknya dimulai.',
+          label: 'Sudut siku-siku',
+          prompt: 'Perhatikan vektor $\\vec{v}$. Langkah mendatar dan tegaknya membentuk **segitiga siku-siku**. Ketuk titik **sudut siku-sikunya**.',
           check: (p) => {
             if (samePoint(p, corner)) return true;
             if (samePoint(p, [0, y])) return { toast: 'sikuTegakDulu' };
             return { toast: 'sikuMeleset', values: { titik: tapped(p) } };
           },
-          summary: () => `Titik siku di $${texTuple(corner)}$: kaki $${Math.abs(x)}$ dan $${Math.abs(y)}$.`,
+          hint: () => ({
+            text: `Dari $O$, jalan **mendatar** dulu sampai tepat di bawah ujung panah. Di situlah langkah mendatar berbelok menjadi tegak.`,
+            show: () => ghostHops(this, [0, 0], [x, 0]),
+          }),
+          summary: () => `Segitiga siku-siku dengan sisi mendatar $${Math.abs(x)}$ dan sisi tegak $${Math.abs(y)}$.`,
           onSolved: () => this.drawLegs(v),
         },
         {
           kind: 'choice',
-          label: 'Tebak dulu',
-          prompt: `Jalan memutar — mendatar lalu tegak — panjangnya $${Math.abs(x)} + ${Math.abs(y)} = ${Math.abs(x) + Math.abs(y)}$. Panah $\\vec{v}$ yang **lurus** itu…`,
+          label: 'Sama dengan 7?',
+          prompt: `Tepat! Langkah mendatar + tegak $= ${Math.abs(x)} + ${Math.abs(y)} = ${Math.abs(x) + Math.abs(y)}$. Kalau berjalan **lurus** mengikuti $\\vec{v}$, apakah panjangnya juga $${Math.abs(x) + Math.abs(y)}$?`,
           options: [
-            { key: 'sama', label: `tepat $${Math.abs(x) + Math.abs(y)}$ satuan` },
-            { key: 'pendek', label: `**lebih pendek** dari $${Math.abs(x) + Math.abs(y)}$ satuan` },
-            { key: 'panjang', label: `lebih panjang dari $${Math.abs(x) + Math.abs(y)}$ satuan` },
+            { key: 'sama', label: `Ya, sama dengan $${Math.abs(x) + Math.abs(y)}$` },
+            { key: 'pendek', label: `Tidak, **lebih pendek** dari $${Math.abs(x) + Math.abs(y)}$` },
+            { key: 'panjang', label: `Tidak, lebih panjang dari $${Math.abs(x) + Math.abs(y)}$` },
           ],
-          check: (key) => (key === 'pendek' ? true : { toast: 'jalanMemutar' }),
-          summary: () => 'Jalan lurus selalu **lebih pendek** daripada jalan memutar.',
+          check: (key) => (key === 'pendek' ? true : { toast: 'lurusLebihPendek' }),
+          hint: () => ({ text: 'Bandingkan dua cara sampai ke ujung panah: berbelok di sudut, atau langsung lurus. Mana yang lebih dekat?' }),
+          summary: () => `Panjang $\\vec{v}$ lebih pendek dari $${Math.abs(x) + Math.abs(y)}$ — berjalan lurus lebih cepat sampai.`,
         },
         this.squaresStep(v, {
-          label: 'Persegi di kaki',
-          prompt: 'Bangun sebuah **persegi** di setiap kaki segitiga. Berapa **luas** masing-masing persegi?',
-          fieldLabel: (n, i) => `Sisi $${Math.abs(n)}$ (${i === 0 ? 'mendatar' : 'tegak'}): luas`,
+          label: 'Kuadrat sisi siku-siku',
+          prompt: 'Benar, jalan lurus lebih pendek. Ingatkah **Teorema Pythagoras** dari SMP? Hitung dulu kuadrat kedua sisi siku-siku.',
+          intro: 'Pada segitiga siku-siku, **kuadrat sisi miring = jumlah kuadrat kedua sisi siku-sikunya**. Sisi miring segitiga ini adalah $\\vec{v}$.',
           onSolved: async () => {
             await this.growSquare([0, 0], corner, -1, 'amber', x * x);
             await this.growSquare(corner, v, -1, 'amber', y * y);
           },
         }),
         this.sumStep(v, {
-          label: 'Persegi di sisi miring',
-          prompt: 'Teorema Pythagoras: persegi pada **sisi miring** — panah $\\vec{v}$ — luasnya sama dengan **jumlah** kedua persegi itu. Berapa?',
-          onSolved: () => this.growSquare([0, 0], v, 1, 'blue', x * x + y * y),
+          label: 'Jumlahkan',
+          prompt: `Kedua persegi di atas menunjukkan $${sq(x)}$ dan $${sq(y)}$. Sekarang **jumlahkan** keduanya — hasilnya sama dengan kuadrat panjang $\\vec{v}$.`,
+          onSolved: () => this.growSquare([0, 0], v, 1, 'blue', sum),
         }),
         {
           kind: 'fields',
-          label: 'Sisi = panjang $\\vec{v}$',
-          prompt: 'Panjang $\\vec{v}$ adalah **sisi** persegi biru itu. Sisi persegi yang luasnya sudah kamu tahu = …',
+          label: 'Akarkan',
+          prompt: `Jadi $|\\vec{v}|^2 = ${sum}$, ditunjukkan persegi biru pada sisi miring. Panjang $\\vec{v}$ adalah **akar** dari ${sum}. Berapa $|\\vec{v}|$?`,
           fields: [{ key: 'len', label: '$|\\vec{v}| =$', mode: 'surd' }],
           check: (values) => {
-            const sum = x * x + y * y;
             const verdict = Val.checkExactAnswer(values.len.raw, S.fromSquare(sum), { requireSimplest: true });
             if (verdict.correct) return true;
             if (verdict.code === 'decimal') return { toast: 'terlanjurDesimal' };
             if (same(values.len.value, sum)) return { toast: 'belumDiakar' };
             return { toast: 'panjangSalah' };
           },
-          summary: () => `$|\\vec{v}| = \\sqrt{${x * x + y * y}} = ${S.toLatexS(S.fromSquare(x * x + y * y))}$`,
+          hint: () => ({ text: `Cari bilangan yang jika dikali dirinya sendiri hasilnya $${sum}$.`, fields: ['len'] }),
+          summary: () => `$|\\vec{v}| = \\sqrt{${sum}} = ${S.toLatexS(S.fromSquare(sum))}$`,
           onSolved: () => {
-            springPop(this.plane.drawTag([x / 2, y / 2], `|\\vec{v}| = ${S.toLatexS(S.fromSquare(x * x + y * y))}`, { offset: [24, 14], tone: 'amber' }).inner);
+            springPop(this.plane.drawTag([x / 2, y / 2], `|\\vec{v}| = ${S.toLatexS(S.fromSquare(sum))}`, { offset: [24, 14], tone: 'amber' }).inner);
             this.plane.highlight('v');
           },
         },
@@ -931,36 +1033,45 @@ export class GuidedMagnitudeSim extends CaseSimulation {
     }
 
     if (c.kind === 'simplify') {
-      const sum = x * x + y * y;
-      const factor = S.squareFreeSplit(sum);
+      const split = S.squareFreeSplit(sum);
+      const k2 = split.outside * split.outside;
       return [
         this.squaresStep(v, {
           label: 'Kuadratkan',
-          prompt: 'Kuadratkan **setiap** komponen $\\vec{v}$.',
-          fieldLabel: (n) => `$(${n})^2 =$`,
-          onSolved: () => this.drawLegs(v),
+          prompt: `Segitiga siku-sikunya sudah tergambar: sisi $${Math.abs(x)}$ dan $${Math.abs(y)}$. Seperti tadi, hitung dulu kuadrat kedua sisi siku-sikunya.`,
         }),
         this.sumStep(v, { label: 'Jumlahkan', prompt: 'Jumlahkan kedua hasil kuadrat itu.' }),
         {
           kind: 'choice',
-          label: 'Faktor kuadrat',
-          prompt: `$\\sqrt{${sum}}$ belum sederhana. Faktor **bilangan kuadrat** terbesar dari $${sum}$ adalah…`,
+          label: 'Kuadrat sempurna',
+          prompt: `Jadi $|\\vec{v}| = \\sqrt{${sum}}$. Karena $${sum}$ **bukan kuadrat sempurna**, akarnya perlu disederhanakan. Pilih bilangan yang tepat.`,
+          intro: `Caranya: cari **kuadrat sempurna** ($4, 9, 16, \\dots$) yang **kurang dari** $${sum}$ dan jika dikalikan bilangan bulat lain hasilnya tepat $${sum}$.`,
           options: [
+            { key: 'sembilan', label: '$9$' },
+            { key: 'ok', label: `$${k2}$` },
             { key: 'dua', label: '$2$' },
-            { key: 'ok', label: `$${factor.outside * factor.outside}$` },
-            { key: 'sepuluh', label: `$${sum / 2}$` },
-            { key: 'satu', label: '$1$' },
-          ],
+            { key: 'enambelas', label: '$16$' },
+          ].filter((o, i, arr) => arr.findIndex((p) => p.label === o.label) === i),
           check: (key) => {
             if (key === 'ok') return true;
-            if (key === 'satu') return { toast: 'faktorBukanTerbesar' };
-            return { toast: 'faktorBukanKuadrat' };
+            if (key === 'dua') return { toast: 'faktorBukanKuadrat' };
+            return { toast: 'faktorTidakMembagi' };
           },
-          summary: () => `$${sum} = ${factor.outside * factor.outside} \\times ${factor.inside}$`,
+          hint: () => ({ text: `Coba satu per satu: apakah $${sum} \\div 4$, $${sum} \\div 9$, $${sum} \\div 16$ hasilnya bilangan bulat?` }),
+          summary: () => `$${sum} = ${k2} \\times ${split.inside}$, jadi $\\sqrt{${sum}} = \\sqrt{${k2}} \\times \\sqrt{${split.inside}}$`,
+        },
+        {
+          kind: 'fields',
+          label: `Akar dari ${k2}`,
+          prompt: `Tepat. Maka $\\sqrt{${sum}} = \\sqrt{${k2}} \\times \\sqrt{${split.inside}}$. Berapa $\\sqrt{${k2}}$?`,
+          fields: [{ key: 'root', label: `$\\sqrt{${k2}} =$`, mode: 'integer' }],
+          check: (values) => (same(values.root.value, split.outside) ? true : { toast: 'akarKuadratSalah' }),
+          hint: () => ({ text: `Bilangan berapa yang dikali dirinya sendiri hasilnya $${k2}$?`, fields: ['root'] }),
+          summary: () => `$\\sqrt{${k2}} = ${split.outside}$`,
         },
         this.simplestStep(v, {
-          label: 'Sederhanakan',
-          prompt: 'Tarik akar faktor kuadratnya keluar. Tulis $|\\vec{v}|$ dalam bentuk akar **paling sederhana**.',
+          label: 'Bentuk sederhana',
+          prompt: `Jadi $\\sqrt{${sum}} = ${split.outside}\\sqrt{${split.inside}}$. Tulis panjang $\\vec{v}$ dalam bentuk paling sederhana.`,
         }),
       ];
     }
@@ -968,27 +1079,26 @@ export class GuidedMagnitudeSim extends CaseSimulation {
     return [
       this.squaresStep(v, {
         label: 'Kuadratkan',
-        prompt: 'Kuadratkan **setiap** komponen — termasuk tandanya.',
-        fieldLabel: (n) => `$(${n})^2 =$`,
-        onSolved: () => this.drawLegs(v),
+        prompt: 'Sekarang **tanpa gambar**. Hitung kuadrat **setiap** komponen $\\vec{v}$ — hati-hati dengan tanda minus.',
       }),
-      this.sumStep(v, { label: 'Jumlahkan', prompt: 'Jumlahkan kedua hasil kuadrat itu.' }),
+      this.sumStep(v, { label: 'Jumlahkan', prompt: 'Jumlahkan semua hasil kuadratnya.' }),
       this.simplestStep(v, {
         label: 'Akar paling sederhana',
-        prompt: 'Akarkan, lalu sederhanakan. Tulis $|\\vec{v}|$ dalam bentuk akar **paling sederhana**.',
+        prompt: 'Panjang $\\vec{v}$ adalah akar dari jumlah itu. Tulis dalam bentuk akar **paling sederhana**.',
       }),
     ];
   }
 }
 
 /* ============================================================
-   5. unit_guided — Vektor satuan: "potong" panahnya menjadi 1 satuan
+   5. unit_guided — Vektor satuan dan lingkaran berjari-jari 1
 
-   Kasus 1 (terpandu): |v| = 5 → pilih caranya (dibagi 5) → titik-titik
-   membagi panah menjadi 5 potong sama panjang → hitung v̂ → ujungnya
-   MENDARAT di lingkaran satuan → verifikasi (3/5)² + (4/5)² = 1.
-   Kasus 2: (6, 8) — searah, vektor satuannya SAMA. Kasus 3: hasil berakar.
-   Kasus 4: vektor nol — satu-satunya tanpa vektor satuan.
+   Kasus 1 (terpandu): hitung |v| = 5 → pilih caranya (dibagi panjangnya)
+   → titik-titik membagi panah menjadi 5 bagian yang sama panjang →
+   hitung v̂ → ujungnya tepat berada di lingkaran berjari-jari 1 → uji
+   (3/5)² + (4/5)² = 1. Kasus 2: (6, 8) searah, vektor satuannya sama.
+   Kasus 3: panjangnya berakar (papan angka: 1 → a/b → √ → 5).
+   Kasus 4: vektor nol tidak punya vektor satuan.
    ============================================================ */
 export class GuidedUnitSim extends CaseSimulation {
   usesPlane(c) {
@@ -1012,15 +1122,15 @@ export class GuidedUnitSim extends CaseSimulation {
   }
 
   caseDonePrompt(c, allDone) {
-    if (c.kind === 'shrink') return '**Ujung vektor satuan jatuh tepat di lingkaran berjari-jari 1.** Itu bukti panjangnya tepat 1 — arahnya tetap arah $\\vec{v}$.';
-    if (c.kind === 'same') return 'Panah $(6,\\, 8)$ dua kali lebih panjang, tetapi **searah** — maka vektor satuannya **sama persis**.';
+    if (c.kind === 'shrink') return 'Lihat: ujung $\\hat{v}$ tepat berada di **lingkaran berjari-jari 1**. Itu tanda panjangnya tepat 1, sedangkan arahnya tetap arah $\\vec{v}$.';
+    if (c.kind === 'same') return 'Vektor $(6,\\, 8)$ dua kali lebih panjang, tetapi **searah** — karena itu vektor satuannya **sama persis**.';
     return super.caseDonePrompt(c, allDone);
   }
 
   nextCaseInvite(next) {
-    if (next.kind === 'same') return 'Hebat! Sekarang vektor yang **dua kali lebih panjang** — apakah vektor satuannya ikut berubah?';
-    if (next.kind === 'surd') return 'Tidak semua panjang bilangan bulat. Coba yang panjangnya **berakar**.';
-    return 'Terakhir: bagaimana dengan vektor yang **panjangnya nol**?';
+    if (next.kind === 'same') return 'Bagus! Sekarang vektor yang **dua kali lebih panjang** — apakah vektor satuannya ikut berubah?';
+    if (next.kind === 'surd') return 'Tidak semua panjang berupa bilangan bulat. Kita coba yang panjangnya **berbentuk akar**.';
+    return 'Terakhir, bagaimana dengan vektor yang **panjangnya nol**?';
   }
 
   celebration() {
@@ -1028,9 +1138,9 @@ export class GuidedUnitSim extends CaseSimulation {
       ...super.celebration(),
       badge: 'Vektor Satuan Dikuasai',
       recap: [
-        'Vektor satuan: **searah** $\\vec{v}$, panjangnya tepat **1**',
+        'Vektor satuan **searah** dengan $\\vec{v}$, panjangnya tepat **1**',
         '$\\hat{e} = \\dfrac{\\vec{v}}{|\\vec{v}|}$ — bagi **setiap** komponen dengan panjangnya',
-        'Vektor searah punya vektor satuan yang sama; $\\vec{0}$ tidak punya',
+        'Vektor yang searah punya vektor satuan yang sama; $\\vec{0}$ tidak punya',
       ],
     };
   }
@@ -1038,7 +1148,7 @@ export class GuidedUnitSim extends CaseSimulation {
   setupCase(c) {
     this.givenEl.appendChild(givenBlock(tex(`\\vec{v} = ${texColumn(c.v)}`), 'sim-given--display'));
     if (!this.plane) {
-      this.givenEl.appendChild(givenBlock('Vektor ini tidak bisa digambar sebagai panah: pangkal dan ujungnya berimpit.', 'sim-given--muted'));
+      this.givenEl.appendChild(givenBlock('Vektor ini tidak bisa digambar sebagai panah: pangkal dan ujungnya berada di titik yang sama.', 'sim-given--muted'));
       return;
     }
     this.plane.drawCircle([0, 0], 1, { tone: 'cyan' });
@@ -1066,6 +1176,10 @@ export class GuidedUnitSim extends CaseSimulation {
         if (sumSq !== 0 && same(values.len.value, sumSq) && sumSq !== 1) return { toast: 'belumDiakar' };
         return { toast: 'panjangSalah' };
       },
+      hint: () => ({
+        text: `Seperti sub-topik sebelumnya: $|\\vec{v}| = \\sqrt{${c.v.map((n) => (n < 0 ? `(${n})^2` : `${n}^2`)).join(' + ')}}$.${sumSq && !Number.isInteger(Math.sqrt(sumSq)) ? ' Untuk menulis akar, tekan **√** lalu angkanya.' : ''}`,
+        fields: ['len'],
+      }),
       summary: () => `$|\\vec{v}| = ${S.toLatexS(length)}$`,
       onSolved: () => {
         if (!this.plane) return;
@@ -1074,13 +1188,15 @@ export class GuidedUnitSim extends CaseSimulation {
     };
   }
 
-  unitStep(c, { prompt, mode = 'fraction' }) {
+  unitStep(c, { prompt, mode = 'fraction', intro }) {
     const { length, unit } = this.unitOf(c.v);
     const dim = c.v.length;
+    const lenTex = S.toLatexS(length);
     return {
       kind: 'fields',
       label: 'Bagi setiap komponen',
       prompt,
+      intro,
       fields: componentFields(dim, { mode }),
       check: (values) => {
         const s = componentValues(values, dim);
@@ -1089,9 +1205,13 @@ export class GuidedUnitSim extends CaseSimulation {
         const right = dim - wrong.length;
         if (right > 0 && s.some((x, i) => !same(x, unit[i]) && same(x, c.v[i]))) return { toast: 'hanyaSatuKomponen', wrong };
         if (s.every((x, i) => c.v[i] === 0 || same(x, Math.sign(c.v[i])))) return { toast: 'dibagiKomponen', wrong };
-        if (firstWrong(s, unit.map((u) => S.toNumber(u) < 0 ? S.negS(u) : u)) < 0) return { toast: 'tandaHilang', wrong };
-        return { toast: 'satuanSalah', values: { panjang: S.toLatexS(length) }, wrong };
+        if (firstWrong(s, unit.map((u) => (S.toNumber(u) < 0 ? S.negS(u) : u))) < 0) return { toast: 'tandaHilang', wrong };
+        return { toast: 'satuanSalah', values: { panjang: lenTex }, wrong };
       },
+      hint: () => ({
+        text: `$\\hat{v} = \\left(\\dfrac{${c.v[0]}}{${lenTex}},\\ \\dfrac{${c.v[1]}}{${lenTex}}\\right)$ — tulis setiap komponen sebagai pecahan.${mode === 'surd' ? ` Cara mengetik: angka atas → **a/b** → **√** → angka di dalam akar.` : ''}`,
+        fields: 'wrong',
+      }),
       summary: () => `$\\hat{v} = \\left(${unit.map((u) => S.toLatexS(u)).join(',\\ ')}\\right)$`,
       onSolved: async () => {
         const tip = unit.map((u) => S.toNumber(u));
@@ -1110,11 +1230,11 @@ export class GuidedUnitSim extends CaseSimulation {
       const { length, unit } = this.unitOf(c.v);
       const n = S.toNumber(length);
       return [
-        this.lengthStep(c, { prompt: 'Lingkaran biru muda berjari-jari **1**. Hitung dulu panjang $\\vec{v}$ — ingat sub-topik sebelumnya.' }),
+        this.lengthStep(c, { prompt: 'Perhatikan lingkaran biru muda: jari-jarinya **1**. Kita ingin vektor yang searah $\\vec{v}$ tetapi panjangnya tepat 1. Mulai dengan menghitung panjang $\\vec{v}$.' }),
         {
           kind: 'choice',
           label: 'Pilih caranya',
-          prompt: `Kita ingin vektor yang **searah** $\\vec{v}$ tetapi panjangnya **tepat 1**. Apa yang harus dilakukan pada $\\vec{v}$?`,
+          prompt: `Tepat, panjangnya $${n}$. Supaya panjangnya menjadi **tepat 1** tanpa mengubah arah, apa yang harus kita lakukan pada $\\vec{v}$?`,
           options: [
             { key: 'kurang', label: `Mengurangi setiap komponen dengan $${n - 1}$` },
             { key: 'komponen', label: `Membagi komponen pertama dengan $${x}$ dan komponen kedua dengan $${y}$` },
@@ -1127,9 +1247,10 @@ export class GuidedUnitSim extends CaseSimulation {
             if (key === 'komponen') return { toast: 'dibagiKomponen' };
             return { toast: 'komponenTetap' };
           },
+          hint: () => ({ text: `Panjangnya $${n}$ kali lebih besar dari yang kita mau. Agar arahnya tetap, semua komponen harus diperlakukan **sama**.` }),
           summary: () => `Bagi $\\vec{v}$ dengan panjangnya sendiri: $\\dfrac{\\vec{v}}{${n}}$.`,
           onSolved: async () => {
-            // Panah dipotong menjadi n bagian sama panjang — potongan pertama
+            // Panah dibagi menjadi n bagian sama panjang — bagian pertama
             // adalah vektor satuannya (komponennya tetap dihitung siswa).
             for (let k = 1; k < n; k += 1) {
               const dot = this.plane.drawPoint([(x * k) / n, (y * k) / n], { ghost: true });
@@ -1138,17 +1259,18 @@ export class GuidedUnitSim extends CaseSimulation {
             }
           },
         },
-        this.unitStep(c, { prompt: `Bagi **setiap** komponen $\\vec{v}$ dengan $${n}$. Pecahan boleh dipakai.` }),
+        this.unitStep(c, { prompt: `Titik-titik membagi $\\vec{v}$ menjadi $${n}$ bagian yang sama panjang. Bagian pertama itulah vektor satuannya. Bagi **setiap** komponen $\\vec{v}$ dengan $${n}$.` }),
         {
           kind: 'fields',
           label: 'Uji panjangnya',
-          prompt: 'Buktikan tanpa bertanya siapa pun: kuadratkan dan jumlahkan komponen $\\hat{v}$. Hasilnya harus…',
+          prompt: 'Kamu bisa memeriksa sendiri jawabanmu: kuadratkan setiap komponen $\\hat{v}$, lalu jumlahkan. Hasilnya harus…',
           fields: [{ key: 'chk', label: `$\\left(${S.toLatexS(unit[0])}\\right)^2 + \\left(${S.toLatexS(unit[1])}\\right)^2 =$`, mode: 'fraction' }],
           check: (values) => {
             if (same(values.chk.value, 1)) return true;
             if (same(values.chk.value, S.addS(unit[0], unit[1]))) return { toast: 'lupaKuadrat' };
             return { toast: 'verifikasiSalah' };
           },
+          hint: () => ({ text: `Kuadratkan pembilang dan penyebutnya: $\\left(${S.toLatexS(unit[0])}\\right)^2 = \\dfrac{${x * x}}{${n * n}}$. Lakukan juga untuk komponen kedua, lalu jumlahkan.`, fields: ['chk'] }),
           summary: () => '$|\\hat{v}| = \\sqrt{1} = 1$ ✓',
           onSolved: () => {
             springPop(this.plane.drawTag(unit.map((u) => S.toNumber(u)), '|\\hat{v}| = 1', { offset: [34, -14], tone: 'amber' }).inner);
@@ -1166,7 +1288,7 @@ export class GuidedUnitSim extends CaseSimulation {
         {
           kind: 'choice',
           label: 'Mengapa sama?',
-          prompt: `Vektor satuannya mendarat di titik yang **sama** dengan kasus sebelumnya, $\\left(${ref}\\right)$. Mengapa?`,
+          prompt: `Vektor satuannya berada di titik yang **sama** dengan kasus sebelumnya, $\\left(${ref}\\right)$. Mengapa?`,
           options: [
             { key: 'panjang', label: 'Karena kedua vektor sama panjang' },
             { key: 'searah', label: `Karena $${texTuple(c.v)} = ${k} \\times ${texTuple(c.ref)}$: kedua vektor **searah**` },
@@ -1177,20 +1299,25 @@ export class GuidedUnitSim extends CaseSimulation {
             if (key === 'panjang') return { toast: 'panjangBeda' };
             return { toast: 'bukanKebetulan' };
           },
-          summary: () => 'Searah ⇒ vektor satuannya **sama**.',
+          hint: () => ({ text: `Bandingkan komponennya: $${c.v[0]}$ dengan $${c.ref[0]}$, dan $${c.v[1]}$ dengan $${c.ref[1]}$. Apa hubungannya?` }),
+          summary: () => 'Vektor yang searah punya vektor satuan yang **sama**.',
         },
       ];
     }
 
     if (c.kind === 'surd') {
       return [
-        this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$. Hasilnya berakar — tulis dalam mode **Akar**.' }),
-        this.unitStep(c, { prompt: 'Bagi **setiap** komponen dengan panjangnya. Bentuk akar di penyebut boleh, bentuk yang dirasionalkan juga boleh.', mode: 'surd' }),
+        this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$. Hasilnya berbentuk akar — tekan **√** di papan angka untuk menulisnya.' }),
+        this.unitStep(c, {
+          prompt: 'Sekarang bagi **setiap** komponen dengan panjangnya. Kamu boleh menulis akar di penyebut, atau bentuk yang sudah dirasionalkan.',
+          intro: 'Cara mengetik $\\tfrac{1}{\\sqrt{5}}$: tekan **1**, lalu **a/b**, lalu **√**, lalu **5**. Untuk tanda minus, tekan **±**.',
+          mode: 'surd',
+        }),
       ];
     }
 
     return [
-      this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$ lebih dulu — ia akan menjadi pembagi.' }),
+      this.lengthStep(c, { prompt: 'Hitung panjang $\\vec{v}$ lebih dulu — panjang ini akan menjadi pembagi.' }),
       {
         kind: 'choice',
         label: 'Vektor satuan?',
@@ -1205,6 +1332,7 @@ export class GuidedUnitSim extends CaseSimulation {
           if (key === 'nol') return { toast: 'memaksaVektorNol' };
           return { toast: 'satuSembarang' };
         },
+        hint: () => ({ text: 'Untuk mencari vektor satuan kita membagi dengan panjangnya. Panjangnya $0$ — bolehkah membagi dengan nol?' }),
         summary: () => '$\\vec{0}$ tidak punya arah, jadi tidak punya vektor satuan.',
       },
     ];
@@ -1313,13 +1441,13 @@ export class GuidedSpaceSim extends CaseSimulation {
     return this.mover.moveTo([0, 0, 0], 0);
   }
 
-  padStep(c, { prompt, onSolved }) {
+  padStep(c, { prompt, onSolved, intro }) {
     const target = c.P;
     return {
       kind: 'pad',
       label: 'Kemudikan drone',
       prompt,
-      intro: 'Satu tekan = **satu satuan**. Geser ruangnya untuk melihat dari sisi lain.',
+      intro: intro || 'Satu tekan = **satu satuan**. Geser ruangnya untuk melihat dari sisi lain.',
       buttons: PAD_BUTTONS,
       onPress: (key) => this.press(key),
       onReset: () => this.resetDrone(),
@@ -1330,7 +1458,15 @@ export class GuidedSpaceSim extends CaseSimulation {
         const i = this.pos.findIndex((n, k) => n !== target[k]);
         return { toast: 'posisiSalah', values: { sumbu: AXIS_NAME[i] } };
       },
-      summary: () => `Drone mendarat di $P${tuple3(target)}$.`,
+      hint: () => {
+        const words = [['Maju', 'Mundur'], ['Kanan', 'Kiri'], ['Naik', 'Turun']];
+        const presses = target.map((n, i) => (n ? `**${words[i][n > 0 ? 0 : 1]}** ${Math.abs(n)} kali` : null)).filter(Boolean);
+        return {
+          text: `Garis putus-putus amber menunjukkan rutenya. Tekan **Ulang**, lalu tekan ${presses.join(', ')}.`,
+          show: () => ghostRoute3d(this.space, target),
+        };
+      },
+      summary: () => `Drone tiba di $P${tuple3(target)}$.`,
       onSolved,
     };
   }
@@ -1359,18 +1495,26 @@ export class GuidedSpaceSim extends CaseSimulation {
         if (S.toNumber(s[i]) === -key[i]) return { toast: 'tandaKomponen', values: { sumbu: AXIS_NAME[i] }, wrong };
         return { toast: 'komponenSalah', values: { sumbu: AXIS_NAME[i] }, wrong };
       },
+      hint: () => ({
+        text: `Urutannya selalu: ${basis ? '$\\hat{i}$' : 'baris atas'} = maju/mundur ($X$), ${basis ? '$\\hat{j}$' : 'baris tengah'} = kanan/kiri ($Y$), ${basis ? '$\\hat{k}$' : 'baris bawah'} = naik/turun ($Z$). Mundur, kiri, dan turun bertanda **minus**; arah yang tidak dilalui ditulis $0$.`,
+        fields: 'wrong',
+      }),
       summary: () => (basis
         ? `$\\vec{v} = ${V.toLatex(V.fromArray(key), { style: 'ijk' })}$`
         : `$\\vec{v} = ${texColumn(key)}$`),
     };
   }
 
-  lengthField(sumSq, { label, prompt, plain, simplest = false, onSolved }) {
+  lengthField(sumSq, { label, prompt, plain, simplest = false, onSolved, hintText }) {
     const length = S.fromSquare(sumSq);
     return {
       kind: 'fields',
       label,
       prompt,
+      hint: () => ({
+        text: `${hintText || ''} Hasilnya akar dari $${sumSq}$${simplest && S.squareFreeSplit(sumSq).outside > 1 ? `; sederhanakan: $${sumSq} = ${S.squareFreeSplit(sumSq).outside ** 2} \\times ${S.squareFreeSplit(sumSq).inside}$` : ''}. Tekan **√** untuk menulis akar.`.trim(),
+        fields: ['len'],
+      }),
       fields: [{ key: 'len', label: '$=$', mode: 'surd' }],
       check: (values) => {
         const verdict = Val.checkExactAnswer(values.len.raw, length, { requireSimplest: simplest });
@@ -1386,7 +1530,7 @@ export class GuidedSpaceSim extends CaseSimulation {
     };
   }
 
-  /** Panah O→P tumbuh + balok bantu + titik P; drone mendarat. */
+  /** Panah O→P digambar + balok bantu + titik P; penanda drone dihapus. */
   async revealPoint(P, name) {
     if (this.mover) { this.mover.remove(); this.mover = null; }
     this.space.box(P);
@@ -1402,19 +1546,21 @@ export class GuidedSpaceSim extends CaseSimulation {
       const floorSq = P[0] ** 2 + P[1] ** 2;
       const floorLen = S.fromSquare(floorSq);
       const floorNum = S.toNumber(floorLen);
+      const sq = (n) => (n < 0 ? `(${n})^2` : `${n}^2`);
       return [
         this.padStep(c, {
           prompt: `Perintah drone: **${c.say}**. Kemudikan dengan tombol arah, lalu tekan **Periksa**.`,
+          intro: 'Perhatikan ruang tiga dimensi ini: ada sumbu $X$, $Y$, dan sumbu baru $Z$ yang tegak ke atas. Satu tekan = **satu satuan**; geser ruangnya untuk melihat dari sisi lain.',
           onSolved: () => this.revealPoint(P, 'P'),
         }),
         this.columnStep(P, {
           label: 'Kolom tiga baris',
-          prompt: 'Tulis $\\overrightarrow{OP}$ sebagai **vektor kolom** — kini ada **tiga** baris: $x$, $y$, lalu $z$.',
+          prompt: 'Tepat! Posisi drone kini $P$, pojok sebuah balok. Tulis $\\overrightarrow{OP}$ sebagai **vektor kolom** — sekarang ada **tiga** baris: $x$, $y$, lalu $z$.',
         }),
         {
           ...this.columnStep(P, {
             label: 'Basis $\\hat{i},\\, \\hat{j},\\, \\hat{k}$',
-            prompt: 'Basis baru $\\hat{k}$ = satu langkah **naik** searah sumbu $Z$. Tulis $\\overrightarrow{OP}$ dengan $\\hat{i}$, $\\hat{j}$, $\\hat{k}$.',
+            prompt: 'Di ruang ada vektor basis baru, $\\hat{k}$: satu langkah **naik** searah sumbu $Z$. Tulis $\\overrightarrow{OP}$ dengan $\\hat{i}$, $\\hat{j}$, dan $\\hat{k}$.',
             basis: true,
           }),
           onSolved: () => {
@@ -1423,8 +1569,10 @@ export class GuidedSpaceSim extends CaseSimulation {
         },
         this.lengthField(floorSq, {
           label: 'Diagonal lantai',
-          prompt: `Bayangan $P$ di lantai adalah $${tuple3(floor)}$. Berapa panjang diagonal **lantai** dari $O$ ke bayangan itu?`,
+          prompt: 'Kita hitung panjangnya dengan Pythagoras **dua kali**. Pertama: berapa panjang garis dari $O$ ke bayangan $P$ di lantai?',
+          intro: `Bayangan $P$ di lantai adalah $${tuple3(floor)}$ — titik tepat di bawah drone.`,
           plain: Math.abs(P[0]) + Math.abs(P[1]),
+          hintText: `Di lantai ada segitiga siku-siku dengan sisi $${Math.abs(P[0])}$ dan $${Math.abs(P[1])}$: panjangnya $\\sqrt{${sq(P[0])} + ${sq(P[1])}}$.`,
           onSolved: () => {
             this.space.polygon([[0, 0, 0], [P[0], 0, 0], floor], { tone: 'cyan' });
             this.space.segment([0, 0, 0], floor, { tone: 'cyan' });
@@ -1432,8 +1580,9 @@ export class GuidedSpaceSim extends CaseSimulation {
         }),
         this.lengthField(floorSq + P[2] ** 2, {
           label: 'Diagonal ruang',
-          prompt: `Diagonal lantai ($${S.toLatexS(floorLen)}$) dan tinggi ($${P[2]}$) membentuk segitiga siku-siku **tegak**. Berapa $|\\overrightarrow{OP}|$?`,
+          prompt: `Kedua, garis lantai ($${S.toLatexS(floorLen)}$) dan tinggi drone ($${P[2]}$) membentuk segitiga siku-siku **tegak**. Berapa $|\\overrightarrow{OP}|$?`,
           plain: floorNum + Math.abs(P[2]),
+          hintText: `Segitiga tegak itu punya sisi $${S.toLatexS(floorLen)}$ dan $${P[2]}$: panjangnya $\\sqrt{${S.toLatexS(floorLen)}^2 + ${P[2]}^2}$.`,
           onSolved: async () => {
             this.space.polygon([[0, 0, 0], floor, P], { tone: 'amber' });
             await this.space.setView('samping');
@@ -1447,19 +1596,20 @@ export class GuidedSpaceSim extends CaseSimulation {
       const sumSq = P.reduce((a, n) => a + n * n, 0);
       return [
         this.padStep(c, {
-          prompt: `Perintah baru: **${c.say}**. Kemudikan drone, lalu tekan **Periksa**.`,
+          prompt: `Drone berikutnya. Perintahnya: **${c.say}**. Kemudikan drone, lalu tekan **Periksa**.`,
           onSolved: () => this.revealPoint(P, 'Q'),
         }),
         this.columnStep(P, {
           label: 'Kolom (ada nolnya)',
-          prompt: 'Tulis $\\overrightarrow{OQ}$ sebagai vektor kolom. Arah yang **tidak** dilalui tetap punya barisnya sendiri.',
+          prompt: 'Tulis $\\overrightarrow{OQ}$ sebagai vektor kolom. Arah yang **tidak** dilalui tetap punya barisnya sendiri, diisi $0$.',
           nolCheck: true,
         }),
         this.lengthField(sumSq, {
           label: 'Panjang $\\overrightarrow{OQ}$',
-          prompt: 'Langsung dengan rumus temuanmu: $|\\overrightarrow{OQ}| = \\sqrt{x^2 + y^2 + z^2}$.',
+          prompt: 'Dua kali Pythagoras tadi bisa diringkas menjadi satu rumus: $|\\vec{v}| = \\sqrt{x^2 + y^2 + z^2}$. Hitung $|\\overrightarrow{OQ}|$.',
           plain: P.reduce((a, n) => a + Math.abs(n), 0),
           simplest: true,
+          hintText: `$|\\overrightarrow{OQ}| = \\sqrt{${P.map((n) => (n < 0 ? `(${n})^2` : `${n}^2`)).join(' + ')}}$.`,
         }),
       ];
     }
@@ -1471,7 +1621,8 @@ export class GuidedSpaceSim extends CaseSimulation {
       {
         kind: 'fields',
         label: '$\\overrightarrow{AB} = B - A$',
-        prompt: 'Rumus "ujung dikurangi pangkal" tetap berlaku — kini tiga baris. Tentukan $\\overrightarrow{AB}$.',
+        prompt: 'Rumus **ujung − pangkal** tetap berlaku di ruang. Tentukan $\\overrightarrow{AB}$.',
+        intro: 'Sama seperti sub-topik 3, hanya sekarang ada tiga baris: $x$, $y$, dan $z$.',
         fieldsLayout: 'column',
         fields: componentFields(3),
         check: (values) => {
@@ -1481,6 +1632,10 @@ export class GuidedSpaceSim extends CaseSimulation {
           if (firstWrong(s, key.map((n) => -n)) < 0) return { toast: 'tandaTerbalik', values: { nama: 'AB', kebalikan: 'BA' }, wrong };
           return { toast: 'hasilSalah', wrong };
         },
+        hint: () => ({
+          text: `$x = ${B[0]} - ${A[0]}$, $y = ${B[1] < 0 ? `(${B[1]})` : B[1]} - ${A[1]}$, $z = ${B[2]} - ${A[2]}$ — koordinat $B$ dikurangi koordinat $A$.`,
+          fields: 'wrong',
+        }),
         summary: () => `$\\overrightarrow{AB} = ${texColumn(key)}$`,
         onSolved: async () => {
           const corner1 = [B[0], A[1], A[2]];
@@ -1494,9 +1649,11 @@ export class GuidedSpaceSim extends CaseSimulation {
       },
       this.lengthField(sumSq, {
         label: 'Panjang $\\overrightarrow{AB}$',
-        prompt: 'Hitung $|\\overrightarrow{AB}|$ dalam bentuk akar **paling sederhana**.',
+        prompt: 'Hitung panjangnya dalam bentuk akar **paling sederhana**.',
+        intro: 'Pakai rumus panjang di ruang: $\\sqrt{x^2 + y^2 + z^2}$.',
         plain: key.reduce((a, n) => a + Math.abs(n), 0),
         simplest: true,
+        hintText: `$|\\overrightarrow{AB}| = \\sqrt{${key.map((n) => (n < 0 ? `(${n})^2` : `${n}^2`)).join(' + ')}}$.`,
       }),
     ];
   }
