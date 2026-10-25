@@ -378,6 +378,321 @@ export class GuidedNotationSim extends CaseSimulation {
   }
 }
 
+/* ============================================================
+   3. position_guided — Vektor posisi & "ujung dikurangi pangkal"
+
+   Kasus 1 (terpandu, inkuiri): tandai A dan B → gambar vektor posisi
+   a = OA → gambar AB → hitung langkahnya di kisi (lompatan dari A) →
+   lengkapi pola "6 = 8 − 2" → siswa MENEMUKAN AB = B − A sendiri.
+   Kasus 2: hitung dulu, buktikan di kisi (LKPD 5) + vektor lawan.
+   Kasus 3: koordinat ratusan — tanpa kisi, rumus menyelamatkan.
+   Kasus 4: rumus dibalik — mencari titik PANGKAL (LKPD 6).
+   ============================================================ */
+const pointName = (name, p) => `$${name}${texTuple(p)}$`;
+
+export class GuidedPositionSim extends CaseSimulation {
+  usesPlane(c) {
+    return c.kind !== 'nogrid';
+  }
+
+  planeOptions(c) {
+    const pts = [[0, 0]];
+    if (c.kind === 'discover') pts.push(c.A, c.B);
+    if (c.kind === 'formula') pts.push(c.P, c.Q);
+    if (c.kind === 'origin') pts.push(c.S, c.S.map((n, i) => n - c.RS[i]));
+    const xs = pts.map((p) => p[0]);
+    const ys = pts.map((p) => p[1]);
+    return {
+      xRange: [Math.min(...xs) - 2, Math.max(...xs) + 2],
+      yRange: [Math.min(...ys) - 1, Math.max(...ys) + 2],
+    };
+  }
+
+  caseLabel(c) {
+    return { discover: 'Denah', formula: '$\\overrightarrow{PQ}$', nogrid: 'Tanpa kisi', origin: 'Titik $R$' }[c.kind];
+  }
+
+  caseSuccessKey(c) {
+    return { discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind];
+  }
+
+  caseDonePrompt(c, allDone) {
+    if (c.kind === 'discover') {
+      return '**Kamu menemukan rumusnya sendiri:** $\\overrightarrow{AB} = \\vec{b} - \\vec{a}$ — koordinat **ujung** dikurangi koordinat **pangkal**.';
+    }
+    if (c.kind === 'nogrid') {
+      return 'Tanpa kertas berpetak pun beres: **ujung − pangkal** untuk vektor, **pangkal + vektor** untuk titik ujung.';
+    }
+    return super.caseDonePrompt(c, allDone);
+  }
+
+  nextCaseInvite(next) {
+    if (next.kind === 'formula') return 'Hebat! Sekarang **hitung dulu** dengan rumusmu, baru buktikan di kisi.';
+    if (next.kind === 'nogrid') return 'Bagaimana kalau koordinatnya **ratusan**? Kertas berpetak tidak cukup lagi.';
+    return 'Terakhir: rumusnya **dibalik** — cari titik pangkalnya.';
+  }
+
+  celebration() {
+    return {
+      ...super.celebration(),
+      badge: 'Rumus Ujung − Pangkal Ditemukan',
+      recap: [
+        '**Vektor posisi** titik $A$: $\\vec{a} = \\overrightarrow{OA}$, pangkalnya di $O$',
+        '$\\overrightarrow{AB} = \\vec{b} - \\vec{a}$: koordinat **ujung** dikurangi **pangkal**',
+        'Dibalik: ujung $= A + \\overrightarrow{AB}$, pangkal $= B - \\overrightarrow{AB}$',
+      ],
+    };
+  }
+
+  setupCase(c) {
+    this.marks = {};
+    if (this.plane) this.marks.O = this.drawPoint([0, 0], { label: 'O', essential: true });
+    if (c.kind === 'discover') {
+      this.givenEl.appendChild(givenBlock(mixed(`Denah sekolah: gerbang $O(0,\\, 0)$, kelas ${pointName('A', c.A)}, kantin ${pointName('B', c.B)}.`)));
+    } else if (c.kind === 'formula') {
+      this.givenEl.appendChild(givenBlock(tex(`P${texTuple(c.P)} \\qquad Q${texTuple(c.Q)}`), 'sim-given--display'));
+      this.marks.P = this.drawPoint(c.P, { label: 'P', essential: true });
+      this.marks.Q = this.drawPoint(c.Q, { label: 'Q', essential: true });
+    } else if (c.kind === 'nogrid') {
+      this.givenEl.appendChild(givenBlock(tex(`K${texTuple(c.K)} \\qquad L${texTuple(c.L)}`), 'sim-given--display'));
+      this.givenEl.appendChild(givenBlock('Koordinat sebesar ini tidak muat di kertas berpetak — hanya rumus yang bisa menolongmu.', 'sim-given--muted'));
+    } else {
+      this.givenEl.appendChild(givenBlock(tex(`\\overrightarrow{RS} = ${texColumn(c.RS)} \\qquad S${texTuple(c.S)}`), 'sim-given--display'));
+      this.marks.S = this.drawPoint(c.S, { label: 'S', essential: true });
+    }
+  }
+
+  /** Ketuk letak titik bernama; kesalahan "tertukar" dikenali. */
+  pickPoint(name, target) {
+    return {
+      kind: 'pick',
+      label: `Titik $${name}$`,
+      prompt: `Ketuk letak titik ${pointName(name, target)} pada denah.`,
+      check: (p) => {
+        if (samePoint(p, target)) return true;
+        if (samePoint(p, [target[1], target[0]])) return { toast: 'koordinatTertukar', values: { titik: tapped(p) } };
+        return { toast: 'titikMeleset', values: { titik: tapped(p) } };
+      },
+      summary: () => `${pointName(name, target)} ditandai.`,
+      onSolved: () => {
+        this.marks[name] = this.drawPoint(target, { label: name, essential: true });
+      },
+    };
+  }
+
+  /** Gambar panah dua ketukan dari titik bernama `from` ke `to`. */
+  drawStep(from, to, { label, prompt, summary, tone = 'blue', points, after }) {
+    const drawer = createArrowDrawer(this, { points, marks: () => this.marks, from, to, name: `${from}${to}` });
+    return {
+      kind: 'pick',
+      label,
+      prompt,
+      intro: 'Ketuk dua titik di bidang: **pangkal** dulu, baru **ujung**.',
+      onEnter: () => drawer.disarm(),
+      onLeave: () => drawer.disarm(),
+      check: (p) => drawer.check(p),
+      summary,
+      onSolved: async () => {
+        const P = points()[from];
+        const Q = points()[to];
+        const name = from === 'O' ? to.toLowerCase() : `${from}${to}`;
+        const arrow = this.drawVector({ from: P, to: P, name, tone }, { essential: true });
+        await arrow.setVector({ from: P, to: Q }, { animate: !stillMotion(), duration: ARROW_MS });
+        if (arrow.labelEl) springPop(arrow.labelEl.firstChild.firstChild);
+        if (after) await after();
+      },
+    };
+  }
+
+  /** Isian "ujung − pangkal" dengan pengenal kesalahan khas. */
+  differenceStep(start, end, P, Q, { label, prompt }) {
+    const key = Q.map((q, i) => q - P[i]);
+    return {
+      kind: 'fields',
+      label,
+      prompt,
+      fields: componentFields(2),
+      check: (values) => {
+        const s = componentValues(values, 2);
+        if (firstWrong(s, key) < 0) return true;
+        const wrong = wrongKeys(s, key);
+        if (firstWrong(s, key.map((n) => -n)) < 0) return { toast: 'tandaTerbalik', values: { nama: `${start}${end}`, kebalikan: `${end}${start}` }, wrong };
+        if (same(s[0], Q[0] - P[1]) || same(s[1], Q[1] - P[0])) return { toast: 'komponenTidakSeletak', wrong };
+        return { toast: 'hasilSalah', wrong };
+      },
+      summary: () => `$\\overrightarrow{${start}${end}} = ${end} - ${start} = ${texColumn(key)}$`,
+    };
+  }
+
+  buildSteps(c) {
+    if (c.kind === 'discover') return this.stepsDiscover(c);
+    if (c.kind === 'formula') return this.stepsFormula(c);
+    if (c.kind === 'nogrid') return this.stepsNoGrid(c);
+    return this.stepsOrigin(c);
+  }
+
+  stepsDiscover(c) {
+    const { A, B } = c;
+    const key = [B[0] - A[0], B[1] - A[1]];
+    const points = () => ({ O: [0, 0], A, B });
+    return [
+      this.pickPoint('A', A),
+      this.pickPoint('B', B),
+      this.drawStep('O', 'A', {
+        label: 'Vektor posisi $\\vec{a}$',
+        prompt: 'Vektor yang **pangkalnya di $O$** disebut **vektor posisi**. Gambar vektor posisi titik $A$: ketuk $O$, lalu $A$.',
+        summary: () => 'Vektor posisi $\\vec{a} = \\overrightarrow{OA}$.',
+        tone: 'cyan',
+        points,
+      }),
+      this.drawStep('A', 'B', {
+        label: 'Gambar $\\overrightarrow{AB}$',
+        prompt: 'Kamu berangkat dari **kelas**, bukan dari gerbang. Gambar $\\overrightarrow{AB}$: dari $A$ menuju $B$.',
+        summary: () => '$\\overrightarrow{AB}$ tergambar — dan vektor posisi $\\vec{b}$ ikut muncul.',
+        points,
+        after: async () => {
+          const b = this.drawVector({ from: [0, 0], to: [0, 0], name: 'b', tone: 'cyan' }, { essential: true });
+          await b.setVector({ to: B }, { animate: !stillMotion(), duration: ARROW_MS });
+        },
+      }),
+      {
+        kind: 'fields',
+        label: 'Hitung di kisi',
+        prompt: 'Hitung kotak kisinya: dari $A$ ke $B$, **berapa satuan mendatar** dan **berapa satuan tegak**?',
+        fields: [
+          { key: 'dx', label: 'Mendatar', mode: 'integer', aria: 'Langkah mendatar' },
+          { key: 'dy', label: 'Tegak', mode: 'integer', aria: 'Langkah tegak' },
+        ],
+        check: (v) => {
+          const s = [v.dx.value, v.dy.value];
+          const i = firstWrong(s, key);
+          if (i < 0) return true;
+          const wrong = [['dx', 'dy'][i]];
+          if (same(s[i], -key[i])) {
+            return { toast: 'langkahSalahTanda', values: { sumbu: i === 0 ? 'mendatar' : 'tegak', arah: DIRECTION[AXES[i]](key[i]) }, wrong };
+          }
+          return { toast: 'langkahSalahBesar', values: { sumbu: i === 0 ? 'mendatar' : 'tegak' }, wrong };
+        },
+        summary: () => `Dari $A$ ke $B$: $${key[0]}$ ${DIRECTION.x(key[0])}, $${key[1]}$ ${DIRECTION.y(key[1])}.`,
+        onSolved: () => animateHops(this, A, key),
+      },
+      {
+        kind: 'fields',
+        label: 'Temukan polanya',
+        prompt: `Dari mana angka $${key[0]}$ dan $${key[1]}$ itu muncul? Lengkapi dengan **koordinat** $A$ dan $B$.`,
+        fields: [
+          { key: 'xb', label: `$${key[0]} =$`, mode: 'integer', aria: 'Bilangan pertama baris x' },
+          { key: 'xa', label: '$-$', mode: 'integer', aria: 'Bilangan kedua baris x' },
+          { key: 'yb', label: `$${key[1]} =$`, mode: 'integer', aria: 'Bilangan pertama baris y' },
+          { key: 'ya', label: '$-$', mode: 'integer', aria: 'Bilangan kedua baris y' },
+        ],
+        check: (v) => {
+          const s = [v.xb.value, v.xa.value, v.yb.value, v.ya.value];
+          const want = [B[0], A[0], B[1], A[1]];
+          if (firstWrong(s, want) < 0) return true;
+          const flipped = [A[0], B[0], A[1], B[1]];
+          if (firstWrong(s, flipped) < 0) return { toast: 'urutanUjungPangkal' };
+          return { toast: 'polaSalah', wrong: ['xb', 'xa', 'yb', 'ya'].filter((k, i) => !same(s[i], want[i])) };
+        },
+        summary: () => '$\\overrightarrow{AB} = B - A$: **ujung dikurangi pangkal**.',
+        onSolved: () => this.plane.highlight('AB'),
+      },
+    ];
+  }
+
+  stepsFormula(c) {
+    const { P, Q } = c;
+    const key = Q.map((q, i) => q - P[i]);
+    return [
+      {
+        ...this.differenceStep('P', 'Q', P, Q, {
+          label: 'Hitung $\\overrightarrow{PQ}$',
+          prompt: 'Pakai rumus temuanmu: $\\overrightarrow{PQ} = Q - P$, komponen demi komponen.',
+        }),
+        onSolved: async () => {
+          await animateHops(this, P, key);
+          const arrow = this.drawVector({ from: P, to: P, name: 'PQ', tone: 'blue' }, { essential: true });
+          await arrow.setVector({ from: P, to: Q }, { animate: !stillMotion(), duration: ARROW_MS });
+        },
+      },
+      {
+        kind: 'fields',
+        label: 'Vektor lawan $\\overrightarrow{QP}$',
+        prompt: 'Sekarang $\\overrightarrow{QP}$ — berangkat dari $Q$ menuju $P$.',
+        fields: componentFields(2),
+        check: (values) => {
+          const s = componentValues(values, 2);
+          const want = key.map((n) => -n);
+          if (firstWrong(s, want) < 0) return true;
+          if (firstWrong(s, key) < 0) return { toast: 'lawanSama', wrong: ['cx', 'cy'] };
+          return { toast: 'hasilSalah', wrong: wrongKeys(s, want) };
+        },
+        summary: () => `$\\overrightarrow{QP} = P - Q = ${texColumn(key.map((n) => -n))} = -\\overrightarrow{PQ}$`,
+      },
+    ];
+  }
+
+  stepsNoGrid(c) {
+    const { K, L, KM } = c;
+    const M = K.map((k, i) => k + KM[i]);
+    return [
+      this.differenceStep('K', 'L', K, L, {
+        label: 'Hitung $\\overrightarrow{KL}$',
+        prompt: 'Tentukan $\\overrightarrow{KL}$ tanpa menggambar.',
+      }),
+      {
+        kind: 'fields',
+        label: 'Titik ujung $M$',
+        prompt: `Dari $K$ dilakukan perpindahan $\\overrightarrow{KM} = ${texColumn(KM)}$. Di mana titik **ujung** $M$?`,
+        fields: componentFields(2, { label: (a) => `$${a}_M$` }),
+        check: (values) => {
+          const s = componentValues(values, 2);
+          if (firstWrong(s, M) < 0) return true;
+          const minus = K.map((k, i) => k - KM[i]);
+          if (firstWrong(s, minus) < 0) return { toast: 'ujungBukanPangkal', wrong: ['cx', 'cy'] };
+          return { toast: 'hasilSalah', wrong: wrongKeys(s, M) };
+        },
+        summary: () => `$M = K + \\overrightarrow{KM} = ${texTuple(M)}$`,
+      },
+    ];
+  }
+
+  stepsOrigin(c) {
+    const { RS, S } = c;
+    const R = S.map((s, i) => s - RS[i]);
+    return [
+      {
+        kind: 'fields',
+        label: 'Hitung $R$',
+        prompt: '$R$ adalah **pangkal** dan $S$ **ujung**, jadi $\\overrightarrow{RS} = S - R$. Balik rumusnya: tentukan koordinat $R$.',
+        fields: componentFields(2, { label: (a) => `$${a}_R$` }),
+        check: (values) => {
+          const s = componentValues(values, 2);
+          if (firstWrong(s, R) < 0) return true;
+          const plus = S.map((v, i) => v + RS[i]);
+          if (firstWrong(s, plus) < 0) return { toast: 'pangkalBukanUjung', wrong: ['cx', 'cy'] };
+          return { toast: 'hasilSalah', wrong: wrongKeys(s, R) };
+        },
+        summary: () => `$R = S - \\overrightarrow{RS} = ${texTuple(R)}$`,
+      },
+      {
+        kind: 'pick',
+        label: 'Buktikan di bidang',
+        prompt: 'Buktikan jawabanmu: **ketuk titik $R$** pada bidang. Dari sana, $\\overrightarrow{RS}$ harus tiba tepat di $S$.',
+        check: (p) => (samePoint(p, R) ? true : { toast: 'titikMeleset', values: { titik: tapped(p) } }),
+        summary: () => `Dari $R$, langkah $\\overrightarrow{RS}$ tiba tepat di $S$.`,
+        onSolved: async () => {
+          this.marks.R = this.drawPoint(R, { label: 'R', essential: true });
+          await animateHops(this, R, RS);
+          const arrow = this.drawVector({ from: R, to: R, name: 'RS', tone: 'blue' }, { essential: true });
+          await arrow.setVector({ from: R, to: S }, { animate: !stillMotion(), duration: ARROW_MS });
+        },
+      },
+    ];
+  }
+}
+
 export const ENGINES = {
   notation_guided: GuidedNotationSim,
+  position_guided: GuidedPositionSim,
 };

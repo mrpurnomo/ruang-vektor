@@ -2,7 +2,6 @@
  * lesson/simulations/simBasics.js — Engine simulasi Bab 1: Konsep Dasar Vektor.
  *
  *   vector_anatomy     Bedah satu tanda panah
- *   position_vector    Ujung dikurangi pangkal
  *   component_builder  Susun vektor dari instruksi kalimat
  *   magnitude_builder  Bangun akar panjang vektor sendiri
  *   unit_vector        Buang panjang, sisakan arah
@@ -288,78 +287,6 @@ export class GuidedVectorIntroSim extends CaseSimulation {
 }
 
 /* ============================================================
-   3. position_vector — Ujung Dikurangi Pangkal
-   ============================================================ */
-export class PositionVectorSim extends CaseSimulation {
-  usesPlane(c) {
-    return is2D(c.A);
-  }
-
-  caseLabel(c) {
-    return `$\\overrightarrow{${c.ask}}$${c.A.length === 3 ? ' (ruang)' : ''}`;
-  }
-
-  setupCase(c) {
-    this.givenEl.appendChild(givenBlock(`${tex(`A${texTuple(c.A)}`)} &nbsp; ${tex(`B${texTuple(c.B)}`)} &nbsp;→&nbsp; tentukan ${tex(`\\overrightarrow{${c.ask}}`)}`));
-    this.marks = {};
-    if (this.plane) {
-      this.marks.A = this.drawPoint(c.A, { label: 'A', essential: true });
-      this.marks.B = this.drawPoint(c.B, { label: 'B', essential: true });
-    }
-  }
-
-  buildSteps(c) {
-    const start = c.ask[0];
-    const end = c.ask[1];
-    const P = start === 'A' ? c.A : c.B;
-    const Q = end === 'A' ? c.A : c.B;
-    const dim = c.A.length;
-    const key = Q.map((q, i) => q - P[i]);
-    const reverse = `${end}${start}`;
-
-    const pickCheck = (letter) => letter === start || { toast: 'pangkalUjungTertukar', values: { titik: start, nama: c.ask } };
-
-    const pickStep = this.plane
-      ? {
-        kind: 'tap',
-        label: 'Pangkal',
-        prompt: `Pada $\\overrightarrow{${c.ask}}$, titik mana yang menjadi **pangkal**? Ketuk titiknya.`,
-        targets: () => [{ key: 'A', mark: this.marks.A, label: 'Titik A' }, { key: 'B', mark: this.marks.B, label: 'Titik B' }],
-        check: pickCheck,
-      }
-      : {
-        kind: 'choice',
-        label: 'Pangkal',
-        prompt: `Pada $\\overrightarrow{${c.ask}}$, titik mana yang menjadi **pangkal**?`,
-        options: [{ key: 'A', label: 'Titik $A$' }, { key: 'B', label: 'Titik $B$' }],
-        check: pickCheck,
-      };
-
-    return [
-      pickStep,
-      {
-        kind: 'fields',
-        label: 'Ujung − pangkal',
-        prompt: `Hitung $\\overrightarrow{${c.ask}} = ${end} - ${start}$ komponen demi komponen.`,
-        fields: componentFields(dim, { mode: 'integer' }),
-        check: (values) => {
-          const s = componentValues(values, dim);
-          if (firstWrong(s, key) < 0) return true;
-          const wrong = AXES.slice(0, dim).filter((a, i) => !same(s[i], key[i])).map((a) => `c${a}`);
-          if (firstWrong(s, key.map((n) => -n)) < 0) return { toast: 'tandaTerbalik', values: { kebalikan: reverse, nama: c.ask }, wrong };
-          if (dim >= 2 && same(s[0], Q[0] - P[1]) && !same(s[0], key[0])) return { toast: 'komponenTidakSeletak', wrong };
-          return { toast: 'hasilSalah', wrong };
-        },
-        summary: () => `$\\overrightarrow{${c.ask}} = ${texColumn(key)}$`,
-        onSolved: () => {
-          if (this.plane) this.drawVector({ from: P, to: Q, name: c.ask, tone: 'amber' }, { essential: true });
-        },
-      },
-    ];
-  }
-}
-
-/* ============================================================
    4. component_builder — Susun Vektor dari Instruksinya
    ============================================================ */
 export class ComponentBuilderSim extends CaseSimulation {
@@ -589,7 +516,6 @@ export class UnitVectorSim extends CaseSimulation {
 
 export const ENGINES = {
   vector_anatomy: GuidedVectorIntroSim,
-  position_vector: PositionVectorSim,
   component_builder: ComponentBuilderSim,
   magnitude_builder: MagnitudeBuilderSim,
   unit_vector: UnitVectorSim,

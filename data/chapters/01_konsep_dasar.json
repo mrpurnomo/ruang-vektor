@@ -839,6 +839,12 @@
     {
       "id": "vektor_posisi",
       "title": "Vektor Posisi & Selisih Titik",
+      "hook": {
+        "art": "denah",
+        "title": "Dari kelas ke kantin",
+        "story": "Di denah sekolah, gerbang dipatok sebagai $O(0,\\, 0)$. Kelasmu ada di $A(2,\\, 3)$ dan kantin di $B(8,\\, 7)$. Saat istirahat kamu **tidak** berangkat dari gerbang — kamu berangkat dari kelas.",
+        "question": "Langkah apa yang membawamu dari kelas ke kantin? Bisakah dihitung **tanpa** menggambar sama sekali?"
+      },
       "materi": [
         {
           "t": "p",
@@ -886,12 +892,14 @@
         }
       ],
       "simulation": {
-        "engine": "position_vector",
-        "title": "Simulasi: Ujung Dikurangi Pangkal",
-        "brief": "Tentukan dulu mana pangkalnya, baru hitung selisih tiap komponen. Kasus terakhir pindah ke ruang — rumusnya tetap sama.",
+        "engine": "position_guided",
+        "title": "Simulasi Terpandu: Menemukan Rumus Ujung − Pangkal",
+        "brief": "Rumusnya tidak diberikan — kamu yang menemukannya dari denah, lalu mengujinya pada koordinat yang terlalu besar untuk digambar.",
         "config": {
           "cases": [
             {
+              "kind": "discover",
+              "guided": true,
               "A": [
                 2,
                 3
@@ -899,140 +907,297 @@
               "B": [
                 8,
                 7
-              ],
-              "ask": "AB"
+              ]
             },
             {
-              "A": [
-                2,
-                3
+              "kind": "formula",
+              "P": [
+                -2,
+                5
               ],
-              "B": [
-                8,
-                7
-              ],
-              "ask": "BA"
-            },
-            {
-              "A": [
-                1,
+              "Q": [
                 4,
+                -1
+              ]
+            },
+            {
+              "kind": "nogrid",
+              "K": [
+                120,
+                -45
+              ],
+              "L": [
+                85,
+                30
+              ],
+              "KM": [
+                10,
+                20
+              ]
+            },
+            {
+              "kind": "origin",
+              "RS": [
+                6,
                 -2
               ],
-              "B": [
-                5,
-                2,
-                3
-              ],
-              "ask": "AB"
+              "S": [
+                3,
+                4
+              ]
             }
-          ],
-          "xRange": [
-            -2,
-            10
-          ],
-          "yRange": [
-            -2,
-            9
           ]
         },
         "toasts": {
-          "pangkalUjungTertukar": "Belum tepat — pada $\\overrightarrow{{{nama}}}$, huruf pertamanya adalah ${{titik}}$, dan huruf pertama selalu **pangkal**. Yang kamu ketuk justru titik ujungnya.",
-          "komponenTidakSeletak": "Belum tepat — ada komponen yang dikurangkan dengan komponen yang tidak seletak. Kurangkan $x$ dengan $x$, lalu $y$ dengan $y$, baris demi baris.",
-          "tandaTerbalik": "Belum tepat — seluruh tandamu berlawanan, jadi yang kamu hitung sebenarnya $\\vec{{{kebalikan}}}$. Untuk $\\overrightarrow{{{nama}}}$, koordinat **ujung** yang berdiri di depan tanda kurang.",
-          "hasilSalah": "Belum tepat — kerjakan satu baris dulu, dan bawa tandanya apa adanya. Ingat bahwa mengurangi bilangan negatif sama artinya dengan **menambah**.",
-          "success": "Tepat! Ujung dikurangi pangkal — rumus yang sama bekerja di bidang maupun di ruang."
+          "koordinatTertukar": "Belum tepat — {{titik}} adalah titik lain. Angka **pertama** dihitung mendatar pada sumbu $X$, angka **kedua** tegak pada sumbu $Y$.",
+          "titikMeleset": "Belum tepat — kamu mengetuk {{titik}}. Hitung lagi kotak kisinya dari $O$: mendatar dulu, lalu tegak.",
+          "pangkalBukanTitik": "Belum tepat — {{titik}} bukan titik yang sudah ditandai. Panah ini berpangkal pada salah satu titik di denah.",
+          "ujungBukanTitik": "Belum tepat — ujung panah harus jatuh tepat di titik tujuan yang sudah ditandai, bukan di {{titik}}. Mulai lagi dari pangkalnya.",
+          "arahPanahTerbalik": "Belum tepat — yang kamu gambar adalah $\\overrightarrow{ {{balik}} }$, bukan $\\overrightarrow{ {{nama}} }$. Huruf **pertama** pada nama vektor adalah pangkal: ketuk titik itu dulu.",
+          "langkahSalahTanda": "Besarnya sudah benar, tandanya belum. Langkah {{sumbu}} itu menuju **{{arah}}**, dan arah itulah yang menentukan tandanya.",
+          "langkahSalahBesar": "Belum tepat — hitung ulang kotak kisi pada arah {{sumbu}}, satu per satu, mulai dari $A$ dan berhenti tepat di $B$.",
+          "urutanUjungPangkal": "Hampir! Bilangannya sudah benar, tetapi urutannya terbalik. Langkah ke **kanan** dan ke **atas** bernilai positif — jadi koordinat yang lebih jauh, yaitu milik **ujung**, ditulis lebih dulu.",
+          "polaSalah": "Belum tepat — angka di kiri tanda sama dengan adalah langkah yang baru kamu hitung. Cari dua **koordinat** titik $A$ dan $B$ pada sumbu yang sama yang selisihnya sebesar itu.",
+          "tandaTerbalik": "Semua tandamu terbalik — yang kamu hitung adalah $\\overrightarrow{ {{kebalikan}} }$, bukan $\\overrightarrow{ {{nama}} }$. Ingat temuanmu: **ujung** dikurangi **pangkal**.",
+          "komponenTidakSeletak": "Belum tepat — ada koordinat yang dikurangkan dengan sumbu yang berbeda. Kurangkan $x$ dengan $x$, dan $y$ dengan $y$.",
+          "hasilSalah": "Belum tepat — periksa lagi pengurangannya komponen demi komponen. Hati-hati dengan tanda minus pada koordinat negatif.",
+          "lawanSama": "Belum tepat — itu $\\overrightarrow{PQ}$ lagi. Vektor $\\overrightarrow{QP}$ berangkat dari $Q$, jadi pangkal dan ujungnya bertukar.",
+          "ujungBukanPangkal": "Belum tepat — kamu mengurangkan perpindahannya. $M$ adalah **ujung**: berangkat dari $K$ lalu **menambahkan** perpindahan $\\overrightarrow{KM}$.",
+          "pangkalBukanUjung": "Belum tepat — kamu menambahkan perpindahannya, sehingga mendapat titik yang dicapai **sesudah** $S$. $R$ adalah **pangkal**: dari $R$, perpindahan $\\overrightarrow{RS}$ harus **tiba** di $S$.",
+          "belumLengkap": "Masih ada kotak yang kosong. Isi semuanya lebih dulu.",
+          "success": "Tepat! Kamu menemukan sendiri bahwa $\\overrightarrow{AB} = \\vec{b} - \\vec{a}$: koordinat ujung dikurangi koordinat pangkal.",
+          "successRumus": "Tepat! Rumusnya bekerja: hitung dulu dengan ujung − pangkal, lalu lompatan di kisi membuktikannya. Vektor lawan cukup dibalik tandanya.",
+          "successBesar": "Tepat! Koordinat ratusan pun beres tanpa kertas berpetak: ujung − pangkal untuk vektor, pangkal + vektor untuk titik ujung.",
+          "successPangkal": "Tepat! Rumus yang sama bisa dibalik: pangkal = ujung − vektor. Lompatan dari $R$ tiba tepat di $S$."
+        },
+        "conclusion": {
+          "title": "Kesimpulan: vektor posisi & selisih titik",
+          "definition": "**Vektor posisi** $\\vec{a} = \\overrightarrow{OA}$ berpangkal di $O$. Vektor antara dua titik mana pun adalah **ujung dikurangi pangkal**.",
+          "formula": "\\overrightarrow{AB} = \\vec{b} - \\vec{a} = \\begin{pmatrix} x_B - x_A \\\\ y_B - y_A \\end{pmatrix}",
+          "columns": [
+            {
+              "title": "Tiga bentuk rumus",
+              "tone": "vector",
+              "items": [
+                "Vektor: $\\overrightarrow{AB} = B - A$",
+                "Titik ujung: $B = A + \\overrightarrow{AB}$",
+                "Titik pangkal: $A = B - \\overrightarrow{AB}$"
+              ]
+            },
+            {
+              "title": "Jebakan",
+              "tone": "amber",
+              "items": [
+                "$A - B$ menghasilkan $\\overrightarrow{BA}$: semua tanda terbalik",
+                "Kurangkan $x$ dengan $x$, $y$ dengan $y$ — jangan silang",
+                "Koordinat negatif: $4 - (-2) = 6$"
+              ]
+            }
+          ],
+          "remember": "Ingat denahnya: gerbang → kelas → kantin, jadi $\\vec{a} + \\overrightarrow{AB} = \\vec{b}$."
         }
       },
       "quiz": [
         {
           "id": "b1_03_1",
-          "input_type": "mathpad",
+          "input_type": "single_choice",
           "subtopic": "vektor_posisi",
-          "prompt": "Diketahui titik $A(3,\\, -2)$ dan $B(7,\\, 5)$.",
-          "after": "**Tentukan komponen $x$ dari vektor $\\overrightarrow{AB}$.**",
-          "answer": 4,
-          "tolerance": 1e-06,
-          "explanation": "$\\overrightarrow{AB} = B - A$, sehingga komponen $x$-nya adalah $7 - 3 = 4$.",
-          "toastWrong": "Belum tepat — periksa urutan pengurangannya. Pada $\\overrightarrow{AB}$, titik $B$ adalah **ujung** sehingga ia berdiri di depan: $x_B - x_A$, bukan $x_A - x_B$."
+          "prompt": "Diketahui titik $A(3,\\, -1)$ dan $B(-2,\\, 4)$.",
+          "after": "**Vektor $\\overrightarrow{AB}$ adalah…**",
+          "options": [
+            {
+              "label": "$\\begin{pmatrix} 5 \\\\ -5 \\end{pmatrix}$"
+            },
+            {
+              "label": "$\\begin{pmatrix} 1 \\\\ 3 \\end{pmatrix}$"
+            },
+            {
+              "label": "$\\begin{pmatrix} -5 \\\\ 5 \\end{pmatrix}$"
+            },
+            {
+              "label": "$\\begin{pmatrix} -5 \\\\ 3 \\end{pmatrix}$"
+            },
+            {
+              "label": "$\\begin{pmatrix} -1 \\\\ 5 \\end{pmatrix}$"
+            }
+          ],
+          "answerIndex": 2,
+          "explanation": "$\\overrightarrow{AB} = B - A = \\begin{pmatrix} -2 - 3 \\\\ 4 - (-1) \\end{pmatrix} = \\begin{pmatrix} -5 \\\\ 5 \\end{pmatrix}$. Ujung dikurangi pangkal. **Opsi C**.",
+          "toastWrong": "Belum tepat — kalau semua tanda jawabanmu terbalik, kamu menghitung pangkal dikurangi ujung. Kalau ada angka yang sama sekali lain, periksa pengurangan dengan bilangan negatif.",
+          "hint": "Rumus temuanmu di simulasi: $\\overrightarrow{AB} = B - A$. Hati-hati: mengurangi bilangan negatif sama dengan menambah."
         },
         {
           "id": "b1_03_2",
-          "input_type": "matrix_input",
+          "input_type": "plane_tap",
           "subtopic": "vektor_posisi",
-          "prompt": "Diketahui titik $A(1,\\, 4,\\, -2)$ dan $B(5,\\, 2,\\, 3)$ di ruang.",
-          "after": "**Tentukan $\\overrightarrow{AB}$ dalam bentuk vektor kolom.**",
-          "rows": 3,
-          "cols": 1,
-          "answer": [
-            [
+          "prompt": "Diketahui $\\overrightarrow{CD} = \\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix}$ dan titik pangkal $C(-2,\\, 2)$.",
+          "after": "**Ketuk letak titik ujungnya, $D$, pada bidang.**",
+          "plane": {
+            "xRange": [
+              -7,
               4
             ],
-            [
-              -2
-            ],
-            [
-              5
+            "yRange": [
+              -3,
+              6
             ]
+          },
+          "points": {
+            "C": [
+              -2,
+              2
+            ]
+          },
+          "arrows": [],
+          "answer": {
+            "taps": [
+              [
+                2,
+                -1
+              ]
+            ]
+          },
+          "feedback": [
+            {
+              "taps": [
+                [
+                  -6,
+                  5
+                ]
+              ],
+              "message": "Belum tepat — kamu **mengurangkan** perpindahannya. $D$ adalah ujung: berangkat dari $C$, lalu **tambahkan** $\\overrightarrow{CD}$."
+            },
+            {
+              "taps": [
+                [
+                  4,
+                  -3
+                ]
+              ],
+              "message": "Belum tepat — titik itu ujungnya kalau berangkat dari $O$. Kali ini pangkalnya $C$: hitung langkahnya dari $C$."
+            }
           ],
-          "explanation": "$\\overrightarrow{AB} = B - A = \\begin{pmatrix} 5-1 \\\\ 2-4 \\\\ 3-(-2) \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -2 \\\\ 5 \\end{pmatrix}$. Perhatikan baris ketiga: mengurangi bilangan negatif berarti **menambah**.",
-          "toastWrong": "Belum tepat — periksa baris ketiganya. $3 - (-2)$ bukan $1$, melainkan $3 + 2 = 5$. Dua tanda minus yang bertemu menjadi tambah."
+          "explanation": "$D = C + \\overrightarrow{CD} = (-2 + 4,\\, 2 + (-3)) = (2,\\, -1)$: dari $C$ melangkah $4$ ke kanan dan $3$ ke bawah.",
+          "toastWrong": "Belum tepat — $D$ adalah ujung: mulai dari $C$, lalu lakukan perpindahan $\\overrightarrow{CD}$ — komponen atas mendatar, komponen bawah tegak.",
+          "hint": "Titik ujung $=$ pangkal $+$ vektor. Mulailah menghitung kotak **dari $C$**.",
+          "reveal": {
+            "from": "C",
+            "name": "CD"
+          }
         },
         {
           "id": "b1_03_3",
           "input_type": "single_choice",
           "subtopic": "vektor_posisi",
-          "prompt": "Diketahui vektor posisi $\\overrightarrow{OA} = (2,\\, 5)$ dan $\\overrightarrow{OB} = (-1,\\, 3)$.",
-          "after": "**Tentukan $\\overrightarrow{AB}$.**",
+          "prompt": "Diketahui $\\overrightarrow{PQ} = \\begin{pmatrix} -3 \\\\ 4 \\end{pmatrix}$ dan titik ujung $Q(1,\\, 1)$.",
+          "after": "**Koordinat titik pangkal $P$ adalah…**",
           "options": [
             {
-              "tex": "(3,\\, 2)"
+              "label": "$(-2,\\, 5)$"
             },
             {
-              "tex": "(-3,\\, -2)"
+              "label": "$(4,\\, -3)$"
             },
             {
-              "tex": "(1,\\, 8)"
+              "label": "$(-4,\\, 3)$"
             },
             {
-              "tex": "(-3,\\, 2)"
+              "label": "$(3,\\, -4)$"
             },
             {
-              "tex": "(3,\\, -2)"
+              "label": "$(2,\\, -5)$"
             }
           ],
           "answerIndex": 1,
-          "explanation": "Vektor posisi $\\overrightarrow{OA}$ dan $\\overrightarrow{OB}$ berarti $A(2,5)$ dan $B(-1,3)$. Maka $\\overrightarrow{AB} = B - A = (-1-2,\\; 3-5) = (-3,\\, -2)$. **Opsi B**.",
-          "toastWrong": "Belum tepat — kalau jawabanmu $(3,2)$, kamu menghitung $A - B$, yaitu $\\overrightarrow{BA}$. Kalau jawabanmu $(1,8)$, kamu **menjumlahkan** keduanya, bukan mengurangkan."
-        },
-        {
-          "id": "b1_03_4",
-          "input_type": "single_choice",
-          "subtopic": "vektor_posisi",
-          "prompt": "Diketahui $\\overrightarrow{PQ} = (6,\\, -4)$ dan koordinat titik $P(2,\\, 1)$.",
-          "after": "**Tentukan koordinat titik $Q$.**",
-          "options": [
-            {
-              "tex": "Q(4,\\, -5)"
-            },
-            {
-              "tex": "Q(8,\\, -3)"
-            },
-            {
-              "tex": "Q(-4,\\, 5)"
-            },
-            {
-              "tex": "Q(12,\\, -4)"
-            },
-            {
-              "tex": "Q(3,\\, -2)"
-            }
-          ],
-          "answerIndex": 1,
-          "explanation": "Dari $\\overrightarrow{PQ} = Q - P$ diperoleh $Q = P + \\overrightarrow{PQ} = (2+6,\\; 1+(-4)) = (8,\\, -3)$. **Opsi B**.",
-          "toastWrong": "Belum tepat — rumusnya $\\overrightarrow{PQ} = Q - P$. Untuk mencari $Q$, pindahkan $P$ ke ruas kanan sehingga menjadi $Q = P + \\overrightarrow{PQ}$. Jadi yang dilakukan adalah **menambah**, bukan mengurangi."
+          "explanation": "$\\overrightarrow{PQ} = Q - P$, jadi $P = Q - \\overrightarrow{PQ} = (1 - (-3),\\, 1 - 4) = (4,\\, -3)$. Cek: dari $(4,\\, -3)$ melangkah $3$ ke kiri dan $4$ ke atas, tiba di $Q(1,\\, 1)$. **Opsi B**.",
+          "toastWrong": "Belum tepat — kalau kamu menambahkan vektornya ke $Q$, yang kamu dapat adalah titik **sesudah** $Q$, bukan pangkalnya. Pangkal = ujung − vektor.",
+          "hint": "Seperti kasus titik $R$ di simulasi: pangkal $=$ ujung $-$ vektor. Cek jawabanmu dengan melangkah dari pangkal ke ujung."
         }
-      ]
+      ],
+      "rangkuman": {
+        "subtitle": "Vektor posisi, lalu rumus \"ujung dikurangi pangkal\" yang kamu temukan sendiri dari denah — dan cara membaliknya.",
+        "sections": [
+          {
+            "title": "1 · Vektor posisi & selisih titik",
+            "blocks": [
+              {
+                "t": "conclusion"
+              }
+            ]
+          },
+          {
+            "title": "2 · Menemukan rumusnya dari denah",
+            "blocks": [
+              {
+                "t": "figure",
+                "key": "selisih_titik",
+                "caption": "$\\vec{a}$ dan $\\vec{b}$ berpangkal di $O$; $\\overrightarrow{AB}$ melangkah $6$ ke kanan dan $4$ ke atas."
+              },
+              {
+                "t": "table",
+                "headers": [
+                  "Langkah",
+                  "Dari kisi",
+                  "Dari koordinat"
+                ],
+                "rows": [
+                  [
+                    "Mendatar",
+                    "$6$",
+                    "$8 - 2$"
+                  ],
+                  [
+                    "Tegak",
+                    "$4$",
+                    "$7 - 3$"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3 · Rumus dipakai & dibalik",
+            "blocks": [
+              {
+                "t": "table",
+                "headers": [
+                  "Ditanya",
+                  "Rumus",
+                  "Contoh"
+                ],
+                "rows": [
+                  [
+                    "Vektor",
+                    "$\\overrightarrow{PQ} = Q - P$",
+                    "$P(-2,\\, 5),\\ Q(4,\\, -1) \\Rightarrow \\begin{pmatrix} 6 \\\\ -6 \\end{pmatrix}$"
+                  ],
+                  [
+                    "Ujung",
+                    "$M = K + \\overrightarrow{KM}$",
+                    "$(120,\\, -45) + (10,\\, 20) = (130,\\, -25)$"
+                  ],
+                  [
+                    "Pangkal",
+                    "$R = S - \\overrightarrow{RS}$",
+                    "$(3,\\, 4) - (6,\\, -2) = (-3,\\, 6)$"
+                  ]
+                ]
+              },
+              {
+                "t": "tip",
+                "title": "Vektor lawan",
+                "x": "$\\overrightarrow{QP} = -\\overrightarrow{PQ}$ — cukup balik semua tandanya."
+              }
+            ]
+          }
+        ],
+        "notes": [
+          "Kertas berpetak hanya membantu untuk koordinat kecil; rumus bekerja untuk koordinat berapa pun.",
+          "Hasil $\\overrightarrow{AB}$ yang semua tandanya terbalik hampir pasti dihitung $A - B$.",
+          "Selalu cek jawaban: dari pangkal, lakukan perpindahannya — kamu harus tiba di ujung.",
+          "Vektor posisi selalu berpangkal di $O$, jadi komponennya sama dengan koordinat titiknya."
+        ]
+      }
     },
     {
       "id": "panjang_vektor",

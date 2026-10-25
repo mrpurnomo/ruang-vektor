@@ -141,6 +141,7 @@ function probeOf(template) {
 
 /** Kunci toast sukses yang WAJIB berbunyi saat sebuah kasus tuntas. */
 const CASE_SUCCESS = {
+  position_guided: (c) => ({ discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind]),
   notation_guided: (c) => ({ build: 'success', shift: 'successBebas', tidy: 'successBaku' }[c.kind]),
   vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
 };
@@ -353,15 +354,41 @@ const PLANS = {
   },
 
 
-  position_vector: (c) => {
-    const [s, e] = [c.ask[0], c.ask[1]];
-    const P = s === 'A' ? c.A : c.B;
-    const Q = e === 'A' ? c.A : c.B;
-    const key = Q.map((q, i) => q - P[i]);
-    const pick = c.A.length === 2 ? (k) => ({ tap: k }) : (k) => ({ choice: k });
+  position_guided: (c) => {
+    if (c.kind === 'discover') {
+      const { A, B } = c;
+      const key = vsub(B, A);
+      return [
+        { wrong: { pick: [A[1], A[0]] }, right: { pick: A }, expectToast: 'koordinatTertukar' },
+        { wrong: { pick: [B[1], B[0]] }, right: { pick: B }, expectToast: 'koordinatTertukar' },
+        { wrong: [{ pick: A }, { pick: [0, 0] }], right: [{ pick: [0, 0] }, { pick: A }], expectToast: 'arahPanahTerbalik' },
+        { wrong: [{ pick: B }, { pick: A }], right: [{ pick: A }, { pick: B }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: { dx: txt(-key[0]), dy: txt(key[1]) } }, right: { fields: { dx: txt(key[0]), dy: txt(key[1]) } }, expectToast: 'langkahSalahTanda', leak: [`${key[0]}, ${key[1]}`] },
+        {
+          wrong: { fields: { xb: txt(A[0]), xa: txt(B[0]), yb: txt(A[1]), ya: txt(B[1]) } },
+          right: { fields: { xb: txt(B[0]), xa: txt(A[0]), yb: txt(B[1]), ya: txt(A[1]) } },
+          expectToast: 'urutanUjungPangkal',
+        },
+      ];
+    }
+    if (c.kind === 'formula') {
+      const key = vsub(c.Q, c.P);
+      return [
+        { wrong: { fields: comps(vmul(-1, key)) }, right: { fields: comps(key) }, expectToast: 'tandaTerbalik', leak: [key.join(', ')] },
+        { wrong: { fields: comps(key) }, right: { fields: comps(vmul(-1, key)) }, expectToast: 'lawanSama' },
+      ];
+    }
+    if (c.kind === 'nogrid') {
+      const key = vsub(c.L, c.K);
+      return [
+        { wrong: { fields: comps(vmul(-1, key)) }, right: { fields: comps(key) }, expectToast: 'tandaTerbalik', leak: [key.join(', ')] },
+        { wrong: { fields: comps(vsub(c.K, c.KM)) }, right: { fields: comps(vadd(c.K, c.KM)) }, expectToast: 'ujungBukanPangkal' },
+      ];
+    }
+    const R = vsub(c.S, c.RS);
     return [
-      { wrong: pick(e), right: pick(s), expectToast: 'pangkalUjungTertukar' },
-      { wrong: { fields: comps(key.map((n) => -n)) }, right: { fields: comps(key) }, expectToast: 'tandaTerbalik', leak: [key.join(', ')] },
+      { wrong: { fields: comps(vadd(c.S, c.RS)) }, right: { fields: comps(R) }, expectToast: 'pangkalBukanUjung', leak: [R.join(', ')] },
+      { wrong: { pick: [R[0] + 1, R[1]] }, right: { pick: R }, expectToast: 'titikMeleset' },
     ];
   },
 
@@ -752,9 +779,9 @@ for (const chapter of CHAPTERS) {
 /* ------------------------------------------------------------
    Pemulihan sesi — sekali, pada engine multi-kasus berbidang
    ------------------------------------------------------------ */
-if (!only || only === 'position_vector') {
+if (!only || only === 'position_guided') {
   const data = await (await fetch('../data/chapters/01_konsep_dasar.json', { cache: 'no-store' })).json();
-  const def = data.subtopics.find((s) => s.simulation.engine === 'position_vector').simulation;
+  const def = data.subtopics.find((s) => s.simulation.engine === 'position_guided').simulation;
   try {
     host.innerHTML = '';
     hint.innerHTML = '';
@@ -770,7 +797,7 @@ if (!only || only === 'position_vector') {
     assert(sim.caseIndex === 1, `pemulihan: mendarat di kasus ${sim.caseIndex + 1}, seharusnya 2`);
     assert(sim.solved.has(0) && !sim.solved.has(1), 'pemulihan: status kasus selesai tidak dipulihkan');
     const chips = [...hint.querySelectorAll('.case-chip')].map((c) => c.dataset.state);
-    assert(chips.join() === 'solved,current,locked', `pemulihan: status chip ${chips.join()}`);
+    assert(chips.join() === 'solved,current,locked,locked', `pemulihan: status chip ${chips.join()}`);
     assert(completes === 0, 'pemulihan: onComplete terpanggil padahal belum tuntas');
     sim.destroy();
 
@@ -786,7 +813,7 @@ if (!only || only === 'position_vector') {
     hint.innerHTML = '';
     toasts.length = 0;
     completes = 0;
-    sim = mountSimulation(host, def, () => { completes += 1; }, { hintHost: hint, resumeState: { solved: [0, 1, 2], caseIndex: 2 } });
+    sim = mountSimulation(host, def, () => { completes += 1; }, { hintHost: hint, resumeState: { solved: [0, 1, 2, 3], caseIndex: 3 } });
     await frames(2);
     assert(completes === 1, `kunjungan ulang: onComplete ${completes}×`);
     assert(!toasts.some((t) => t.type === 'success'), 'kunjungan ulang: toast sukses berbunyi lagi');
