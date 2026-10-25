@@ -595,11 +595,18 @@ export class LessonView {
 
     const actions = el('div', 'actionbar');
 
+    // Revisi guru: Rangkuman baru bisa dibuka SESUDAH simulasinya selesai —
+    // ringkasan bukan jalan pintas untuk melewati penemuan di simulasi.
     const back = el('button', 'btn btn--ghost');
     back.type = 'button';
+    back.dataset.role = 'open-rangkuman';
     back.innerHTML = `${icon('book', { size: 16 })}<span>Rangkuman</span>`;
-    back.dataset.tip = 'Buka catatan lengkap sub-topik ini';
-    back.addEventListener('click', () => this.openRangkuman());
+    const syncRangkuman = () => {
+      back.disabled = !this.simulationDone;
+      back.dataset.tip = this.simulationDone ? 'Buka catatan lengkap sub-topik ini' : 'Rangkuman terbuka setelah simulasi selesai';
+    };
+    syncRangkuman();
+    back.addEventListener('click', () => { if (this.simulationDone) this.openRangkuman(); });
     actions.appendChild(back);
 
     const retry = el('button', 'btn btn--ghost');
@@ -642,6 +649,7 @@ export class LessonView {
       this.simulationDone = true;
       this.remember({ simulationDone: true });
       markSimulationDone(this.ctx.chapter.id, this.ctx.subtopic.id);
+      syncRangkuman();
       next.disabled = false;
       // Denyut menuntun mata siswa ke aksi berikutnya.
       next.classList.add('btn--pulse');
@@ -1057,6 +1065,13 @@ export class LessonView {
     toList.addEventListener('click', () => this.ctx.onExit());
     links.appendChild(toList);
 
+    const doc = el('button', 'btn btn--ghost btn--sm');
+    doc.type = 'button';
+    doc.dataset.role = 'done-rangkuman';
+    doc.innerHTML = `${icon('book', { size: 15 })}<span>Rangkuman</span>`;
+    doc.addEventListener('click', () => this.openRangkuman());
+    links.appendChild(doc);
+
     links.appendChild(this.retryQuizButton('btn--ghost btn--sm'));
     stage.appendChild(links);
 
@@ -1065,6 +1080,7 @@ export class LessonView {
     // (baris di kartu disembunyikan CSS) — semua aksi terlihat tanpa gulir.
     const mini = el('div', 'done__mini');
     [['home', 'Beranda', () => home.click()], ['layers', 'Daftar Sub-topik', () => toList.click()],
+      ['book', 'Rangkuman', () => this.openRangkuman()],
       ['rotate', 'Coba Lagi Kuis', () => this.retryQuiz()]].forEach(([ic, label, go]) => {
       const b = el('button', 'btn btn--ghost btn--icon');
       b.type = 'button';

@@ -156,6 +156,12 @@ def fresh_position(page):
     page.evaluate("() => { try { sessionStorage.clear(); } catch (e) {} }")
 
 
+def mark_sim_done(page, chapter_id="01_konsep_dasar", subtopic_id="pengertian_notasi"):
+    """Catat simulasi sub-topik sudah tuntas (Rangkuman baru terbuka sesudahnya)."""
+    page.evaluate("""async ([c, s]) => (await import('/js/core/state/progressStore.js')).markSimulationDone(c, s)""",
+                  [chapter_id, subtopic_id])
+
+
 def fresh_progress(page):
     """Posisi DAN pencapaian kosong (identitas tetap): simulasi belum pernah tuntas."""
     page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
@@ -386,6 +392,13 @@ def section_subtopics(page, errors, chapters):
     open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
     record("Sub-topik dibuka langsung di Simulasi, bukan Materi",
            page.query_selector(".sim-host") is not None and page.query_selector(".doc-sheet") is None)
+    # Revisi guru: Rangkuman terkunci sampai simulasinya selesai.
+    page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
+    open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
+    record("Rangkuman terkunci selama simulasi belum selesai",
+           page.evaluate("() => { const b = document.querySelector('[data-role=\"open-rangkuman\"]'); return !!b && b.disabled; }"))
+    mark_sim_done(page)
+    open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=700)
     click_text(page, "Rangkuman")
     page.wait_for_timeout(500)
     record("Tombol Rangkuman membuka dokumen Rangkuman", page.query_selector(".doc-sheet") is not None)
@@ -394,6 +407,8 @@ def section_subtopics(page, errors, chapters):
     record("Kembali dari Rangkuman mendarat di Simulasi lagi",
            page.query_selector(".sim-host") is not None and page.query_selector(".doc-sheet") is None)
     record("Tanpa galat konsol selama Rangkuman", not errors, "; ".join(errors[:2]))
+    # Isolasi: bagian berikutnya mengharapkan simulasi sub-topik 1 yang belum tuntas.
+    page.evaluate("async () => (await import('/js/core/state/progressStore.js')).resetAll()")
 
 
 def section_visual(page):
@@ -844,6 +859,9 @@ def section_quiz_retry(page, errors):
         record(f"{w}×{h}: tombol papan coret tidak menimpa tombol layar hasil", not hit, str(hit))
     page.set_viewport_size({"width": 1024, "height": 600})
     record("Tanpa galat konsol selama coba lagi kuis", not errors, "; ".join(errors[:2]))
+    # Revisi guru: Rangkuman juga tersedia di deretan tombol layar Mini Kuis selesai.
+    record("Layar hasil menyediakan tombol Rangkuman (juga sebagai ikon di lanskap pendek)",
+           page.evaluate("() => !!document.querySelector('[data-role=\"done-rangkuman\"]') && [...document.querySelectorAll('.done__mini button')].some((b) => b.getAttribute('aria-label') === 'Rangkuman')"))
     page.locator(".done__links button", has_text="Beranda").click()
     page.wait_for_timeout(700)
     record("Tombol Beranda di layar hasil membawa ke Beranda", page.evaluate("() => location.hash === '#/' || location.hash === ''"),
@@ -891,6 +909,7 @@ def section_rangkuman_doc(page, errors):
     for w, h in [(1024, 600), (740, 360)]:
         page.set_viewport_size({"width": w, "height": h})
         fresh_position(page)
+        mark_sim_done(page)
         open_route(page, GUIDED_ROUTE, settle=700)
         click_text(page, "Rangkuman")
         page.wait_for_timeout(900)
@@ -1026,6 +1045,132 @@ def section_bab1_package(page, errors):
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
+GUIDE_WALK = """async () => {
+  const sim = window.__vektorLab.state.activeView.simulation;
+  const g = document.querySelector('.sim-guide');
+  const out = [];
+  const measure = (where) => { const over = g.scrollHeight - g.clientHeight; if (over > 1) out.push(`${where} +${over}px`); };
+  for (let i = 0; i < sim.cases.length; i += 1) {
+    sim.goToCase(i, { fresh: true });
+    await new Promise((r) => setTimeout(r, 60));
+    while (sim.currentStep && sim.caseIndex === i) { measure(`K${i + 1}L${sim.stepIndex + 1}`); await sim.solveStep(sim.currentStep, [0, 0]); }
+    measure(`K${i + 1} selesai`);
+  }
+  return out;
+}"""
+
+
+def plane_click(page, pt):
+    """Klik mouse SUNGGUHAN pada titik kisi bidang simulasi."""
+    xy = page.evaluate("""(pt) => { const p = window.__vektorLab.state.activeView.simulation.plane;
+        const [sx, sy] = p.toScreen(pt); const q = new DOMPoint(sx, sy).matrixTransform(p.svg.getScreenCTM()); return [q.x, q.y]; }""", list(pt))
+    page.mouse.click(xy[0], xy[1])
+    page.wait_for_timeout(250)
+
+
+SIM_STATE = """() => { const s = window.__vektorLab.state.activeView.simulation;
+    return { case: s.caseIndex, step: s.stepIndex, solved: [...s.solved], hint: !!document.querySelector('.sim-hint'),
+             ghost: document.querySelectorAll('.plane__segment--hint, .plane__hop--ghost, .plane__point-mark--hint').length,
+             review: [...document.querySelectorAll('.case-review [data-sim-action]')].map((b) => b.dataset.simAction) }; }"""
+
+
+def section_teacher_revisions(page, errors):
+    print("\n6m. Revisi guru: panduan muat, petunjuk, kontinuitas kasus, papan angka")
+    # (a) Panduan ringkas: tidak ada langkah yang teksnya meluap di 740×360.
+    page.set_viewport_size({"width": 740, "height": 360})
+    over = []
+    for sid in BAB1_SUBTOPICS:
+        fresh_progress(page)
+        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=500)
+        over += [f"{sid} {x}" for x in page.evaluate(GUIDE_WALK)]
+    record("740×360: teks panduan di SETIAP langkah keenam sub-topik muat tanpa terpotong", not over, "; ".join(over[:4]))
+
+    # (b) Petunjuk sesudah 3 ketukan salah (vektor posisi, langkah "ketuk A").
+    page.set_viewport_size({"width": 1024, "height": 600})
+    route = "#/belajar/01_konsep_dasar/vektor_posisi"
+    fresh_progress(page)
+    open_route(page, route, settle=700)
+    for p in [(5, 5), (6, 1)]:
+        plane_click(page, p)
+    st = page.evaluate(SIM_STATE)
+    record("Dua ketukan salah: petunjuk belum muncul", not st["hint"], json.dumps(st))
+    plane_click(page, (1, 6))
+    page.wait_for_timeout(400)
+    st = page.evaluate(SIM_STATE)
+    record("Ketukan salah ke-3: kartu petunjuk + bayangan di bidang", st["hint"] and st["ghost"] > 0, json.dumps(st))
+    plane_click(page, (2, 3))
+    page.wait_for_timeout(400)
+    st = page.evaluate(SIM_STATE)
+    record("Langkah berikutnya: petunjuk & bayangan lama dibersihkan", not st["hint"] and st["ghost"] == 0, json.dumps(st))
+    page.wait_for_timeout(7600)
+    record("Diam 7 detik: petunjuk muncul sendiri", page.evaluate(SIM_STATE)["hint"])
+
+    # (c) Kontinuitas: kasus selesai ditinjau, kasus berjalan dilanjutkan.
+    page.evaluate("""async () => { const s = window.__vektorLab.state.activeView.simulation;
+        while (s.currentStep && s.caseIndex === 0) await s.solveStep(s.currentStep, [0, 0]); }""")
+    page.wait_for_timeout(1500)
+    page.evaluate("() => window.__vektorLab.state.activeView.simulation.goToCase(1)")
+    page.wait_for_timeout(400)
+    page.evaluate("async () => { const s = window.__vektorLab.state.activeView.simulation; await s.solveStep(s.currentStep, [0, 0]); }")
+    page.wait_for_timeout(1200)
+    page.locator(".case-chip").nth(0).click()
+    page.wait_for_timeout(1200)
+    st = page.evaluate(SIM_STATE)
+    record("Membuka kasus yang sudah selesai: keadaan akhir + Ulangi kasus ini / Lanjut, tidak terulang sendiri",
+           st["case"] == 0 and st["review"] == ["replay-case", "resume-case"], json.dumps(st))
+    page.click('[data-sim-action="resume-case"]')
+    page.wait_for_timeout(1200)
+    st = page.evaluate(SIM_STATE)
+    record("Lanjut ke kasus aktif: dimulai dari langkah terakhir siswa (langkah 2), bukan dari awal",
+           st["case"] == 1 and st["step"] == 1, json.dumps(st))
+    page.evaluate("() => { const v = window.__vektorLab.state.activeView; v.step = 1; v.renderStep(); }")
+    page.wait_for_timeout(500)
+    page.evaluate("() => { const v = window.__vektorLab.state.activeView; v.step = 0; v.renderStep(); }")
+    page.wait_for_timeout(1400)
+    st = page.evaluate(SIM_STATE)
+    record("Pindah ke Mini Kuis lalu kembali: kasus aktif tetap di langkah terakhir", st["case"] == 1 and st["step"] == 1, json.dumps(st))
+
+    # (d) Papan angka: 1/√5 dan −2/√5 diketik lewat tuts, ukuran papan tetap.
+    fresh_progress(page)
+    open_route(page, "#/belajar/01_konsep_dasar/vektor_satuan", settle=700)
+    page.evaluate("""async () => { const sim = window.__vektorLab.state.activeView.simulation;
+        for (let i = 0; i < 2; i += 1) { sim.goToCase(i); while (sim.currentStep && sim.caseIndex === i) await sim.solveStep(sim.currentStep, [0, 0]); }
+        sim.goToCase(2); await sim.solveStep(sim.currentStep, [0, 0]); }""")
+    page.wait_for_timeout(900)
+    page.evaluate("() => document.querySelectorAll('.toast').forEach((t) => t.remove())")
+    size = "() => { const r = document.querySelector('.mathpad').getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; }"
+
+    def press(keys):
+        sizes = []
+        for k in keys:
+            sel = {"root": '[data-key="root"]', "frac": '[data-key="frac"]', "sign": '[data-key="sign"]', "ok": '[data-key="confirm"]'}.get(k)
+            if sel:
+                page.locator(f".mathpad__grid {sel}").dispatch_event("pointerdown")
+            else:
+                page.locator(".mathpad__grid .mp-key", has_text=k).first.dispatch_event("pointerdown")
+            page.wait_for_timeout(60)
+            if page.evaluate("() => document.querySelector('.mathpad').dataset.open === 'true'"):
+                sizes.append(page.evaluate(size))
+        return sizes
+
+    page.locator('[data-sim-field="cx"]').click()
+    page.wait_for_timeout(300)
+    sizes = [page.evaluate(size)] + press(["1", "frac", "root", "5", "ok"])
+    page.locator('[data-sim-field="cy"]').click()
+    page.wait_for_timeout(300)
+    sizes += press(["sign", "2", "frac", "root", "5", "ok"])
+    vals = page.evaluate("() => [document.querySelector('[data-sim-field=\"cx\"]').value, document.querySelector('[data-sim-field=\"cy\"]').value]")
+    record("Papan angka: 1/√5 dan −2/√5 bisa diketik (√ dan a/b), ukuran papan tetap",
+           vals == ["1/√5", "-2/√5"] and len(set(map(tuple, sizes))) == 1, f"{vals} ukuran={sorted(set(map(tuple, sizes)))}")
+    page.click('[data-sim-action="check"]')
+    page.wait_for_timeout(1500)
+    record("Jawaban berakar di penyebut diterima pemeriksa (kasus selesai)",
+           page.evaluate("() => window.__vektorLab.state.activeView.simulation.solved.has(2)"))
+
+    # (e) Layar Mini Kuis selesai menyediakan tombol Rangkuman.
+    record("Tanpa galat konsol selama revisi guru", not errors, "; ".join(errors[:2]))
+
+
 def section_sound_toggle(page, errors):
     print("\n6e. Tombol suara di header")
     for w, h in [(740, 360), (1024, 600), (1440, 900)]:
@@ -1127,6 +1272,8 @@ def section_tap_targets(page, errors):
         fresh_position(page)
         open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=900)
         measure(f"{v} simulasi terpandu (vector_anatomy)")
+        mark_sim_done(page)
+        open_route(page, "#/belajar/01_konsep_dasar/pengertian_notasi", settle=900)
         click_text(page, "Rangkuman")
         page.wait_for_timeout(600)
         measure(f"{v} rangkuman")
@@ -1491,6 +1638,7 @@ def main():
             section_rangkuman_doc(page, errors)
             section_tooltip(page, errors)
             section_bab1_package(page, errors)
+            section_teacher_revisions(page, errors)
             section_tap_targets(page, errors)
             section_mathpad(page, errors)
             section_reveal_policy(page, errors)
