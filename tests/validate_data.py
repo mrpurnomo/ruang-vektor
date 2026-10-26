@@ -76,6 +76,12 @@ KIT_TOASTS = {
         ("ujungBukanTitik", {"titik"}),
         ("arahPanahTerbalik", {"nama", "balik"}),
     ],
+    # arrowStep() membungkus createArrowDrawer (Bab 2).
+    "arrowStep(": [
+        ("pangkalBukanTitik", {"titik"}),
+        ("ujungBukanTitik", {"titik"}),
+        ("arahPanahTerbalik", {"nama", "balik"}),
+    ],
 }
 
 # Sub-topik yang WAJIB memakai paket terpandu lengkap (revisi guru: pola
@@ -83,6 +89,9 @@ KIT_TOASTS = {
 GUIDED_SUBTOPICS = {
     "01_konsep_dasar": ["pengertian_notasi", "notasi_penyajian", "vektor_posisi",
                         "panjang_vektor", "vektor_satuan", "komponen_r2_r3"],
+    "02_operasi_bangun_datar": ["penjumlahan_segitiga", "penjumlahan_jajargenjang", "operasi_komponen",
+                                "perkalian_skalar", "kombinasi_operasi", "kesamaan_vektor",
+                                "titik_segaris", "pembagian_ruas_garis"],
 }
 CONCLUSION_TONES = {"vector", "scalar", "amber", "cyan"}
 DOC_BLOCKS = {"p", "tex", "list", "steps", "table", "figure", "conclusion", "def", "tip", "warn"}

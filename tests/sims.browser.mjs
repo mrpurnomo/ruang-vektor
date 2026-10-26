@@ -160,6 +160,14 @@ const CASE_SUCCESS = {
   position_guided: (c) => ({ discover: 'success', formula: 'successRumus', nogrid: 'successBesar', origin: 'successPangkal' }[c.kind]),
   notation_guided: (c) => ({ build: 'success', shift: 'successBebas', tidy: 'successBaku' }[c.kind]),
   vector_anatomy: (c) => (c.guided ? 'success' : 'successLatihan'),
+  triangle_guided: (c) => ({ chain: 'success', move: 'successGeser', polygon: 'successPoligon', letters: 'successHuruf' }[c.kind]),
+  parallelogram_guided: (c) => ({ sum: 'success', diff: 'successSelisih', practice: 'successLatihan', space: 'successRuang' }[c.kind]),
+  component_guided: (c) => ({ add: 'success', sub: 'successKurang', space: 'successRuang', dimension: 'successDimensi' }[c.kind]),
+  scalar_guided: (c) => ({ repeat: 'success', negative: 'successNegatif', fraction: 'successPecahan', length: 'successPanjang' }[c.kind]),
+  combo_guided: (c) => ({ plane: 'success', calc: 'successHitung', space: 'successRuang', unknown: 'successPersamaan' }[c.kind]),
+  equality_guided: (c) => ({ compare: 'success', solve: 'successPersamaan', space: 'successRuang' }[c.kind]),
+  collinear_guided: (c) => ({ yes: 'success', negative: 'successBerlawanan', no: 'successTidak', space: 'successRuang' }[c.kind]),
+  section_guided: (c) => ({ parts: 'success', mid: 'successTengah', space: 'successRuang', outer: 'successLuar' }[c.kind]),
 };
 
 /**
@@ -188,8 +196,10 @@ function planeRect() {
   // Banner "lanjut ke kasus berikutnya" menggulir panggung ke pandangan —
   // itu GULIRAN, bukan pergeseran tata letak. Panggung dikembalikan ke atas
   // dulu (bidangnya sticky), lalu posisinya diukur dalam koordinat dokumen.
-  const body = host.closest('.workspace__body');
-  if (body) body.scrollTop = 0;
+  // Semua leluhur, bukan hanya .workspace__body: di halaman uji ini <body>
+  // sendiri wadah gulir (rig 620px > viewport 600px), dan scrollIntoView
+  // langkah baru ikut menggulirnya — terukur 12–19px di Bab 2.
+  for (let n = host.parentElement; n; n = n.parentElement) if (n.scrollTop) n.scrollTop = 0;
   const r = p.getBoundingClientRect();
   return [Math.round(r.left + scrollX), Math.round(r.top + scrollY), Math.round(r.width), Math.round(r.height)].join(',');
 }
@@ -515,115 +525,266 @@ const vmul = (k, p) => p.map((n) => k * n);
 const bump = (arr) => { const out = arr.slice(); out[0] = S.addS(S.parseSurd(out[0]), 1); return out; };
 
 Object.assign(PLANS, {
-  triangle_rule: (c) => {
-    const sum = vadd(c.a, c.b);
-    const closes = sum[0] === 0 && sum[1] === 0;
+  // ---------------- Bab 2 terpandu ----------------
+  triangle_guided: (c) => {
+    if (c.kind === 'chain') {
+      const a = vsub(c.B, c.A);
+      const b = vsub(c.C, c.B);
+      const AC = vsub(c.C, c.A);
+      return [
+        { wrong: { fields: { ...comps(vmul(-1, a), 'a'), ...comps(b, 'b') } }, right: { fields: { ...comps(a, 'a'), ...comps(b, 'b') } }, expectToast: 'tandaKomponen' },
+        { wrong: [{ pick: c.C }, { pick: c.A }], right: [{ pick: c.A }, { pick: c.C }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: comps(vmul(-1, AC)) }, right: { fields: comps(AC) }, expectToast: 'tandaTerbalik', leak: [AC.join(', ')] },
+        { wrong: { fields: comps(a, 'p') }, right: { fields: comps(b, 'p') }, expectToast: 'polaSalah' },
+        { wrong: { choice: 'pangkal' }, right: { choice: 'ujung' }, expectToast: 'pangkalBersama' },
+      ];
+    }
+    if (c.kind === 'move') {
+      const Q = vadd(c.P, c.a);
+      const T = vadd(Q, c.b);
+      const sum = vadd(c.a, c.b);
+      return [
+        { wrong: { pick: c.P }, right: { pick: Q }, expectToast: 'pangkalBukanDiPangkal' },
+        { wrong: [{ pick: T }, { pick: c.P }], right: [{ pick: c.P }, { pick: T }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: comps(vmul(-1, sum)) }, right: { fields: comps(sum) }, expectToast: 'tandaKomponen', leak: [sum.join(', ')] },
+      ];
+    }
+    if (c.kind === 'polygon') {
+      const AD = vsub(c.D, c.A);
+      return [
+        { wrong: { choice: 'DA' }, right: { choice: 'AD' }, expectToast: 'arahTotalTerbalik' },
+        { wrong: [{ pick: c.D }, { pick: c.A }], right: [{ pick: c.A }, { pick: c.D }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: comps(vmul(-1, AD)) }, right: { fields: comps(AD) }, expectToast: 'tandaTerbalik', leak: [AD.join(', ')] },
+      ];
+    }
     return [
-      { wrong: { tap: 'first' }, right: { tap: 'second' }, expectToast: 'geserKeUjungSalah' },
-      { wrong: { tap: 'tail' }, right: { tap: 'joint' } },
-      { wrong: { tap: 'joint' }, right: { tap: 'tail' }, expectToast: 'resultanSalahPangkal' },
-      { wrong: { tap: 'joint' }, right: { tap: closes ? 'tail' : 'end' }, expectToast: 'resultanSalahPangkal' },
-      { wrong: { fields: comps(vsub(c.a, c.b)) }, right: { fields: comps(sum) }, leak: sum[0] || sum[1] ? [sum.join(', ')] : [] },
+      { wrong: { choice: 'QR' }, right: { choice: 'PR' }, expectToast: 'hurufTengah' },
+      { wrong: { choice: 'PR' }, right: { choice: 'nol' }, expectToast: 'kembaliKeAwal' },
+      { wrong: { choice: 'AC' }, right: { choice: 'CB' }, expectToast: 'urutkanDulu' },
     ];
   },
 
-  parallelogram_rule: (c) => {
-    const target = c.ask === 'sum' ? vadd(c.a, c.b) : vsub(c.a, c.b);
-    const steps = [
-      { wrong: { tap: 'tip' }, right: { tap: 'tail' }, expectToast: 'pangkalTidakBerimpit' },
-      c.ask === 'sum'
-        ? { wrong: { choice: 'tips' }, right: { choice: 'common' }, expectToast: 'diagonalSalah' }
-        : { wrong: { choice: 'common' }, right: { choice: 'tips' } },
+  parallelogram_guided: (c) => {
+    const sum = vadd(c.a, c.b);
+    const diff = vsub(c.a, c.b);
+    if (c.kind === 'sum') {
+      return [
+        { wrong: { pick: [0, 0] }, right: { pick: c.a }, expectToast: 'masihDiO' },
+        { wrong: { pick: [0, 0] }, right: { pick: c.b }, expectToast: 'masihDiO' },
+        { wrong: { choice: 'trapesium' }, right: { choice: 'jajar' }, expectToast: 'sisiBerhadapan' },
+        { wrong: [{ pick: sum }, { pick: [0, 0] }], right: [{ pick: [0, 0] }, { pick: sum }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: comps(diff) }, right: { fields: comps(sum) }, expectToast: 'diagonalLain', leak: [sum.join(', ')] },
+      ];
+    }
+    if (c.kind === 'diff') {
+      return [
+        { wrong: { choice: 'bma' }, right: { choice: 'amb' }, expectToast: 'selisihTerbalik' },
+        { wrong: [{ pick: c.a }, { pick: c.b }], right: [{ pick: c.b }, { pick: c.a }], expectToast: 'arahPanahTerbalik' },
+        { wrong: { fields: comps(vmul(-1, diff)) }, right: { fields: comps(diff) }, expectToast: 'selisihTerbalik', leak: [diff.join(', ')] },
+      ];
+    }
+    if (c.kind === 'practice') {
+      return [
+        { wrong: { pick: [sum[0] + 1, sum[1]] }, right: { pick: sum }, expectToast: 'sudutKeempat' },
+        { wrong: { fields: comps(diff) }, right: { fields: comps(sum) }, expectToast: 'diagonalLain' },
+        { wrong: { fields: comps(sum) }, right: { fields: comps(diff) }, expectToast: 'diagonalJumlah', leak: [diff.join(', ')] },
+      ];
+    }
+    return [
+      { wrong: { fields: comps(diff) }, right: { fields: comps(sum) }, expectToast: 'diagonalLain', leak: [sum.join(', ')] },
+      { wrong: { fields: comps(vmul(-1, diff)) }, right: { fields: comps(diff) }, expectToast: 'selisihTerbalik', leak: [diff.join(', ')] },
     ];
-    if (c.ask === 'diff') steps.push({ wrong: { choice: 'ab' }, right: { choice: 'ba' }, expectToast: 'arahSelisihTerbalik' });
-    steps.push(c.ask === 'sum'
-      ? { wrong: { fields: comps(vsub(c.a, c.b)) }, right: { fields: comps(target) }, expectToast: 'diagonalSalah' }
-      : { wrong: { fields: comps(vsub(c.b, c.a)) }, right: { fields: comps(target) }, expectToast: 'arahSelisihTerbalik' });
-    return steps;
   },
 
-  component_add: (c) => {
-    // Kunci langkah ini berupa KATA, bukan angka: kalimat salah tidak boleh
-    // langsung menyebut "tidak terdefinisi".
-    if (c.invalid) return [{ wrong: { choice: 'padded' }, right: { choice: 'undefined' }, expectToast: 'dimensiBeda', leak: ['tidak terdefinisi'] }];
-    const sign = c.op === 'add' ? 1 : -1;
-    const steps = [];
-    c.a.forEach((n, i) => {
-      steps.push({ wrong: { tap: `r${(i + 1) % c.a.length}` }, right: { tap: `r${i}` }, expectToast: 'komponenTidakSeletak' });
-      const result = n + sign * c.b[i];
-      steps.push(c.op === 'sub' && c.b[i] !== 0
-        ? { wrong: { fields: { [`r${AX[i]}`]: String(n + c.b[i]) } }, right: { fields: { [`r${AX[i]}`]: String(result) } }, expectToast: 'tandaKurangTerlewat', leak: [String(result)] }
-        : { wrong: { fields: { [`r${AX[i]}`]: String(result + 1) } }, right: { fields: { [`r${AX[i]}`]: String(result) } }, expectToast: 'hasilSalah', leak: [String(result)] });
-    });
-    return steps;
+  component_guided: (c) => {
+    if (c.kind === 'dimension') {
+      return [
+        { wrong: { choice: 'nol' }, right: { choice: 'tidak' }, expectToast: 'tambahNol', leak: ['tidak bisa'] },
+        { wrong: { choice: 'panjang' }, right: { choice: 'dimensi' }, expectToast: 'syaratDimensi' },
+      ];
+    }
+    const sum = vadd(c.a, c.b);
+    const diff = vsub(c.a, c.b);
+    if (c.kind === 'add') {
+      return [
+        { wrong: { fields: comps(vmul(-1, sum)) }, right: { fields: comps(sum) }, expectToast: 'tandaKomponen', leak: [sum.join(', ')] },
+        {
+          wrong: { fields: { xa: txt(c.a[1]), xb: txt(c.b[1]), ya: txt(c.a[0]), yb: txt(c.b[0]) } },
+          right: { fields: { xa: txt(c.a[0]), xb: txt(c.b[0]), ya: txt(c.a[1]), yb: txt(c.b[1]) } },
+          expectToast: 'tidakSeletak',
+        },
+        { wrong: { choice: 'silang' }, right: { choice: 'seletak' }, expectToast: 'tidakSeletak' },
+      ];
+    }
+    if (c.kind === 'sub') {
+      return [
+        { wrong: { fields: comps(c.b) }, right: { fields: comps(vmul(-1, c.b)) }, expectToast: 'lupaMinus' },
+        { wrong: { fields: comps(sum) }, right: { fields: comps(diff) }, expectToast: 'masihDitambah', leak: [diff.join(', ')] },
+        { wrong: { choice: 'balik' }, right: { choice: 'kurang' }, expectToast: 'urutanTerbalik' },
+      ];
+    }
+    return [
+      { wrong: { fields: comps(bump(sum)) }, right: { fields: comps(sum) }, expectToast: 'hasilSalah', leak: [sum.join(', ')] },
+      { wrong: { fields: comps(sum) }, right: { fields: comps(diff) }, expectToast: 'masihDitambah', leak: [diff.join(', ')] },
+    ];
   },
 
-  scalar_sweep: (c) => {
-    const scaled = c.v.map((n) => S.mulS(S.toFraction(c.k), n));
-    const steps = scaled.map((value, i) => (S.isZeroS(value)
-      ? { wrong: { fields: { [`k${AX[i]}`]: '1' } }, right: { fields: { [`k${AX[i]}`]: '0' } } }
-      : { wrong: { fields: { [`k${AX[i]}`]: S.toText(S.negS(value)) } }, right: { fields: { [`k${AX[i]}`]: S.toText(value) } }, expectToast: 'tandaHilang', leak: Math.abs(c.v[i]) === 1 ? [] : [S.toText(value)] }));
-    const k = Number(c.k);
-    const direction = k === 0 ? 'zero' : k < 0 ? 'opp' : 'same';
-    const expected = direction === 'zero' ? 'zero' : `${direction}-${Math.abs(k) > 1 ? 'long' : 'short'}`;
-    const wrongDir = direction === 'zero' ? 'same-long' : `${direction === 'same' ? 'opp' : 'same'}-${Math.abs(k) > 1 ? 'long' : 'short'}`;
-    steps.push({ wrong: { choice: wrongDir }, right: { choice: expected }, expectToast: direction === 'zero' ? undefined : 'arahSalah' });
-    return steps;
+  scalar_guided: (c) => {
+    const k = S.parseSurd(String(c.k));
+    const kv = c.v.map((n) => S.mulS(k, S.parseSurd(n)));
+    if (c.kind === 'repeat') {
+      const v2 = vmul(2, c.v);
+      const v3 = vmul(3, c.v);
+      const half = c.v.slice();
+      half[0] = txt(kv[0]);
+      return [
+        { wrong: { pick: c.v }, right: { pick: v2 }, expectToast: 'ujungPertama' },
+        { wrong: { pick: [v3[0] - 1, v3[1]] }, right: { pick: v3 }, expectToast: 'ujungSalinan' },
+        { wrong: { fields: comps(half) }, right: { fields: comps(kv) }, expectToast: 'hanyaSatuKomponen' },
+        { wrong: { fields: comps(kv, 'p') }, right: { fields: comps(c.v, 'p') }, expectToast: 'polaKali' },
+        { wrong: { choice: 'lawan-panjang' }, right: { choice: 'searah-panjang' }, expectToast: 'arahSalah' },
+      ];
+    }
+    if (c.kind === 'negative') {
+      return [
+        { wrong: { fields: comps(kv.map(S.negS)) }, right: { fields: comps(kv) }, expectToast: 'tandaHilang' },
+        { wrong: { choice: 'searah-panjang' }, right: { choice: 'lawan-panjang' }, expectToast: 'arahSalah' },
+      ];
+    }
+    if (c.kind === 'fraction') {
+      return [
+        { wrong: { fields: comps(vmul(2, c.v)) }, right: { fields: comps(kv) }, expectToast: 'dikaliDua' },
+        { wrong: { choice: 'searah-panjang' }, right: { choice: 'searah-pendek' }, expectToast: 'panjangBeda' },
+      ];
+    }
+    const half = c.v.slice();
+    half[0] = txt(kv[0]);
+    const sumSq = c.v.reduce((a, n) => a + n * n, 0);
+    const len = S.fromSquare(sumSq);
+    const kLen = S.mulS(k, len);
+    return [
+      { wrong: { fields: comps(half) }, right: { fields: comps(kv) }, expectToast: 'hanyaSatuKomponen' },
+      { wrong: { fields: { len: String(sumSq) } }, right: { fields: { len: S.toText(len) } }, expectToast: 'belumDiakar', leak: [S.toText(len)] },
+      { wrong: { fields: { klen: `√${Number(c.k) ** 2 * sumSq}` } }, right: { fields: { klen: S.toText(kLen) } }, expectToast: 'belumDisederhanakan', leak: [S.toText(kLen)] },
+    ];
   },
 
-  combo_vector_op: (c) => {
+  combo_guided: (c) => {
+    if (c.kind === 'unknown') {
+      const bma = vsub(c.b, c.a);
+      const x = bma.map((n) => S.divS(S.parseSurd(n), S.parseSurd(c.k)));
+      return [
+        { wrong: { choice: 'bpa' }, right: { choice: 'bma' }, expectToast: 'pindahRuas' },
+        { wrong: { fields: comps(vadd(c.a, c.b)) }, right: { fields: comps(bma) }, expectToast: 'pindahRuas', leak: [bma.join(', ')] },
+        { wrong: { fields: comps(bma) }, right: { fields: comps(x) }, expectToast: 'belumDibagi' },
+      ];
+    }
     const su = vmul(c.ku, c.u);
     const sv = vmul(c.kv, c.v);
-    const result = vadd(su, sv);
-    const vWrong = c.kv === 1 ? bump(sv) : c.v;
-    return [
-      { wrong: { fields: comps(c.u, 'u') }, right: { fields: comps(su, 'u') }, expectToast: 'skalarHanyaSatuKomponen', leak: [su.join(', ')] },
-      { wrong: { fields: comps(vWrong, 'v') }, right: { fields: comps(sv, 'v') }, expectToast: c.kv === 1 ? undefined : 'skalarHanyaSatuKomponen' },
-      { wrong: { fields: comps(vsub(su, sv)) }, right: { fields: comps(result) }, expectToast: 'tandaKurangSalah', leak: [result.join(', ')] },
-    ];
+    const res = vadd(su, sv);
+    const firstOnly = (k, w) => { const out = w.slice(); out[0] = k * w[0]; return out; };
+    const uStep = Math.abs(c.ku) !== 1 && c.kind !== 'space'
+      ? { wrong: { fields: comps(firstOnly(c.ku, c.u), 'u') }, right: { fields: comps(su, 'u') }, expectToast: 'skalarSemua', leak: [su.join(', ')] }
+      : { wrong: { fields: comps(vmul(-1, su), 'u') }, right: { fields: comps(su, 'u') }, expectToast: 'tandaHilang', leak: [su.join(', ')] };
+    const vStep = { wrong: { fields: comps(vmul(-1, sv), 'v') }, right: { fields: comps(sv, 'v') }, expectToast: 'tandaHilang' };
+    const resStep = { wrong: { fields: comps(vsub(su, sv)) }, right: { fields: comps(res) }, expectToast: 'tandaKurangSalah', leak: [res.join(', ')] };
+    if (c.kind === 'plane') {
+      return [{ wrong: { choice: 'kurang' }, right: { choice: 'kali' }, expectToast: 'kaliDulu' }, uStep, vStep, resStep];
+    }
+    return c.kv === 1 ? [uStep, resStep] : [uStep, vStep, resStep];
   },
 
-  equality_link: (c) => {
-    const steps = [];
-    c.left.forEach((expr, i) => {
-      const variable = /[a-z]/.exec(expr)[0];
-      steps.push({ wrong: { tap: `r${(i + 1) % c.left.length}` }, right: { tap: `r${i}` }, expectToast: 'tidakSeletak' });
-      // Baris identitas (p = −1) memuat jawabannya di DATA soal — bukan kebocoran.
-      const trivial = expr === variable;
-      steps.push({ wrong: { fields: { [`s${i}`]: String(c.solve[variable] + 1) } }, right: { fields: { [`s${i}`]: String(c.solve[variable]) } }, expectToast: 'nilaiSalah', leak: trivial ? [] : [String(c.solve[variable])] });
+  equality_guided: (c) => {
+    if (c.kind === 'compare') {
+      const AB = vsub(c.B, c.A);
+      const CD = vsub(c.D, c.C);
+      const EF = vsub(c.F, c.E);
+      return [
+        { wrong: { fields: comps(vmul(-1, AB), 'p') }, right: { fields: comps(AB, 'p') }, expectToast: 'tandaTerbalik' },
+        { wrong: { fields: comps([CD[1], CD[0]], 'q') }, right: { fields: comps(CD, 'q') }, expectToast: 'komponenTertukar' },
+        { wrong: { choice: 'beda' }, right: { choice: 'sama' }, expectToast: 'letakTidakPenting' },
+        { wrong: { fields: comps(vmul(-1, EF), 'r') }, right: { fields: comps(EF, 'r') }, expectToast: 'tandaTerbalik' },
+        { wrong: { choice: 'sama' }, right: { choice: 'lawan' }, expectToast: 'panjangSajaTidakCukup' },
+      ];
+    }
+    return c.rows.map((row, i) => {
+      const key = S.divS(S.parseSurd(row.rhs - row.b), S.parseSurd(row.a));
+      const field = `s${i}`;
+      if (row.b !== 0) {
+        return { wrong: { fields: { [field]: txt(S.divS(S.parseSurd(row.rhs + row.b), S.parseSurd(row.a))) } }, right: { fields: { [field]: txt(key) } }, expectToast: 'pindahTanda' };
+      }
+      if (row.a !== 1) {
+        return { wrong: { fields: { [field]: txt(row.rhs) } }, right: { fields: { [field]: txt(key) } }, expectToast: 'lupaBagi' };
+      }
+      return { wrong: { fields: { [field]: plus1(key) } }, right: { fields: { [field]: txt(key) } }, expectToast: 'nilaiSalah' };
     });
-    return steps;
   },
 
-  collinear_check: (c) => {
+  collinear_guided: (c) => {
     const AB = vsub(c.B, c.A);
+    if (c.kind === 'space') {
+      const k = (c.Cx - c.A[0]) / AB[0];
+      const p = c.A[1] + k * AB[1];
+      const q = c.A[2] + k * AB[2];
+      return [
+        { wrong: { fields: comps(vmul(-1, AB), 'p') }, right: { fields: comps(AB, 'p') }, expectToast: 'tandaTerbalik' },
+        { wrong: { fields: { k: txt(c.Cx / AB[0]) } }, right: { fields: { k: txt(k) } }, expectToast: 'lupaKurangA' },
+        { wrong: { fields: { p: txt(p), q: txt(k * AB[2]) } }, right: { fields: { p: txt(p), q: txt(q) } }, expectToast: 'lupaTambahA' },
+      ];
+    }
     const AC = vsub(c.C, c.A);
-    const ix = AB[0] !== 0 ? 0 : 1;
-    const iy = 1 - ix;
-    const k1 = S.toText(S.fraction(AC[ix], AB[ix]));
-    const k2 = S.toText(S.fraction(AC[iy], AB[iy]));
-    const kWrong = (k) => S.toText(S.addS(S.parseSurd(k), 1));
+    const k = S.divS(S.parseSurd(AC[0]), S.parseSurd(AB[0]));
+    const test = S.mulS(k, S.parseSurd(AB[1]));
+    const verdict = { yes: ['tidak', 'segaris', 'kCocok'], negative: ['tidak', 'seberang', 'kNegatif'], no: ['segaris', 'tidak', 'satuKomponenTidakCukup'] }[c.kind];
     return [
-      { wrong: { fields: comps(AB.map((n) => -n), 'AB') }, right: { fields: comps(AB, 'AB') } },
-      { wrong: { fields: comps(AC.map((n) => -n), 'AC') }, right: { fields: comps(AC, 'AC') } },
-      { wrong: { fields: { k1: kWrong(k1) } }, right: { fields: { k1 } }, leak: Math.abs(AB[ix]) === 1 ? [] : [k1] },
-      { wrong: { fields: { k2: kWrong(k2) } }, right: { fields: { k2 } }, leak: Math.abs(AB[iy]) === 1 ? [] : [k2] },
-      c.collinear
-        ? { wrong: { choice: 'no' }, right: { choice: 'yes' } }
-        : { wrong: { choice: 'yes' }, right: { choice: 'no' }, expectToast: 'kBeda' },
+      { wrong: { fields: comps(vmul(-1, AB), 'p') }, right: { fields: comps(AB, 'p') }, expectToast: 'tandaTerbalik' },
+      { wrong: { fields: comps(vmul(-1, AC), 'q') }, right: { fields: comps(AC, 'q') }, expectToast: 'tandaTerbalik' },
+      { wrong: { fields: { k: txt(AC[0] - AB[0]) } }, right: { fields: { k: txt(k) } }, expectToast: 'kurangBukanBagi' },
+      { wrong: { fields: { uji: plus1(test) } }, right: { fields: { uji: txt(test) } }, expectToast: 'ujiSalah' },
+      { wrong: { choice: verdict[0] }, right: { choice: verdict[1] }, expectToast: verdict[2] },
     ];
   },
 
-  section_point: (c) => {
-    const total = c.m + c.n;
-    const P = c.A.map((a, i) => S.toText(S.fraction(c.n * a + c.m * c.B[i], total)));
-    const swapped = c.A.map((a, i) => S.toText(S.fraction(c.m * a + c.n * c.B[i], total)));
-    const canSwap = swapped.some((s, i) => s !== P[i]);
+  section_guided: (c) => {
+    const frac = (v, d) => v.map((x) => S.divS(S.parseSurd(x), S.parseSurd(d)));
+    const P = c.A.map((a, i) => S.divS(S.parseSurd(c.m * c.B[i] + c.n * a), S.parseSurd(c.m + c.n)));
+    if (c.kind === 'parts') {
+      const AB = vsub(c.B, c.A);
+      const part = frac(AB, c.m + c.n);
+      const partNum = part.map((x) => S.toNumber(x));
+      const AP = vmul(c.m, partNum);
+      return [
+        { wrong: { fields: comps(vmul(-1, AB), 'p') }, right: { fields: comps(AB, 'p') }, expectToast: 'tandaTerbalik' },
+        { wrong: { fields: comps(frac(AB, c.m), 'q') }, right: { fields: comps(part, 'q') }, expectToast: 'banyakBagian' },
+        { wrong: { fields: comps(partNum, 'r') }, right: { fields: comps(AP, 'r') }, expectToast: 'baruSatuBagian' },
+        { wrong: { fields: comps(AP) }, right: { fields: comps(P) }, expectToast: 'lupaTambahA' },
+        { wrong: { choice: 'lurus' }, right: { choice: 'silang' }, expectToast: 'mnTertukar' },
+      ];
+    }
+    if (c.kind === 'mid') {
+      const sum = vadd(c.A, c.B);
+      const M = P.map((x) => S.toNumber(x));
+      return [
+        { wrong: { pick: [M[0] + 1, M[1]] }, right: { pick: M }, expectToast: 'bukanTengah' },
+        { wrong: { fields: comps(vsub(c.B, c.A), 's') }, right: { fields: comps(sum, 's') }, expectToast: 'bukanSelisih' },
+        { wrong: { fields: comps(sum) }, right: { fields: comps(P) }, expectToast: 'belumDibagi' },
+      ];
+    }
+    if (c.kind === 'space') {
+      const top = vadd(vmul(c.m, c.B), vmul(c.n, c.A));
+      const swapped = vadd(vmul(c.m, c.A), vmul(c.n, c.B));
+      return [
+        { wrong: { choice: 'lurus' }, right: { choice: 'silang' }, expectToast: 'mnTertukar' },
+        { wrong: { fields: comps(swapped, 't') }, right: { fields: comps(top, 't') }, expectToast: 'mnTertukar' },
+        { wrong: { fields: comps(top) }, right: { fields: comps(P) }, expectToast: 'belumDibagi' },
+      ];
+    }
+    const Pn = P.map((x) => S.toNumber(x));
+    const swapped = frac(vadd(vmul(c.m, c.A), vmul(c.n, c.B)), c.m + c.n);
     return [
-      { wrong: { fields: { den: String(total + 1) } }, right: { fields: { den: String(total) } }, expectToast: 'penyebutSalah', leak: [String(total)] },
-      canSwap
-        ? { wrong: { fields: comps(swapped) }, right: { fields: comps(P) }, expectToast: 'mnTertukar', leak: [P.join(', ')] }
-        : { wrong: { fields: comps(bump(P).map((x) => S.toText(S.parseSurd(x)))) }, right: { fields: comps(P) }, leak: [P.join(', ')] },
+      { wrong: { choice: 'dalam' }, right: { choice: 'setelahB' }, expectToast: 'bukanDiDalam' },
+      { wrong: { fields: comps(swapped) }, right: { fields: comps(P) }, expectToast: 'mnTertukar' },
+      { wrong: { pick: [Pn[0] - 1, Pn[1]] }, right: { pick: Pn }, expectToast: 'titikMeleset' },
     ];
   },
 });

@@ -1,5 +1,5 @@
 /**
- * lesson/simulations/guidedKit.js — Perkakas simulasi TERPANDU Bab 1.
+ * lesson/simulations/guidedKit.js — Perkakas simulasi TERPANDU Bab 1 & Bab 2.
  *
  * Sub-topik 1 menetapkan pola "gold standard": siswa mengetuk, menghitung,
  * lalu MENGGAMBAR sendiri; aplikasi baru menganimasikan hasilnya sesudah
@@ -166,6 +166,38 @@ export function createArrowDrawer(sim, { points, marks, from, to, name }) {
   return { check, disarm, get armed() { return armed; } };
 }
 
+/**
+ * Langkah "gambar panah dua ketukan" dari titik bernama `from` ke `to`.
+ * Panahnya baru digambar di onSolved, sesudah kedua ketukan benar.
+ * `sim.marks` harus memuat penanda titik-titiknya (untuk denyut pangkal).
+ * Toast (validator KIT_TOASTS): pangkalBukanTitik, ujungBukanTitik, arahPanahTerbalik.
+ */
+export function arrowStep(sim, { from, to, points, label, prompt, summary, tone = 'blue', name, arrowLabel, after }) {
+  const drawer = createArrowDrawer(sim, { points, marks: () => sim.marks, from, to, name: `${from}${to}` });
+  return {
+    kind: 'pick',
+    label,
+    prompt,
+    intro: 'Ketuk dua titik di bidang: **pangkal** dulu, baru **ujung**.',
+    onEnter: () => drawer.disarm(),
+    onLeave: () => drawer.disarm(),
+    check: (p) => drawer.check(p),
+    hint: () => ({
+      text: `Pangkal panah ini adalah titik $${from}$ (berdenyut). Ketuk $${from}$ dulu, lalu titik $${to}$.`,
+      show: () => pulsePoint(sim, points()[from]),
+    }),
+    summary,
+    onSolved: async () => {
+      const P = points()[from];
+      const Q = points()[to];
+      const arrow = sim.drawVector({ from: P, to: P, name: name || `${from}${to}`, tone, label: arrowLabel }, { essential: true });
+      await arrow.setVector({ from: P, to: Q }, { animate: !stillMotion(), duration: ARROW_MS });
+      if (arrow.labelEl && arrow.labelEl.firstChild) springPop(arrow.labelEl.firstChild.firstChild);
+      if (after) await after(arrow);
+    },
+  };
+}
+
 /** Isian satu per komponen: cx, cy, (cz). */
 export function componentFields(dim, { prefix = 'c', label = (axis) => `$${axis}$`, mode = 'integer' } = {}) {
   return AXES.slice(0, dim).map((axis) => ({ key: `${prefix}${axis}`, label: label(axis), mode, aria: `Komponen ${axis}` }));
@@ -259,6 +291,17 @@ export function pulsePoint(sim, p) {
   const dot = plane.drawPoint(p, { ghost: true });
   dot.el.classList.add('is-armed', 'plane__point-mark--hint');
   return () => dot.remove();
+}
+
+/** Ruas bayangan putus-putus dari `from` ke `to` + titik berdenyut di `to`. */
+export function ghostArrow(sim, from, to) {
+  const plane = sim.plane;
+  if (!plane) return () => {};
+  const seg = plane.drawSegment(from, to, { dashed: true });
+  seg.el.classList.add('plane__segment--hint');
+  const dot = plane.drawPoint(to, { ghost: true });
+  dot.el.classList.add('is-armed', 'plane__point-mark--hint');
+  return () => [seg, dot].forEach((m) => m.remove());
 }
 
 /** Rute bayangan di ruang 3D: maju/mundur, lalu kanan/kiri, lalu naik/turun. */

@@ -1010,6 +1010,11 @@ def section_hook(page, errors):
 
 
 BAB1_SUBTOPICS = ["pengertian_notasi", "notasi_penyajian", "vektor_posisi", "panjang_vektor", "vektor_satuan", "komponen_r2_r3"]
+BAB2_SUBTOPICS = ["penjumlahan_segitiga", "penjumlahan_jajargenjang", "operasi_komponen", "perkalian_skalar",
+                  "kombinasi_operasi", "kesamaan_vektor", "titik_segaris", "pembagian_ruas_garis"]
+# Setiap sub-topik berpaket terpandu: (bab, sub-topik). §6l dan §6m menegakkan paketnya.
+GUIDED_PACKAGES = ([("01_konsep_dasar", s) for s in BAB1_SUBTOPICS]
+                   + [("02_operasi_bangun_datar", s) for s in BAB2_SUBTOPICS])
 CONCLUSION_FIT = """() => { const v = window.__vektorLab.state.activeView; v.showConclusion(v.ctx.subtopic.simulation.conclusion); }"""
 CONCLUSION_PROBE = """() => { const m = document.querySelector('.modal--conclusion'); if (!m) return null;
     const r = m.getBoundingClientRect(), b = m.querySelector('.modal__body');
@@ -1017,11 +1022,11 @@ CONCLUSION_PROBE = """() => { const m = document.querySelector('.modal--conclusi
 
 
 def section_bab1_package(page, errors):
-    print("\n6l. Bab 1: keenam sub-topik memakai paket terpandu lengkap (740×360)")
+    print("\n6l. Bab 1–2: setiap sub-topik memakai paket terpandu lengkap (740×360)")
     page.set_viewport_size({"width": 740, "height": 360})
-    for sid in BAB1_SUBTOPICS:
+    for chapter, sid in GUIDED_PACKAGES:
         fresh_progress(page)
-        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=700, hook="keep")
+        open_route(page, f"#/belajar/{chapter}/{sid}", settle=700, hook="keep")
         hook = page.evaluate("() => !!document.querySelector('.hook .hook__art svg') && !!document.querySelector('[data-role=\"start-simulation\"]')")
         page.click('[data-role="start-simulation"]')
         page.wait_for_timeout(700)
@@ -1035,13 +1040,13 @@ def section_bab1_package(page, errors):
         page.keyboard.press("Escape")
         page.wait_for_timeout(300)
         fresh_position(page)
-        page.evaluate("""async (s) => { const m = await import('/js/core/state/sessionState.js');
-            m.patchResume(m.lessonKey('01_konsep_dasar', s), { step: 2 }); }""", sid)
-        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=600)
+        page.evaluate("""async ([c, s]) => { const m = await import('/js/core/state/sessionState.js');
+            m.patchResume(m.lessonKey(c, s), { step: 2 }); }""", [chapter, sid])
+        open_route(page, f"#/belajar/{chapter}/{sid}", settle=600)
         d = page.evaluate(DOC_PROBE)
         record(f"{sid}: Rangkuman satu lembar A4 tanpa luapan, ada catatan kecil",
                len(d) == 1 and not d[0]["overflow"] and d[0]["notes"], json.dumps([{k2: v for k2, v in x.items() if k2 != "text"} for x in d]))
-    record("Tanpa galat konsol selama paket Bab 1", not errors, "; ".join(errors[:2]))
+    record("Tanpa galat konsol selama paket Bab 1–2", not errors, "; ".join(errors[:2]))
     page.set_viewport_size({"width": 1024, "height": 600})
 
 
@@ -1079,11 +1084,11 @@ def section_teacher_revisions(page, errors):
     # (a) Panduan ringkas: tidak ada langkah yang teksnya meluap di 740×360.
     page.set_viewport_size({"width": 740, "height": 360})
     over = []
-    for sid in BAB1_SUBTOPICS:
+    for chapter, sid in GUIDED_PACKAGES:
         fresh_progress(page)
-        open_route(page, f"#/belajar/01_konsep_dasar/{sid}", settle=500)
+        open_route(page, f"#/belajar/{chapter}/{sid}", settle=500)
         over += [f"{sid} {x}" for x in page.evaluate(GUIDE_WALK)]
-    record("740×360: teks panduan di SETIAP langkah keenam sub-topik muat tanpa terpotong", not over, "; ".join(over[:4]))
+    record("740×360: teks panduan di SETIAP langkah sub-topik Bab 1–2 muat tanpa terpotong", not over, "; ".join(over[:4]))
 
     # (b) Petunjuk sesudah 3 ketukan salah (vektor posisi, langkah "ketuk A").
     page.set_viewport_size({"width": 1024, "height": 600})
@@ -1166,6 +1171,23 @@ def section_teacher_revisions(page, errors):
     page.wait_for_timeout(1500)
     record("Jawaban berakar di penyebut diterima pemeriksa (kasus selesai)",
            page.evaluate("() => window.__vektorLab.state.activeView.simulation.solved.has(2)"))
+
+    # (d2) Bab 2: k = 5/2 (titik tidak segaris) diketik sebagai pecahan lewat tuts a/b.
+    fresh_progress(page)
+    open_route(page, "#/belajar/02_operasi_bangun_datar/titik_segaris", settle=700)
+    page.evaluate("""async () => { const sim = window.__vektorLab.state.activeView.simulation;
+        for (let i = 0; i < 2; i += 1) { sim.goToCase(i); while (sim.currentStep && sim.caseIndex === i) await sim.solveStep(sim.currentStep, [0, 0]); }
+        sim.goToCase(2); await sim.solveStep(sim.currentStep, [0, 0]); await sim.solveStep(sim.currentStep, [0, 0]); }""")
+    page.wait_for_timeout(900)
+    page.evaluate("() => document.querySelectorAll('.toast').forEach((t) => t.remove())")
+    page.locator('[data-sim-field="k"]').click()
+    page.wait_for_timeout(300)
+    press(["5", "frac", "2", "ok"])
+    typed = page.evaluate("() => document.querySelector('[data-sim-field=\"k\"]').value")
+    page.click('[data-sim-action="check"]')
+    page.wait_for_timeout(1200)
+    st = page.evaluate(SIM_STATE)
+    record("Bab 2: k = 5/2 diketik dengan tuts a/b dan diterima pemeriksa", typed == "5/2" and st["case"] == 2 and st["step"] == 3, f"{typed} {json.dumps(st)}")
 
     # (e) Layar Mini Kuis selesai menyediakan tombol Rangkuman.
     record("Tanpa galat konsol selama revisi guru", not errors, "; ".join(errors[:2]))
