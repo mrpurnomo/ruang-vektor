@@ -2,7 +2,7 @@
 
 > Salin SELURUH blok di bawah ini sebagai pesan pertama di sesi baru.
 > Sesi itu akan membaca handoff, memverifikasi repo, lalu **standby** menunggu
-> perintah Bapak untuk mulai menulis Bab 2. Dokumen ini sendiri bukan instruksi.
+> revisi Bapak atas Bab 2 atau perintah memulai Bab 3. Dokumen ini sendiri bukan instruksi.
 
 ---
 
@@ -14,7 +14,7 @@ kelas 11 untuk SMA YPVDP Bontang (vanilla HTML/CSS/ES Modules, tanpa build,
 luring, lanskap saja, UI berbahasa Indonesia).
 Repo: F:\MATERI MATEMATIKA\MATEMATIKA TINGKAT LANJUT\KELAS 11\VEKTOR\vektor-lab-interaktif
 
-## KEADAAN TERAKHIR (25 Oktober 2026, commit terbaru sesudah `827e15e`)
+## KEADAAN TERAKHIR (26 Oktober 2026)
 - BAB 1 (6 sub-topik) SELESAI dan dinyatakan guru "bagus dan sempurna".
   Setiap sub-topik punya paket lengkap: kartu pemantik → simulasi terpandu
   (petunjuk visual sesudah salah 3 kali / diam 7 detik, kasus bisa ditinjau
@@ -22,31 +22,32 @@ Repo: F:\MATERI MATEMATIKA\MATEMATIKA TINGKAT LANJUT\KELAS 11\VEKTOR\vektor-lab-
   (terbuka sesudah simulasi selesai) → Mini Kuis 3 soal berpetunjuk.
 - Papan angka baru: satu mode, tuts √ dan a/b, ukuran tetap (bisa menulis 1/√5).
 - Ruang 3D yang bisa diputar tersedia (domain/space/spaceView.js + langkah `pad`).
-- Uji terakhir: engine 132/132 · data 799/0/0 · plane 33/33 · sims 26/26 ·
-  smoke --skip-suites 293/0.
+- BAB 2 (8 sub-topik) SELESAI ditulis dengan pola yang sama (handoff §10) dan
+  sudah di-push ke GitHub mrpurnomo/ruang-vektor (cabang main). Menunggu
+  pemeriksaan guru.
+- Uji terakhir: engine 132/132 · data 863/0/0 · plane 33/33 · sims 26/26 ·
+  smoke penuh 320/0.
 
 ## MISI SESI INI: STANDBY
 1. LANGKAH 0 — baca `handoff/handoff.md` SELURUHNYA, dengan urutan:
-   §4 (misi & cara mengerjakan Bab 2) → §9 (ATURAN GURU untuk SEMUA bab) →
+   §10 (Bab 2) → §4 (misi & cara mengerjakan bab) → §9 (ATURAN GURU untuk SEMUA bab) →
    §8 (peta engine & kontrak paket terpandu) → §3 (kontrak arsitektur) → §5.
    Baca juga memori proyek (guided-sim-teacher-rules, ruang-vektor-handoff).
 2. Verifikasi keadaan: `git status` bersih, `git log -5`, lalu jalankan uji cepat
    `node tests/engine.test.mjs` (harus 132/132) dan `py tests/validate_data.py`
    (harus 0 GAGAL · 0 PERINGATAN).
 3. Laporkan kesiapan dalam Bahasa Indonesia, SINGKAT: keadaan repo, hasil uji,
-   daftar 8 sub-topik Bab 2 (handoff §4.1), dan pertanyaan yang akan kamu ajukan
-   sebelum mulai (handoff §4.1a butir 1).
-4. **BERHENTI dan TUNGGU perintah guru.** JANGAN menyentuh kode, data, atau
-   berkas Bab 2 sebelum guru memerintahkan "mulai Bab 2" (atau sejenisnya).
+   dan daftar sub-topik Bab 3 (6 sub-topik, data/chapters/03_perkalian_proyeksi.json).
+4. **BERHENTI dan TUNGGU perintah guru**: revisi Bab 2, atau "mulai Bab 3".
 
-## SETELAH DIPERINTAH: TULIS BAB 2 (Operasi & Bangun Datar, 8 sub-topik)
-Ikuti handoff §4.1a langkah demi langkah. Ringkasnya:
+## SETELAH DIPERINTAH: TULIS BAB BERIKUTNYA
+Ikuti handoff §4.1a dan contoh Bab 2 (§10). Ringkasnya:
 - Tanyakan dulu keputusan milik guru (konteks cerita, referensi LKPD, cara
   pemeriksaan) — maksimal 4 pertanyaan pilihan.
 - Setiap sub-topik WAJIB memakai paket terpandu lengkap seperti Bab 1, dan
   setiap langkah simulasi WAJIB punya `hint`.
-- Tambahkan sub-topik Bab 2 ke validator (`GUIDED_SUBTOPICS`) dan smoke
-  (padanan §6l/§6m) supaya paketnya ditegakkan uji.
+- Tambahkan sub-topik bab itu ke validator (`GUIDED_SUBTOPICS`) dan smoke
+  (`GUIDED_PACKAGES`) supaya paketnya ditegakkan uji.
 - Commit per sub-topik sesudah gerbang uji LULUS.
 
 ## ATURAN GURU — MENGIKAT UNTUK SETIAP BAB (handoff §9)
@@ -84,10 +85,10 @@ Ikuti handoff §4.1a langkah demi langkah. Ringkasnya:
 
 ## UJI WAJIB SEBELUM SETIAP COMMIT (gerbang mensyaratkan "GAGAL 0" eksplisit)
 - `node tests/engine.test.mjs` → 132/132
-- `py tests/validate_data.py` → 0 GAGAL · 0 PERINGATAN (saat ini 799 lolos)
+- `py tests/validate_data.py` → 0 GAGAL · 0 PERINGATAN (saat ini 863 lolos)
 - `py tests/serve.py 5173` (latar belakang), lalu suite `tests/plane.html` 33/33,
-  `tests/sims.html` 26/26, dan `py tests/smoke.py --skip-suites` → 0 GAGAL
-  (saat ini 293 lolos, ±15 menit)
+  `tests/sims.html` 26/26, dan `py tests/smoke.py` → 0 GAGAL
+  (saat ini 320 lolos termasuk kedua suite, ±22 menit)
 - Uji yang menyentuh progres wajib memanggil `progressStore.resetAll()`.
 
 ## CATATAN LINGKUNGAN
@@ -100,7 +101,7 @@ Ikuti handoff §4.1a langkah demi langkah. Ringkasnya:
 
 ## GIT
 - Commit per butir pekerjaan, pesan berbahasa Indonesia.
-- JANGAN `git push` tanpa permintaan eksplisit.
+- JANGAN `git push` tanpa permintaan eksplisit (remote: origin = github.com/mrpurnomo/ruang-vektor, cabang main).
 - JANGAN menambahkan trailer `Co-Authored-By` atau tanda tangan AI apa pun.
 
 Setelah setiap pekerjaan selesai: laporkan dalam Bahasa Indonesia — apa yang
@@ -114,10 +115,4 @@ tanyakan apa yang perlu direvisi.
 
 ### Yang akan terjadi di sesi baru
 Sesi baru hanya membaca, memeriksa, dan melapor siap. Ia baru bekerja setelah
-Bapak menulis perintah, misalnya: **"Mulai Bab 2."**
-
-### Bahan yang berguna disiapkan untuk Bab 2
-1. LKPD atau soal latihan Bab 2 (penjumlahan vektor, perkalian skalar,
-   kesamaan, titik segaris, pembagian ruas garis) bila ada versi terbaru.
-2. Konteks cerita yang Bapak inginkan (mis. kapal, drone, peta kota).
-3. Apakah Bab 2 diperiksa sekaligus (seperti Bab 1) atau per sub-topik.
+Bapak menulis revisi Bab 2, atau perintah seperti: **"Mulai Bab 3."**

@@ -249,12 +249,13 @@ Aturan:
 
 ## 4. THE IMMEDIATE NEXT STEP — MISI SESI BARU
 
-> ### 🎯 MISI: STANDBY — MENULIS BAB 2 SETELAH DIPERINTAH GURU
+> ### 🎯 MISI: STANDBY — MENUNGGU PENILAIAN GURU ATAS BAB 2
 >
-> **Bab 1 SELESAI** dan dinyatakan "bagus dan sempurna" oleh guru (25 Okt 2026). Sesi baru
-> **TIDAK langsung bekerja**: baca handoff ini, verifikasi keadaan repo & uji, laporkan
-> kesiapan singkat dalam Bahasa Indonesia, lalu **TUNGGU perintah guru** untuk memulai Bab 2.
-> Jangan menyentuh kode Bab 2 sebelum ada perintah eksplisit.
+> **Bab 1 SELESAI** ("bagus dan sempurna", 25 Okt 2026). **Bab 2 SELESAI ditulis** (26 Okt 2026,
+> §10) dan sudah di-push ke GitHub `mrpurnomo/ruang-vektor`; menunggu pemeriksaan guru.
+> Sesi baru **TIDAK langsung bekerja**: baca handoff ini (§10 lalu §9), verifikasi repo & uji,
+> laporkan kesiapan singkat, lalu **TUNGGU** revisi guru atas Bab 2 atau perintah memulai Bab 3.
+> Pola §4.1a di bawah berlaku sama untuk Bab 3.
 
 ### 4.1 Antrean yang sudah disetujui
 
@@ -600,3 +601,60 @@ berikutnya** — jangan diulangi kesalahannya.
 7. **Rangkuman** hanya terbuka sesudah simulasi selesai.
 
 **Uji terakhir (`2adf415`):** Node 132/132 · data 799/0/0 · plane 33/33 · sims 26/26 · smoke `--skip-suites` **293**/0.
+
+---
+
+## 10. ADENDUM 26 Okt 2026 — Bab 2 ditulis ulang ke pola terpandu (8 sub-topik)
+
+Keputusan guru (mengikat): konteks cerita **mengikuti materi, tidak dipaksakan**, sudut pandang
+guru seperti Bab 1; **tanpa LKPD** (kreasi sendiri); 8 sub-topik **sekaligus** lalu diperiksa;
+**cukup 2D** — vektor tiga komponen boleh dipakai di kasus tanpa gambar dan di Mini Kuis, hanya
+hitungannya (tanpa ruang 3D). Sesudah selesai: **push ke GitHub `mrpurnomo/ruang-vektor`**
+(guru mem-publish manual di Vercel).
+
+**Peta engine Bab 2** (`simOperations.js`, ditulis ulang; engine lama `triangle_rule`,
+`parallelogram_rule`, `component_add`, `scalar_sweep`, `combo_vector_op`, `equality_link`,
+`collinear_check`, `section_point` dihapus):
+
+| Sub-topik | Engine | Kasus (yang pertama terpandu) |
+|---|---|---|
+| `penjumlahan_segitiga` | `triangle_guided` | Bersambung A→B→C (AC = a + b) · Digeser (siswa memindah b) · Poligon AD · Tanpa gambar (huruf, vektor nol, urutkan dulu) |
+| `penjumlahan_jajargenjang` | `parallelogram_guided` | Geser b & a → jajar genjang, diagonal a + b · Diagonal selisih a − b · Latihan sudut keempat · 3 komponen |
+| `operasi_komponen` | `component_guided` | Dari kisi ke pola komponen seletak · a − b = a + (−b) · 3 komponen · Beda dimensi |
+| `perkalian_skalar` | `scalar_guided` | v + v + v = 3v · k = −2 · k = ½ · 3 komponen + \|kv\| = \|k\|\|v\| (4√14) |
+| `kombinasi_operasi` | `combo_guided` | 2u − v di bidang (urutan) · 3u + 2v · −2u + v (3 komponen) · 2x + a = b |
+| `kesamaan_vektor` | `equality_guided` | AB = CD beda letak, EF = −AB · dua persamaan · dua persamaan · 3 komponen |
+| `titik_segaris` | `collinear_guided` | k = 3 + uji · k = −2 · k = 5/2 gagal uji · 3 komponen cari p, q |
+| `pembagian_ruas_garis` | `section_guided` | 2 : 1 lewat bagian sama panjang → rumus bersilang · Titik tengah · 1 : 2 di ruang · 2 : (−1) di luar ruas |
+
+**Perkakas baru (`guidedKit.js`):** `arrowStep(sim, {from, to, points, …})` = langkah panah dua
+ketukan siap pakai (validator `KIT_TOASTS["arrowStep("]`), `ghostArrow(sim, from, to)` = ruas
+bayangan petunjuk. Helper modul di `simOperations.js` (tanpa kalimat toast): `boundsOf`,
+`vectorVerdict` (ok/sign/swap/other), `markPoint`, `growArrow`, `chainCopies`, `lineThrough`, `glow`.
+Kalimat toast tetap literal `{ toast: '…' }` di tiap kelas supaya validator §3 bisa memeriksanya.
+
+**Data:** setiap sub-topik Bab 2 punya `hook` (ilustrasi baru di `hookArt.js`: perpindahan, jajar,
+komponen, kelipatan, kombinasi, kembar, segaris, bagi), `simulation.conclusion`, `rangkuman`
+terstruktur (gambar baru di `FIGURES`: segitiga, jajargenjang, komponen, skalar, kombinasi,
+kesamaan, segaris, pembagian), Mini Kuis 3 soal ber-`hint`. Soal baru: `b2_01_3` (plane_tap,
+ujung a + b), `b2_05_2` (komponen z, 3 komponen), `b2_08_2` (titik tengah 3 komponen). Data
+dibangun dengan skrip Python raw-string (bukan heredoc). `content/MINI_KUIS_ARCHIVE.md`
+dibangkitkan ulang. `content/02_operasi_bangun_datar.md` (bacaan lama) BELUM disinkronkan.
+
+**Uji:** validator `GUIDED_SUBTOPICS` + smoke `GUIDED_PACKAGES` (§6l paket & Rangkuman 1 lembar,
+§6m panduan muat di setiap langkah 740×360) kini mencakup Bab 2; §6m baru: `k = 5/2` diketik
+dengan tuts a/b. `sims.browser.mjs`: rencana 8 engine baru + `CASE_SUCCESS`. **Bug alat ukur
+diperbaiki:** `planeRect()` hanya mengembalikan `.workspace__body` ke atas, padahal `<body>`
+halaman uji juga wadah gulir (rig 620px > viewport 600px) sehingga `scrollIntoView` terbaca
+sebagai "bidang bergeser 12–19px"; kini semua leluhur dikembalikan.
+
+**Temuan & perbaikan saat verifikasi:** panduan sesudah kasus 1 pembagian ruas garis meluap
++13px (rumus `\dfrac` dua tingkat) → kalimat tanpa pecahan; salinan CD yang digeser menutupi AB
+(AB tampak abu-abu) → salinan dibuang sesudah animasi; dua kiasan tersisa di b2_05_3
+("disapukan", "diregangkan") diganti.
+
+**Uji terakhir:** Node 132/132 · data **863**/0/0 · plane 33/33 · sims 26/26 · smoke penuh
+**320**/0 (1 CATATAN = jumlah lembar Rangkuman: 25/25 satu lembar), ±22 menit.
+
+**Antrean berikutnya:** penilaian guru atas Bab 2; sesudah disetujui, Bab 3 (Perkalian &
+Proyeksi, 6 sub-topik) dengan pola yang sama.
