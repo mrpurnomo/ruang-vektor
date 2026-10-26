@@ -146,6 +146,137 @@ const ART = {
       <circle class="ha-dot" cx="${ox}" cy="${oy}" r="3.5"/>
     </svg>`;
   },
+
+  /* ---------------- Bab 2 ---------------- */
+
+  /** Bab 2.1: A → B → C bersambung; perpindahan A → C ditanyakan. */
+  perpindahan() {
+    const u = 18; const ox = 22; const oy = 140;
+    const X = (x) => ox + x * u;
+    const Y = (y) => oy - y * u;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(13, 14, 11, 7, 18)}
+      ${arrow(X(0), Y(0), X(6), Y(1))}
+      ${arrow(X(6), Y(1), X(8), Y(6))}
+      <path class="ha-dash" d="M${X(0)} ${Y(0)}L${X(8)} ${Y(6)}"/>
+      <circle class="ha-dot" cx="${X(0)}" cy="${Y(0)}" r="4"/><circle class="ha-dot" cx="${X(6)}" cy="${Y(1)}" r="4"/><circle class="ha-dot ha-dot--amber" cx="${X(8)}" cy="${Y(6)}" r="4"/>
+      <text class="ha-label" x="${X(0) - 4}" y="${Y(0) + 15}">A</text>
+      <text class="ha-label" x="${X(6) + 10}" y="${Y(1) + 12}">B</text>
+      <text class="ha-label" x="${X(8) + 10}" y="${Y(6) - 4}">C</text>
+      <text class="ha-label ha-label--blue" x="${X(3.4)}" y="${Y(3.6)}">?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.2: dua tarikan dari satu titik; jajar genjang belum lengkap. */
+  jajar() {
+    const u = 20; const ox = 40; const oy = 128;
+    const X = (x) => ox + x * u;
+    const Y = (y) => oy - y * u;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(10, 8, 10, 7, 20)}
+      <path class="ha-dash" d="M${X(5)} ${Y(1)}L${X(6.5)} ${Y(5)}L${X(1.5)} ${Y(4)}"/>
+      ${arrow(X(0), Y(0), X(5), Y(1))}
+      ${arrow(X(0), Y(0), X(1.5), Y(4), 'ha-vec ha-vec--amber', 'ha-head ha-head--amber')}
+      <rect class="ha-bldg" x="${X(0) - 11}" y="${Y(0) - 9}" width="22" height="18" rx="2"/>
+      <text class="ha-label ha-label--blue" x="${X(3.9)}" y="${Y(3.4)}">?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.3: komponen ratusan — kertas berpetak tidak cukup. */
+  komponen() {
+    const col = (x, top, bottom) => `<g class="ha-tag"><rect x="${x}" y="36" width="44" height="58" rx="4"/>
+      <path class="ha-bracket" d="M${x + 8} 42q-6 23 0 46M${x + 36} 42q6 23 0 46"/>
+      <text x="${x + 22}" y="61">${top}</text><text x="${x + 22}" y="83">${bottom}</text></g>`;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${col(8, '125', '−40')}
+      <text class="ha-label ha-label--blue" x="64" y="70">+</text>
+      ${col(76, '−60', '95')}
+      <text class="ha-label ha-label--blue" x="132" y="70">=</text>
+      ${col(144, '?', '?')}
+      ${grid(30, 112, 16, 3, 10)}
+      <text class="ha-label ha-label--amber" x="110" y="152">tanpa gambar?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.4: langkah yang sama diulang tiga kali. */
+  kelipatan() {
+    const u = 22; const ox = 26; const oy = 128;
+    const X = (x) => ox + x * u;
+    const Y = (y) => oy - y * u;
+    const hops = [0, 1, 2].map((k) => arrow(X(2 * k), Y(k), X(2 * k + 2), Y(k + 1))).join('');
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(4, 18, 9, 5, 22)}
+      ${hops}
+      <circle class="ha-dot" cx="${X(0)}" cy="${Y(0)}" r="4"/>
+      <text class="ha-label" x="${X(1)}" y="${Y(0.5) + 16}">1</text>
+      <text class="ha-label" x="${X(3)}" y="${Y(1.5) + 16}">2</text>
+      <text class="ha-label" x="${X(5)}" y="${Y(2.5) + 16}">3</text>
+      <g class="ha-drone" transform="translate(${X(6)} ${Y(3)})"><circle r="6"/><path d="M-13 -6h8M5 -6h8M-13 6h8M5 6h8"/></g>
+      <text class="ha-label ha-label--blue" x="${X(6.6)}" y="${Y(4.1)}">3v?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.5: 2u lalu −v — urutan mengerjakannya ditanyakan. */
+  kombinasi() {
+    const u = 24; const ox = 24; const oy = 112;
+    const X = (x) => ox + x * u;
+    const Y = (y) => oy - y * u;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(12, 16, 8, 5, 24)}
+      ${arrow(X(0), Y(0), X(6), Y(2))}
+      ${arrow(X(6), Y(2), X(5), Y(0), 'ha-vec ha-vec--amber', 'ha-head ha-head--amber')}
+      <path class="ha-dash" d="M${X(0)} ${Y(0)}L${X(5)} ${Y(0)}"/>
+      <circle class="ha-dot" cx="${X(0)}" cy="${Y(0)}" r="4"/>
+      <text class="ha-label ha-label--blue" x="${X(2.6)}" y="${Y(1.6)}">2u</text>
+      <text class="ha-label ha-label--amber" x="${X(6.4) + 6}" y="${Y(1)}">−v</text>
+      <g class="ha-tag"><rect x="58" y="128" width="104" height="26" rx="4"/><text x="110" y="146">2u − v = ?</text></g>
+    </svg>`;
+  },
+
+  /** Bab 2.6: dua panah sama panjang & searah di tempat berjauhan. */
+  kembar() {
+    const u = 20; const ox = 20; const oy = 136;
+    const X = (x) => ox + x * u;
+    const Y = (y) => oy - y * u;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(10, 16, 10, 6, 20)}
+      ${arrow(X(0), Y(1), X(3), Y(3))}
+      ${arrow(X(5), Y(3), X(8), Y(5))}
+      <circle class="ha-dot" cx="${X(0)}" cy="${Y(1)}" r="3.5"/><circle class="ha-dot" cx="${X(5)}" cy="${Y(3)}" r="3.5"/>
+      <text class="ha-label ha-label--blue" x="${X(4)}" y="${Y(1.2)}">= ?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.7: tiga tiang lampu — benar-benar segaris? */
+  segaris() {
+    const pole = (x, y) => `<path class="ha-axis" d="M${x} ${y}v-30"/><circle class="ha-dot ha-dot--amber" cx="${x}" cy="${y - 33}" r="5"/><circle class="ha-dot" cx="${x}" cy="${y}" r="3.5"/>`;
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(10, 10, 20, 14, 10)}
+      <path class="ha-dash" d="M14 138L206 42"/>
+      ${pole(40, 125)}${pole(110, 90)}${pole(176, 59)}
+      <text class="ha-label" x="40" y="146">A</text><text class="ha-label" x="110" y="111">B</text><text class="ha-label" x="176" y="80">C</text>
+      <text class="ha-label ha-label--blue" x="196" y="28">?</text>
+    </svg>`;
+  },
+
+  /** Bab 2.8: jalan lurus A–B dengan halte P di dua pertiga jalan. */
+  bagi() {
+    const A = [24, 118]; const B = [196, 54];
+    const at = (t) => [A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t];
+    const ticks = [1 / 3, 2 / 3].map((t) => { const [x, y] = at(t); return `<circle class="ha-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5"/>`; }).join('');
+    const [px, py] = at(2 / 3);
+    return `<svg viewBox="0 0 220 160" aria-hidden="true">
+      ${grid(10, 10, 20, 14, 10)}
+      <path class="ha-route" d="M${A[0]} ${A[1]}L${B[0]} ${B[1]}"/>
+      ${ticks}
+      <circle class="ha-dot" cx="${A[0]}" cy="${A[1]}" r="4"/><circle class="ha-dot" cx="${B[0]}" cy="${B[1]}" r="4"/>
+      <rect class="ha-bldg ha-bldg--amber" x="${(px - 14).toFixed(1)}" y="${(py - 34).toFixed(1)}" width="28" height="18" rx="3"/>
+      <text class="ha-bldg-t" x="${px.toFixed(1)}" y="${(py - 22).toFixed(1)}">P?</text>
+      <text class="ha-label" x="${A[0]}" y="${A[1] + 18}">A</text><text class="ha-label" x="${B[0]}" y="${B[1] - 10}">B</text>
+      <text class="ha-label ha-label--amber" x="${at(1 / 3)[0].toFixed(1)}" y="${(at(1 / 3)[1] + 22).toFixed(1)}">2 bagian</text>
+      <text class="ha-label ha-label--amber" x="${(at(5 / 6)[0] + 6).toFixed(1)}" y="${(at(5 / 6)[1] + 22).toFixed(1)}">1 bagian</text>
+    </svg>`;
+  },
 };
 
 export function hookArt(name) {

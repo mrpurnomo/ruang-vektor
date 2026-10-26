@@ -188,6 +188,159 @@ const FIGURES = {
       <text class="t tz" x="${P(0, 0, 3.5)[0] - 4}" y="${P(0, 0, 3.5)[1]}">Z</text>
     </svg>`;
   },
+
+  /* ---------------- Bab 2 ---------------- */
+
+  /** A(1, 1) → B(5, 2) → C(6, 5): a + b = AC. */
+  segitiga() {
+    const { w, h, X, Y, grid } = gridFig([0, 8], [0, 6], 24);
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Aturan segitiga: a dari A ke B, b dari B ke C, hasilnya AC">
+      ${grid}
+      ${docArrow(X(1), Y(1), X(5), Y(2))}
+      ${docArrow(X(5), Y(2), X(6), Y(5))}
+      ${docArrow(X(1), Y(1), X(6), Y(5), 'c', 'ch')}
+      <circle class="p" cx="${X(1)}" cy="${Y(1)}" r="4"/><circle class="p" cx="${X(5)}" cy="${Y(2)}" r="4"/><circle class="p" cx="${X(6)}" cy="${Y(5)}" r="4"/>
+      <text class="t" x="${X(1) - 6}" y="${Y(1) + 16}">A(1, 1)</text>
+      <text class="t" x="${X(5) + 6}" y="${Y(2) + 14}">B(5, 2)</text>
+      <text class="t" x="${X(6) + 7}" y="${Y(5) + 4}">C(6, 5)</text>
+      <text class="o" x="${X(3)}" y="${Y(1.5) + 15}">a</text>
+      <text class="o" x="${X(5.6) + 5}" y="${Y(3.4)}">b</text>
+      <text class="o o--c" x="${X(2.4)}" y="${Y(3.2)}">a + b</text>
+    </svg>`;
+  },
+
+  /** O, a(4, 1), b(1, 3): jajar genjang OACB, diagonal jumlah & selisih. */
+  jajargenjang() {
+    const { w, h, X, Y, grid } = gridFig([-1, 6], [-1, 5], 26);
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Jajar genjang OACB dengan diagonal a + b dan a − b">
+      ${grid}
+      <polygon class="sqc" points="${X(0)},${Y(0)} ${X(4)},${Y(1)} ${X(5)},${Y(4)} ${X(1)},${Y(3)}"/>
+      <path class="d" d="M${X(4)} ${Y(1)}L${X(5)} ${Y(4)}L${X(1)} ${Y(3)}"/>
+      ${docArrow(X(0), Y(0), X(4), Y(1))}
+      ${docArrow(X(0), Y(0), X(1), Y(3))}
+      ${docArrow(X(0), Y(0), X(5), Y(4), 'c', 'ch')}
+      ${docArrow(X(1), Y(3), X(4), Y(1), 'va', 'vha')}
+      <circle class="p" cx="${X(5)}" cy="${Y(4)}" r="3.5"/>
+      <text class="t" x="${X(0) - 12}" y="${Y(0) + 13}">O</text>
+      <text class="t" x="${X(4) + 6}" y="${Y(1) + 12}">A</text>
+      <text class="t" x="${X(1) - 14}" y="${Y(3) - 4}">B</text>
+      <text class="t" x="${X(5) + 6}" y="${Y(4) - 4}">C</text>
+      <text class="o" x="${X(2.2)}" y="${Y(0.5) + 15}">a</text>
+      <text class="o" x="${X(0.1) - 2}" y="${Y(1.8)}">b</text>
+      <text class="o o--c" x="${X(3.4)}" y="${Y(3) - 2}">a + b</text>
+      <text class="o o--a" x="${X(2.5) + 4}" y="${Y(2) + 14}">a − b</text>
+    </svg>`;
+  },
+
+  /** a(3, 1) lalu b(2, 4) bersambung: a + b = (5, 5). */
+  komponen() {
+    const { w, h, X, Y, grid } = gridFig([-1, 7], [-1, 6], 22);
+    let hops = '';
+    for (let k = 0; k < 5; k += 1) hops += `<path class="h" d="M${X(k)} ${Y(0)} Q${X(k + 0.5)} ${Y(0) + 11} ${X(k + 1)} ${Y(0)}"/>`;
+    for (let k = 0; k < 5; k += 1) hops += `<path class="h" d="M${X(5)} ${Y(k)} Q${X(5) + 11} ${Y(k + 0.5)} ${X(5)} ${Y(k + 1)}"/>`;
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="a = (3, 1) dan b = (2, 4) bersambung, a + b = (5, 5)">
+      ${grid}${hops}
+      ${docArrow(X(0), Y(0), X(3), Y(1))}
+      ${docArrow(X(3), Y(1), X(5), Y(5))}
+      ${docArrow(X(0), Y(0), X(5), Y(5), 'c', 'ch')}
+      <circle class="p" cx="${X(5)}" cy="${Y(5)}" r="3.5"/>
+      <text class="t" x="${X(0) - 12}" y="${Y(0) - 4}">O</text>
+      <text class="t" x="${X(5) - 50}" y="${Y(5) - 6}">C(5, 5)</text>
+      <text class="o" x="${X(1.6)}" y="${Y(0.6) + 13}">a</text>
+      <text class="o" x="${X(4.2) + 6}" y="${Y(3)}">b</text>
+      <text class="o o--c" x="${X(1.4)}" y="${Y(2.6)}">a + b</text>
+      <text class="n" x="${X(2.5) - 4}" y="${Y(0) + 22}">+5</text>
+      <text class="n" x="${X(5) + 16}" y="${Y(2.5) + 4}">+5</text>
+    </svg>`;
+  },
+
+  /** v = (2, 1) disambung tiga kali: 3v = (6, 3). */
+  skalar() {
+    const { w, h, X, Y, grid } = gridFig([-1, 7], [-1, 4], 26);
+    const copies = [0, 1, 2].map((k) => docArrow(X(2 * k), Y(k), X(2 * k + 2), Y(k + 1))).join('');
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Tiga salinan v = (2, 1) bersambung menjadi 3v = (6, 3)">
+      ${grid}
+      <line class="c" x1="${X(0)}" y1="${Y(0) + 9}" x2="${X(6) - 4}" y2="${Y(3) + 9}"/>
+      ${copies}
+      <circle class="dot" cx="${X(2)}" cy="${Y(1)}" r="2.8"/><circle class="dot" cx="${X(4)}" cy="${Y(2)}" r="2.8"/>
+      <circle class="p" cx="${X(0)}" cy="${Y(0)}" r="3.5"/>
+      <text class="t" x="${X(0) - 12}" y="${Y(0) - 4}">O</text>
+      <text class="o" x="${X(0.8)}" y="${Y(0.5) - 6}">v</text>
+      <text class="o" x="${X(2.8)}" y="${Y(1.5) - 6}">v</text>
+      <text class="o" x="${X(4.8)}" y="${Y(2.5) - 6}">v</text>
+      <text class="o o--c" x="${X(3.6)}" y="${Y(1.8) + 22}">3v = (6, 3)</text>
+    </svg>`;
+  },
+
+  /** 2u = (6, 2) lalu −v = (−1, −2): 2u − v = (5, 0). */
+  kombinasi() {
+    const { w, h, X, Y, grid } = gridFig([-1, 7], [-1, 3], 28);
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="2u lalu minus v bersambung, hasilnya 2u − v = (5, 0)">
+      ${grid}
+      ${docArrow(X(0), Y(0), X(6), Y(2))}
+      ${docArrow(X(6), Y(2), X(5), Y(0), 'va', 'vha')}
+      ${docArrow(X(0), Y(0), X(5), Y(0), 'c', 'ch')}
+      <circle class="p" cx="${X(0)}" cy="${Y(0)}" r="3.5"/>
+      <text class="t" x="${X(0) - 12}" y="${Y(0) - 4}">O</text>
+      <text class="o" x="${X(2.6)}" y="${Y(1.3) - 4}">2u</text>
+      <text class="o o--a" x="${X(5.7) + 6}" y="${Y(0.9)}">−v</text>
+      <text class="o o--c" x="${X(2)}" y="${Y(0) + 16}">2u − v = (5, 0)</text>
+    </svg>`;
+  },
+
+  /** AB = CD di tempat berbeda; EF = −AB. */
+  kesamaan() {
+    const { w, h, X, Y, grid } = gridFig([-5, 5], [-3, 5], 20);
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="AB dan CD vektor yang sama di tempat berbeda, EF berlawanan arah">
+      ${grid}
+      ${docArrow(X(-4), Y(1), X(-1), Y(3))}
+      ${docArrow(X(1), Y(-2), X(4), Y(0))}
+      ${docArrow(X(4), Y(4), X(1), Y(2), 'va', 'vha')}
+      <circle class="p" cx="${X(-4)}" cy="${Y(1)}" r="3"/><circle class="p" cx="${X(-1)}" cy="${Y(3)}" r="3"/>
+      <circle class="p" cx="${X(1)}" cy="${Y(-2)}" r="3"/><circle class="p" cx="${X(4)}" cy="${Y(0)}" r="3"/>
+      <circle class="p" cx="${X(4)}" cy="${Y(4)}" r="3"/><circle class="p" cx="${X(1)}" cy="${Y(2)}" r="3"/>
+      <text class="t" x="${X(-4) - 8}" y="${Y(1) + 15}">A</text><text class="t" x="${X(-1) + 5}" y="${Y(3) - 4}">B</text>
+      <text class="t" x="${X(1) - 4}" y="${Y(-2) + 15}">C</text><text class="t" x="${X(4) + 5}" y="${Y(0) + 4}">D</text>
+      <text class="t" x="${X(4) + 5}" y="${Y(4) + 4}">E</text><text class="t" x="${X(1) - 12}" y="${Y(2) + 4}">F</text>
+      <text class="n" x="${X(-3.4)}" y="${Y(2.6)}">(3, 2)</text>
+      <text class="n" x="${X(2.6) + 4}" y="${Y(-1.3) + 6}">(3, 2)</text>
+      <text class="n n--a" x="${X(2.2)}" y="${Y(3.5) - 2}">(−3, −2)</text>
+    </svg>`;
+  },
+
+  /** A(1, 1), B(3, 2), C(7, 4): tiga salinan AB tiba di C. */
+  segaris() {
+    const { w, h, X, Y, grid } = gridFig([0, 8], [0, 5], 26);
+    const copies = [0, 1, 2].map((k) => docArrow(X(1 + 2 * k), Y(1 + k), X(3 + 2 * k), Y(2 + k), k ? 'c' : 'v', k ? 'ch' : 'vh')).join('');
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Tiga salinan AB dari A tiba di C: A, B, C segaris">
+      ${grid}
+      <line class="d" x1="${X(0)}" y1="${Y(0.5)}" x2="${X(8)}" y2="${Y(4.5)}"/>
+      ${copies}
+      <circle class="p" cx="${X(1)}" cy="${Y(1)}" r="4"/><circle class="p" cx="${X(3)}" cy="${Y(2)}" r="4"/><circle class="p" cx="${X(7)}" cy="${Y(4)}" r="4"/>
+      <text class="t" x="${X(1) - 6}" y="${Y(1) + 17}">A(1, 1)</text>
+      <text class="t" x="${X(3) - 4}" y="${Y(2) + 17}">B(3, 2)</text>
+      <text class="t" x="${X(7) - 50}" y="${Y(4) - 6}">C(7, 4)</text>
+      <text class="n" x="${X(2) - 4}" y="${Y(1.5) - 8}">AB</text>
+      <text class="n n--c" x="${X(5) + 6}" y="${Y(3) + 14}">AC = 3 AB</text>
+    </svg>`;
+  },
+
+  /** AB dibagi 3 bagian; P(5, 3) berjarak 2 bagian dari A. */
+  pembagian() {
+    const { w, h, X, Y, grid } = gridFig([0, 8], [0, 5], 26);
+    return `<svg class="docfig" viewBox="0 0 ${w} ${h}" role="img" aria-label="Ruas AB dibagi tiga bagian sama panjang, P di dua bagian dari A">
+      ${grid}
+      <line class="d" x1="${X(1)}" y1="${Y(1)}" x2="${X(7)}" y2="${Y(4)}"/>
+      ${docArrow(X(1), Y(1), X(5), Y(3), 'c', 'ch')}
+      <circle class="dot" cx="${X(3)}" cy="${Y(2)}" r="3"/>
+      <circle class="p" cx="${X(1)}" cy="${Y(1)}" r="4"/><circle class="p" cx="${X(7)}" cy="${Y(4)}" r="4"/><circle class="p" cx="${X(5)}" cy="${Y(3)}" r="4.5"/>
+      <text class="t" x="${X(1) - 6}" y="${Y(1) + 17}">A(1, 1)</text>
+      <text class="t" x="${X(7) - 50}" y="${Y(4) - 6}">B(7, 4)</text>
+      <text class="t" x="${X(5) + 4}" y="${Y(3) + 17}">P(5, 3)</text>
+      <text class="n n--c" x="${X(2.2)}" y="${Y(2.2) - 6}">2 bagian</text>
+      <text class="n n--a" x="${X(6) - 6}" y="${Y(3.5) + 18}">1 bagian</text>
+    </svg>`;
+  },
 };
 
 /* ------------------------------------------------------------

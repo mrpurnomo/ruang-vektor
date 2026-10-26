@@ -449,16 +449,18 @@ E. $\overrightarrow{PQ} + \overrightarrow{RS}$
 #### Soal 3
 
 - **ID:** `b2_01_3`
-- **Tipe:** Isian angka (papan angka)
+- **Tipe:** Ketuk titik di bidang kartesius
 - **Sub-topik:** `penjumlahan_segitiga`
 
-Diketahui panjang $\overrightarrow{AB} = 12$ satuan.
+Pada bidang tergambar $\vec{a} = \overrightarrow{PQ}$ dengan $P(-2,\, 0)$ dan $Q(1,\, 2)$. Diketahui juga $\vec{b} = \begin{pmatrix} 3 \\ -4 \end{pmatrix}$.
 
-**Tentukan panjang vektor $\overrightarrow{AB} + \overrightarrow{BA}$.**
+**Dengan aturan segitiga, ketuk letak titik $T$ sehingga $\overrightarrow{PT} = \vec{a} + \vec{b}$.**
 
-> **KUNCI JAWABAN:** **0**
+*Bidang:* x ∈ [-4, 6], y ∈ [-4, 4] · titik P(-2, 0), Q(1, 2) · panah P→Q
 
-**Pembahasan.** $\overrightarrow{AB} + \overrightarrow{BA} = \overrightarrow{AA} = \vec{0}$, dan panjang vektor nol adalah $0$. Angka $12$ di soal sengaja disediakan sebagai pengecoh — berapa pun panjangnya, pergi lalu kembali menghasilkan perpindahan nol.
+> **KUNCI JAWABAN:** **(4, -2)**
+
+**Pembahasan.** Pangkal $\vec{b}$ diletakkan di ujung $\vec{a}$, yaitu $Q(1,\, 2)$. Dari $Q$, $\vec{b}$ melangkah $3$ ke kanan dan $4$ ke bawah, sampai di $T(4,\, -2)$. Jadi $\overrightarrow{PT} = \vec{a} + \vec{b}$.
 
 ---
 
@@ -680,13 +682,13 @@ Diketahui $\vec{u} = (4,\, -1)$ dan $\vec{v} = (2,\, 3)$.
 - **Tipe:** Isian angka (papan angka)
 - **Sub-topik:** `kombinasi_operasi`
 
-Diketahui $\vec{a} = (1,\, 5)$ dan $\vec{b} = (-4,\, 2)$.
+Diketahui $\vec{a} = (1,\, 5,\, -2)$ dan $\vec{b} = (-4,\, 2,\, 4)$.
 
-**Tentukan komponen $x$ dari $3\vec{a} + 2\vec{b}$.**
+**Tentukan komponen $z$ dari $3\vec{a} + 2\vec{b}$.**
 
-> **KUNCI JAWABAN:** **-5**
+> **KUNCI JAWABAN:** **2**
 
-**Pembahasan.** Komponen $x$: $3(1) + 2(-4) = 3 + (-8) = -5$.
+**Pembahasan.** Komponen $z$: $3(-2) + 2(4) = -6 + 8 = 2$. Kerjakan kedua perkalian lebih dulu, baru dijumlahkan.
 
 ---
 
@@ -701,14 +703,14 @@ Seorang siswa mengerjakan $2\vec{u} - 3\vec{v}$ dengan $\vec{u} = (4,\, -1)$ dan
 **Di manakah letak kesalahannya?**
 
 A. Ia mengurangkan $\vec{u}$ dan $\vec{v}$ sebelum mengalikan skalarnya.
-B. Ia hanya mengalikan skalar ke komponen $x$, sehingga komponen $y$ tidak ikut diregangkan.
+B. Ia hanya mengalikan skalar ke komponen $x$, sehingga komponen $y$ tidak ikut dikalikan.
 C. Ia menukar posisi $\vec{u}$ dan $\vec{v}$ pada pengurangan.
 D. Ia menjumlahkan padahal seharusnya mengurangkan.
 E. Tidak ada kesalahan; hasilnya memang $(2,\, -1)$.
 
-> **KUNCI JAWABAN:** **B** — Ia hanya mengalikan skalar ke komponen $x$, sehingga komponen $y$ tidak ikut diregangkan.
+> **KUNCI JAWABAN:** **B** — Ia hanya mengalikan skalar ke komponen $x$, sehingga komponen $y$ tidak ikut dikalikan.
 
-**Pembahasan.** Komponen $x$-nya benar ($8-6=2$), tetapi komponen $y$-nya tertinggal di $-1$ — nilai asli $\vec{u}$ sebelum dikali $2$, dan $\vec{v}$ tidak ikut dikurangkan. Ini gejala khas skalar yang hanya disapukan ke komponen pertama. **Opsi B**.
+**Pembahasan.** Komponen $x$-nya benar ($8-6=2$), tetapi komponen $y$-nya tertinggal di $-1$ — nilai asli $\vec{u}$ sebelum dikali $2$, dan $\vec{v}$ tidak ikut dikurangkan. Ini tanda skalar yang hanya dikalikan ke komponen pertama. **Opsi B**.
 
 ---
 
@@ -878,13 +880,13 @@ E. $P(10,\, 9)$
 - **Tipe:** Isian angka (papan angka)
 - **Sub-topik:** `pembagian_ruas_garis`
 
-Diketahui titik $A(-3,\, 4)$ dan $B(7,\, -2)$. Titik $M$ adalah titik tengah ruas garis $AB$.
+Diketahui titik $A(-3,\, 4,\, 1)$ dan $B(7,\, -2,\, 5)$. Titik $M$ adalah titik tengah ruas garis $AB$.
 
-**Tentukan absis (komponen $x$) titik $M$.**
+**Tentukan komponen $z$ titik $M$.**
 
-> **KUNCI JAWABAN:** **2**
+> **KUNCI JAWABAN:** **3**
 
-**Pembahasan.** Titik tengah berarti $m : n = 1 : 1$, sehingga $\vec{m} = \dfrac{\vec{a}+\vec{b}}{2}$. Absisnya: $\dfrac{-3 + 7}{2} = \dfrac{4}{2} = 2$.
+**Pembahasan.** Titik tengah: $\vec{m} = \dfrac{\vec{a} + \vec{b}}{2}$. Komponen $z$: $\dfrac{1 + 5}{2} = \dfrac{6}{2} = 3$.
 
 ---
 
